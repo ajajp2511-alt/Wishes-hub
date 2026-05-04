@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="hi" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WishesHub | Premium Wishing Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
+    <style>
+        :root { --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --primary: #6c5ce7; --input: #fff; --border: #ddd; }
+        [data-theme="dark"] { --bg: #18191a; --card: #242526; --text: #e4e6eb; --primary: #a29bfe; --input: #3a3b3c; --border: #444; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s ease; }
+        body { background: var(--bg); color: var(--text); }
+        
+        .navbar { background: var(--primary); padding: 12px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .nav-right { display: flex; gap: 15px; align-items: center; }
+
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+
+        .search-box { width: 100%; padding: 14px 20px; border-radius: 30px; border: 1px solid var(--border); background: var(--input); color: var(--text); margin-bottom: 20px; outline: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        .filters { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none; }
+        .filters::-webkit-scrollbar { display: none; }
+        
+        .filter-btn { padding: 8px 20px; border-radius: 25px; border: 1.5px solid var(--primary); background: var(--card); color: var(--primary); cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 13px; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        /* Admin Dashboard */
+        #adminTools { background: var(--card); padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 6px solid #00b894; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--input); color: var(--text); font-size: 14px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: var(--card); border-radius: 18px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); position: relative; }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+        .card-body { padding: 20px; }
+
+        .btn-wa { display: block; background: #25d366; color: white; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 600; margin-top: 15px; font-size: 14px; }
+        .btn-copy { width: 100%; background: var(--bg); border: none; padding: 10px; border-radius: 10px; cursor: pointer; margin-top: 8px; color: var(--text); font-weight: 600; font-size: 13px; }
+        .btn-outline { background: transparent; border: 1.5px solid white; color: white; padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 13px; }
+
+        .del-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; width: 35px; height: 35px; border-radius: 50%; color: #ff4757; cursor: pointer; font-size: 18px; display: none; z-index: 10; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2 onclick="location.reload()" style="cursor:pointer; letter-spacing: 1px;">✨ WishesHub</h2>
+        <div class="nav-right">
+            <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">🌓</button>
+            <button id="fBtn" onclick="openFeedback()" style="display:none; background:none; border:none; color:white; font-size:22px; cursor:pointer;" title="Sujhaav">💬</button>
+            <div id="userBtnSection">
+                <button class="btn-outline" onclick="openAuth()">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <input type="text" class="search-box" id="searchInp" placeholder="Search wishes, shayari, quotes..." onkeyup="searchPosts()">
+        
+        <div class="filters" id="catFilter">
+            <button class="filter-btn active" onclick="filterPosts('All', this)">All</button>
+            <button class="filter-btn" onclick="filterPosts('Birthday', this)">🎂 Birthday</button>
+            <button class="filter-btn" onclick="filterPosts('Love', this)">❤️ Love</button>
+            <button class="filter-btn" onclick="filterPosts('Anniversary', this)">💍 Anniversary</button>
+            <button class="filter-btn" onclick="filterPosts('Shayari', this)">✍️ Shayari</button>
+            <button class="filter-btn" onclick="filterPosts('Attitude', this)">😎 Attitude</button>
+            <button class="filter-btn" onclick="filterPosts('Good Morning', this)">☀️ Morning</button>
+            <button class="filter-btn" onclick="filterPosts('Good Night', this)">🌙 Night</button>
+            <button class="filter-btn" onclick="filterPosts('Festival', this)">🎉 Festival</button>
+            <button class="filter-btn" onclick="filterPosts('Quotes', this)">📜 Quotes</button>
+            <button class="filter-btn" onclick="filterPosts('Others', this)">📂 Others</button>
+        </div>
+
+        <div id="adminTools">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>🚀 Admin Panel</h3>
+                <!-- Naya Backup Button -->
+                <button onclick="downloadBackup()" style="background:#0984e3; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;">📥 Download Backup</button>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="wTitle" placeholder="Post Title">
+                <select id="wCat">
+                    <option>Birthday</option><option>Love</option><option>Anniversary</option>
+                    <option>Shayari</option><option>Attitude</option><option>Good Morning</option>
+                    <option>Good Night</option><option>Festival</option><option>Quotes</option><option>Others</option>
+                </select>
+            </div>
+            <input type="file" id="wFile" accept="image/*">
+            <textarea id="wText" placeholder="Write your wish message here..." rows="4"></textarea>
+            <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; border:1px solid var(--border);">
+                <input type="text" id="gName" placeholder="Gift Item Name (Optional)">
+                <input type="url" id="gLink" placeholder="Gift Link (Amazon/Flipkart)">
+            </div>
+            <button onclick="publishData()" id="pubBtn" style="width:100%; padding:14px; background:#00b894; color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer; margin-top:10px;">Publish to Live Site ✅</button>
+        </div>
+
+        <div class="grid" id="mainGrid">Wishes load ho rahi hain...</div>
+    </div>
+
+    <!-- Modals -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <h3 id="authT">Login or Sign Up</h3>
+            <input type="email" id="authEmail" placeholder="Email Address">
+            <input type="password" id="authPass" placeholder="Password (min 6 chars)">
+            <button onclick="handleAuth()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer; margin-top:10px;">Continue</button>
+            <p onclick="toggleMode()" id="modeSwitch" style="margin-top:20px; font-size:14px; color:var(--primary); cursor:pointer; font-weight:600;">Don't have an account? Sign Up</p>
+            <button onclick="closeModal('authModal')" style="margin-top:15px; background:none; border:none; color:gray;">Not Now</button>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <h3>📝 Feedback</h3>
+            <textarea id="fText" placeholder="Write your suggestion..." rows="5"></textarea>
+            <button onclick="sendFeedback()" id="fSubmit" style="width:100%; padding:14px; background:#00b894; color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer;">Submit ✅</button>
+            <button onclick="closeModal('feedbackModal')" style="margin-top:10px; background:none; border:none; color:gray;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhqqHLeWTKGRc4-cHG2n8ALBt7zZFr8GQ",
+            authDomain: "wishes-hub.firebaseapp.com",
+            projectId: "wishes-hub",
+            storageBucket: "wishes-hub.firebasestorage.app",
+            messagingSenderId: "366690205259",
+            appId: "1:366690205259:web:f82e09f5f8fd70dfd797ce"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(), auth = firebase.auth(), storage = firebase.storage();
+
+        let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
+
+        // --- AUTH & UI ---
+        function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
+        function openFeedback() { document.getElementById('feedbackModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('authT').innerText = isLoginMode ? "Login" : "Sign Up";
+            document.getElementById('modeSwitch').innerText = isLoginMode ? "Need an account? Sign Up" : "Already have an account? Login";
+        }
+
+        async function handleAuth() {
+            const e = document.getElementById('authEmail').value, p = document.getElementById('authPass').value;
+            if(!e || p.length < 6) return alert("Zaroori details bhariye!");
+            try {
+                if(isLoginMode) await auth.signInWithEmailAndPassword(e, p);
+                else await auth.createUserWithEmailAndPassword(e, p);
+                location.reload();
+            } catch(err) { alert(err.message); }
+        }
+
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('fBtn').style.display = 'block';
+                document.getElementById('userBtnSection').innerHTML = `<button onclick="auth.signOut().then(()=>location.reload())" class="btn-outline" style="background:#ff4757; border:none;">Logout</button>`;
+                
+                // Admin UID Check[cite: 1]
+                if(user.email === 'admin@admin.com' || user.uid === 'fDp1cb1RAsWm8QfyuW2BDeYJyJw1') {
+                    isAdmin = true;
+                    document.getElementById('adminTools').style.display = 'block';
+                }
+            }
+            fetchPosts();
+        });
+
+        // --- BACKUP FUNCTION (Naya Feature) ---
+        async function downloadBackup() {
+            try {
+                const snapshot = await db.collection("wishes").get();
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `WishesHub_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                alert("Backup download ho gaya! Ise safe jagah save karein.");
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        }
+
+        // --- MAIN FUNCTIONS ---
+        async function publishData() {
+            const btn = document.getElementById('pubBtn'), file = document.getElementById('wFile').files[0];
+            const title = document.getElementById('wTitle').value, cat = document.getElementById('wCat').value, text = document.getElementById('wText').value;
+            const gn = document.getElementById('gName').value, gl = document.getElementById('gLink').value;
+
+            if(!title || !text) return alert("Title aur Text zaroori hai!");
+            btn.innerText = "Processing... ⏳"; btn.disabled = true;
+
+            let url = "";
+            if(file) {
+                const ref = storage.ref('img/' + Date.now());
+                await ref.put(file); 
+                url = await ref.getDownloadURL();
+            }
+            await db.collection("wishes").add({ 
+                title, cat, text, thumb: url, gName: gn, gLink: gl, 
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+            location.reload();
+        }
+
+        function fetchPosts() {
+            db.collection("wishes").orderBy("createdAt", "desc").onSnapshot(snap => {
+                allPosts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPosts(allPosts);
+            });
+        }
+
+        function renderPosts(data) {
+            document.getElementById('mainGrid').innerHTML = data.map(d => `
+                <div class="card">
+                    ${isAdmin ? `<button class="del-btn" style="display:block" onclick="deletePost('${d.id}')">🗑</button>` : ''}
+                    ${d.thumb ? `<img src="${d.thumb}" class="card-img" loading="lazy">` : ''}
+                    <div class="card-body">
+                        <small style="color:var(--primary); font-weight:600; text-transform:uppercase; font-size:10px;">${d.cat}</small>
+                        <h3 style="margin:5px 0; font-size:18px;">${d.title}</h3>
+                        <p id="t-${d.id}" style="font-size:14px; opacity:0.8; white-space:pre-wrap; line-height:1.6;">${d.text}</p>
+                        
+                        ${d.gLink ? `<div style="margin-top:12px; font-size:12px; color:#e67e22; background:rgba(230,126,34,0.08); padding:10px; border-radius:10px; border:1px dashed #e67e22;">🎁 Gift: <a href="${d.gLink}" target="_blank" style="color:#e67e22; font-weight:600; text-decoration:none;">${d.gName || 'Shop'}</a></div>` : ''}
+
+                        <a href="https://wa.me/?text=${encodeURIComponent(d.text)}" target="_blank" class="btn-wa">Share on WhatsApp</a>
+                        <button class="btn-copy" onclick="copyTxt('${d.id}')">📋 Copy Message</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTheme() {
+            const target = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('portalTheme', target);
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('portalTheme') || 'light');
+
+        function searchPosts() {
+            const q = document.getElementById('searchInp').value.toLowerCase();
+            renderPosts(allPosts.filter(p => p.title.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)));
+        }
+
+        function filterPosts(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPosts(cat === 'All' ? allPosts : allPosts.filter(p => p.cat === cat));
+        }
+
+        function copyTxt(id) { 
+            const txt = document.getElementById('t-' + id).innerText;
+            navigator.clipboard.writeText(txt); 
+            alert("Copied! ✅"); 
+        }
+
+        async function deletePost(id) { 
+            if(confirm("Delete this post?")) await db.collection("wishes").doc(id).delete(); 
+        }
+    </script>
+</body>
+</html>
