@@ -128,7 +128,12 @@
             <button onclick="closeModal('feedbackModal')" style="margin-top:10px; background:none; border:none; color:gray;">Cancel</button>
         </div>
     </div>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 
+    <script src="storage.js"></script>
     <script> 
         // --- FIREBASE INITIALIZATION ---
         const firebaseConfig = {
@@ -145,12 +150,6 @@
         const TG_BOT_TOKEN = "8183244146:AAGc3zdrTFQBAICK7JEIuDZCQSZB4hHvITg"; // Yeh zaroori hai images dikhane ke liye
         let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
          
-       <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
-
-    <script src="storage.js"></script>
     <script>
         // Aapka baaki ka index.html wala code yahan se shuru hoga...
         // --- AUTH & UI ---
