@@ -260,6 +260,10 @@
         async function deletePost(id) { 
             if(confirm("Delete this post?")) await db.collection("wishes").doc(id).delete(); 
         }
-    </script>
+    </script> 
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>
+eruda.init();
+</script>
 </body>
 </html>
