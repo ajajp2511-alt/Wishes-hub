@@ -141,7 +141,7 @@
             appId: "1:366690205259:web:f82e09f5f8fd70dfd797ce"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(), auth = firebase.auth(), storage = firebase.storage();
+        const db = firebase.firestore(), auth = firebase.auth();
 
         let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
 
@@ -201,26 +201,6 @@
         }
 
         // --- MAIN FUNCTIONS ---
-        async function publishData() {
-            const btn = document.getElementById('pubBtn'), file = document.getElementById('wFile').files[0];
-            const title = document.getElementById('wTitle').value, cat = document.getElementById('wCat').value, text = document.getElementById('wText').value;
-            const gn = document.getElementById('gName').value, gl = document.getElementById('gLink').value;
-
-            if(!title || !text) return alert("Title aur Text zaroori hai!");
-            btn.innerText = "Processing... ⏳"; btn.disabled = true;
-
-            let url = "";
-            if(file) {
-                const ref = storage.ref('img/' + Date.now());
-                await ref.put(file); 
-                url = await ref.getDownloadURL();
-            }
-            await db.collection("wishes").add({ 
-                title, cat, text, thumb: url, gName: gn, gLink: gl, 
-                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-            });
-            location.reload();
-        }
 
         function fetchPosts() {
             db.collection("wishes").orderBy("createdAt", "desc").onSnapshot(snap => {
@@ -233,7 +213,7 @@
             document.getElementById('mainGrid').innerHTML = data.map(d => `
                 <div class="card">
                     ${isAdmin ? `<button class="del-btn" style="display:block" onclick="deletePost('${d.id}')">🗑</button>` : ''}
-                    ${d.thumb ? `<img src="${d.thumb}" class="card-img" loading="lazy">` : ''}
+                    ${d.telegram_id ? `<img src="https://api.telegram.org/file/bot${TG_BOT_TOKEN}/${d.telegram_id}" class="card-img" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=Wishes+Hub'">` : (d.thumb ? `<img src="${d.thumb}" class="card-img" loading="lazy">` : '')}
                     <div class="card-body">
                         <small style="color:var(--primary); font-weight:600; text-transform:uppercase; font-size:10px;">${d.cat}</small>
                         <h3 style="margin:5px 0; font-size:18px;">${d.title}</h3>
