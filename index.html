@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="hi" dir="ltr">
-<head> 
-    <script src="storage.js"></script> 
+<head>  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WishesHub | Premium Wishing Portal</title>
@@ -177,6 +176,12 @@
                 if(user.email === 'admin@admin.com' || user.uid === 'fDp1cb1RAsWm8QfyuW2BDeYJyJw1') {
                     isAdmin = true;
                     document.getElementById('adminTools').style.display = 'block';
+               <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    
+    <script src="storage.js"></script> 
+
+    <script>
+        // Aapka baaki ka main script yahan se shuru hota hai...
                 }
             }
             fetchPosts();
