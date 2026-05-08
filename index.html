@@ -142,7 +142,8 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
-
+        // --- TELEGRAM CONFIG ---
+        const TG_BOT_TOKEN = "8183244146:AAGc3zdrTFQBAICK7JEIuDZCQSZB4hHvITg"; // Yeh zaroori hai images dikhane ke liye
         let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
 
         // --- AUTH & UI ---
