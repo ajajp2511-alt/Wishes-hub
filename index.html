@@ -144,7 +144,15 @@
         // --- TELEGRAM CONFIG ---
         const TG_BOT_TOKEN = "8183244146:AAGc3zdrTFQBAICK7JEIuDZCQSZB4hHvITg"; // Yeh zaroori hai images dikhane ke liye
         let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
+         <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 
+    <script src="storage.js"></script>
+
+    <script>
+        // Aapka baaki ka index.html wala code yahan se shuru hoga...
         // --- AUTH & UI ---
         function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
         function openFeedback() { document.getElementById('feedbackModal').style.display = 'flex'; }
@@ -176,13 +184,7 @@
                 if(user.email === 'admin@admin.com' || user.uid === 'fDp1cb1RAsWm8QfyuW2BDeYJyJw1') {
                     isAdmin = true;
                     document.getElementById('adminTools').style.display = 'block';
-               <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
-    
-    <script src="storage.js"></script> 
-
-    <script>
-        // Aapka baaki ka main script yahan se shuru hota hai...
-                }
+         }
             }
             fetchPosts();
         });
