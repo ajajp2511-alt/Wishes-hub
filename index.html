@@ -128,7 +128,7 @@
             <button onclick="closeModal('feedbackModal')" style="margin-top:10px; background:none; border:none; color:gray;">Cancel</button>
         </div>
     </div>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
@@ -151,10 +151,11 @@ console.log("Storage file loaded");
         const db = firebase.firestore(), auth = firebase.auth();
         // --- TELEGRAM CONFIG ---
         const TG_BOT_TOKEN = "8183244146:AAGc3zdrTFQBAICK7JEIuDZCQSZB4hHvITg"; // Yeh zaroori hai images dikhane ke liye
-        let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
+       let allPosts = [], isLoginMode = true, currentUser = null, isAdmin = false;
         // Aapka baaki ka index.html wala code yahan se shuru hoga...
         // --- AUTH & UI ---
-        function openAuth() { document.getElementById('authModal').style.display = 'flex'; }
+        function openAuth() { document.getElementById('authModal').style.display = 'flex';
+        }
         function openFeedback() { document.getElementById('feedbackModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
