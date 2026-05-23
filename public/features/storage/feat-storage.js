@@ -1,24 +1,33 @@
-// Upgrade: Lazy Loading Logic
-let lastVisibleDoc = null; // Last fetched document tracker
+// Step 1: Conversion Logic (Optimized with SessionStorage)
+window.resolveTeleImage = async (fileId) => {
+    // Check agar link pehle se session mein hai (Speed ke liye)
+    const cached = sessionStorage.getItem(fileId);
+    if (cached) return cached;
 
-window.loadMoreWishes = async () => {
-    let query = db.collection("wishes").orderBy("timestamp", "desc").limit(20);
+    const res = await fetch(`https://api.telegram.org/bot${process.env.TG_BOT_TOKEN}/getFile?file_id=${fileId}`);
+    const data = await res.json();
     
-    if (lastVisibleDoc) {
-        query = query.startAfter(lastVisibleDoc);
+    if (data.ok) {
+        const fullLink = `https://api.telegram.org/file/bot${process.env.TG_BOT_TOKEN}/${data.result.file_path}`;
+        sessionStorage.setItem(fileId, fullLink); // Agli baar ke liye save karein
+        return fullLink;
     }
-
-    const snapshot = await query.get();
-    if (!snapshot.empty) {
-        lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
-        const newWishes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        appendWishesToGrid(newWishes); // Nayi wishes purani grid mein jodna
-    }
+    return "assets/placeholder.png";
 };
 
-// Scroll Detection (Unlimited Scroll)
-window.onscroll = function() {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-        loadMoreWishes();
+// Step 2: Render Logic
+async function displayWishes(wishes) {
+    const grid = document.getElementById('wishes-grid');
+    grid.innerHTML = ""; // Clear purana data
+
+    for (let wish of wishes) {
+        // ID ko link mein convert karein
+        const finalImgUrl = await resolveTeleImage(wish.tgFileId);
+        
+        grid.innerHTML += `
+            <div class="wish-card">
+                <img src="${finalImgUrl}" loading="lazy">
+                <p>${wish.text}</p>
+            </div>`;
     }
-};
+}
