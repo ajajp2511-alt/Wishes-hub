@@ -1,69 +1,32 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WishesHub | Patel Studio</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@600&family=Pacifico&family=Zeyada&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>Wishes Hub | Professional Studio</title>
+    <link rel="stylesheet" href="style-ui.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 <body>
-    <div id="loader"><h2>✨ WishesHub</h2></div>
 
-    <nav class="navbar">
-        <h2 onclick="location.reload()">✨ WishesHub</h2>
-        <div id="userBtnSection"><button class="btn-outline" onclick="openAuth()">Admin</button></div>
-    </nav>
+    <header id="main-header"></header>
 
-    <div class="container">
-        <div class="category-wrapper" id="catChips">
-            <div class="chip active" onclick="filterData('All', this)">All</div>
-            <div class="chip" onclick="filterData('Birthday', this)">Birthday</div>
-            <div class="chip" onclick="filterData('Love', this)">Love</div>
-            <div class="chip" onclick="filterData('Shayari', this)">Shayari</div>
-        </div>
+    <nav id="category-bar"></nav>
 
-        <div id="adminTools" class="admin-panel">
-            <h3>🚀 Advanced Admin Panel</h3>
-            <div class="admin-box">
-                <small>Brand Logo (Telegram DB):</small>
-                <input type="file" id="adminLogo" accept="image/*" onchange="uploadLogoToDB(this)">
-                <div id="logoStatus" class="status-text"></div>
-            </div>
+    <main id="wishes-grid" class="grid-container">
+        </main>
 
-            <div class="input-row">
-                <input type="text" id="wTitle" placeholder="Post Title">
-                <select id="wCat" onchange="updateSubCatOptions(this.value)">
-                    <option value="Birthday">Birthday</option>
-                    <option value="Love">Love</option>
-                    <option value="Shayari">Shayari</option>
-                </select>
-                <select id="wSubCat">
-                    <option value="General">General</option>
-                </select>
-            </div>
-            
-            <input type="text" id="songInput" placeholder="Background Music URL (YouTube)..." onkeyup="autoSearchSong()">
-            
-            <div class="upload-section">
-                <input type="file" id="wFile" accept="image/*">
-                <div class="toggle-row">
-                    <span>🚀 Ultra HD Document</span>
-                    <label class="switch"><input type="checkbox" id="hdToggle"><span class="slider round"></span></label>
-                </div>
-            </div>
-            <textarea id="wText" placeholder="Write message..." rows="3"></textarea>
-            <button onclick="publishData()" id="pubBtn">Publish Final Branded Wish ✅</button>
-        </div>
+    <script src="features/storage/feat-storage.js"></script>
+    <script src="features/filters/feat-filter.js"></script>
+    <script src="features/editor/feat-editor.js"></script>
+    <script src="features/download/feat-download.js"></script>
 
-        <div class="grid" id="mainGrid">Loading...</div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="storagedemo.js"></script> 
-    <script src="script.js"></script>
+    <script>
+        // Website start karne ka logic
+        document.addEventListener('DOMContentLoaded', () => {
+            initStorage(); // Sabse pehle data fetch karo
+        });
+    </script>
 </body>
 </html>
