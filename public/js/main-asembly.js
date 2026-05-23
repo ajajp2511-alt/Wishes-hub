@@ -9,5 +9,9 @@ async function startApp() {
         console.error("Assembly Error:", error);
     }
 }
-
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log("Service Worker: App Ready for Offline Use"))
+    .catch((err) => console.log("SW Error:", err));
+}
 document.addEventListener('DOMContentLoaded', startApp);
