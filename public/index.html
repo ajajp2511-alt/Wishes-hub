@@ -4,29 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub | Professional Studio</title>
+    
     <link rel="stylesheet" href="style-ui.css">
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 </head>
 <body>
 
-    <header id="main-header"></header>
+    <header id="main-header">
+        <div class="logo-container">
+            <img src="" alt="Wishes Hub" class="app-logo" style="height: 50px;">
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search wishes (e.g. Birthday, Love)...">
+        </div>
+    </header>
 
-    <nav id="category-bar"></nav>
+    <nav id="category-bar">
+        </nav>
 
     <main id="wishes-grid" class="grid-container">
         </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="js/utils.js"></script>
+    <script src="features/branding/feat-branding.js"></script>
+    
     <script src="features/storage/feat-storage.js"></script>
+    
     <script src="features/filters/feat-filter.js"></script>
+    <script src="features/search/feat-search.js"></script>
     <script src="features/editor/feat-editor.js"></script>
+    <script src="features/favorites/feat-fav.js"></script>
     <script src="features/download/feat-download.js"></script>
+    <script src="features/ui/feat-toast.js"></script>
+
+    <script src="js/main-assembly.js"></script>
 
     <script>
-        // Website start karne ka logic
         document.addEventListener('DOMContentLoaded', () => {
-            initStorage(); // Sabse pehle data fetch karo
+            // Pura application start karo
+            startApp(); 
+            
+            // Branding (Logo aur Favicon) load karo
+            if (typeof BrandingManager !== 'undefined') {
+                BrandingManager.loadLogos();
+            }
+
+            // Search engine activate karo
+            if (typeof initSearch === 'function') {
+                initSearch();
+            }
         });
     </script>
+
 </body>
 </html>
