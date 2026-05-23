@@ -61,3 +61,10 @@ body {
     transform: translateY(-5px);
     border-color: var(--primary-neon);
 }
+.music-module { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #ddd; }
+.toggle-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+.search-dropdown { background: #fff; border: 1px solid #ddd; max-height: 150px; overflow-y: auto; border-radius: 8px; }
+.search-item { display: flex; align-items: center; padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; }
+.search-item:hover { background: #f0f0f0; }
+.search-item img { border-radius: 4px; margin-right: 10px; }
+.search-item p { font-size: 12px; margin: 0; }
