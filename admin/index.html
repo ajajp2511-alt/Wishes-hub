@@ -1,19 +1,19 @@
-<div class="music-controller">
-    <div class="toggle-box">
-        <span>YouTube Mode:</span>
+<div class="admin-card music-module">
+    <div class="toggle-header">
+        <span>🎵 Background Music Control</span>
         <label class="switch">
-            <input type="checkbox" id="ytMode" onchange="toggleYTInput()">
+            <input type="checkbox" id="ytModeToggle" onchange="switchMusicMode()">
             <span class="slider round"></span>
         </label>
-        <small id="modeText">Direct Link</small>
+    </div>
+    <small id="modeIndicator" style="color: var(--primary);">Mode: Direct YouTube Link</small>
+
+    <div id="directLinkBox" class="mt-10">
+        <input type="text" id="directYtUrl" placeholder="Paste YouTube Video URL here...">
     </div>
 
-    <div id="linkInputArea">
-        <input type="text" id="directYTLink" placeholder="Paste YouTube Link here...">
-    </div>
-
-    <div id="searchInputArea" style="display:none;">
-        <input type="text" id="ytSearchQuery" placeholder="Search Song (e.g. Arijit Singh)..." onkeyup="handleSearch()">
-        <div id="ytResults" class="search-results-box"></div>
+    <div id="apiSearchBox" class="mt-10" style="display: none;">
+        <input type="text" id="ytQuery" placeholder="Search song (e.g. Arijit Singh)..." onkeyup="handleYTSearch()">
+        <div id="ytSearchResults" class="search-dropdown"></div>
     </div>
 </div>
