@@ -1,1 +1,21 @@
+# --- Telegram Configuration (api_upload.js) ---
+# Image storage aur HD document transfer ke liye
+TG_BOT_TOKEN=7290807559:AAH9l0p0vF4Z7t3iVw7B9L5u1h9p2s4x6k8
+TG_CHAT_ID=-1002145678901
 
+# --- YouTube Configuration ---
+# AI Wish generation ya music search functionality ke liye
+YOUTUBE_API_KEY=AIzaSyAcgg1d3F96M1CppkBSg27NcrXJvEgUnLk
+
+# --- Firebase Configuration (index5.html & storagedemo.js) ---
+# Wishes aur categories ka text data store karne ke liye
+FIREBASE_API_KEY=AIzaSyDhqqHLeWTKGRc4-cHG2n8ALBt7zZFr8GQ
+FIREBASE_AUTH_DOMAIN=wishes-hub.firebaseapp.com
+FIREBASE_PROJECT_ID=wishes-hub
+FIREBASE_STORAGE_BUCKET=wishes-hub.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=366690205259
+FIREBASE_APP_ID=1:366690205259:web:f82e09f5f8fd70dfd797ce
+
+# --- Admin Security ---
+# Admin dashboard access karne ke liye aapka secret password
+ADMIN_PASSWORD=PatelStudio@2026
