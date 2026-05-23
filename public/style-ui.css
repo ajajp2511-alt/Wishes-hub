@@ -1,19 +1,63 @@
-:root { --primary: #6c5ce7; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; --border: #dfe6e9; }
+/* Professional Studio Minimalist Design */
+:root {
+    --primary-neon: #00f2ff;
+    --bg-dark: #0a0a0a;
+    --card-bg: #1a1a1a;
+}
 
-/* Category Chips Scroll */
-.category-wrapper { display: flex; overflow-x: auto; gap: 10px; padding: 15px 0; scrollbar-width: none; }
-.chip { padding: 8px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-size: 14px; }
-.chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); }
+body {
+    background-color: var(--bg-dark);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
 
-/* Card Design */
-.card { background: var(--card); border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border); }
-.capture-area { position: relative; }
-.card-img { width: 100%; height: 250px; object-fit: cover; }
-.watermark-style { position: absolute; bottom: 12px; right: 12px; width: 60px; opacity: 0.7; pointer-events: none; }
-.badge { font-size: 10px; background: #eee; padding: 2px 8px; border-radius: 10px; color: #666; margin-bottom: 8px; display: inline-block; }
+/* Category Bar Scrolling */
+#category-bar {
+    display: flex;
+    overflow-x: auto;
+    padding: 15px;
+    gap: 10px;
+    background: #111;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-/* Style Bar */
-.style-bar { display: grid; grid-template-columns: 1fr 40px; gap: 5px; margin-bottom: 8px; }
-.quality-select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; }
-.btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-.btn-main:hover { opacity: 0.9; transform: scale(0.98); }
+.chip {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--primary-neon);
+    background: transparent;
+    color: white;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.chip.active {
+    background: var(--primary-neon);
+    color: black;
+    box-shadow: 0 0 15px var(--primary-neon);
+}
+
+/* Wishes Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.wish-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid #333;
+    transition: transform 0.3s;
+}
+
+.wish-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-neon);
+}
