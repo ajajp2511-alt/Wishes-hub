@@ -1,0 +1,13 @@
+async function publishData() {
+    const ytId = window.getFinalYTId(); // Hamare controller se ID uthao
+
+    const wishObject = {
+        message: document.getElementById('wText').value,
+        youtubeId: ytId || "", // 11-char ID save hogi
+        tgFileId: currentFileId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection("wishes").add(wishObject);
+    alert("Patel Studio: Wish Published with Music! 🚀");
+}
