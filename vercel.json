@@ -2,11 +2,6 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/$1" }
-  ],
-  "env": {
-    "TG_BOT_TOKEN": "@tg_bot_token",
-    "TG_CHAT_ID": "@tg_chat_id",
-    "ADMIN_PASSWORD": "@admin_password"
-  }
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
