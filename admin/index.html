@@ -10,27 +10,28 @@
 <body>
     <div id="admin-app" class="admin-container">
         <header>
-            <h1 style="color: #00f2ff;">Control Center</h1>
+            <h1 style="color: #00f2ff; text-align: center;">Control Center</h1>
         </header>
 
-        <div id="login-module">
-            <input type="password" id="auth-key" placeholder="System Password">
-            <button onclick="login()">Unlock</button>
+        <div id="login-module" style="text-align: center; margin-top: 50px;">
+            <input type="password" id="auth-key" placeholder="System Password" style="padding: 10px; width: 80%;">
+            <button onclick="login()" style="margin-top: 15px; padding: 10px 30px; cursor: pointer;">Unlock</button>
         </div>
 
-        <div id="main-panel" style="display:none;">
+        <div id="main-panel" style="display:none; padding: 20px;">
             <div class="upload-section">
+                <p>Upload New Wish:</p>
                 <input type="file" id="media-upload" accept="image/*">
-                <textarea id="caption-text" placeholder="Enter message..."></textarea>
-                <button id="publish-btn">Publish to Live</button>
+                <textarea id="caption-text" placeholder="Enter message..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>
+                <button id="publish-btn" style="margin-top: 10px; width: 100%; padding: 12px; background: #00f2ff; border: none; font-weight: bold;">Publish to Live</button>
             </div>
-            <div id="console-output"></div>
+            <div id="console-output" style="margin-top: 20px; font-size: 0.9em; color: #ddd;"></div>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     
-    <script src="Script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
