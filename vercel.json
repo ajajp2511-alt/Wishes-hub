@@ -7,10 +7,14 @@
     },
     { 
       "source": "/admin", 
-      "destination": "/admin.html" 
+      "destination": "/admin/index.html" 
     },
     { 
-      "source": "/((?!api/|admin.html|style-ui.css|js/|features/).*)", 
+      "source": "/admin/(.*)", 
+      "destination": "/admin/$1" 
+    },
+    { 
+      "source": "/((?!api/|admin/|public/|style-ui.css|js/|features/).*)", 
       "destination": "/index.html" 
     }
   ],
