@@ -1,12 +1,9 @@
 {
   "version": 2,
-  "public": true,
   "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/$1" },
-    { "source": "/((?!api/|admin/|public/|style-ui.css|js/|features/).*)", "destination": "/index.html" }
+    { "source": "/admin/(.*)", "destination": "/admin/$1" }
   ]
 }
