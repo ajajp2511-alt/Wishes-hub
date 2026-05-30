@@ -5,44 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Wishes Hub</title>
     
-    <link rel="stylesheet" href="style-admin.css">
-    
     <style>
-        /* Extra safety: Agar style-admin.css load na ho toh bhi layout na bigde */
-        body { background-color: #0d1117; color: white; font-family: sans-serif; }
-        .admin-container { max-width: 400px; margin: 50px auto; border: 1px solid #333; border-radius: 10px; background: #161b22; }
+        body { 
+            background-color: #0d1117; 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .admin-container { 
+            width: 100%;
+            max-width: 400px; 
+            padding: 20px;
+            border: 1px solid #30363d; 
+            border-radius: 12px; 
+            background: #161b22; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        input, textarea, button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            background: #00f2ff;
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #00c8d4; }
+        #console-output { margin-top: 15px; font-family: monospace; font-size: 12px; color: #00f2ff; }
     </style>
 </head>
 <body>
     <div id="admin-app" class="admin-container">
         <header>
-            <h1 style="color: #00f2ff; text-align: center; padding-top: 20px;">Control Center</h1>
+            <h1 style="color: #00f2ff; text-align: center; margin-top: 0;">Control Center</h1>
         </header>
 
-        <div id="login-module" style="text-align: center; padding: 40px 20px;">
-            <input type="password" id="auth-key" placeholder="System Password" 
-                   style="padding: 12px; width: 85%; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px;">
-            <br>
-            <button onclick="login()" 
-                    style="margin-top: 20px; padding: 12px 40px; cursor: pointer; background: #00f2ff; border: none; border-radius: 5px; font-weight: bold; color: black;">
-                Unlock System
-            </button>
+        <div id="login-module" style="text-align: center;">
+            <input type="password" id="auth-key" placeholder="System Password">
+            <button onclick="login()">Unlock System</button>
         </div>
 
-        <div id="main-panel" style="display:none; padding: 20px;">
-            <div class="upload-section">
-                <p style="margin-bottom: 10px; color: #888;">Upload New Wish:</p>
-                <input type="file" id="media-upload" accept="image/*" style="margin-bottom: 15px;">
-                
-                <textarea id="caption-text" placeholder="Enter message..." rows="4" 
-                          style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px; box-sizing: border-box;"></textarea>
-                
-                <button id="publish-btn" 
-                        style="margin-top: 15px; width: 100%; padding: 12px; background: #00f2ff; border: none; font-weight: bold; color: black; border-radius: 5px; cursor: pointer;">
-                    Publish to Live
-                </button>
-            </div>
-            <div id="console-output" style="margin-top: 20px; font-size: 0.85em; color: #00f2ff; font-family: monospace;"></div>
+        <div id="main-panel" style="display:none;">
+            <p style="color: #888; margin-bottom: 5px;">Upload New Wish:</p>
+            <input type="file" id="media-upload" accept="image/*">
+            <textarea id="caption-text" placeholder="Enter message..." rows="4"></textarea>
+            <button id="publish-btn">Publish to Live</button>
+            <div id="console-output"></div>
         </div>
     </div>
 
@@ -51,4 +72,4 @@
     
     <script src="script.js"></script>
 </body>
-</html>
+                </html>
