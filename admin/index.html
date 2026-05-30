@@ -6,10 +6,11 @@
     <title>Admin Panel | Wishes Hub</title>
     
     <style>
+        /* Internal CSS - Taaki 100% load ho */
         body { 
             background-color: #0d1117; 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             margin: 0;
             display: flex;
             justify-content: center;
@@ -17,51 +18,60 @@
             height: 100vh;
         }
         .admin-container { 
-            width: 100%;
+            width: 90%;
             max-width: 400px; 
-            padding: 20px;
+            padding: 30px;
             border: 1px solid #30363d; 
-            border-radius: 12px; 
+            border-radius: 15px; 
             background: #161b22; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
         }
-        input, textarea, button {
+        h1 { color: #00f2ff; margin-bottom: 25px; font-size: 1.8rem; }
+        input, textarea {
             width: 100%;
             margin-top: 15px;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #30363d;
             background: #0d1117;
             color: white;
             box-sizing: border-box;
+            outline: none;
         }
+        input:focus { border-color: #00f2ff; }
         button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
             background: #00f2ff;
             color: black;
             font-weight: bold;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1rem;
             transition: 0.3s;
         }
-        button:hover { background: #00c8d4; }
-        #console-output { margin-top: 15px; font-family: monospace; font-size: 12px; color: #00f2ff; }
+        button:hover { background: #00c8d4; transform: translateY(-2px); }
+        #console-output { margin-top: 20px; font-family: monospace; font-size: 12px; color: #00f2ff; }
     </style>
 </head>
 <body>
     <div id="admin-app" class="admin-container">
         <header>
-            <h1 style="color: #00f2ff; text-align: center; margin-top: 0;">Control Center</h1>
+            <h1>Control Center</h1>
         </header>
 
-        <div id="login-module" style="text-align: center;">
-            <input type="password" id="auth-key" placeholder="System Password">
+        <div id="login-module">
+            <input type="password" id="auth-key" placeholder="Enter System Password">
             <button onclick="login()">Unlock System</button>
         </div>
 
         <div id="main-panel" style="display:none;">
-            <p style="color: #888; margin-bottom: 5px;">Upload New Wish:</p>
+            <p style="color: #888; text-align: left; margin-bottom: 5px;">Upload New Wish:</p>
             <input type="file" id="media-upload" accept="image/*">
-            <textarea id="caption-text" placeholder="Enter message..." rows="4"></textarea>
+            <textarea id="caption-text" placeholder="Enter your message here..." rows="4"></textarea>
             <button id="publish-btn">Publish to Live</button>
             <div id="console-output"></div>
         </div>
@@ -72,4 +82,4 @@
     
     <script src="script.js"></script>
 </body>
-                </html>
+</html>
