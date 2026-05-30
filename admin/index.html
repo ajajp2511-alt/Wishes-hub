@@ -6,11 +6,11 @@
     <title>Admin Panel | Wishes Hub</title>
     
     <style>
-        /* Internal CSS - Taaki 100% load ho */
+        /* Modern Dark Theme UI */
         body { 
             background-color: #0d1117; 
             color: white; 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0;
             display: flex;
             justify-content: center;
@@ -27,7 +27,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             text-align: center;
         }
-        h1 { color: #00f2ff; margin-bottom: 25px; font-size: 1.8rem; }
+        h1 { color: #00f2ff; margin-bottom: 25px; font-size: 1.8rem; letter-spacing: 1px; }
         input, textarea {
             width: 100%;
             margin-top: 15px;
@@ -38,8 +38,9 @@
             color: white;
             box-sizing: border-box;
             outline: none;
+            transition: 0.3s;
         }
-        input:focus { border-color: #00f2ff; }
+        input:focus, textarea:focus { border-color: #00f2ff; box-shadow: 0 0 8px rgba(0, 242, 255, 0.2); }
         button {
             width: 100%;
             margin-top: 20px;
@@ -54,7 +55,18 @@
             transition: 0.3s;
         }
         button:hover { background: #00c8d4; transform: translateY(-2px); }
-        #console-output { margin-top: 20px; font-family: monospace; font-size: 12px; color: #00f2ff; }
+        button:active { transform: translateY(0); }
+        #console-output { 
+            margin-top: 20px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 13px; 
+            color: #00f2ff; 
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -69,9 +81,9 @@
         </div>
 
         <div id="main-panel" style="display:none;">
-            <p style="color: #888; text-align: left; margin-bottom: 5px;">Upload New Wish:</p>
+            <p style="color: #888; text-align: left; margin-bottom: 5px; font-size: 0.9rem;">Create New Entry:</p>
             <input type="file" id="media-upload" accept="image/*">
-            <textarea id="caption-text" placeholder="Enter your message here..." rows="4"></textarea>
+            <textarea id="caption-text" placeholder="Write your wish message here..." rows="4"></textarea>
             <button id="publish-btn">Publish to Live</button>
             <div id="console-output"></div>
         </div>
@@ -79,6 +91,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     
     <script src="script.js"></script>
 </body>
