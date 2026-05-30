@@ -5,86 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Wishes Hub</title>
     <style>
-        /* CSS seedha yahan hai taaki Blank Screen na aaye */
-        body { 
-            background-color: #0d1117; 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .admin-box { 
-            width: 90%;
-            max-width: 380px; 
-            padding: 30px;
-            border: 1px solid #30363d; 
-            border-radius: 12px; 
-            background: #161b22; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        h1 { color: #00f2ff; margin-bottom: 20px; font-size: 1.5rem; }
-        input, textarea {
-            width: 100%;
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: white;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            background: #00f2ff;
-            color: black;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        #status-msg { margin-top: 15px; font-size: 13px; color: #00f2ff; }
+        /* Sari design yahan hai taaki link na toote */
+        body { background: #0d1117; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #161b22; padding: 35px; border-radius: 15px; border: 1px solid #30363d; text-align: center; width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        h1 { color: #00f2ff; margin-bottom: 25px; font-size: 1.6rem; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; background: #00f2ff; color: black; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        button:hover { background: #00c8d4; }
     </style>
 </head>
 <body>
-
-    <div class="admin-box">
-        <h1>Wishes Hub Admin</h1>
-
-        <div id="login-section">
-            <input type="password" id="pass-input" placeholder="Enter Admin Password">
-            <button onclick="handleLogin()">Unlock Access</button>
+    <div class="box">
+        <h1>Control Center</h1>
+        <div id="login-ui">
+            <input type="password" id="admin-pass" placeholder="Enter Password">
+            <button onclick="checkAccess()">Unlock System</button>
         </div>
-
-        <div id="dash-section" style="display:none;">
-            <input type="file" id="image-input" accept="image/*">
-            <textarea id="msg-input" placeholder="Enter message here..." rows="4"></textarea>
-            <button id="upload-btn">Post Now</button>
-            <div id="status-msg"></div>
+        <div id="admin-ui" style="display:none;">
+            <input type="file" id="upload" accept="image/*">
+            <textarea placeholder="Message..."></textarea>
+            <button>Publish to Live</button>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    
     <script>
-        // Emergency Login Logic (Agar script.js load na ho)
-        function handleLogin() {
-            const p = document.getElementById('pass-input').value;
-            // Agar aapka script.js load ho raha hai toh ye usse connect ho jayega
-            if (typeof login === "function") {
-                login(); 
+        function checkAccess() {
+            // Ye temporary login hai taaki aap screen dekh sakein
+            const p = document.getElementById('admin-pass').value;
+            if(p === "123") { // Apna password check karein
+                document.getElementById('login-ui').style.display = 'none';
+                document.getElementById('admin-ui').style.display = 'block';
             } else {
-                // Manual check agar file missing hai
-                alert("Security check passed. System loading...");
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dash-section').style.display = 'block';
+                alert("Checking system...");
+                // Agar aapka script.js live hai toh ye usse connect ho jayega
+                if(typeof login === "function") { login(); }
             }
         }
     </script>
