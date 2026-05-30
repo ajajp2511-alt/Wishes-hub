@@ -4,28 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Wishes Hub</title>
-    <link rel="stylesheet" href="../public/style-ui.css">
+    
     <link rel="stylesheet" href="style-admin.css">
+    
+    <style>
+        /* Extra safety: Agar style-admin.css load na ho toh bhi layout na bigde */
+        body { background-color: #0d1117; color: white; font-family: sans-serif; }
+        .admin-container { max-width: 400px; margin: 50px auto; border: 1px solid #333; border-radius: 10px; background: #161b22; }
+    </style>
 </head>
 <body>
     <div id="admin-app" class="admin-container">
         <header>
-            <h1 style="color: #00f2ff; text-align: center;">Control Center</h1>
+            <h1 style="color: #00f2ff; text-align: center; padding-top: 20px;">Control Center</h1>
         </header>
 
-        <div id="login-module" style="text-align: center; margin-top: 50px;">
-            <input type="password" id="auth-key" placeholder="System Password" style="padding: 10px; width: 80%;">
-            <button onclick="login()" style="margin-top: 15px; padding: 10px 30px; cursor: pointer;">Unlock</button>
+        <div id="login-module" style="text-align: center; padding: 40px 20px;">
+            <input type="password" id="auth-key" placeholder="System Password" 
+                   style="padding: 12px; width: 85%; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px;">
+            <br>
+            <button onclick="login()" 
+                    style="margin-top: 20px; padding: 12px 40px; cursor: pointer; background: #00f2ff; border: none; border-radius: 5px; font-weight: bold; color: black;">
+                Unlock System
+            </button>
         </div>
 
         <div id="main-panel" style="display:none; padding: 20px;">
             <div class="upload-section">
-                <p>Upload New Wish:</p>
-                <input type="file" id="media-upload" accept="image/*">
-                <textarea id="caption-text" placeholder="Enter message..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>
-                <button id="publish-btn" style="margin-top: 10px; width: 100%; padding: 12px; background: #00f2ff; border: none; font-weight: bold;">Publish to Live</button>
+                <p style="margin-bottom: 10px; color: #888;">Upload New Wish:</p>
+                <input type="file" id="media-upload" accept="image/*" style="margin-bottom: 15px;">
+                
+                <textarea id="caption-text" placeholder="Enter message..." rows="4" 
+                          style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px; box-sizing: border-box;"></textarea>
+                
+                <button id="publish-btn" 
+                        style="margin-top: 15px; width: 100%; padding: 12px; background: #00f2ff; border: none; font-weight: bold; color: black; border-radius: 5px; cursor: pointer;">
+                    Publish to Live
+                </button>
             </div>
-            <div id="console-output" style="margin-top: 20px; font-size: 0.9em; color: #ddd;"></div>
+            <div id="console-output" style="margin-top: 20px; font-size: 0.85em; color: #00f2ff; font-family: monospace;"></div>
         </div>
     </div>
 
