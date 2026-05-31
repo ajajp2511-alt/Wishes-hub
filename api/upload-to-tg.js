@@ -1,8 +1,13 @@
 import fetch from 'node-fetch';
-import FormData from 'form-data';
+
+// Vercel ko batana padta hai ki body parsing manually handle hogi
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
 
 export default async function handler(req, res) {
-    // Sirf POST requests allow karein
     if (req.method !== 'POST') {
         return res.status(405).json({ error: "Method not allowed" });
     }
@@ -11,28 +16,29 @@ export default async function handler(req, res) {
     const chatId = process.env.TG_CHAT_ID;  
 
     try {
-        // Telegram API ko photo forward karna
-        // chat_id ko URL query mein daalna secure hai
         const tgUrl = `https://api.telegram.org/bot${token}/sendPhoto?chat_id=${chatId}`;
         
+        // Zaroori: req.headers se sirf 'content-type' pass karein
+        // Poore req.headers pass karne se Vercel ke internal headers Telegram ko block kar sakte hain
         const response = await fetch(tgUrl, {
             method: 'POST',
-            body: req.body, 
-            headers: req.headers // Admin panel se aane wale multi-part headers
+            body: req, // Direct request stream pass karein
+            headers: {
+                'content-type': req.headers['content-type'],
+            }
         });
 
         const data = await response.json();
 
         if (data.ok) {
-            // Photo array se sabse HD quality (last index) wali file_id nikalna
             const fileId = data.result.photo[data.result.photo.length - 1].file_id;
-            res.status(200).json({ ok: true, fileId: fileId });
+            return res.status(200).json({ ok: true, fileId: fileId });
         } else {
-            console.error("Telegram Error:", data.description);
-            res.status(400).json({ ok: false, error: data.description });
+            console.error("Telegram API Refused:", data.description);
+            return res.status(400).json({ ok: false, error: data.description });
         }
     } catch (error) {
-        console.error("Server Crash:", error.message);
-        res.status(500).json({ error: "Server Error: " + error.message });
+        console.error("Critical Crash:", error.message);
+        return res.status(500).json({ ok: false, error: error.message });
     }
 }
