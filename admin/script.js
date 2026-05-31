@@ -1,7 +1,4 @@
-// 1. Admin Config
-const ADMIN_PASS = "PatelStudio@2026"; 
-
-// 2. Firebase Init (Make sure this matches your Firebase Console exactly)
+// 1. Firebase Init
 const firebaseConfig = {
     apiKey: "AIzaSyDhqqHLeWTKGRc4-cHG2n8ALBt7zZFr8GQ",
     authDomain: "wishes-hub.firebaseapp.com",
@@ -16,21 +13,39 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-// 3. Login Function (Window object se bind kiya taaki HTML ise dhund sake)
-window.login = function() {
-    const val = document.getElementById('auth-key').value;
-    if(val === ADMIN_PASS) {
-        document.getElementById('login-module').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
-    } else {
-        alert("Access Denied: Galat Key Hai");
+// 2. Updated Login Function (Ab ye backend se verify karega)
+window.login = async function() {
+    const passInput = document.getElementById('auth-key').value;
+    const output = document.getElementById('console-output');
+    
+    try {
+        // Backend API call to verify-pass.js
+        const response = await fetch('/api/verify-pass', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: passInput })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('login-module').style.display = 'none';
+            document.getElementById('main-panel').style.display = 'block';
+            console.log("Access Granted");
+        } else {
+            alert("Access Denied: " + (data.message || "Galat Key Hai"));
+        }
+    } catch (err) {
+        console.error("Login Error:", err);
+        alert("Server Connection Error!");
     }
 }
 
-// 4. Publish Logic
+// 3. Publish Logic
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'publish-btn') {
-        const file = document.getElementById('media-upload').files[0];
+        const fileInput = document.getElementById('media-upload');
+        const file = fileInput.files[0];
         const text = document.getElementById('caption-text').value;
         const output = document.getElementById('console-output');
 
@@ -41,12 +56,13 @@ document.addEventListener('click', async (e) => {
         try {
             const formData = new FormData();
             formData.append('photo', file);
-            formData.append('caption', text);
+            // Caption ko backend handle karega ya aap params mein bhej sakte hain
 
-            // Vercel API Call (Yahan Vercel apne environment variables use karega)
+            // Vercel API Call for Telegram
             const res = await fetch('/api/upload-to-tg', {
                 method: 'POST',
                 body: formData
+                // Note: Multipart form data mein headers browser khud set karta hai
             });
 
             const data = await res.json();
@@ -54,6 +70,7 @@ document.addEventListener('click', async (e) => {
             if(data.ok) {
                 output.innerText = "📡 Telegram Sent. Syncing Firestore...";
                 
+                // Firestore Update
                 await db.collection('wishes').add({
                     text: text,
                     tgFileId: data.fileId,
@@ -61,9 +78,11 @@ document.addEventListener('click', async (e) => {
                 });
                 
                 output.innerText = "✅ Mubarak Ho! Content Live Ho Gaya.";
+                fileInput.value = ""; // Clear after success
+                document.getElementById('caption-text').value = "";
                 alert("Task Successful!");
             } else {
-                throw new Error(data.message || "Upload Failed");
+                throw new Error(data.error || "Upload Failed");
             }
         } catch (error) {
             output.innerText = "❌ Error: " + error.message;
