@@ -1,17 +1,33 @@
 {
   "version": 2,
-  "public": true,
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/(.*)", "destination": "/admin/$1" }
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "admin/**/*", "use": "@vercel/static" },
+    { "src": "public/**/*", "use": "@vercel/static" },
+    { "src": "*", "use": "@vercel/static" }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/admin/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, max-age=0" }
-      ]
+      "src": "/admin/(.*)",
+      "headers": { "Cache-Control": "no-store, max-age=0" },
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/admin/",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
