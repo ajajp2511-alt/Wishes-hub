@@ -29,6 +29,9 @@ window.login = async function() {
             document.getElementById('main-panel').style.display = 'block';
             status.innerText = "✅ Welcome, Admin!";
             console.log("Access Granted");
+            
+            // लॉगिन के बाद ही पब्लिश बटन का फंक्शन एक्टिव करें
+            initPublishLogic();
         } else {
             // Galat password par alert
             alert("Access Denied: " + (data.message || "Galat key dali hai."));
@@ -43,44 +46,48 @@ window.login = async function() {
     }
 }
 
-// Telegram Publish Logic (New)
-document.getElementById('publish-btn').addEventListener('click', async () => {
-    const fileInput = document.getElementById('media-upload');
-    const status = document.getElementById('status');
+// Telegram Publish Logic (Function के अंदर ताकि एरर न आए)
+function initPublishLogic() {
     const publishBtn = document.getElementById('publish-btn');
+    if (!publishBtn) return;
 
-    if (fileInput.files.length === 0) {
-        alert("Pehle ek image select karein.");
-        return;
-    }
+    publishBtn.addEventListener('click', async () => {
+        const fileInput = document.getElementById('media-upload');
+        const status = document.getElementById('status');
 
-    status.innerText = "🚀 Telegram par bhej rahe hain...";
-    publishBtn.disabled = true;
-    
-    const file = fileInput.files[0];
-
-    try {
-        // upload-to-tg.js binary stream handle karta hai isliye direct file bhej rahe hain
-        const response = await fetch('/api/upload-to-tg', {
-            method: 'POST',
-            body: file, 
-            headers: {
-                'content-type': file.type
-            }
-        });
-
-        const data = await response.json();
-
-        if (data.ok) {
-            status.innerText = "✅ Telegram par successfully upload ho gaya!";
-            fileInput.value = ""; // Input clear karein
-        } else {
-            status.innerText = "❌ Error: " + (data.error || "Upload fail ho gaya.");
+        if (fileInput.files.length === 0) {
+            alert("Pehle ek image select karein.");
+            return;
         }
-    } catch (err) {
-        console.error("Upload Error:", err);
-        status.innerText = "❌ Connection Failed. Check your internet or API.";
-    } finally {
-        publishBtn.disabled = false;
-    }
-});
+
+        status.innerText = "🚀 Telegram par bhej rahe hain...";
+        publishBtn.disabled = true;
+        
+        const file = fileInput.files[0];
+
+        try {
+            // upload-to-tg.js binary stream handle karta hai
+            const response = await fetch('/api/upload-to-tg', {
+                method: 'POST',
+                body: file, 
+                headers: {
+                    'content-type': file.type
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.ok) {
+                status.innerText = "✅ Telegram par successfully upload ho gaya!";
+                fileInput.value = ""; 
+            } else {
+                status.innerText = "❌ Error: " + (data.error || "Upload fail ho gaya.");
+            }
+        } catch (err) {
+            console.error("Upload Error:", err);
+            status.innerText = "❌ Connection Failed. Check your API settings.";
+        } finally {
+            publishBtn.disabled = false;
+        }
+    });
+}
