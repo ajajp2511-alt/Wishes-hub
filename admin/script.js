@@ -1,46 +1,41 @@
 window.login = async function() {
     const passInput = document.getElementById('auth-key').value;
     const btn = document.querySelector('#login-module button');
-    const statusDiv = document.getElementById('status');
     
-    if(!passInput) {
-        alert("Please enter the admin key.");
-        return;
-    }
+    if(!passInput) return alert("Password enter kijiye!");
 
     // Loading State
-    const originalText = btn.innerText;
-    btn.innerText = "⏳ Verifying..."; 
+    btn.innerText = "⏳ Firebase Connecting...";
     btn.disabled = true;
-    if(statusDiv) statusDiv.innerText = "Connecting to server...";
 
     try {
-        // Path fix: Ensure it calls the root API
-        const response = await fetch('/api/verify-pass', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ password: passInput })
-        });
+        // Firestore se security document fetch karna
+        const doc = await db.collection('admin_config').doc('security').get();
         
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('login-module').style.display = 'none';
-            document.getElementById('main-panel').style.display = 'block';
-            if(statusDiv) statusDiv.innerText = "Access Granted ✅";
+        if (doc.exists) {
+            const firebasePassword = doc.data().passkey;
+
+            if (passInput === firebasePassword) {
+                // SUCCESS: Panel Unlock
+                document.getElementById('login-module').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'block';
+                console.log("Access Granted via Firebase");
+            } else {
+                alert("Ghalat Password! Try again.");
+                resetBtn();
+            }
         } else {
-            alert(data.message || "Access Denied: Galat key dali hai.");
-            btn.innerText = originalText;
-            btn.disabled = false;
-            if(statusDiv) statusDiv.innerText = "Error: Invalid Key.";
+            alert("Error: Firebase mein password document nahi mila!");
+            resetBtn();
         }
     } catch (err) {
-        console.error("Login Error:", err);
-        alert("Server Error: Backend se connection nahi ho raha.");
-        btn.innerText = originalText;
+        console.error("Firestore Error:", err);
+        alert("Connection Error! Rules check karein.");
+        resetBtn();
+    }
+
+    function resetBtn() {
+        btn.innerText = "Unlock System";
         btn.disabled = false;
     }
-                }
+}
