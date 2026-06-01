@@ -12,7 +12,7 @@
         button { width: 100%; padding: 12px; background: #00f2ff; color: black; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         button:hover { background: #00c8d4; }
         button:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
-        #status { margin-top: 15px; font-size: 13px; color: #00f2ff; min-height: 15px; }
+        #status { margin-top: 15px; font-size: 13px; color: #00f2ff; min-height: 1.2em; }
     </style>
 </head>
 <body>
@@ -20,19 +20,17 @@
         <h1>Control Center</h1>
         <div id="login-module">
             <input type="password" id="auth-key" placeholder="Enter Admin Password">
-            <button onclick="login()">Unlock System</button>
+            <button id="login-btn" onclick="login()">Unlock System</button>
         </div>
         <div id="main-panel" style="display:none;">
-            <p>✅ Access Granted</p>
+            <p style="color: #238636;">✅ Access Granted</p>
             <input type="file" id="media-upload" accept="image/*">
-            <button id="publish-btn" style="margin-top:10px;">Send to Telegram</button>
+            <button id="publish-btn">Send to Telegram</button>
         </div>
         <div id="status"></div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
     <script src="script.js"></script>
 </body>
 </html>
