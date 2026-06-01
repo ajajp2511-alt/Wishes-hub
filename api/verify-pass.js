@@ -1,21 +1,24 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).end();
+    // Sirf POST request allow karein
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: "Method not allowed" });
+    }
 
     try {
-        // Agar req.body string format mein hai, toh use parse karo, nahi toh direct use karo
+        // Vercel body parsing safety check
         let body = req.body;
         if (typeof body === 'string') {
-            body = JSON.parse(body);
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                return res.status(400).json({ success: false, message: "Invalid JSON format" });
+            }
         }
 
         const { password } = body; 
         const SECURE_PASS = process.env.ADMIN_PASSWORD;
 
-        // Extra Safety: Check agar password khali toh nahi aa raha
-        if (!password || !SECURE_PASS) {
-            return res.status(400).json({ success: false, message: "Password config missing or empty!" });
-        }
-
+        // Check agar password match hota hai
         if (password === SECURE_PASS) {
             return res.status(200).json({ success: true });
         } else {
