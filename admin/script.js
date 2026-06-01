@@ -8,18 +8,19 @@ window.login = async function() {
         return;
     }
 
-    // --- Loading State ---
+    // Loading State
     const originalText = btn.innerText;
     btn.innerText = "⏳ Verifying..."; 
-    btn.disabled = true; 
+    btn.disabled = true;
     if(statusDiv) statusDiv.innerText = "Connecting to server...";
 
     try {
-        // Folder structure ke hisaab se absolute path use kiya hai
+        // Path fix: Ensure it calls the root API
         const response = await fetch('/api/verify-pass', {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json' 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ password: passInput })
         });
@@ -27,11 +28,9 @@ window.login = async function() {
         const data = await response.json();
         
         if (data.success) {
-            // Success: Admin Panel show karein
             document.getElementById('login-module').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
             if(statusDiv) statusDiv.innerText = "Access Granted ✅";
-            console.log("Access Granted");
         } else {
             alert(data.message || "Access Denied: Galat key dali hai.");
             btn.innerText = originalText;
@@ -40,9 +39,8 @@ window.login = async function() {
         }
     } catch (err) {
         console.error("Login Error:", err);
-        alert("Server Error: Check if your Vercel deployment is successful.");
+        alert("Server Error: Backend se connection nahi ho raha.");
         btn.innerText = originalText;
         btn.disabled = false;
-        if(statusDiv) statusDiv.innerText = "Connection Failed.";
     }
-}
+                }
