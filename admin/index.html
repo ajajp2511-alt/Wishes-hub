@@ -13,24 +13,33 @@
         button:hover { background: #00c8d4; }
         button:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
         #status { margin-top: 15px; font-size: 13px; color: #00f2ff; min-height: 1.2em; }
+        .toggle-link { font-size: 12px; color: #8b949e; cursor: pointer; margin-top: 10px; display: block; }
+        .toggle-link:hover { color: #00f2ff; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h1>Control Center</h1>
+        <h1 id="auth-title">Control Center</h1>
+        
         <div id="login-module">
-            <input type="password" id="auth-key" placeholder="Enter Admin Password">
-            <button id="login-btn" onclick="login()">Unlock System</button>
+            <input type="email" id="admin-email" placeholder="Admin Email">
+            <input type="password" id="admin-pass" placeholder="Admin Password">
+            <button id="auth-btn" onclick="handleAuth()">Unlock System</button>
+            <span class="toggle-link" id="toggle-auth" onclick="toggleMode()">Naya account banayein (Sign Up)</span>
         </div>
+
         <div id="main-panel" style="display:none;">
-            <p style="color: #238636;">✅ Access Granted</p>
+            <p style="color: #238636;">✅ Admin Access Active</p>
             <input type="file" id="media-upload" accept="image/*">
             <button id="publish-btn">Send to Telegram</button>
+            <button onclick="logout()" style="background:transparent; color:#f85149; margin-top:10px; border:1px solid #f85149;">Logout</button>
         </div>
+        
         <div id="status"></div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script> <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
