@@ -1,22 +1,25 @@
 <div class="box">
     <h1 id="auth-title">Control Center</h1>
+    
     <div id="login-module">
         <input type="email" id="admin-email" placeholder="Admin Email">
         <input type="password" id="admin-pass" placeholder="Admin Password">
+        
         <button id="auth-btn" onclick="handleAuth()">Unlock System</button>
-        <span id="toggle-auth" onclick="toggleMode()" style="font-size:12px; cursor:pointer; color:#8b949e; display:block; margin-top:10px;">Create Admin Account</span>
+        
+        <p id="toggle-text" style="font-size: 12px; margin-top: 15px; color: #8b949e;">
+            Naya account chahiye? <span onclick="toggleMode()" style="color: #00f2ff; cursor: pointer;">Sign Up</span>
+        </p>
     </div>
 
     <div id="main-panel" style="display:none;">
-        <p style="color: #238636;">✅ Admin Access Active</p>
+        <p style="color: #238636; font-weight: bold;">✅ Access Granted</p>
         <input type="file" id="media-upload" accept="image/*">
         <button id="publish-btn">Send to Telegram</button>
-        <button onclick="logout()" style="background:transparent; color:#f85149; margin-top:10px; border:1px solid #f85149; width:100%; padding:8px; border-radius:8px; cursor:pointer;">Logout</button>
+        <button onclick="logout()" style="background:none; border:1px solid #f85149; color:#f85149; margin-top:10px;">Logout</button>
     </div>
+    
     <div id="status"></div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="script.js"></script>
