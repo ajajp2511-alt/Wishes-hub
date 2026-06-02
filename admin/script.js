@@ -1,63 +1,62 @@
 let isLoginMode = true;
 
-// Login aur Sign-up ke beech switch karne ke liye
+// 1. Vercel se Config mangwana
+async function init() {
+    try {
+        const res = await fetch('/api/get-config');
+        const config = await res.json();
+        if (!firebase.apps.length) firebase.initializeApp(config);
+        
+        // Check Login Status
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-module').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'block';
+            } else {
+                document.getElementById('login-module').style.display = 'block';
+                document.getElementById('main-panel').style.display = 'none';
+            }
+        });
+    } catch (e) {
+        document.getElementById('status').innerText = "❌ Connection Error";
+    }
+}
+
+// 2. Login/Sign-up switch
 window.toggleMode = function() {
     isLoginMode = !isLoginMode;
-    const title = document.getElementById('auth-title');
-    const btn = document.getElementById('auth-btn');
-    const toggleText = document.getElementById('toggle-text');
-
-    if (isLoginMode) {
-        title.innerText = "Control Center";
-        btn.innerText = "Unlock System";
-        toggleText.innerHTML = 'Naya account chahiye? <span onclick="toggleMode()" style="color: #00f2ff; cursor: pointer;">Sign Up</span>';
-    } else {
-        title.innerText = "Admin Registration";
-        btn.innerText = "Create Account";
-        toggleText.innerHTML = 'Account hai? <span onclick="toggleMode()" style="color: #00f2ff; cursor: pointer;">Login karein</span>';
-    }
+    document.getElementById('auth-title').innerText = isLoginMode ? "Admin Login" : "Admin Sign-Up";
+    document.getElementById('auth-btn').innerText = isLoginMode ? "Unlock System" : "Create Account";
+    document.getElementById('toggle-text').innerText = isLoginMode ? "Naya account banayein (Sign Up)" : "Purana account login karein";
 };
 
-// Firebase Auth Logic
+// 3. Auth Logic
 window.handleAuth = async function() {
     const email = document.getElementById('admin-email').value;
     const pass = document.getElementById('admin-pass').value;
-    const status = document.getElementById('status');
     const btn = document.getElementById('auth-btn');
+    const status = document.getElementById('status');
 
-    if (!email || !pass) return alert("Email aur Password bhariye!");
+    if(!email || !pass) return alert("Details bhariye!");
 
     btn.innerText = "⏳ Processing...";
     btn.disabled = true;
+    status.innerText = "";
 
     try {
         if (isLoginMode) {
-            // Login process
             await firebase.auth().signInWithEmailAndPassword(email, pass);
         } else {
-            // Sign-up process
-            await firebase.auth().createUserWithEmailAndPassword(email, pass);
-            alert("Admin Account Created Successfully!");
+            await firebase.createUserWithEmailAndPassword(email, pass);
+            alert("Account Created!");
         }
-    } catch (error) {
-        alert("Error: " + error.message);
-        btn.disabled = false;
+    } catch (err) {
+        status.innerText = "❌ " + err.message;
         btn.innerText = isLoginMode ? "Unlock System" : "Create Account";
+        btn.disabled = false;
     }
 };
 
-// Auth State Observer (Login hone par panel dikhayega)
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        document.getElementById('login-module').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
-    } else {
-        document.getElementById('login-module').style.display = 'block';
-        document.getElementById('main-panel').style.display = 'none';
-    }
-});
+window.logout = () => firebase.auth().signOut();
 
-// Logout Function
-window.logout = function() {
-    firebase.auth().signOut();
-};
+init();
