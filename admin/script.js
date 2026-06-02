@@ -2,34 +2,34 @@ let auth;
 let allowedAdminUid = "";
 let isLoginMode = true;
 
-// Jab poora page load ho jaye tabhi system chalu hoga
+// Page puri tarah load hone ke baad hi system start hoga
 window.onload = async function() {
     const statusDiv = document.getElementById('status');
+    
     try {
-        // 1. Vercel Backend API se config fetch karna
+        // 1. Vercel Backend se config fetch karna
         const response = await fetch('/api/get-config');
-        if (!response.ok) throw new Error("Backend API se configuration nahi mil saki!");
+        if (!response.ok) throw new Error("Vercel API se config nahi mili!");
         
         const config = await response.json();
-        allowedAdminUid = config.adminUid; // Vercel dashboard ka ADMIN_UID
+        allowedAdminUid = config.adminUid; // Vercel dashboard wala ADMIN_UID
 
-        // 2. Firebase Initialize karna
+        // 2. Firebase Initialize
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
         }
         auth = firebase.auth();
 
-        // 3. Real-time Authentication State Check
+        // 3. Auth State Monitor (Automatic login/logout detect karega)
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Check ki login karne wala admin hi hai na
+                // UID check: Sirf aapki UID ko access milega
                 if (user.uid === allowedAdminUid) {
                     document.getElementById('login-module').style.display = 'none';
                     document.getElementById('main-panel').style.display = 'block';
                     statusDiv.innerText = "";
                 } else {
-                    statusDiv.style.color = "#f85149";
-                    statusDiv.innerText = "❌ Access Denied: Aap authorised admin nahi hain.";
+                    statusDiv.innerText = "❌ Unauthorized: Aap admin nahi hain.";
                     auth.signOut();
                 }
             } else {
@@ -38,14 +38,13 @@ window.onload = async function() {
             }
         });
 
-    } catch (error) {
-        console.error("Boot Error:", error);
-        statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ System Boot Error: " + error.message;
+    } catch (err) {
+        console.error("Initialization Error:", err);
+        statusDiv.innerText = "❌ System Error: " + err.message;
     }
 };
 
-// Login / Sign-Up Mode Switcher
+// Mode Switcher (Login <-> Sign-up)
 window.toggleMode = function() {
     isLoginMode = !isLoginMode;
     document.getElementById('auth-title').innerText = isLoginMode ? "Admin Login" : "Admin Sign-Up";
@@ -53,32 +52,28 @@ window.toggleMode = function() {
     document.getElementById('toggle-text').innerText = isLoginMode ? "Naya account banayein (Sign Up)" : "Purana account login karein";
 };
 
-// Handle Authentication (Login/Signup Button)
+// Login/Sign-up Handler
 window.handleAuth = async function() {
     const email = document.getElementById('admin-email').value.trim();
     const pass = document.getElementById('admin-pass').value;
     const btn = document.getElementById('auth-btn');
     const statusDiv = document.getElementById('status');
 
-    if (!email || !pass) return alert("Email aur Password dono bhariye!");
+    if (!email || !pass) return alert("Email aur Password bhariye!");
 
     btn.disabled = true;
-    btn.innerText = "⏳ Connecting...";
+    btn.innerText = "⏳ Wait...";
     statusDiv.innerText = "";
 
     try {
         if (isLoginMode) {
-            // Login process
             await auth.signInWithEmailAndPassword(email, pass);
         } else {
-            // Sign-up process
             await auth.createUserWithEmailAndPassword(email, pass);
-            alert("Account successfully bana liya hai! Ab direct login karein.");
+            alert("Account created! Ab login karein.");
             toggleMode();
         }
     } catch (err) {
-        console.error("Auth Error:", err);
-        statusDiv.style.color = "#f85149";
         statusDiv.innerText = "❌ " + err.message;
     } finally {
         btn.disabled = false;
@@ -86,7 +81,4 @@ window.handleAuth = async function() {
     }
 };
 
-// Logout Function
-window.logout = function() {
-    if (auth) auth.signOut();
-};
+window.logout = () => { if(auth) auth.signOut(); };
