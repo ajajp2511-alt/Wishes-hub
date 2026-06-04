@@ -4,10 +4,28 @@ window.verifyMasterPassword = function() {
 
     if (!passInput || !statusDiv) return;
 
-    if (passInput.value.trim() === "1234") {
+    const password = passInput.value.trim();
+
+    // Role Mapping Logic
+    let role = "";
+    if (password === "1234") {
+        role = "SUPER_ADMIN";
+    } else if (password === "editor123") {
+        role = "EDITOR";
+    }
+
+    if (role !== "") {
+        // Auth aur Role dono set karein
         localStorage.setItem("admin_auth_status", "active");
-        // Reload is the safest way to trigger the dashboard view
-        window.location.reload();
+        localStorage.setItem("admin_role", role);
+        
+        statusDiv.innerText = "✅ Login Successful!";
+        statusDiv.style.color = "green";
+        
+        // Dashboard load karne ke liye reload
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     } else {
         statusDiv.innerText = "❌ Ghalat Password!";
         statusDiv.style.color = "red";
