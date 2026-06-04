@@ -1,37 +1,31 @@
+// 1. Apni Firebase Configuration Direct Daalein
+const firebaseConfig = {
+    apiKey: "AIzaSy...", // 👈 Yahan apni asli API Key daalein
+    authDomain: "wishes-hub-xxxxx.firebaseapp.com", // 👈 Apna Auth Domain daalein
+    projectId: "wishes-hub-xxxxx", // 👈 Apna Project ID daalein
+    storageBucket: "wishes-hub-xxxxx.appspot.com",
+    messagingSenderId: "xxxxxxxxxxxx",
+    appId: "1:xxxxxxxxx:web:xxxxxxxxxxxx"
+};
+
+const allowedAdminUid = "fDp1cb1RAsWm8QfyuW2BDeYJyJw1"; // Aapki ID
 let auth = null;
-let allowedAdminUid = "";
 let isLoginMode = true;
 
-// Safe Initialization function
-async function initializeAdminPanel() {
+// Safe Initialization
+function initializeAdminPanel() {
     const statusDiv = document.getElementById('status');
     try {
-        // 1. Config fetch karna
-        const response = await fetch('/api/get-config');
-        if (!response.ok) {
-            statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ Error: API/Backend issue (404/500)";
-            return;
-        }
-        
-        const config = await response.json();
-        allowedAdminUid = config.adminUid;
-
-        // 2. Firebase check aur initialization
-        if (typeof firebase === 'undefined') {
-            statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ Error: Firebase CDN blocked or failed!";
-            return;
-        }
-
+        // Firebase Setup
         if (!firebase.apps.length) {
-            firebase.initializeApp(config);
+            firebase.initializeApp(firebaseConfig);
         }
         
         auth = firebase.auth();
-        statusDiv.innerText = ""; // Clear loader once ready
+        statusDiv.innerText = "✅ System Connected"; // UI confirm karega ki Firebase chal gaya
+        setTimeout(() => { statusDiv.innerText = ""; }, 2000);
 
-        // 3. Auth Listener
+        // Auth Monitor
         auth.onAuthStateChanged((user) => {
             const loginModule = document.getElementById('login-module');
             const mainPanel = document.getElementById('main-panel');
@@ -54,7 +48,7 @@ async function initializeAdminPanel() {
 
     } catch (err) {
         statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ Connection Fail: " + err.message;
+        statusDiv.innerText = "❌ Firebase Fail: " + err.message;
     }
 }
 
@@ -102,5 +96,4 @@ window.logout = function() {
     if (auth) auth.signOut();
 };
 
-// Page load sequence par execute karein
 document.addEventListener("DOMContentLoaded", initializeAdminPanel);
