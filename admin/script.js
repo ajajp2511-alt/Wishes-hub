@@ -1,5 +1,3 @@
-// admin/script.js
-
 function checkAuth() {
     const authStatus = localStorage.getItem("admin_auth_status");
     const loginMod = document.getElementById('login-module');
