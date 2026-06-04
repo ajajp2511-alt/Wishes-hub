@@ -19,8 +19,6 @@ window.logout = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     checkAuth();
-    const logoutBtn = document.getElementById('logout-btn');
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-    }
+    const lbtn = document.getElementById('logout-btn');
+    if(lbtn) lbtn.addEventListener('click', window.logout);
 });
