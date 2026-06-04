@@ -1,25 +1,34 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ message: "Method not allowed" });
+    // 1. Sirf POST allow karein
+    if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, message: "Method Not Allowed" });
+    }
 
     try {
-        let body = req.body;
-        if (typeof body === 'string') {
-            body = JSON.parse(body);
+        // 2. Body parsing safety
+        let data = req.body;
+        if (typeof data === 'string') {
+            data = JSON.parse(data);
         }
 
-        const { password } = body;
+        const { password } = data;
         const SECURE_PASS = process.env.ADMIN_PASSWORD;
 
+        // 3. Check if Environment Variable exists
         if (!SECURE_PASS) {
-            return res.status(500).json({ success: false, message: "Vercel par ADMIN_PASSWORD set nahi hai." });
+            console.error("Vercel Error: ADMIN_PASSWORD is not set in Environment Variables.");
+            return res.status(500).json({ success: false, message: "Server configuration missing." });
         }
 
+        // 4. Password matching
         if (password === SECURE_PASS) {
             return res.status(200).json({ success: true });
         } else {
-            return res.status(401).json({ success: false, message: "Ghalat Key!" });
+            return res.status(401).json({ success: false, message: "Ghalat Key! Dobara koshish karein." });
         }
+
     } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
+        console.error("Auth Error:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
     }
 }
