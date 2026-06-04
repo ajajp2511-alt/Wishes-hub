@@ -2,88 +2,94 @@ let auth;
 let allowedAdminUid = "";
 let isLoginMode = true;
 
-// 1. Page aur all backend assets load hone ke baad system trigger hoga
+// 1. Ek dum basic check
+console.log("Script loaded successfully!");
+
 window.onload = async function() {
     const statusDiv = document.getElementById('status');
-    
-    try {
-        statusDiv.style.color = "#00f2ff";
-        statusDiv.innerText = "⏳ Initializing Secure Connection...";
+    statusDiv.innerText = "⏳ Loading System...";
 
-        // Vercel Backend API se credentials fetch karna
+    try {
+        // 2. Vercel Backend se config fetch karna
         const response = await fetch('/api/get-config');
-        if (!response.ok) throw new Error("Vercel environment variables securely load nahi ho paaye.");
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}. Check if /api/get-config.js exists.`);
+        }
         
         const config = await response.json();
-        allowedAdminUid = config.adminUid; // Vercel dashboard wala ADMIN_UID
+        allowedAdminUid = config.adminUid;
 
-        // Firebase Client App Bootstrapping
+        // 3. Check if variables are empty
+        if (!config.apiKey || config.apiKey === "undefined") {
+            throw new Error("Vercel Variables miss ho rahe hain. Check Dashboard!");
+        }
+
+        // 4. Firebase Initialize
+        if (typeof firebase === 'undefined') {
+            throw new Error("Firebase Library load nahi hui. Check Internet/HTML scripts.");
+        }
+
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
         }
         auth = firebase.auth();
 
-        // Status clear jab system ready ho jaye
-        statusDiv.innerText = "";
-
-        // Real-time Auth State Monitoring
+        // 5. Auth Monitor
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // strict UID Cross-matching check
                 if (user.uid === allowedAdminUid) {
                     document.getElementById('login-module').style.display = 'none';
                     document.getElementById('main-panel').style.display = 'block';
                     statusDiv.innerText = "";
                 } else {
-                    statusDiv.style.color = "#f85149";
-                    statusDiv.innerText = "❌ Access Denied: Unauthorized UID detected.";
+                    statusDiv.innerText = "❌ Unauthorized Admin ID!";
                     auth.signOut();
                 }
             } else {
                 document.getElementById('login-module').style.display = 'block';
                 document.getElementById('main-panel').style.display = 'none';
+                statusDiv.innerText = "";
             }
         });
 
+        console.log("Firebase Ready!");
+        statusDiv.innerText = "✅ System Ready";
+        setTimeout(() => { if(!auth.currentUser) statusDiv.innerText = ""; }, 2000);
+
     } catch (err) {
-        console.error("Boot Failure:", err);
-        statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ System Error: " + err.message;
+        console.error("Critical Error:", err);
+        statusDiv.style.color = "#ff4b4b";
+        statusDiv.innerText = "🚨 Error: " + err.message;
     }
 };
 
-// Mode Switcher (Login / Registration)
-window.toggleMode = function() {
+// Toggle & HandleAuth functions (Same as before)
+window.toggleMode = () => {
     isLoginMode = !isLoginMode;
     document.getElementById('auth-title').innerText = isLoginMode ? "Admin Login" : "Admin Sign-Up";
     document.getElementById('auth-btn').innerText = isLoginMode ? "Unlock System" : "Create Account";
-    document.getElementById('toggle-text').innerText = isLoginMode ? "Naya account banayein (Sign Up)" : "Purana account login karein";
 };
 
-// Core Execution Login / Signup
-window.handleAuth = async function() {
+window.handleAuth = async () => {
     const email = document.getElementById('admin-email').value.trim();
     const pass = document.getElementById('admin-pass').value;
     const btn = document.getElementById('auth-btn');
     const statusDiv = document.getElementById('status');
 
-    if (!email || !pass) return alert("Kripya saari details sahi se bhariye!");
+    if (!auth) return alert("System abhi load ho raha hai, wait karein.");
 
     btn.disabled = true;
-    btn.innerText = "⏳ Authenticating...";
-    statusDiv.innerText = "";
+    btn.innerText = "⏳ Wait...";
 
     try {
         if (isLoginMode) {
             await auth.signInWithEmailAndPassword(email, pass);
         } else {
             await auth.createUserWithEmailAndPassword(email, pass);
-            alert("Account authentication base me register ho gaya hai. Ab login karein!");
+            alert("Success! Ab login karein.");
             toggleMode();
         }
     } catch (err) {
-        console.error("Authentication Exception:", err);
-        statusDiv.style.color = "#f85149";
         statusDiv.innerText = "❌ " + err.message;
     } finally {
         btn.disabled = false;
@@ -91,7 +97,4 @@ window.handleAuth = async function() {
     }
 };
 
-// Dashboard Session Control
-window.logout = function() {
-    if (auth) auth.signOut();
-};
+window.logout = () => auth.signOut();
