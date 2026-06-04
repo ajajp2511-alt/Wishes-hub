@@ -4,7 +4,7 @@ async function verifyMasterPassword() {
     const btn = document.getElementById('auth-btn');
 
     if (!passInput.value) {
-        alert("Kripya password daalein!");
+        alert("Password daalein!");
         return;
     }
 
@@ -13,7 +13,7 @@ async function verifyMasterPassword() {
     statusDiv.innerText = "";
 
     try {
-        // Mobile cache bypass karne ke liye timestamp use kiya hai
+        // Mobile par cache bypass karne ke liye timestamp (?v=...)
         const apiUrl = `${window.location.origin}/api/verify-pass?v=${Date.now()}`;
         
         const response = await fetch(apiUrl, {
@@ -26,7 +26,7 @@ async function verifyMasterPassword() {
 
         if (response.ok && result.success) {
             localStorage.setItem("admin_auth_status", "active");
-            // UI Update
+            // Direct panel dikhao bina page reload ke
             document.getElementById('login-module').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
             statusDiv.innerText = "✅ Unlocked!";
@@ -35,14 +35,15 @@ async function verifyMasterPassword() {
             statusDiv.innerText = "❌ " + (result.message || "Ghalat Key");
         }
     } catch (err) {
-        statusDiv.innerText = "❌ Connection Error!";
-        alert("Error: " + err.message);
+        statusDiv.innerText = "❌ Connection Fail!";
+        alert("API tak request nahi pahunch rahi. GitHub commit ke baad 1-2 minute rukiye.");
     } finally {
         btn.disabled = false;
         btn.innerText = "Unlock System";
     }
 }
 
+// Ye function hamesha check karega agar pehle se login hai
 function checkAuth() {
     if (localStorage.getItem("admin_auth_status") === "active") {
         document.getElementById('login-module').style.display = 'none';
