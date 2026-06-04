@@ -1,5 +1,3 @@
-// admin/wishes.js
-
 async function uploadWish() {
     const wishText = document.getElementById('wish-text').value;
     const imageFile = document.getElementById('media-upload').files[0];
@@ -13,15 +11,15 @@ async function uploadWish() {
 
     btn.disabled = true;
     btn.innerText = "⏳ Processing...";
-    statusDiv.innerText = "Sending to server...";
+    statusDiv.innerText = "Sending to Telegram...";
 
     const formData = new FormData();
     formData.append('wish', wishText);
     formData.append('image', imageFile);
 
     try {
-        // Path logic fix for admin folder
-        const response = await fetch('../api/upload-to-tg', {
+        // Universal path logic: Ye hamesha root /api dhoondega
+        const response = await fetch('/api/upload-to-tg', {
             method: 'POST',
             body: formData
         });
@@ -31,8 +29,6 @@ async function uploadWish() {
         if (response.ok && result.success) {
             statusDiv.style.color = "#238636";
             statusDiv.innerText = "✅ Wish successfully publish ho gayi!";
-            
-            // Clear fields after success
             document.getElementById('wish-text').value = "";
             document.getElementById('media-upload').value = "";
         } else {
@@ -41,13 +37,11 @@ async function uploadWish() {
         }
     } catch (err) {
         statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ Server connect nahi ho raha.";
-        console.error("Upload Error:", err);
+        statusDiv.innerText = "❌ Server error. Check internet.";
     } finally {
         btn.disabled = false;
         btn.innerText = "Publish Wish";
     }
 }
 
-// Global exposure
 window.uploadWish = uploadWish;
