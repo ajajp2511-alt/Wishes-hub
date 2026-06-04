@@ -1,6 +1,7 @@
 export default async function handler(req, res) {
-    // Browser cache ko rokne ke liye headers
-    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    // Cache ko puri tarah se rokne ke liye headers
+    res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
     
     if (req.method !== 'POST') return res.status(405).json({ success: false });
 
@@ -9,9 +10,7 @@ export default async function handler(req, res) {
         if (typeof data === 'string') data = JSON.parse(data);
 
         const { password } = data;
-
-        // Aapka naya password
-        const SECURE_PASS = "1234"; 
+        const SECURE_PASS = "1234"; // Aapka password
 
         if (password === SECURE_PASS) {
             return res.status(200).json({ success: true });
