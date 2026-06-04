@@ -5,52 +5,7 @@ body {
     font-family: sans-serif;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Top se start hoga */
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.admin-container {
-    background: #161b22;
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #30363d;
-    text-align: center;
-    width: 100%;
-    max-width: 400px; /* Mobile ke liye perfect */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    margin-top: 50px;
-}
-
-/* Jab panel show ho toh center me rahe */
-#main-panel {
-    width: 100%;
-    text-align: left;
-}
-
-h1 { color: #00f2ff; font-size: 1.5rem; margin-bottom: 20px; }
-
-textarea, input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    color: white;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 16px; /* Mobile zoom prevent karne ke liye */
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    background: #00f2ff;
-    color: black;
-    border: none;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
+    align-items: flex-start; /* Isse content top se dikhega */
+    min-height: 100vh; /* height ki jagah min-height use karein */
+    padding-top: 50px;
 }
