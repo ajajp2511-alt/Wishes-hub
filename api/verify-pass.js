@@ -1,18 +1,17 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).end();
+    if (req.method !== 'POST') return res.status(405).json({ message: "Method not allowed" });
 
     try {
-        // Manual parsing safety for Vercel
         let body = req.body;
         if (typeof body === 'string') {
             body = JSON.parse(body);
         }
 
-        const { password } = body; 
+        const { password } = body;
         const SECURE_PASS = process.env.ADMIN_PASSWORD;
 
         if (!SECURE_PASS) {
-            return res.status(500).json({ success: false, message: "Server Error: ADMIN_PASSWORD not set." });
+            return res.status(500).json({ success: false, message: "Vercel par ADMIN_PASSWORD set nahi hai." });
         }
 
         if (password === SECURE_PASS) {
