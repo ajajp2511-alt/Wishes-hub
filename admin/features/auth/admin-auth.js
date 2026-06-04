@@ -1,20 +1,31 @@
-// Feature: Admin Session Security
-function checkAdminAuth() {
-    const session = localStorage.getItem('adminToken');
-    if (!session) {
-        window.location.href = "login.html"; // Agar login nahi hai toh bahar bhej do
+// admin/features/auth/admin-auth.js
+
+function verifyMasterPassword() {
+    const passInput = document.getElementById('admin-pass');
+    const statusDiv = document.getElementById('status');
+
+    if (!passInput || !passInput.value) {
+        alert("Kripya password enter karein!");
+        return;
+    }
+
+    // Aapka fixed password
+    if (passInput.value.trim() === "1234") {
+        localStorage.setItem("admin_auth_status", "active");
+        
+        if (statusDiv) {
+            statusDiv.style.color = "#238636";
+            statusDiv.innerText = "✅ Unlocked!";
+        }
+        
+        // Panel dikhane ke liye page refresh
+        setTimeout(() => { window.location.reload(); }, 500);
+    } else {
+        if (statusDiv) {
+            statusDiv.style.color = "#f85149";
+            statusDiv.innerText = "❌ Incorrect Password!";
+        }
     }
 }
 
-async function loginAdmin(pass) {
-    // .env wali key se match karega (via API)
-    const response = await fetch('/api/verify-pass', {
-        method: 'POST',
-        body: JSON.stringify({ password: pass })
-    });
-    const result = await response.json();
-    if (result.success) {
-        localStorage.setItem('adminToken', 'active');
-        window.location.reload();
-    }
-}
+window.verifyMasterPassword = verifyMasterPassword;
