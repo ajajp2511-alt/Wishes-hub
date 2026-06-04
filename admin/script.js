@@ -1,63 +1,64 @@
-// Function: Password Check via API
-window.verifyMasterPassword = async function() {
+// Login logic
+async function verifyMasterPassword() {
     const passInput = document.getElementById('admin-pass');
-    const btn = document.getElementById('auth-btn');
     const statusDiv = document.getElementById('status');
+    const btn = document.getElementById('auth-btn');
 
     if (!passInput.value) {
-        alert("Password daaliye!");
+        alert("Kripya password daalein!");
         return;
     }
 
     btn.disabled = true;
-    btn.innerText = "⏳ Verifying...";
+    btn.innerText = "⏳ Checking...";
     statusDiv.innerText = "";
 
     try {
         const response = await fetch('/api/verify-pass', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: passInput.value })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: passInput.value.trim() })
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (response.ok && data.success) {
-            // Local storage me login state save karein
-            localStorage.setItem("is_admin", "true");
-            checkAuth();
+        if (response.ok && result.success) {
+            // Success! Save session and show panel
+            localStorage.setItem("admin_auth", "active");
+            showPanel();
         } else {
+            // Fail! Show error message
             statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ " + (data.message || "Login Failed");
+            statusDiv.innerText = "❌ " + (result.message || "Access Denied");
         }
     } catch (err) {
-        statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ Server Error!";
+        statusDiv.innerText = "❌ Connection Fail: " + err.message;
     } finally {
         btn.disabled = false;
         btn.innerText = "Unlock System";
     }
-};
-
-// Function: Auth State Check
-function checkAuth() {
-    const loginModule = document.getElementById('login-module');
-    const mainPanel = document.getElementById('main-panel');
-    
-    if (localStorage.getItem("is_admin") === "true") {
-        loginModule.style.display = 'none';
-        mainPanel.style.display = 'block';
-    } else {
-        loginModule.style.display = 'block';
-        mainPanel.style.display = 'none';
-    }
 }
 
-// Function: Logout
-window.logout = function() {
-    localStorage.removeItem("is_admin");
-    window.location.reload();
-};
+// UI Helpers
+function showPanel() {
+    document.getElementById('login-module').style.display = 'none';
+    document.getElementById('main-panel').style.display = 'block';
+}
 
-// Initial Load Check
-document.addEventListener("DOMContentLoaded", checkAuth);
+function logout() {
+    localStorage.removeItem("admin_auth");
+    window.location.reload();
+}
+
+// Check auth on load
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("admin_auth") === "active") {
+        showPanel();
+    }
+});
+
+// Window exposure for HTML buttons
+window.verifyMasterPassword = verifyMasterPassword;
+window.logout = logout;
