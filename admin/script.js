@@ -1,18 +1,16 @@
 // admin/script.js
 
 // ==========================================
-// 🛡️ AUTHENTICATION ENGINE (SECURITY CHECK)
+// 🛡️ AUTHENTICATION ENGINE
 // ==========================================
 function checkAuth() {
     const authStatus = localStorage.getItem("admin_auth_status");
-    
-    // Agar login layout aapke index.html me hi defined hai
     const loginMod = document.getElementById('login-module');
-    const mainPan = document.getElementById('main-panel') || document.querySelector('.admin-wrapper');
+    const mainPan = document.getElementById('main-panel');
 
     if (authStatus === "active") {
         if (loginMod) loginMod.style.display = 'none';
-        if (mainPan) mainPan.style.display = 'flex'; // `.admin-wrapper` layout flex use karta hai
+        if (mainPan) mainPan.style.display = 'flex'; // Mobile/Desktop Flex Layout
         return true;
     } else {
         if (loginMod) loginMod.style.display = 'block';
@@ -21,58 +19,49 @@ function checkAuth() {
     }
 }
 
-// Global Logout Handler
 window.logout = function() {
     localStorage.removeItem("admin_auth_status");
     window.location.reload();
 };
 
 // ==========================================
-// 🚀 MAIN DOM INITIALIZATION
+// 🚀 INITIALIZATION
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Pehle user valid hai ya nahi check karein
     const isAuthenticated = checkAuth();
 
-    // 2. Authentication Event Listeners
+    // Bind Auth Buttons
     const unlockBtn = document.getElementById('unlock-btn');
-    if (unlockBtn) {
-        unlockBtn.addEventListener('click', window.verifyMasterPassword);
-    }
+    if (unlockBtn) unlockBtn.addEventListener('click', window.verifyMasterPassword);
 
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', window.logout);
-    }
+    if (logoutBtn) logoutBtn.addEventListener('click', window.logout);
 
-    // 3. Agar authenticated hai, toh hi features logic init karein
     if (isAuthenticated) {
         initializeDashboardNavigation();
     }
 });
 
 // ==========================================
-// 📋 DASHBOARD NAVIGATION & LAYOUT
+// 🧭 NAVIGATION ROUTER
 // ==========================================
 function initializeDashboardNavigation() {
     const navLinks = document.querySelectorAll(".nav-link");
     
-    // Default module load karein (Wishes module)
+    // Sabse pehle Default Feature (Wishes) load karein
     loadFeature("wishes");
 
     navLinks.forEach(link => {
         link.addEventListener("click", (e) => {
             e.preventDefault();
-            
             const featureName = link.getAttribute("data-feature");
             
-            // Agar logout button sidebar me .nav-link ki tarah mapped hai
             if (featureName === "auth") {
                 window.logout();
                 return;
             }
             
-            // Active tab styling toggle
+            // UI Active Tab Toggle
             navLinks.forEach(l => l.classList.remove("active"));
             link.classList.add("active");
 
@@ -81,126 +70,66 @@ function initializeDashboardNavigation() {
     });
 }
 
-// Dynamic Feature Loader Engine
+// ==========================================
+// 🛠️ DYNAMIC FEATURE LOADER (Modular)
+// ==========================================
 async function loadFeature(feature) {
     const contentRoot = document.getElementById("dynamic-content-root");
     if (!contentRoot) return;
 
-    contentRoot.innerHTML = `<div class="loader">Loading ${feature}...</div>`;
+    // Loading State
+    contentRoot.innerHTML = `<div class="loader">⚡ Loading ${feature} Module...</div>`;
 
     try {
-        if (feature === "wishes") {
-            contentRoot.innerHTML = renderWishesForm();
-            initWishesFeature(); // Form binding aur categories dropdown loader trigger
-        } else {
-            contentRoot.innerHTML = `
-                <div class="placeholder-card">
-                    <h3>Feature Component: "${feature}"</h3>
-                    <p>This module is located inside /admin/features/${feature}/</p>
-                </div>`;
+        // Har feature apni alag file se function call karega
+        switch (feature) {
+            case "wishes":
+                if (typeof window.renderWishesModule === "function") {
+                    window.renderWishesModule(contentRoot);
+                }
+                break;
+
+            case "photos":
+                if (typeof window.renderPhotosModule === "function") {
+                    window.renderPhotosModule(contentRoot);
+                }
+                break;
+
+            case "links":
+                if (typeof window.renderLinksModule === "function") {
+                    window.renderLinksModule(contentRoot);
+                }
+                break;
+
+            case "manager":
+                // Agar manager file ready nahi hai toh placeholder dikhayega
+                if (typeof window.renderManagerModule === "function") {
+                    window.renderManagerModule(contentRoot);
+                } else {
+                    renderPlaceholder(contentRoot, "Manage Wishes", "manager");
+                }
+                break;
+
+            case "analytics":
+                renderPlaceholder(contentRoot, "System Analytics", "analytics");
+                break;
+
+            default:
+                contentRoot.innerHTML = `<div class="error">Module Not Found</div>`;
         }
     } catch (err) {
-        console.error("Feature loading broken:", err);
-        contentRoot.innerHTML = `<div class="error-msg">Failed to initialize workspace layout.</div>`;
+        console.error("Router Error:", err);
+        contentRoot.innerHTML = `<div class="error-msg">⚠️ Failed to load ${feature}. Check console for errors.</div>`;
     }
 }
 
-// HTML Generator Template for Wishes Form
-function renderWishesForm() {
-    return `
-        <div class="feature-card animate-fade">
-            <div class="card-header">
-                <h2>✨ Add New Wish Entry</h2>
-                <p>Select accurate global categories to publish wishes directly onto Wishes Hub.</p>
-            </div>
-            
-            <form id="wishesSubmissionForm">
-                <div class="form-group">
-                    <label for="wishCategory">Main Category</label>
-                    <select id="wishCategory" required>
-                        <!-- category-data.js se options load honge -->
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="wishSubCategory">Sub Category</label>
-                    <select id="wishSubCategory" disabled required>
-                        <option value="">-- Choose Sub Category --</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="wishBody">Wish Text Message</label>
-                    <textarea id="wishBody" rows="5" placeholder="Write your beautiful greeting message here..." required></textarea>
-                </div>
-
-                <button type="submit" id="addWishSubmitBtn" class="primary-action-btn">Publish to Wishes Hub</button>
-            </form>
-            <div id="wishesActionFeedback" class="feedback-container"></div>
-        </div>
-    `;
+// Global Placeholder for pending features
+function renderPlaceholder(container, title, path) {
+    container.innerHTML = `
+        <div class="placeholder-card animate-fade">
+            <div class="icon" style="font-size: 3rem; margin-bottom: 1rem;">⚙️</div>
+            <h3>${title} Module</h3>
+            <p>Code logic is isolated inside <code>/admin/features/${path}/${path}.js</code></p>
+            <p style="margin-top: 1rem; color: var(--text-muted);">Please create the module file to activate this section.</p>
+        </div>`;
 }
-
-// Logic Handler for Dropdowns population and Form submissions
-function initWishesFeature() {
-    const form = document.getElementById("wishesSubmissionForm");
-    if (!form) return;
-
-    const mainCategorySelect = document.getElementById("wishCategory");
-    const subCategorySelect = document.getElementById("wishSubCategory");
-    const feedback = document.getElementById("wishesActionFeedback");
-
-    // Dynamic checks for global category-data.js utilities
-    if (typeof populateMainCategories === "function") {
-        populateMainCategories(mainCategorySelect);
-    }
-
-    mainCategorySelect.addEventListener("change", () => {
-        const selectedMain = mainCategorySelect.value;
-        if (typeof updateSubCategories === "function") {
-            updateSubCategories(selectedMain, subCategorySelect);
-        }
-    });
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const mainCat = mainCategorySelect.value;
-        const subCat = subCategorySelect.value;
-        const text = document.getElementById("wishBody").value;
-
-        feedback.className = "feedback-container processing";
-        feedback.innerText = "⚡ Transmitting payload to serverless endpoint...";
-
-        const wishPayload = {
-            mainCategory: mainCat,
-            subCategory: subCat,
-            wishText: text,
-            status: "active",
-            createdAt: new Date().toISOString()
-        };
-
-        try {
-            const response = await fetch('/api/add-wish', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(wishPayload)
-            });
-
-            if (response.ok) {
-                feedback.className = "feedback-container success";
-                feedback.innerText = `✅ Success! Wish published under ${mainCat} ➔ ${subCat}.`;
-                form.reset();
-                subCategorySelect.disabled = true;
-            } else {
-                throw new Error("Endpoint connection initialization pending.");
-            }
-        } catch (error) {
-            console.log("Local Payload Mock Saved:", wishPayload);
-            feedback.className = "feedback-container success";
-            feedback.innerText = `✅ [Mock Saved] Wish verified for ${mainCat} (${subCat})!`;
-            form.reset();
-            subCategorySelect.disabled = true;
-        }
-    });
-                    }
