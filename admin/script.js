@@ -1,3 +1,4 @@
+// Panel Show/Hide Logic
 function checkAuth() {
     const authStatus = localStorage.getItem("admin_auth_status");
     const loginMod = document.getElementById('login-module');
@@ -12,13 +13,20 @@ function checkAuth() {
     }
 }
 
+// Logout Logic
 window.logout = function() {
     localStorage.removeItem("admin_auth_status");
-    window.location.reload();
+    checkAuth();
 }
 
+// Event Listeners setup
 document.addEventListener("DOMContentLoaded", function() {
     checkAuth();
-    const lbtn = document.getElementById('logout-btn');
-    if(lbtn) lbtn.addEventListener('click', window.logout);
+
+    // Buttons par click events attach karna
+    const unlockBtn = document.getElementById('unlock-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (unlockBtn) unlockBtn.addEventListener('click', window.verifyMasterPassword);
+    if (logoutBtn) logoutBtn.addEventListener('click', window.logout);
 });
