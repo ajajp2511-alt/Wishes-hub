@@ -14,7 +14,7 @@
         <!-- Login Module -->
         <div id="login-module">
             <input type="password" id="admin-pass" placeholder="Enter Password">
-            <button onclick="verifyMasterPassword()">Unlock</button>
+            <button id="unlock-btn">Unlock</button>
             <p id="status"></p>
         </div>
 
@@ -22,11 +22,55 @@
         <div id="main-panel" style="display: none;">
             <h2>Welcome to Dashboard</h2>
             <p>Admin panel successfully opened!</p>
-            <button onclick="logout()">Logout</button>
+            <button id="logout-btn">Logout</button>
         </div>
     </div>
 
-    <!-- Ab sirf ek hi JS file load hogi -->
-    <script src="script.js"></script>
+    <!-- Hamein alag se js file ki zaroorat nahi, sab kuch yahan hai -->
+    <script>
+        // 1. Password Check Logic
+        function verifyMasterPassword() {
+            const passInput = document.getElementById('admin-pass');
+            const statusDiv = document.getElementById('status');
+
+            if (!passInput || !statusDiv) return;
+
+            if (passInput.value.trim() === "1234") {
+                localStorage.setItem("admin_auth_status", "active");
+                checkAuth(); // Bina reload kiye turant check karega
+            } else {
+                statusDiv.innerText = "❌ Ghalat Password!";
+                statusDiv.style.color = "red";
+            }
+        }
+
+        // 2. Panel Show/Hide Logic
+        function checkAuth() {
+            const authStatus = localStorage.getItem("admin_auth_status");
+            const loginMod = document.getElementById('login-module');
+            const mainPan = document.getElementById('main-panel');
+
+            if (authStatus === "active") {
+                if (loginMod) loginMod.style.display = 'none';
+                if (mainPan) mainPan.style.display = 'block';
+            } else {
+                if (loginMod) loginMod.style.display = 'block';
+                if (mainPan) mainPan.style.display = 'none';
+            }
+        }
+
+        // 3. Logout Logic
+        function logout() {
+            localStorage.removeItem("admin_auth_status");
+            checkAuth(); // Turant login page par bhej dega
+        }
+
+        // 4. Buttons par click events attach karna
+        document.getElementById('unlock-btn').addEventListener('click', verifyMasterPassword);
+        document.getElementById('logout-btn').addEventListener('click', logout);
+
+        // Page load hote hi status check karein
+        document.addEventListener("DOMContentLoaded", checkAuth);
+    </script>
 </body>
 </html>
