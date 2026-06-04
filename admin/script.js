@@ -1,53 +1,48 @@
-async function verifyMasterPassword() {
-    const passInput = document.getElementById('admin-pass');
-    const statusDiv = document.getElementById('status');
-    const btn = document.getElementById('auth-btn');
+async function uploadWish() {
+    const wishText = document.getElementById('wish-text').value;
+    const imageFile = document.getElementById('media-upload').files[0];
+    const statusDiv = document.getElementById('upload-status');
+    const btn = document.getElementById('publish-btn');
 
-    if (!passInput.value) {
-        alert("Password daalein!");
+    if (!wishText || !imageFile) {
+        alert("Wish text aur Photo dono zaroori hain!");
         return;
     }
 
     btn.disabled = true;
-    btn.innerText = "⏳ Checking...";
-    statusDiv.innerText = "";
+    btn.innerText = "⏳ Uploading...";
+    statusDiv.innerText = "Processing...";
+
+    const formData = new FormData();
+    formData.append('wish', wishText);
+    formData.append('image', imageFile);
 
     try {
-        // '../' isliye taaki admin folder se nikal kar api folder ko dhoonda ja sake
-        const response = await fetch('../api/verify-pass', {
+        const response = await fetch('/api/upload-to-tg', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: passInput.value.trim() })
+            body: formData // FormData automatic headers set kar deta hai
         });
 
         const result = await response.json();
 
         if (response.ok && result.success) {
-            localStorage.setItem("admin_auth_status", "active");
-            // UI switch
-            document.getElementById('login-module').style.display = 'none';
-            document.getElementById('main-panel').style.display = 'block';
-            statusDiv.innerHTML = "<span style='color:#238636'>✅ Unlocked</span>";
+            statusDiv.style.color = "#238636";
+            statusDiv.innerText = "✅ Wish successfully publish ho gayi!";
+            document.getElementById('wish-text').value = ""; // Clear box
+            document.getElementById('media-upload').value = ""; // Clear file
         } else {
             statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ " + (result.message || "Ghalat Password");
+            statusDiv.innerText = "❌ Error: " + (result.message || "Upload fail ho gaya");
         }
     } catch (err) {
         statusDiv.style.color = "#f85149";
-        statusDiv.innerText = "❌ Path Error: API nahi mili.";
+        statusDiv.innerText = "❌ Server error. Check internet.";
         console.error(err);
     } finally {
         btn.disabled = false;
-        btn.innerText = "Unlock System";
+        btn.innerText = "Publish Wish";
     }
 }
 
-function checkAuth() {
-    if (localStorage.getItem("admin_auth_status") === "active") {
-        document.getElementById('login-module').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
-    }
-}
-
-document.addEventListener("DOMContentLoaded", checkAuth);
-window.verifyMasterPassword = verifyMasterPassword;
+// Ensure this function is available globally
+window.uploadWish = uploadWish;
