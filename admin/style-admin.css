@@ -1,78 +1,69 @@
 /* ==========================================================
-   ✨ WISHES HUB ADMIN - UPDATED PRODUCTION STYLING
+   ✨ WISHES HUB ADMIN - PRODUCTION READY STYLING (UPDATED)
    ========================================================== */
 
 :root {
     --bg-main: #f8fafc;
     --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
     --primary: #6366f1;
+    --primary-hover: #4f46e5;
     --text-main: #334155;
+    --text-muted: #64748b;
+    --white: #ffffff;
     --border: #e2e8f0;
+    --success: #10b981;
     --danger: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-/* ... (Previous styles same rahenge) ... */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-/* 🖋️ RICH EDITOR STYLING */
-.rich-editor {
-    width: 100%;
-    min-height: 150px;
-    padding: 15px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--white);
-    margin-top: 5px;
-    outline: none;
-}
-.rich-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; }
 
-.toolbar {
-    margin-bottom: 8px;
-    background: #f1f5f9;
-    padding: 8px;
-    border-radius: 8px;
-    display: flex;
-    gap: 8px;
-}
-.toolbar button {
-    padding: 5px 12px;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    cursor: pointer;
-    background: var(--white);
-    font-weight: bold;
-}
+/* 🛡️ LOGIN MODULE */
+#login-module { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at top right, #e0e7ff, #f8fafc); padding: 20px; }
+.login-card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow-lg); width: 100%; max-width: 400px; text-align: center; }
+.login-card input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; background: #f1f5f9; }
+
+/* 🎛️ MAIN DASHBOARD */
+.admin-wrapper { display: flex; width: 100%; min-height: 100vh; }
+.sidebar { width: 280px; background-color: var(--sidebar-bg); color: var(--white); padding: 30px 20px; position: fixed; height: 100vh; z-index: 100; }
+.content-workspace { flex: 1; margin-left: 280px; padding: 40px; }
+
+/* 🧭 NAVIGATION */
+.nav-link { display: flex; align-items: center; color: #94a3b8; padding: 14px; border-radius: 10px; text-decoration: none; margin-bottom: 8px; transition: 0.3s; }
+.nav-link:hover { background-color: var(--sidebar-hover); }
+.nav-link.active { background-color: var(--primary); color: var(--white); }
+.btn-logout { width: 100%; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 12px; border-radius: 10px; cursor: pointer; margin-top: auto; }
+
+/* 🧩 FEATURE CARDS & RICH EDITOR */
+.feature-card { background: var(--white); border-radius: 16px; padding: 32px; box-shadow: var(--shadow-md); border: 1px solid var(--border); }
+.form-group { margin-bottom: 24px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; }
+
+/* RICH EDITOR STYLES */
+.rich-editor { width: 100%; min-height: 150px; padding: 15px; border: 1px solid var(--border); border-radius: 10px; background: #fcfcfc; }
+.toolbar { display: flex; gap: 5px; margin-bottom: 8px; background: #f1f5f9; padding: 5px; border-radius: 8px; }
+.toolbar button { padding: 5px 12px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer; background: white; font-weight: bold; }
 .toolbar button:hover { background: var(--primary); color: white; }
 
-/* 🩺 SYSTEM HEALTH DASHBOARD */
-.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
-.status-card { 
-    background: var(--white); padding: 20px; border-radius: 12px; 
-    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-    text-align: center; font-weight: 600;
-}
-.status-live { color: var(--success); font-weight: bold; }
+/* 🩺 SYSTEM HEALTH & STATUS */
+.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+.status-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
 
-/* 🏗️ PLACEHOLDER CARD */
-.placeholder-card {
-    text-align: center;
-    padding: 60px 20px;
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    background: #fdfdfd;
-}
+/* ⚙️ UI ELEMENTS */
+.primary-action-btn { background: var(--primary); color: var(--white); border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
+.feedback-container { padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+.feedback-container.success { display: block; background: #dcfce7; color: var(--success); }
+.feedback-container.processing { display: block; background: #e0e7ff; color: var(--primary); }
 
-/* 🔄 ANIMATIONS */
-.animate-fade { animation: fadeIn 0.5s ease-in; }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* 📱 RESPONSIVE UPDATES */
+/* 📋 TABLE & RESPONSIVE */
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 @media screen and (max-width: 768px) {
     .sidebar { width: 100%; height: auto; position: relative; }
     .content-workspace { margin-left: 0; padding: 20px; }
     .admin-wrapper { flex-direction: column; }
-    .status-grid { grid-template-columns: 1fr; }
-}
+   }
