@@ -22,12 +22,14 @@ window.renderWishesModule = function(container) {
 
                 <div class="form-group">
                     <label>Wish Message (Rich Text)</label>
+                    <!-- Toolbar for Rich Text -->
                     <div class="toolbar">
                         <button type="button" onclick="document.execCommand('bold',false,null)"><b>B</b></button>
                         <button type="button" onclick="document.execCommand('italic',false,null)"><i>I</i></button>
                         <button type="button" onclick="document.execCommand('underline',false,null)"><u>U</u></button>
                     </div>
-                    <div id="wishBodyEditor" contenteditable="true" class="rich-editor"></div>
+                    <!-- Editable Div instead of textarea -->
+                    <div id="wishBodyEditor" contenteditable="true" class="rich-editor" placeholder="Type your beautiful message here..."></div>
                 </div>
 
                 <div class="form-group">
@@ -51,7 +53,8 @@ window.renderWishesModule = function(container) {
     mainCat.addEventListener("change", () => updateSubCategories(mainCat.value, subCat));
 
     // 2. Logic: Image Preview
-    document.getElementById('wishImageFile').addEventListener('change', function() {
+    const fileInput = document.getElementById('wishImageFile');
+    fileInput.addEventListener('change', function() {
         const reader = new FileReader();
         reader.onload = (e) => {
             const preview = document.querySelector('#imgPreview img');
@@ -73,8 +76,9 @@ window.renderWishesModule = function(container) {
         const formData = new FormData();
         formData.append('mainCategory', mainCat.value);
         formData.append('subCategory', subCat.value);
-        formData.append('wishText', editor.innerHTML); // Rich text (HTML)
-        formData.append('image', document.getElementById('wishImageFile').files[0]);
+        // Rich text content le rahe hain
+        formData.append('wishText', editor.innerHTML); 
+        formData.append('image', fileInput.files[0]);
 
         try {
             const response = await fetch('/api/add-unified-wish', {
@@ -85,14 +89,15 @@ window.renderWishesModule = function(container) {
             if (response.ok) {
                 feedback.className = "feedback-container success";
                 feedback.innerText = "✅ Done! Published successfully.";
-                editor.innerHTML = ""; // Clear Editor
+                editor.innerHTML = ""; // Editor clear karein
                 e.target.reset();
                 document.getElementById('imgPreview').style.display = 'none';
             } else { throw new Error(); }
         } catch (err) {
+            console.log("Mock Submission Payload:", formData);
             feedback.className = "feedback-container success";
             feedback.innerText = "✅ [Mock Saved] Rich text wish processed successfully!";
-            editor.innerHTML = ""; 
+            editor.innerHTML = "";
             e.target.reset();
             document.getElementById('imgPreview').style.display = 'none';
         }
