@@ -1,64 +1,59 @@
-// Login logic
 async function verifyMasterPassword() {
     const passInput = document.getElementById('admin-pass');
     const statusDiv = document.getElementById('status');
     const btn = document.getElementById('auth-btn');
 
     if (!passInput.value) {
-        alert("Kripya password daalein!");
+        alert("Password daalein!");
         return;
     }
 
     btn.disabled = true;
     btn.innerText = "⏳ Checking...";
-    statusDiv.innerText = "";
 
     try {
-        const response = await fetch('/api/verify-pass', {
+        // Mobile compatibility ke liye full URL path
+        const apiUrl = window.location.origin + '/api/verify-pass';
+        
+        const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password: passInput.value.trim() })
         });
 
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Success! Save session and show panel
-            localStorage.setItem("admin_auth", "active");
-            showPanel();
+            localStorage.setItem("admin_auth_status", "active");
+            // Mobile par immediate UI update ke liye
+            document.getElementById('login-module').style.display = 'none';
+            document.getElementById('main-panel').style.display = 'block';
+            statusDiv.innerText = "✅ Unlocked";
         } else {
-            // Fail! Show error message
             statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ " + (result.message || "Access Denied");
+            statusDiv.innerText = "❌ " + (result.message || "Ghalat Key");
         }
     } catch (err) {
-        statusDiv.innerText = "❌ Connection Fail: " + err.message;
+        statusDiv.innerText = "❌ Connection Error";
+        console.error(err);
     } finally {
         btn.disabled = false;
         btn.innerText = "Unlock System";
     }
 }
 
-// UI Helpers
-function showPanel() {
-    document.getElementById('login-module').style.display = 'none';
-    document.getElementById('main-panel').style.display = 'block';
+function checkAuth() {
+    if (localStorage.getItem("admin_auth_status") === "active") {
+        document.getElementById('login-module').style.display = 'none';
+        document.getElementById('main-panel').style.display = 'block';
+    }
 }
 
 function logout() {
-    localStorage.removeItem("admin_auth");
+    localStorage.removeItem("admin_auth_status");
     window.location.reload();
 }
 
-// Check auth on load
-document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("admin_auth") === "active") {
-        showPanel();
-    }
-});
-
-// Window exposure for HTML buttons
+document.addEventListener("DOMContentLoaded", checkAuth);
 window.verifyMasterPassword = verifyMasterPassword;
 window.logout = logout;
