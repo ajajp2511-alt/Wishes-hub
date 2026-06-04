@@ -1,12 +1,14 @@
 body {
     margin: 0;
-    background-color: #0d1117; /* Dark Background */
+    background-color: #0d1117;
     color: white;
     font-family: sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start; /* Top se start hoga */
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .admin-container {
@@ -15,21 +17,30 @@ body {
     border-radius: 12px;
     border: 1px solid #30363d;
     text-align: center;
-    width: 320px;
+    width: 100%;
+    max-width: 400px; /* Mobile ke liye perfect */
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    margin-top: 50px;
 }
 
-h1 { color: #00f2ff; font-size: 1.2rem; }
+/* Jab panel show ho toh center me rahe */
+#main-panel {
+    width: 100%;
+    text-align: left;
+}
 
-input {
+h1 { color: #00f2ff; font-size: 1.5rem; margin-bottom: 20px; }
+
+textarea, input {
     width: 100%;
     padding: 12px;
-    margin: 15px 0;
+    margin: 10px 0;
     background: #0d1117;
     border: 1px solid #30363d;
     color: white;
     border-radius: 6px;
     box-sizing: border-box;
+    font-size: 16px; /* Mobile zoom prevent karne ke liye */
 }
 
 button {
@@ -41,4 +52,5 @@ button {
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
+    margin-top: 10px;
 }
