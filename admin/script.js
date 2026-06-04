@@ -3,20 +3,15 @@ async function verifyMasterPassword() {
     const statusDiv = document.getElementById('status');
     const btn = document.getElementById('auth-btn');
 
-    if (!passInput.value) {
-        alert("Password daalein!");
-        return;
-    }
+    if (!passInput.value) return alert("Password daalein!");
 
     btn.disabled = true;
     btn.innerText = "⏳ Checking...";
     statusDiv.innerText = "";
 
     try {
-        // ?cb=${Date.now()} browser ko hamesha naya data load karne par majboor karta hai
-        const apiUrl = `${window.location.origin}/api/verify-pass?cb=${Date.now()}`;
-        
-        const response = await fetch(apiUrl, {
+        // Path logic fix for Mobile & Vercel
+        const response = await fetch('/api/verify-pass', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password: passInput.value.trim() })
@@ -26,27 +21,32 @@ async function verifyMasterPassword() {
 
         if (response.ok && result.success) {
             localStorage.setItem("admin_auth_status", "active");
-            // UI Update
+            // UI Switch (Bina reload ke)
             document.getElementById('login-module').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
-            statusDiv.innerText = "✅ Unlocked!";
+            statusDiv.innerHTML = "<span style='color:#238636'>✅ Unlocked</span>";
         } else {
             statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ " + (result.message || "Ghalat Key");
+            statusDiv.innerText = "❌ " + (result.message || "Ghalat Password");
         }
     } catch (err) {
-        statusDiv.innerText = "❌ API error! Deployments check karein.";
-        alert("Connection failed. Check if Vercel build is complete.");
+        // Agar yahan error aaya, toh manually API hit karke check karenge
+        statusDiv.style.color = "#f85149";
+        statusDiv.innerText = "❌ Connection Failed. API dhoondne mein galti hui.";
+        console.error("Fetch error:", err);
     } finally {
         btn.disabled = false;
         btn.innerText = "Unlock System";
     }
 }
 
+// Auto-Login Check
 function checkAuth() {
     if (localStorage.getItem("admin_auth_status") === "active") {
-        document.getElementById('login-module').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
+        const loginMod = document.getElementById('login-module');
+        const mainPan = document.getElementById('main-panel');
+        if(loginMod) loginMod.style.display = 'none';
+        if(mainPan) mainPan.style.display = 'block';
     }
 }
 
