@@ -4,16 +4,17 @@ async function verifyMasterPassword() {
     const btn = document.getElementById('auth-btn');
 
     if (!passInput.value) {
-        alert("Password daalein!");
+        alert("Kripya password daalein!");
         return;
     }
 
     btn.disabled = true;
     btn.innerText = "⏳ Checking...";
+    statusDiv.innerText = "";
 
     try {
-        // Mobile compatibility ke liye full URL path
-        const apiUrl = window.location.origin + '/api/verify-pass';
+        // Mobile cache bypass karne ke liye timestamp use kiya hai
+        const apiUrl = `${window.location.origin}/api/verify-pass?v=${Date.now()}`;
         
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -25,17 +26,17 @@ async function verifyMasterPassword() {
 
         if (response.ok && result.success) {
             localStorage.setItem("admin_auth_status", "active");
-            // Mobile par immediate UI update ke liye
+            // UI Update
             document.getElementById('login-module').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
-            statusDiv.innerText = "✅ Unlocked";
+            statusDiv.innerText = "✅ Unlocked!";
         } else {
             statusDiv.style.color = "#f85149";
             statusDiv.innerText = "❌ " + (result.message || "Ghalat Key");
         }
     } catch (err) {
-        statusDiv.innerText = "❌ Connection Error";
-        console.error(err);
+        statusDiv.innerText = "❌ Connection Error!";
+        alert("Error: " + err.message);
     } finally {
         btn.disabled = false;
         btn.innerText = "Unlock System";
