@@ -4,36 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin</title>
-    <style>
-        body { background: #0d1117; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #161b22; padding: 40px; border-radius: 15px; border: 1px solid #30363d; text-align: center; width: 320px; }
-        h1 { color: #00f2ff; margin-bottom: 25px; font-size: 22px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #00f2ff; color: black; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        #status { margin-top: 15px; font-size: 13px; color: #00f2ff; }
-        .toggle-link { font-size: 12px; color: #8b949e; cursor: pointer; margin-top: 15px; display: block; }
-    </style>
+    <link rel="stylesheet" href="style-admin.css">
 </head>
 <body>
     <div class="box">
-        <h1 id="auth-title">Admin Login</h1>
+        <h1 id="auth-title">Admin Access</h1>
+        
         <div id="login-module">
-            <input type="email" id="admin-email" placeholder="Email Address">
-            <input type="password" id="admin-pass" placeholder="Password">
-            <button id="auth-btn" onclick="handleAuth()">Unlock System</button>
-            <span class="toggle-link" id="toggle-text" onclick="toggleMode()">Naya account (Sign Up)</span>
+            <input type="password" id="admin-pass" placeholder="Enter Master Password">
+            <button id="auth-btn" onclick="verifyMasterPassword()">Unlock System</button>
         </div>
+
         <div id="main-panel" style="display:none;">
-            <p style="color: #238636;">✅ Access Granted</p>
+            <p style="color: #238636; font-weight: bold;">✅ Access Granted</p>
+            <hr style="border: 0.5px solid #30363d; margin: 20px 0;">
+            
             <input type="file" id="media-upload" accept="image/*" style="margin-bottom: 10px;">
             <button id="publish-btn">Send to Telegram</button>
-            <button onclick="logout()" style="background:transparent; color:#f85149; border:1px solid #f85149; margin-top:10px;">Logout</button>
+            
+            <button onclick="logout()" style="background:transparent; color:#f85149; border:1px solid #f85149; margin-top:20px;">Logout</button>
         </div>
-        <div id="status">⏳ Connecting...</div>
+        
+        <div id="status"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
