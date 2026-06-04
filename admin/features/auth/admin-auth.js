@@ -1,31 +1,14 @@
-// admin/features/auth/admin-auth.js
-
 function verifyMasterPassword() {
     const passInput = document.getElementById('admin-pass');
     const statusDiv = document.getElementById('status');
+    const pass = passInput.value.trim();
 
-    if (!passInput || !passInput.value) {
-        alert("Kripya password enter karein!");
-        return;
-    }
-
-    // Aapka fixed password
-    if (passInput.value.trim() === "1234") {
+    if (pass === "1234") {
         localStorage.setItem("admin_auth_status", "active");
-        
-        if (statusDiv) {
-            statusDiv.style.color = "#238636";
-            statusDiv.innerText = "✅ Unlocked!";
-        }
-        
-        // Panel dikhane ke liye page refresh
-        setTimeout(() => { window.location.reload(); }, 500);
+        window.location.reload(); // Refresh karke panel dikhayega
     } else {
-        if (statusDiv) {
-            statusDiv.style.color = "#f85149";
-            statusDiv.innerText = "❌ Incorrect Password!";
-        }
+        statusDiv.innerText = "❌ Ghalat Password!";
+        statusDiv.style.color = "red";
     }
 }
-
 window.verifyMasterPassword = verifyMasterPassword;
