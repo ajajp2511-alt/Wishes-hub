@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 function initializeDashboardNavigation() {
     const navLinks = document.querySelectorAll(".nav-link");
+    
+    // Default load: Wishes
     loadFeature("wishes");
 
     navLinks.forEach(link => {
@@ -62,7 +64,7 @@ function initializeDashboardNavigation() {
 }
 
 // ==========================================
-// 🛠️ DYNAMIC FEATURE LOADER (Modular Router)
+// 🛠️ DYNAMIC FEATURE LOADER (Modular)
 // ==========================================
 async function loadFeature(feature) {
     const contentRoot = document.getElementById("dynamic-content-root");
@@ -71,7 +73,6 @@ async function loadFeature(feature) {
     contentRoot.innerHTML = `<div class="loader">⚡ Initializing ${feature} module...</div>`;
 
     try {
-        // Router Map: Har feature ke liye check karein
         switch (feature) {
             case "wishes":
                 window.renderWishesModule ? window.renderWishesModule(contentRoot) : renderPlaceholder(contentRoot, "Wishes", "wishes");
@@ -90,6 +91,9 @@ async function loadFeature(feature) {
                 break;
             case "health":
                 window.renderHealthModule ? window.renderHealthModule(contentRoot) : renderPlaceholder(contentRoot, "System Health", "health");
+                break;
+            case "settings":
+                window.renderSettingsModule ? window.renderSettingsModule(contentRoot) : renderPlaceholder(contentRoot, "Settings", "settings");
                 break;
             default:
                 contentRoot.innerHTML = `<div class="error-msg">⚠️ Feature "${feature}" is not configured.</div>`;
