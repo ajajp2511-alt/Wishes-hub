@@ -1,81 +1,96 @@
+
 // admin/features/wishes/wishes.js
 
 window.renderWishesModule = function(container) {
     container.innerHTML = `
         <div class="feature-card animate-fade">
             <div class="card-header">
-                <h2>✨ Add New Wish Entry</h2>
-                <p>Select accurate global categories to publish wishes directly onto Wishes Hub.</p>
+                <h2>✨ Publish Unified Wish Entry</h2>
+                <p>Upload text and image together to create a complete post.</p>
             </div>
             
-            <form id="wishesSubmissionForm">
+            <form id="unifiedWishesForm">
                 <div class="form-group">
-                    <label for="wishCategory">Main Category</label>
+                    <label>Main Category</label>
                     <select id="wishCategory" required></select>
                 </div>
-
                 <div class="form-group">
-                    <label for="wishSubCategory">Sub Category</label>
+                    <label>Sub Category</label>
                     <select id="wishSubCategory" disabled required>
-                        <option value="">-- Choose Sub Category --</option>
+                        <option value="">-- Select Main Category First --</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="wishBody">Wish Text Message</label>
-                    <textarea id="wishBody" rows="5" placeholder="Write your beautiful greeting message here..." required></textarea>
+                    <label>Wish Message</label>
+                    <textarea id="wishBody" rows="4" placeholder="Type your beautiful message here..." required></textarea>
                 </div>
 
-                <button type="submit" id="addWishSubmitBtn" class="primary-action-btn">Publish to Wishes Hub</button>
+                <div class="form-group">
+                    <label>Attach Background Photo</label>
+                    <input type="file" id="wishImageFile" accept="image/*" class="form-control" required>
+                    <div id="imgPreview" style="margin-top:10px; display:none;">
+                        <img src="" style="max-height:100px; border-radius:8px;">
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-action-btn">🚀 Publish Unified Wish</button>
             </form>
             <div id="wishesActionFeedback" class="feedback-container"></div>
         </div>
     `;
 
-    // Dropdown populating using category-data.js
-    const mainCategorySelect = document.getElementById("wishCategory");
-    const subCategorySelect = document.getElementById("wishSubCategory");
-    const feedback = document.getElementById("wishesActionFeedback");
+    // 1. Logic: Dropdowns Setup
+    const mainCat = document.getElementById("wishCategory");
+    const subCat = document.getElementById("wishSubCategory");
+    if (typeof populateMainCategories === "function") populateMainCategories(mainCat);
+    mainCat.addEventListener("change", () => updateSubCategories(mainCat.value, subCat));
 
-    if (typeof populateMainCategories === "function") {
-        populateMainCategories(mainCategorySelect);
-    }
-
-    mainCategorySelect.addEventListener("change", () => {
-        if (typeof updateSubCategories === "function") {
-            updateSubCategories(mainCategorySelect.value, subCategorySelect);
-        }
+    // 2. Logic: Image Preview
+    const fileInput = document.getElementById('wishImageFile');
+    fileInput.addEventListener('change', function() {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const preview = document.querySelector('#imgPreview img');
+            preview.src = e.target.result;
+            document.getElementById('imgPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(this.files[0]);
     });
 
-    document.getElementById("wishesSubmissionForm").addEventListener("submit", async (e) => {
+    // 3. Logic: Unified Submit (Text + Image)
+    document.getElementById("unifiedWishesForm").addEventListener("submit", async (e) => {
         e.preventDefault();
+        const feedback = document.getElementById("wishesActionFeedback");
         feedback.className = "feedback-container processing";
-        feedback.innerText = "⚡ Transmitting payload...";
+        feedback.innerText = "⏳ Uploading wish and media to Wishes Hub...";
 
-        const payload = {
-            mainCategory: mainCategorySelect.value,
-            subCategory: subCategorySelect.value,
-            wishText: document.getElementById("wishBody").value,
-            createdAt: new Date().toISOString()
-        };
+        // FormData ka use karein taki Text aur File dono ek sath jayein
+        const formData = new FormData();
+        formData.append('mainCategory', mainCat.value);
+        formData.append('subCategory', subCat.value);
+        formData.append('wishText', document.getElementById("wishBody").value);
+        formData.append('image', fileInput.files[0]); // File attachment
 
         try {
-            const response = await fetch('/api/add-wish', {
+            // Hum yahan /api/add-unified-wish endpoint call karenge
+            const response = await fetch('/api/add-unified-wish', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: formData
             });
+
             if (response.ok) {
                 feedback.className = "feedback-container success";
-                feedback.innerText = "✅ Wish successfully published!";
+                feedback.innerText = "✅ Done! Wish and Photo published successfully.";
                 e.target.reset();
-                subCategorySelect.disabled = true;
+                document.getElementById('imgPreview').style.display = 'none';
             } else { throw new Error(); }
         } catch (err) {
+            console.log("Mock Submission Payload:", formData);
             feedback.className = "feedback-container success";
-            feedback.innerText = "✅ [Mock Saved] Wish verified locally!";
+            feedback.innerText = "✅ [Mock Saved] Unified Wish processed successfully!";
             e.target.reset();
-            subCategorySelect.disabled = true;
+            document.getElementById('imgPreview').style.display = 'none';
         }
     });
 };
