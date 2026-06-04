@@ -1,20 +1,5 @@
-<div class="admin-container">
-    <h1>Wishes Hub Admin</h1>
+<script src="features/auth/admin-auth.js"></script>
 
-    <div id="login-module">
-        <input type="password" id="admin-pass" placeholder="Enter Key (1234)">
-        <button onclick="verifyMasterPassword()">Unlock System</button>
-        <p id="status" style="font-size: 12px; margin-top: 10px;"></p>
-    </div>
+<script src="script.js"></script>
 
-    <div id="main-panel" style="display: none;">
-        <h3 style="color: #00f2ff;">Add New Wish</h3>
-        <textarea id="wish-text" placeholder="Write wish message..." rows="4"></textarea>
-        <input type="file" id="media-upload" accept="image/*">
-        <button id="publish-btn" onclick="uploadWish()">Publish to Telegram</button>
-        <p id="upload-status" style="margin-top: 10px;"></p>
-        
-        <hr style="border: 0.1px solid #30363d; margin: 20px 0;">
-        <button onclick="logout()" style="background: #f85149; color: white;">Logout</button>
-    </div>
-</div>
+<script src="features/wishes/wishes.js"></script>
