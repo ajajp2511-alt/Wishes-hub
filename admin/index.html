@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin</title>
-    <!-- Aapki existing CSS path file -->
+    
+    <!-- 🖥️ Core Desktop Layout Styling File -->
     <link rel="stylesheet" href="/admin/style-admin.css">
+    
+    <!-- 📱 Android, iOS & Tablet Responsive Layout File -->
+    <link rel="stylesheet" href="/admin/responsive-admin.css">
 </head>
 <body>
 
     <div class="admin-container">
         
-        <!-- 🔒 SECTION 1: LOGIN MODULE (Baad me automatic hide hoga) -->
+        <!-- 🔒 SECTION 1: LOGIN MODULE -->
         <div id="login-module">
             <h1>Wishes Hub Admin</h1>
             <div class="login-card">
@@ -21,11 +25,11 @@
             </div>
         </div>
 
-        <!-- 🎛️ SECTION 2: MAIN PANEL (Successful authentication ke baad display hoga) -->
+        <!-- 🎛️ SECTION 2: MAIN PANEL (Successful auth ke baad flex display hoga) -->
         <div id="main-panel" style="display: none;">
             <div class="admin-wrapper">
                 
-                <!-- Sidebar Menu Routes -->
+                <!-- 🧭 Sidebar Menu Navigation Routes -->
                 <nav class="sidebar">
                     <div class="sidebar-header">
                         <h2>Dashboard</h2>
@@ -58,10 +62,10 @@
                     </ul>
                 </nav>
 
-                <!-- Dynamic Workspace: Jahan har feature ka page inject hoga -->
+                <!-- 💻 Dynamic Workspace Canvas Frame -->
                 <main class="content-workspace">
                     <div id="dynamic-content-root">
-                        <!-- Default feature workspace view script se load hoga -->
+                        <!-- Dynamic View Components via Script Router -->
                     </div>
                 </main>
 
@@ -70,18 +74,21 @@
 
     </div>
 
-    <!-- 📁 INJECTING SEPARATED ISOLATED FEATURE FILES -->
-    <!-- Category Mapping Configuration Source File -->
+    <!-- =================================================== -->
+    <!-- 📁 INJECTING SEPARATED ISOLATED FEATURE FILES      -->
+    <!-- =================================================== -->
+    
+    <!-- 1. Category Mapping Configurations Source -->
     <script src="/admin/features/wishes/category-data.js"></script>
     
-    <!-- Isolated Feature Logics Scripts -->
+    <!-- 2. Isolated Feature Logic Scripts Modules -->
     <script src="/admin/features/wishes/wishes.js"></script>
     <script src="/admin/features/links/links.js"></script>
 
-    <!-- Core App Auth Layer -->
+    <!-- 3. Core App Authentication Layer Security System -->
     <script src="/admin/features/auth/admin-auth.js"></script>
     
-    <!-- Main Dynamic Core Shell Traffic App Router Router -->
+    <!-- 4. Core Traffic Router Controller Application -->
     <script src="/admin/script.js"></script>
 </body>
 </html>
