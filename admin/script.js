@@ -36,10 +36,10 @@ async function loadFeature(feature) {
     const contentRoot = document.getElementById("dynamic-content-root");
     if (!contentRoot) return;
 
-    // RBAC Check
     const userRole = localStorage.getItem("admin_role") || "VIEWER";
     const allowedFeatures = ROLES[userRole]?.permissions || [];
 
+    // RBAC Security Check
     if (!allowedFeatures.includes(feature)) {
         contentRoot.innerHTML = `<div class="error-msg">🚫 Access Denied: You don't have permission to view "${feature}".</div>`;
         return;
@@ -56,11 +56,11 @@ async function loadFeature(feature) {
             case "analytics": window.renderAnalyticsModule?.(contentRoot) || renderPlaceholder(contentRoot, "Analytics", "analytics"); break;
             case "health": window.renderHealthModule?.(contentRoot) || renderPlaceholder(contentRoot, "System Health", "health"); break;
             case "settings": window.renderSettingsModule?.(contentRoot) || renderPlaceholder(contentRoot, "Settings", "settings"); break;
-            default: contentRoot.innerHTML = `<div class="error-msg">⚠️ Feature "${feature}" not configured.</div>`;
+            default: contentRoot.innerHTML = `<div class="error-msg">⚠️ Module not found.</div>`;
         }
     } catch (err) {
         console.error("Router Error:", err);
-        contentRoot.innerHTML = `<div class="error-msg">⚠️ System Error: Failed to load ${feature}.</div>`;
+        contentRoot.innerHTML = `<div class="error-msg">⚠️ System Error.</div>`;
     }
 }
 
@@ -69,13 +69,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (checkAuth()) {
         const navLinks = document.querySelectorAll(".nav-link");
         const userRole = localStorage.getItem("admin_role") || "VIEWER";
+        const allowedPermissions = ROLES[userRole].permissions;
 
-        // Sidebar link hide logic for restricted roles
         navLinks.forEach(link => {
             const feature = link.getAttribute("data-feature");
-            if (!ROLES[userRole].permissions.includes(feature) && feature !== 'auth') {
+            
+            // Hide restricted sidebar links
+            if (feature !== 'auth' && !allowedPermissions.includes(feature)) {
                 link.parentElement.style.display = 'none';
             }
+
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 navLinks.forEach(l => l.classList.remove("active"));
@@ -84,7 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        loadFeature("wishes");
+        // Load first available feature automatically
+        const firstAvailable = allowedPermissions[0] || "analytics";
+        loadFeature(firstAvailable);
     }
 
     document.getElementById('unlock-btn')?.addEventListener('click', window.verifyMasterPassword);
@@ -92,5 +97,5 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderPlaceholder(container, title, path) {
-    container.innerHTML = `<div class="placeholder-card animate-fade"><h3>${title} Module</h3><p>Under construction: <code>/admin/features/${path}/${path}.js</code></p></div>`;
+    container.innerHTML = `<div class="placeholder-card animate-fade"><h3>${title} Module</h3><p>Code pending in <code>/admin/features/${path}/${path}.js</code></p></div>`;
 }
