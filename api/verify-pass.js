@@ -1,22 +1,28 @@
 export default async function handler(req, res) {
-    // Sabhi tarah ke cache ko block karne ke liye headers
+    // Force bypass every possible cache
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+    res.setHeader('Content-Type', 'application/json');
 
-    if (req.method !== 'POST') return res.status(405).json({ success: false });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, message: "Method not allowed" });
+    }
 
     try {
-        let data = req.body;
-        if (typeof data === 'string') data = JSON.parse(data);
+        let body = req.body;
+        // Mobile compatibility parsing
+        if (typeof body === 'string') {
+            body = JSON.parse(body);
+        }
+
+        const { password } = body;
 
         // Aapka fixed password
-        if (data.password === "1234") {
+        if (password === "1234") {
             return res.status(200).json({ success: true });
         } else {
             return res.status(401).json({ success: false, message: "Ghalat Key!" });
         }
     } catch (e) {
-        return res.status(500).json({ success: false, error: "Server Error" });
+        return res.status(500).json({ success: false, message: "Server Error" });
     }
-    }
+}
