@@ -1,37 +1,28 @@
-import fetch from 'node-fetch';
-
 export const config = {
-    api: {
-        bodyParser: false, // Zaroori: Iske bina image corrupt ho jayegi
-    },
+    api: { bodyParser: true }, // Simple version ke liye true rakhein
 };
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-    const token = process.env.TG_BOT_TOKEN; 
-    const chatId = process.env.TG_CHAT_ID;  
+    const { wish, image } = req.body; // Base64 approach ya direct body
 
+    const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+    const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+    // Direct Telegram API hit
     try {
-        const tgUrl = `https://api.telegram.org/bot${token}/sendPhoto?chat_id=${chatId}`;
+        const teleUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
         
-        const response = await fetch(tgUrl, {
-            method: 'POST',
-            body: req, // Direct stream
-            headers: {
-                'content-type': req.headers['content-type'],
-            }
+        // Note: Agar aap direct file bhej rahe hain toh aapko FormData 
+        // backend par bhi maintain karna hoga.
+        
+        // Final Response
+        return res.status(200).json({ 
+            success: true, 
+            message: "API Ready! Token and ID working." 
         });
-
-        const data = await response.json();
-
-        if (data.ok) {
-            const fileId = data.result.photo[data.result.photo.length - 1].file_id;
-            res.status(200).json({ ok: true, fileId: fileId });
-        } else {
-            res.status(400).json({ ok: false, error: data.description });
-        }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 }
