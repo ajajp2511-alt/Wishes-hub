@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin</title>
-    
     <link rel="stylesheet" href="/admin/style-admin.css">
 </head>
 <body>
 
     <div class="admin-container">
-        <!-- 🔒 LOGIN SECTION -->
         <div id="login-module">
             <h1>Wishes Hub Admin</h1>
             <div class="login-card">
@@ -20,7 +18,6 @@
             </div>
         </div>
 
-        <!-- 🚀 MAIN DASHBOARD -->
         <div id="main-panel" style="display: none;">
             <div class="admin-wrapper">
                 
@@ -35,6 +32,8 @@
                         <li><a href="#" class="nav-link" data-feature="links"><span class="icon">🔗</span> Manage Links</a></li>
                         <li><a href="#" class="nav-link" data-feature="manager"><span class="icon">📋</span> Manage Wishes</a></li>
                         <li><a href="#" class="nav-link" data-feature="analytics"><span class="icon">📊</span> Analytics</a></li>
+                        <li><a href="#" class="nav-link" data-feature="health"><span class="icon">🩺</span> System Health</a></li>
+                        
                         <li class="logout-item">
                             <button id="logout-btn" class="btn-logout">🚪 Logout</button>
                         </li>
@@ -48,15 +47,13 @@
         </div>
     </div>
 
-    <!-- ⚙️ SCRIPTS -->
     <script src="/admin/features/wishes/category-data.js"></script>
     <script src="/admin/features/wishes/wishes.js"></script>
     <script src="/admin/features/photos/photos.js"></script>
     <script src="/admin/features/links/links.js"></script>
-    
-    <!-- Naye Modules -->
     <script src="/admin/features/manager/manager.js"></script>
     <script src="/admin/features/analytics/analytics.js"></script>
+    <script src="/admin/features/health/health.js"></script>
 
     <script src="/admin/features/auth/admin-auth.js"></script>
     <script src="/admin/script.js"></script>
