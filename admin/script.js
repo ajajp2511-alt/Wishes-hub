@@ -12,10 +12,9 @@ function checkAuth() {
     }
 }
 
-function logout() {
+window.logout = function() {
     localStorage.removeItem("admin_auth_status");
     window.location.reload();
 }
 
-window.logout = logout;
 document.addEventListener("DOMContentLoaded", checkAuth);
