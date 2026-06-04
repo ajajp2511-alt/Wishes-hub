@@ -13,10 +13,8 @@ window.verifyMasterPassword = function() {
     }
 }
 
-// Button par click event lagana
+// Button click event connection
 document.addEventListener("DOMContentLoaded", function() {
-    const unlockBtn = document.getElementById('unlock-btn');
-    if(unlockBtn) {
-        unlockBtn.addEventListener('click', verifyMasterPassword);
-    }
+    const btn = document.getElementById('unlock-btn');
+    if(btn) btn.addEventListener('click', window.verifyMasterPassword);
 });
