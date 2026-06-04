@@ -1,12 +1,15 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Admin panel loaded!");
+function checkAuth() {
     const authStatus = localStorage.getItem("admin_auth_status");
-    
+    const loginMod = document.getElementById('login-module');
+    const mainPan = document.getElementById('main-panel');
+
     if (authStatus === "active") {
-        document.getElementById('login-module').style.display = 'none';
-        document.getElementById('main-panel').style.display = 'block';
+        if(loginMod) loginMod.style.setProperty('display', 'none', 'important');
+        if(mainPan) mainPan.style.setProperty('display', 'block', 'important');
     } else {
-        document.getElementById('login-module').style.display = 'block';
-        document.getElementById('main-panel').style.display = 'none';
+        if(loginMod) loginMod.style.setProperty('display', 'block', 'important');
+        if(mainPan) mainPan.style.setProperty('display', 'none', 'important');
     }
-});
+}
+
+document.addEventListener("DOMContentLoaded", checkAuth);
