@@ -1,33 +1,27 @@
-window.verifyMasterPassword = function() {
-    const passInput = document.getElementById('admin-pass');
-    const statusDiv = document.getElementById('status');
+// Wishes Hub: Admin Authentication Logic Layer
+// Pure Password & Security Verification - 2026
 
-    if (!passInput || !statusDiv) return;
-
-    const password = passInput.value.trim();
-
-    // Role Mapping Logic
-    let role = "";
-    if (password === "1234") {
-        role = "SUPER_ADMIN";
-    } else if (password === "editor123") {
-        role = "EDITOR";
+window.verifyAdminPassword = async (adminPassword) => {
+    // 1. Basic Local Validation
+    if (!adminPassword || !adminPassword.trim()) {
+        return { ok: false, error: "Security Error: Please enter the Admin Password!" };
     }
 
-    if (role !== "") {
-        // Auth aur Role dono set karein
-        localStorage.setItem("admin_auth_status", "active");
-        localStorage.setItem("admin_role", role);
-        
-        statusDiv.innerText = "✅ Login Successful!";
-        statusDiv.style.color = "green";
-        
-        // Dashboard load karne ke liye reload
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
-    } else {
-        statusDiv.innerText = "❌ Ghalat Password!";
-        statusDiv.style.color = "red";
+    try {
+        // 2. Vercel Backend Password API Check
+        const response = await fetch('/api/verify-pass', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: adminPassword })
+        });
+
+        const data = await response.json();
+        return data; // Returns backend response: { ok: true } or { ok: false, error: "..." }
+
+    } catch (error) {
+        console.error("Auth Layer Network Error:", error);
+        return { ok: false, error: "Authentication API Connection Failed!" };
     }
 };
