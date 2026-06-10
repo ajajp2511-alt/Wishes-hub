@@ -11,12 +11,8 @@
       "destination": "/admin/index.html"
     },
     {
-      "source": "/admin/",
-      "destination": "/admin/index.html"
-    },
-    {
-      "source": "/admin/((?!api).*)" ,
-      "destination": "/admin/$1"
+      "source": "/admin/:path*",
+      "destination": "/admin/:path*"
     },
     {
       "source": "/((?!admin|api).*)" ,
