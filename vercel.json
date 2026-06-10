@@ -1,22 +1,26 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     },
     {
-      "source": "/admin",
-      "destination": "/admin/index.html"
+      "src": "/admin",
+      "dest": "/admin/index.html"
     },
     {
-      "source": "/admin/:path*",
-      "destination": "/admin/:path*"
+      "src": "/admin/",
+      "dest": "/admin/index.html"
     },
     {
-      "source": "/((?!admin|api).*)" ,
-      "destination": "/public/$1"
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/((?!admin|api).*)" ,
+      "dest": "/public/$1"
     }
   ]
 }
