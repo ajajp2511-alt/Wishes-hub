@@ -1,8 +1,8 @@
 // api/verify-pass.js
-// Wishes Hub: Pure Node Backend Password Verification - 2026
+// Wishes Hub: Secure Backend Auth with Body Parser - 2026
 
 export default async function handler(req, res) {
-    // Enable CORS taaki frontend safely connect kar sake
+    // CORS Headers setup
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -20,24 +20,34 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { password } = req.body;
-        // Read password from Vercel Environment Variables
+        // 🚨 VERCEL FIX: Agar body string form me aayi hai, toh use parse karo
+        let body = req.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                console.error("Parsing failed:", e);
+            }
+        }
+
+        const enteredPassword = body?.password;
         const correctPassword = process.env.ADMIN_PASSWORD;
 
         if (!correctPassword) {
             return res.status(500).json({ 
                 ok: false, 
-                error: 'Server variable ADMIN_PASSWORD is missing in Vercel settings!' 
+                error: 'Server error: ADMIN_PASSWORD is not set in Vercel settings!' 
             });
         }
 
-        if (password === correctPassword) {
+        // 🔒 Dono side ke hidden spaces ko trim karke safe compare karna
+        if (enteredPassword && enteredPassword.trim() === correctPassword.trim()) {
             return res.status(200).json({ ok: true });
         } else {
             return res.status(401).json({ ok: false, error: 'Incorrect password!' });
         }
     } catch (error) {
-        console.error("Backend Auth Error:", error);
+        console.error("Secure Auth Error:", error);
         return res.status(500).json({ ok: false, error: 'Internal Server Error' });
     }
 }
