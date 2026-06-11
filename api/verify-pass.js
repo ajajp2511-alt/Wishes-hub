@@ -1,8 +1,7 @@
 // api/verify-pass.js
-// Wishes Hub: Strict Dashboard Variable Match - 2026
+// Wishes Hub: Double-Trim Sync Fix - 2026
 
 export default async function handler(req, res) {
-    // Basic Headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
@@ -12,18 +11,18 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ ok: false });
 
     try {
-        // Safe incoming data parsing
         let body = req.body;
         if (typeof body === 'string') {
             body = JSON.parse(body);
         }
 
-        const enteredPassword = body?.password ? String(body.password).trim() : '';
+        // Frontend se aaya hua password (Trimming space)
+        const enteredPassword = body?.password ? String(body.password).replace(/\s+/g, '') : '';
         
-        // 🔒 Strictly reading from your Vercel Project Settings Dashboard
-        const correctPassword = process.env.ADMIN_PASSWORD ? String(process.env.ADMIN_PASSWORD).trim() : '';
+        // Dashboard se aaya hua password (Force String + Heavy Trimming space)
+        let correctPassword = process.env.ADMIN_PASSWORD ? String(process.env.ADMIN_PASSWORD) : '';
+        correctPassword = correctPassword.replace(/\s+/g, ''); // Kisi bhi hidden space ko poora saaf karne ke liye
 
-        // Debugging validation
         if (!correctPassword) {
             return res.status(500).json({ ok: false, error: "Server Configuration Error" });
         }
