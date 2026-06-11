@@ -1,26 +1,23 @@
+// api/verify-pass.js
 export default async function handler(req, res) {
-    // Mobile cache block karne ke liye
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Content-Type', 'application/json');
-
     if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, message: "Method not allowed" });
+        return res.status(405).json({ ok: false, error: 'Method not allowed' });
     }
 
     try {
-        let body = req.body;
-        if (typeof body === 'string') {
-            body = JSON.parse(body);
+        const { password } = req.body;
+        const correctPassword = process.env.ADMIN_PASSWORD;
+
+        if (!correctPassword) {
+            return res.status(500).json({ ok: false, error: 'Server configuration error: Password not set in environment variables.' });
         }
 
-        const { password } = body;
-
-        if (password === "1234") {
-            return res.status(200).json({ success: true });
+        if (password === correctPassword) {
+            return res.status(200).json({ ok: true });
         } else {
-            return res.status(401).json({ success: false, message: "Ghalat Key!" });
+            return res.status(401).json({ ok: false, error: 'Incorrect password!' });
         }
-    } catch (e) {
-        return res.status(500).json({ success: false, message: "Server Error" });
+    } catch (error) {
+        return res.status(500).json({ ok: false, error: 'Internal Server Error' });
     }
 }
