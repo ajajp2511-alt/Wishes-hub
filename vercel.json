@@ -22,8 +22,8 @@
       "dest": "/admin/index.html"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/verify-pass",
+      "dest": "api/verify-pass.js"
     },
     {
       "src": "/(.*)",
