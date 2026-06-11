@@ -9,6 +9,10 @@
   ],
   "routes": [
     {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
       "src": "/admin/(.*)",
       "headers": { "Cache-Control": "no-store, max-age=0" },
       "dest": "/admin/$1"
