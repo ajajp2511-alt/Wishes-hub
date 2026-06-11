@@ -1,16 +1,12 @@
-// Wishes Hub: Live Admin Controller - 2026
-
+// Wishes Hub: Live Admin Controller
 document.addEventListener('DOMContentLoaded', () => {
     const unlockBtn = document.getElementById('unlock-btn');
     const loginModule = document.getElementById('login-module');
     const mainPanel = document.getElementById('main-panel');
     const statusText = document.getElementById('status');
 
-    console.log("Admin System Status: Event Listeners Initializing...");
-
     if (unlockBtn) {
         unlockBtn.addEventListener('click', async () => {
-            // Target the password input using the exact ID from your HTML
             const passwordField = document.getElementById('admin-password-field');
             const enteredPassword = passwordField?.value || "";
 
@@ -22,40 +18,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (statusText) statusText.innerText = "🔑 Connecting to server...";
 
             try {
-                // Direct call to your Vercel Node serverless function
+                // strict slash ke sath function block invocation
                 const response = await fetch('/api/verify-pass', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json' 
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: enteredPassword })
                 });
 
-                // Check if the response is completely valid
-                if (!response.ok) {
-                    if (statusText) statusText.innerText = `🚨 Server Error (${response.status})`;
-                    return;
-                }
+                const data = await response.json().catch(() => ({}));
 
-                const data = await response.json();
-
-                if (data && data.ok === true) {
-                    // Success: Clear status, hide login, show main panel dashboard
+                if (response.status === 200) {
                     if (statusText) statusText.innerText = "";
                     if (loginModule) loginModule.style.display = 'none';
                     if (mainPanel) mainPanel.style.display = 'block';
-                    
-                    console.log("Access Granted: Welcome back, Admin.");
+                    console.log("Admin Panel Unlocked!");
                 } else {
-                    // Password was processed but rejected by your backend logic
-                    if (statusText) statusText.innerText = "🚨 Access Denied: " + (data.error || "Invalid Password!");
+                    if (statusText) statusText.innerText = "🚨 Access Denied: " + (data.error || "Wrong Password!");
                 }
             } catch (error) {
-                console.error("Network Fetch Exception:", error);
-                if (statusText) statusText.innerText = "🚨 Connection Failed: Check API availability.";
+                console.error(error);
+                if (statusText) statusText.innerText = "🚨 Connection Failed!";
             }
         });
-    } else {
-        console.error("Critical HTML Error: Element '#unlock-btn' not found in DOM.");
     }
 });
