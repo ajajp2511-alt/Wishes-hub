@@ -1,8 +1,8 @@
 # Wishes Hub - Professional Digital Platform
-Developed by **Patel Studio**
+Developed by **Patel aura technology **
 
 ## Features
-- **Unlimited Storage:** Powered by Firebase.
+- **Unlimited Storage:** Powered by Firebase,telegram.
 - **Modular Architecture:** Easy to add new features.
 - **HD/4K Export:** High-quality branded downloads.
 - **Admin Dashboard:** Secure control room with Analytics.
@@ -10,4 +10,4 @@ Developed by **Patel Studio**
 ## Tech Stack
 - Frontend: HTML5, CSS3 (Neon UI), JavaScript (ES6)
 - Backend: Vercel Serverless Functions (Node.js)
-- Database: Firebase Firestore
+- Database: Firebase Firestore telegram 
