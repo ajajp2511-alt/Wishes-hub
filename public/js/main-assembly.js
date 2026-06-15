@@ -6,7 +6,7 @@ async function startApp() {
     const grid = document.getElementById('wishes-grid');
     
     if(grid) {
-        grid.innerHTML = "<p style='color:#00f2ff; padding:20px;'>Initializing Wishes Hub Engine...</p>";
+        grid.innerHTML = "<p style='color:#00f2ff; padding:20px;'>Initializing Patel Studio Engine...</p>";
     }
 
     try {
@@ -42,10 +42,10 @@ async function startApp() {
     }
 }
 
-// Backend API se data lekar HTML me render karne ka function
+// Backend API se data aur media lekar HTML me render karne ka function
 async function fetchWishesFromServer(gridElement) {
     try {
-        // Humne Vercel ki banayi hui naye route ko hit kiya
+        // Vercel ka naya route call kiya data ke liye
         const response = await fetch('/api/get-wishes');
         const data = await response.json();
 
@@ -58,27 +58,52 @@ async function fetchWishesFromServer(gridElement) {
             return;
         }
 
-        gridElement.innerHTML = ""; // Initializing text remove karne ke liye
+        gridElement.innerHTML = ""; // Loader text clear kiya
 
-        // Loop chalakar ek ek wish card screen par banana
+        // Loop chalakar har ek wish ko screen par show karna
         data.wishes.forEach(wish => {
             const card = document.createElement('div');
             card.className = 'wish-card'; 
-            card.style.cssText = "background:#121212; border:1px solid #333; border-radius:12px; padding:15px; margin:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
+            card.style.cssText = "background:#121212; border:1px solid #333; border-radius:12px; padding:15px; margin:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 10px;";
 
+            // Media Element check karne ka logic (Photo vs Video)
+            let mediaHtml = '';
+            if (wish.telegramFileId) {
+                // Hamari naye 'get-media' proxy endpoint ka secure url banaya
+                const proxyMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
+
+                if (wish.fileType === 'video' || wish.fileType === 'animation') {
+                    mediaHtml = `
+                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#000;">
+                            <video src="${proxyMediaUrl}" controls preload="metadata" style="width:100%; max-height:300px; display:block;"></video>
+                        </div>`;
+                } else {
+                    // Default treat as photo
+                    mediaHtml = `
+                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#000; text-align:center;">
+                            <img src="${proxyMediaUrl}" alt="Wish Media" loading="lazy" style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block;">
+                        </div>`;
+                }
+            }
+
+            // Card HTML Layout setup
             card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 8px; border-radius:20px; font-weight:bold;">
                         ${wish.category || 'General'}
                     </span>
                 </div>
-                <p style="color:#fff; font-size:16px; line-height:1.5; margin:15px 0; white-space: pre-wrap;">
+                
+                ${mediaHtml}
+
+                <p style="color:#fff; font-size:16px; line-height:1.5; margin:5px 0; white-space: pre-wrap;">
                     ${wish.title || 'No Text'}
                 </p>
-                <div style="text-align:right;">
+                
+                <div style="text-align:right; margin-top:5px;">
                     <button class="copy-btn" 
                             style="background:#222; color:#00f2ff; border:1px solid #00f2ff; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;"
-                            onclick="navigator.clipboard.writeText(\`${wish.title}\`); alert('Wish copied!');">
+                            onclick="navigator.clipboard.writeText(\`${wish.title}\`); alert('Wish text copied!');">
                         Copy Wish
                     </button>
                 </div>
