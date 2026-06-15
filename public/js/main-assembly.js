@@ -1,5 +1,5 @@
 // Wishes Hub: Master Assembly Script
-// Patel Studio - 2026
+// Patel Aura technology - 2026
 
 async function startApp() {
     console.log("Wishes Hub: System Booting...");
