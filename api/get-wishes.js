@@ -1,50 +1,57 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
-// Firebase Safety Check & Initialization
-try {
-  if (!getApps().length) {
-    if (!process.env.FIREBASE_MAIN) {
-      throw new Error("Missing FIREBASE_MAIN environment variable in Vercel.");
-    }
-
-    // Kuch systems mein private key ke newlines break ho jaate hain, use fix karne ke liye:
-    const rawConfig = process.env.FIREBASE_MAIN;
-    const firebaseConfig = JSON.parse(rawConfig);
-    
-    if (firebaseConfig.privateKey) {
-      firebaseConfig.privateKey = firebaseConfig.privateKey.replace(/\\n/g, '\n');
-    }
-
-    initializeApp({
-      credential: cert(firebaseConfig),
-      databaseURL: process.env.FIREBASE_DATABASE_URL || undefined
-    });
+// Safely parsing configuration
+const getFirebaseConfig = () => {
+  if (!process.env.FIREBASE_MAIN) {
+    console.error("Missing FIREBASE_MAIN variable");
+    return null;
   }
-} catch (initError) {
-  console.error("Firebase Initialization Failed:", initError.message);
-}
+  try {
+    // Agar string format mein hai to parse karega
+    const config = typeof process.env.FIREBASE_MAIN === 'string' 
+      ? JSON.parse(process.env.FIREBASE_MAIN) 
+      : process.env.FIREBASE_MAIN;
 
-// Safely get Firestore instance after initialization
-const getDB = () => {
-  if (getApps().length === 0) return null;
-  return getFirestore();
+    if (config.private_key) {
+      config.private_key = config.private_key.replace(/\\n/g, '\n');
+    }
+    return config;
+  } catch (e) {
+    console.error("JSON parsing error in FIREBASE_MAIN:", e.message);
+    return null;
+  }
 };
+
+const config = getFirebaseConfig();
+
+if (!getApps().length && config) {
+  try {
+    initializeApp({
+      credential: cert(config),
+      databaseURL: process.env.FIREBASE_DATABASE_URL
+    });
+    console.log("Firebase initialized successfully!");
+  } catch (err) {
+    console.error("Initialization failed:", err.message);
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  const db = getDB();
-  if (!db) {
+  // Check if SDK loaded properly
+  if (getApps().length === 0) {
     return res.status(500).json({ 
       success: false, 
-      message: 'Firebase DB initialized nahi ho paya. Env Variables check karein.' 
+      message: 'Connection Error: Firebase SDK not loaded yet. Check Vercel Env variables.' 
     });
   }
 
   try {
+    const db = getFirestore();
     const wishesRef = db.collection('wishes');
     const snapshot = await wishesRef.orderBy('createdAt', 'desc').get();
 
