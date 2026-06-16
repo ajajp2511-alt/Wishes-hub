@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub | Professional Studio</title>
     <link rel="stylesheet" href="style-ui.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-</head>
+    </head>
 <body>
 
     <header id="main-header" style="padding: 20px; text-align: center; background: #111;">
@@ -16,12 +13,13 @@
         <input type="text" id="search-input" placeholder="Search wishes..." style="width: 80%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none;">
     </header>
 
-    <nav id="category-bar"></nav>
+    <nav id="category-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: #151515; white-space: nowrap; border-bottom: 1px solid #333;"></nav>
 
     <main id="wishes-grid" class="grid-container">
         <p id="loading-msg" style="color: white; text-align: center; padding: 50px;">Initializing System...</p>
     </main>
 
+    <script src="features/wishes/category-data.js"></script>
     <script src="features/storage/feat-storage.js"></script>
     <script src="js/main-assembly.js"></script>
 
