@@ -1,26 +1,25 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
-// Safely parsing configuration
+// Alag-alag environment variables se config banana
 const getFirebaseConfig = () => {
-  if (!process.env.FIREBASE_MAIN) {
-    console.error("Missing FIREBASE_MAIN variable");
-    return null;
-  }
-  try {
-    // Agar string format mein hai to parse karega
-    const config = typeof process.env.FIREBASE_MAIN === 'string' 
-      ? JSON.parse(process.env.FIREBASE_MAIN) 
-      : process.env.FIREBASE_MAIN;
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-    if (config.private_key) {
-      config.private_key = config.private_key.replace(/\\n/g, '\n');
-    }
-    return config;
-  } catch (e) {
-    console.error("JSON parsing error in FIREBASE_MAIN:", e.message);
+  if (!projectId || !clientEmail || !privateKey) {
+    console.error("Missing one or more Firebase environment variables");
     return null;
   }
+
+  // Private key ke \n (newlines) ko fix karna
+  privateKey = privateKey.replace(/\\n/g, '\n');
+
+  return {
+    projectId,
+    clientEmail,
+    privateKey
+  };
 };
 
 const config = getFirebaseConfig();
