@@ -9,6 +9,14 @@
   ],
   "routes": [
     {
+      "src": "/api/verify-pass",
+      "dest": "api/verify-pass.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "api/$1.js"
+    },
+    {
       "src": "/admin/(.*)",
       "headers": { "Cache-Control": "no-store, max-age=0" },
       "dest": "/admin/$1"
@@ -22,11 +30,7 @@
       "dest": "/admin/index.html"
     },
     {
-      "src": "/api/verify-pass",
-      "dest": "api/verify-pass.js"
-    },
-    {
-      "src": "/(.*)",
+      "src": "/((?!api|admin).*)" ,
       "dest": "/public/$1"
     }
   ]
