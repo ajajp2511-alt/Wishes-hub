@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (loginModule) loginModule.style.display = 'none';
                     if (mainPanel) mainPanel.style.display = 'block';
                     console.log("Admin Panel Unlocked!");
+
+                    // 👇 YEH NARE CODE KA LOGIC HAI: Dashboard khulte hi default form load karega
+                    if (typeof window.loadDefaultAdminView === 'function') {
+                        window.loadDefaultAdminView();
+                    }
                 } else {
                     if (statusText) statusText.innerText = "🚨 Access Denied: " + (data.error || "Wrong Password!");
                 }
