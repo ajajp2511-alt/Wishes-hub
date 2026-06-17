@@ -1,14 +1,21 @@
-// Is file se import hata diya gaya hai taaki koi scoping issue na ho
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
-// Safe function categoriesConfig data lene ke liye
+// Sahi tareeka categoriesConfig data ko dropdown me badalne ka
 function generateCategoryOptions() {
     const categories = window.categoriesConfig || {};
-    return Object.keys(categories).map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    const keys = Object.keys(categories);
+    
+    if (keys.length === 0) {
+        console.error("🚨 Warning: window.categoriesConfig khali hai ya load nahi hua!");
+        return '<option value="" disabled>No categories found</option>';
+    }
+    
+    return keys.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 
-const addWishTemplate = `
+// Yahan se saare galat backslashes (\\) hata diye gaye hain
+const addWishTemplate = () => `
     <div class="feature-box" style="padding: 20px; color: #fff;">
         <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
         <form id="wishForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
@@ -17,7 +24,7 @@ const addWishTemplate = `
                 <label style="display:block; margin-bottom:5px; font-weight:bold;">Main Category:</label>
                 <select id="main-category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white;">
                     <option value="" disabled selected>Select Main Category</option>
-                    \${generateCategoryOptions()}
+                    ${generateCategoryOptions()}
                 </select>
             </div>
 
@@ -44,7 +51,7 @@ const addWishTemplate = `
     </div>
 `;
 
-// Sidebar click handler ko globally bind karna
+// Sidebar click listener
 if (navLinks.length > 0) {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -54,11 +61,11 @@ if (navLinks.length > 0) {
             
             const feature = link.getAttribute('data-feature');
             if (feature === 'wishes') {
-                loadAddWishesView();
+                window.loadAddWishesView();
             } else {
                 contentRoot.innerHTML = `
                     <div style="padding: 20px; color:#fff;">
-                        <h2>📋 \${feature.toUpperCase()} Panel</h2>
+                        <h2>📋 ${feature.toUpperCase()} Panel</h2>
                         <p style="color:#94a3b8; margin-top:10px;">This section is under active development.</p>
                     </div>`;
             }
@@ -68,13 +75,14 @@ if (navLinks.length > 0) {
 
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
-    contentRoot.innerHTML = addWishTemplate;
+    contentRoot.innerHTML = addWishTemplate(); // Template function call
 
     const mainCatSelect = document.getElementById('main-category');
     const subCatSelect = document.getElementById('sub-category');
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
+    // Sub Category dynamic load karne ka logic
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
@@ -83,7 +91,7 @@ window.loadAddWishesView = function() {
 
             if (subCategories.length > 0) {
                 subCatSelect.innerHTML = `<option value="" disabled selected>Select Sub Category</option>` + 
-                    subCategories.map(sub => `<option value="\${sub}">\${sub}</option>`).join('');
+                    subCategories.map(sub => `<option value="${sub}">${sub}</option>`).join('');
                 subCatSelect.disabled = false;
                 subCatSelect.style.opacity = "1";
             } else {
@@ -94,6 +102,7 @@ window.loadAddWishesView = function() {
         });
     }
 
+    // Submit Action log
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -102,14 +111,13 @@ window.loadAddWishesView = function() {
             
             const formData = new FormData(wishForm);
             try {
-                // API functions agar wish-api.js global hai
                 let tgData = { success: false };
                 if (typeof window.uploadToTelegram === 'function') {
                     tgData = await window.uploadToTelegram(formData);
                 } else if (typeof uploadToTelegram === 'function') {
                     tgData = await uploadToTelegram(formData);
                 } else {
-                    throw new Error("Upload function not found! Check script loading.");
+                    throw new Error("Upload function not found!");
                 }
 
                 if (!tgData.success) throw new Error("Telegram Upload failed!");
@@ -147,7 +155,7 @@ window.loadAddWishesView = function() {
     }
 }
 
-// Global scope initialization
+// Automatic load configuration
 window.loadDefaultAdminView = function() {
     window.loadAddWishesView();
 };
