@@ -1,5 +1,4 @@
-import { uploadToTelegram, saveToDatabase } from '../features/wishes/wish-api.js';
-
+// Is file se import hata diya gaya hai taaki koi scoping issue na ho
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
@@ -18,7 +17,7 @@ const addWishTemplate = `
                 <label style="display:block; margin-bottom:5px; font-weight:bold;">Main Category:</label>
                 <select id="main-category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white;">
                     <option value="" disabled selected>Select Main Category</option>
-                    ${generateCategoryOptions()}
+                    \${generateCategoryOptions()}
                 </select>
             </div>
 
@@ -45,27 +44,30 @@ const addWishTemplate = `
     </div>
 `;
 
-// Sidebar click handler
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        
-        const feature = link.getAttribute('data-feature');
-        if (feature === 'wishes') {
-            loadAddWishesView();
-        } else {
-            contentRoot.innerHTML = `
-                <div style="padding: 20px; color:#fff;">
-                    <h2>📋 ${feature.toUpperCase()} Panel</h2>
-                    <p style="color:#94a3b8; margin-top:10px;">This section is under active development.</p>
-                </div>`;
-        }
+// Sidebar click handler ko globally bind karna
+if (navLinks.length > 0) {
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            const feature = link.getAttribute('data-feature');
+            if (feature === 'wishes') {
+                loadAddWishesView();
+            } else {
+                contentRoot.innerHTML = `
+                    <div style="padding: 20px; color:#fff;">
+                        <h2>📋 \${feature.toUpperCase()} Panel</h2>
+                        <p style="color:#94a3b8; margin-top:10px;">This section is under active development.</p>
+                    </div>`;
+            }
+        });
     });
-});
+}
 
-function loadAddWishesView() {
+window.loadAddWishesView = function() {
+    if (!contentRoot) return;
     contentRoot.innerHTML = addWishTemplate;
 
     const mainCatSelect = document.getElementById('main-category');
@@ -73,7 +75,6 @@ function loadAddWishesView() {
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // Cascade dropdown listener
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
@@ -82,7 +83,7 @@ function loadAddWishesView() {
 
             if (subCategories.length > 0) {
                 subCatSelect.innerHTML = `<option value="" disabled selected>Select Sub Category</option>` + 
-                    subCategories.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+                    subCategories.map(sub => `<option value="\${sub}">\${sub}</option>`).join('');
                 subCatSelect.disabled = false;
                 subCatSelect.style.opacity = "1";
             } else {
@@ -93,7 +94,6 @@ function loadAddWishesView() {
         });
     }
 
-    // Submit handler
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -102,17 +102,34 @@ function loadAddWishesView() {
             
             const formData = new FormData(wishForm);
             try {
-                const tgData = await uploadToTelegram(formData);
+                // API functions agar wish-api.js global hai
+                let tgData = { success: false };
+                if (typeof window.uploadToTelegram === 'function') {
+                    tgData = await window.uploadToTelegram(formData);
+                } else if (typeof uploadToTelegram === 'function') {
+                    tgData = await uploadToTelegram(formData);
+                } else {
+                    throw new Error("Upload function not found! Check script loading.");
+                }
+
                 if (!tgData.success) throw new Error("Telegram Upload failed!");
                 
                 statusDisplay.innerText = "💾 Saving to Database...";
-                const dbData = await saveToDatabase({
+                
+                let dbData = { success: false };
+                const payload = {
                     title: formData.get('title'),
                     category: formData.get('category'),
                     sub_category: formData.get('sub_category'),
                     tgData: tgData
-                });
-                
+                };
+
+                if (typeof window.saveToDatabase === 'function') {
+                    dbData = await window.saveToDatabase(payload);
+                } else if (typeof saveToDatabase === 'function') {
+                    dbData = await saveToDatabase(payload);
+                }
+
                 if (dbData.success) {
                     statusDisplay.innerText = "✅ Wish successfully live!";
                     statusDisplay.style.color = "#00ff88";
@@ -130,15 +147,7 @@ function loadAddWishesView() {
     }
 }
 
-// Default state trigger
-document.addEventListener('DOMContentLoaded', () => {
-    // Agar portal pehle se open ho ya content khaali ho
-    if (contentRoot && contentRoot.innerHTML.trim() === "") {
-        loadAddWishesView();
-    }
-});
-
-// Global internal window trigger jab password unlock ho jaye tab automatically view load karne ke liye
+// Global scope initialization
 window.loadDefaultAdminView = function() {
-    loadAddWishesView();
+    window.loadAddWishesView();
 };
