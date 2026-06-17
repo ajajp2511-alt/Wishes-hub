@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (statusText) statusText.innerText = "🔑 Connecting to server...";
 
             try {
-                // strict slash ke sath function block invocation
                 const response = await fetch('/api/verify-pass', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -33,10 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (mainPanel) mainPanel.style.display = 'block';
                     console.log("Admin Panel Unlocked!");
 
-                    // 👇 YEH NARE CODE KA LOGIC HAI: Dashboard khulte hi default form load karega
-                    if (typeof window.loadDefaultAdminView === 'function') {
-                        window.loadDefaultAdminView();
-                    }
+                    // Sahi tareeka: Agar module load hone me thoda time le, toh yeh use break nahi karega
+                    setTimeout(() => {
+                        if (typeof window.loadDefaultAdminView === 'function') {
+                            window.loadDefaultAdminView();
+                        } else {
+                            // Agar side click manually trigger karna pade
+                            const defaultLink = document.querySelector('.nav-link[data-feature="wishes"]');
+                            if (defaultLink) defaultLink.click();
+                        }
+                    }, 100);
+
                 } else {
                     if (statusText) statusText.innerText = "🚨 Access Denied: " + (data.error || "Wrong Password!");
                 }
