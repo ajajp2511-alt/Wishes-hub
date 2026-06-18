@@ -1,7 +1,7 @@
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
-// Sidebar navigation click listener
+// Sidebar menu navigation rules
 if (navLinks.length > 0) {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -23,10 +23,11 @@ if (navLinks.length > 0) {
     });
 }
 
-// Main HTML Frame Render Engine
+// Main Window view engine
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
 
+    // Pehle HTML layout load karein
     contentRoot.innerHTML = `
         <div class="feature-box" style="padding: 20px; color: #fff;">
             <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
@@ -67,17 +68,23 @@ window.loadAddWishesView = function() {
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // 🔑 Timing Fix: Agar data load hone me microsecond ka delay ho, toh yeh retry karega
+    // 🔑 Data source ko safely extract karne ka naya intelligent checker
+    function getCategoriesData() {
+        if (typeof window.categoriesConfig !== 'undefined') return window.categoriesConfig;
+        if (typeof categoriesConfig !== 'undefined') return categoriesConfig;
+        return null;
+    }
+
+    // Dynamic dropdown data sync loops with fallback retries
     function populateMainCategories() {
-        const categories = window.categoriesConfig;
+        const categories = getCategoriesData();
         
         if (!categories || Object.keys(categories).length === 0) {
-            // Agar abhi data nahi mila, toh 100ms baad fir koshish karega
-            setTimeout(populateMainCategories, 100);
+            // Agar microsecond load issue ho, toh 80ms me automatic dubara check karega
+            setTimeout(populateMainCategories, 80);
             return;
         }
 
-        // Data milte hi dropdown khali karke options dalega
         if (mainCatSelect) {
             mainCatSelect.innerHTML = '<option value="" disabled selected>Select Main Category</option>';
             Object.keys(categories).forEach(cat => {
@@ -89,14 +96,14 @@ window.loadAddWishesView = function() {
         }
     }
 
-    // Function ko call lagayein
+    // Trigger loading process
     populateMainCategories();
 
-    // Sub Category listener logic
+    // Sub Category selection listener rule logic mapping
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
-            const categories = window.categoriesConfig || {};
+            const categories = getCategoriesData() || {};
             const subCategories = categories[selectedMain] || [];
 
             subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
@@ -118,7 +125,7 @@ window.loadAddWishesView = function() {
         });
     }
 
-    // Form Submit handling code
+    // Form Submit handling code logic
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -133,7 +140,7 @@ window.loadAddWishesView = function() {
                 } else if (typeof uploadToTelegram === 'function') {
                     tgData = await uploadToTelegram(formData);
                 } else {
-                    throw new Error("Upload function API structure is not accessible!");
+                    throw new Error("Upload routine API structure is not accessible!");
                 }
 
                 if (!tgData.success) throw new Error("Telegram Upload layer failed!");
