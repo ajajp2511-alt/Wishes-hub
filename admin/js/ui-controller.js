@@ -1,7 +1,7 @@
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
-// Sidebar menu navigation rules
+// Sidebar navigation click listener
 if (navLinks.length > 0) {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -23,11 +23,10 @@ if (navLinks.length > 0) {
     });
 }
 
-// Main Window view engine
+// Main HTML Frame Render Engine
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
 
-    // Pehle base template load karenge bina data dependency ke
     contentRoot.innerHTML = `
         <div class="feature-box" style="padding: 20px; color: #fff;">
             <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
@@ -36,7 +35,7 @@ window.loadAddWishesView = function() {
                 <div>
                     <label style="display:block; margin-bottom:5px; font-weight:bold;">Main Category:</label>
                     <select id="main-category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white;">
-                        <option value="" disabled selected>Select Main Category</option>
+                        <option value="" disabled selected>Loading categories...</option>
                     </select>
                 </div>
 
@@ -63,37 +62,43 @@ window.loadAddWishesView = function() {
         </div>
     `;
 
-    // DOM References elements read karne ke liye
     const mainCatSelect = document.getElementById('main-category');
     const subCatSelect = document.getElementById('sub-category');
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // 🔑 Sabse direct upaya: Window objects check karke direct dynamic options append karna
-    const categories = window.categoriesConfig || {};
-    const mainCategoriesKeys = Object.keys(categories);
+    // 🔑 Timing Fix: Agar data load hone me microsecond ka delay ho, toh yeh retry karega
+    function populateMainCategories() {
+        const categories = window.categoriesConfig;
+        
+        if (!categories || Object.keys(categories).length === 0) {
+            // Agar abhi data nahi mila, toh 100ms baad fir koshish karega
+            setTimeout(populateMainCategories, 100);
+            return;
+        }
 
-    if (mainCategoriesKeys.length > 0 && mainCatSelect) {
-        mainCategoriesKeys.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
-            mainCatSelect.appendChild(option);
-        });
-    } else {
-        console.error("🚨 Configuration Error: categoriesConfig is completely missing on window scope.");
+        // Data milte hi dropdown khali karke options dalega
         if (mainCatSelect) {
-            mainCatSelect.innerHTML = '<option value="" disabled>Failed to load configuration</option>';
+            mainCatSelect.innerHTML = '<option value="" disabled selected>Select Main Category</option>';
+            Object.keys(categories).forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                mainCatSelect.appendChild(option);
+            });
         }
     }
 
-    // Sub Category listener logic mapping
+    // Function ko call lagayein
+    populateMainCategories();
+
+    // Sub Category listener logic
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
+            const categories = window.categoriesConfig || {};
             const subCategories = categories[selectedMain] || [];
 
-            // Reset dropdown first
             subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
 
             if (subCategories.length > 0) {
@@ -113,7 +118,7 @@ window.loadAddWishesView = function() {
         });
     }
 
-    // Submit handler loop configuration
+    // Form Submit handling code
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -128,7 +133,7 @@ window.loadAddWishesView = function() {
                 } else if (typeof uploadToTelegram === 'function') {
                     tgData = await uploadToTelegram(formData);
                 } else {
-                    throw new Error("Upload routine API structure is not accessible!");
+                    throw new Error("Upload function API structure is not accessible!");
                 }
 
                 if (!tgData.success) throw new Error("Telegram Upload layer failed!");
@@ -166,7 +171,6 @@ window.loadAddWishesView = function() {
     }
 }
 
-// Universal mounting window level configuration hook 
 window.loadDefaultAdminView = function() {
     window.loadAddWishesView();
 };
