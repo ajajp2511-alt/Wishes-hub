@@ -1,57 +1,7 @@
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
-// Sahi tareeka categoriesConfig data ko dropdown me badalne ka
-function generateCategoryOptions() {
-    const categories = window.categoriesConfig || {};
-    const keys = Object.keys(categories);
-    
-    if (keys.length === 0) {
-        console.error("🚨 Warning: window.categoriesConfig khali hai ya load nahi hua!");
-        return '<option value="" disabled>No categories found</option>';
-    }
-    
-    return keys.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-}
-
-// Yahan se saare galat backslashes (\\) hata diye gaye hain
-const addWishTemplate = () => `
-    <div class="feature-box" style="padding: 20px; color: #fff;">
-        <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
-        <form id="wishForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
-            
-            <div>
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Main Category:</label>
-                <select id="main-category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white;">
-                    <option value="" disabled selected>Select Main Category</option>
-                    ${generateCategoryOptions()}
-                </select>
-            </div>
-
-            <div>
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Sub Category:</label>
-                <select id="sub-category" name="sub_category" required disabled style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white; opacity: 0.5;">
-                    <option value="" disabled selected>Select Sub Category</option>
-                </select>
-            </div>
-
-            <div>
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Wish Title / Text:</label>
-                <textarea name="title" required placeholder="Enter your wish text here..." style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white; min-height:120px; font-family:inherit;"></textarea>
-            </div>
-
-            <div>
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Image (Optional):</label>
-                <input type="file" name="image" accept="image/*" style="width:100%; background:#1e293b; padding:10px; border-radius:5px; border:1px solid #334155;">
-            </div>
-
-            <button type="submit" style="padding:12px; background:#4f46e5; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Submit Wish</button>
-        </form>
-        <p id="status-message" style="margin-top:15px; font-weight:bold; font-size:15px;"></p>
-    </div>
-`;
-
-// Sidebar click listener
+// Sidebar menu navigation rules
 if (navLinks.length > 0) {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -73,36 +23,97 @@ if (navLinks.length > 0) {
     });
 }
 
+// Main Window view engine
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
-    contentRoot.innerHTML = addWishTemplate(); // Template function call
 
+    // Pehle base template load karenge bina data dependency ke
+    contentRoot.innerHTML = `
+        <div class="feature-box" style="padding: 20px; color: #fff;">
+            <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
+            <form id="wishForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
+                
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Main Category:</label>
+                    <select id="main-category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white;">
+                        <option value="" disabled selected>Select Main Category</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Sub Category:</label>
+                    <select id="sub-category" name="sub_category" required disabled style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white; opacity: 0.5;">
+                        <option value="" disabled selected>Select Sub Category</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Wish Title / Text:</label>
+                    <textarea name="title" required placeholder="Enter your wish text here..." style="width:100%; padding:10px; border-radius:5px; border:1px solid #334155; background:#1e293b; color:white; min-height:120px; font-family:inherit;"></textarea>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Image (Optional):</label>
+                    <input type="file" name="image" accept="image/*" style="width:100%; background:#1e293b; padding:10px; border-radius:5px; border:1px solid #334155;">
+                </div>
+
+                <button type="submit" style="padding:12px; background:#4f46e5; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Submit Wish</button>
+            </form>
+            <p id="status-message" style="margin-top:15px; font-weight:bold; font-size:15px;"></p>
+        </div>
+    `;
+
+    // DOM References elements read karne ke liye
     const mainCatSelect = document.getElementById('main-category');
     const subCatSelect = document.getElementById('sub-category');
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // Sub Category dynamic load karne ka logic
+    // 🔑 Sabse direct upaya: Window objects check karke direct dynamic options append karna
+    const categories = window.categoriesConfig || {};
+    const mainCategoriesKeys = Object.keys(categories);
+
+    if (mainCategoriesKeys.length > 0 && mainCatSelect) {
+        mainCategoriesKeys.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            mainCatSelect.appendChild(option);
+        });
+    } else {
+        console.error("🚨 Configuration Error: categoriesConfig is completely missing on window scope.");
+        if (mainCatSelect) {
+            mainCatSelect.innerHTML = '<option value="" disabled>Failed to load configuration</option>';
+        }
+    }
+
+    // Sub Category listener logic mapping
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
-            const categories = window.categoriesConfig || {};
             const subCategories = categories[selectedMain] || [];
 
+            // Reset dropdown first
+            subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
+
             if (subCategories.length > 0) {
-                subCatSelect.innerHTML = `<option value="" disabled selected>Select Sub Category</option>` + 
-                    subCategories.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+                subCategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subCatSelect.appendChild(option);
+                });
                 subCatSelect.disabled = false;
                 subCatSelect.style.opacity = "1";
             } else {
-                subCatSelect.innerHTML = `<option value="" disabled selected>No Sub Categories</option>`;
+                subCatSelect.innerHTML = '<option value="" disabled selected>No Sub Categories</option>';
                 subCatSelect.disabled = true;
                 subCatSelect.style.opacity = "0.5";
             }
         });
     }
 
-    // Submit Action log
+    // Submit handler loop configuration
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -117,10 +128,10 @@ window.loadAddWishesView = function() {
                 } else if (typeof uploadToTelegram === 'function') {
                     tgData = await uploadToTelegram(formData);
                 } else {
-                    throw new Error("Upload function not found!");
+                    throw new Error("Upload routine API structure is not accessible!");
                 }
 
-                if (!tgData.success) throw new Error("Telegram Upload failed!");
+                if (!tgData.success) throw new Error("Telegram Upload layer failed!");
                 
                 statusDisplay.innerText = "💾 Saving to Database...";
                 
@@ -145,7 +156,7 @@ window.loadAddWishesView = function() {
                     subCatSelect.disabled = true;
                     subCatSelect.style.opacity = "0.5";
                 } else {
-                    throw new Error(dbData.error || "Database operation failed");
+                    throw new Error(dbData.error || "Database layer execution rejected.");
                 }
             } catch (error) {
                 statusDisplay.innerText = "🚨 Error: " + error.message;
@@ -155,7 +166,7 @@ window.loadAddWishesView = function() {
     }
 }
 
-// Automatic load configuration
+// Universal mounting window level configuration hook 
 window.loadDefaultAdminView = function() {
     window.loadAddWishesView();
 };
