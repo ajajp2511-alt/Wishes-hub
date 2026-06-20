@@ -1,3 +1,6 @@
+// Wishes Hub: Master Admin UI Controller Script
+// Patel Studio - 2026
+
 const navLinks = document.querySelectorAll('.nav-link');
 const contentRoot = document.getElementById('dynamic-content-root');
 
@@ -27,7 +30,7 @@ if (navLinks.length > 0) {
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
 
-    // Pehle HTML layout load karein
+    // HTML Layout Architecture
     contentRoot.innerHTML = `
         <div class="feature-box" style="padding: 20px; color: #fff;">
             <h2 style="margin-bottom: 20px;">➕ Add New Wish</h2>
@@ -54,7 +57,7 @@ window.loadAddWishesView = function() {
 
                 <div>
                     <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Image (Optional):</label>
-                    <input type="file" name="image" accept="image/*" style="width:100%; background:#1e293b; padding:10px; border-radius:5px; border:1px solid #334155;">
+                    <input type="file" id="wish-image-file" name="image" accept="image/*" style="width:100%; background:#1e293b; padding:10px; border-radius:5px; border:1px solid #334155;">
                 </div>
 
                 <button type="submit" style="padding:12px; background:#4f46e5; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Submit Wish</button>
@@ -68,19 +71,18 @@ window.loadAddWishesView = function() {
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // 🔑 Data source ko safely extract karne ka naya intelligent checker
+    // Safe lookup structure data parsing
     function getCategoriesData() {
         if (typeof window.categoriesConfig !== 'undefined') return window.categoriesConfig;
         if (typeof categoriesConfig !== 'undefined') return categoriesConfig;
         return null;
     }
 
-    // Dynamic dropdown data sync loops with fallback retries
+    // Dynamic dropdown data options initialization
     function populateMainCategories() {
         const categories = getCategoriesData();
         
         if (!categories || Object.keys(categories).length === 0) {
-            // Agar microsecond load issue ho, toh 80ms me automatic dubara check karega
             setTimeout(populateMainCategories, 80);
             return;
         }
@@ -96,10 +98,9 @@ window.loadAddWishesView = function() {
         }
     }
 
-    // Trigger loading process
     populateMainCategories();
 
-    // Sub Category selection listener rule logic mapping
+    // Mapping event rule for sub-categories tracking
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
@@ -125,51 +126,61 @@ window.loadAddWishesView = function() {
         });
     }
 
-    // Form Submit handling code logic
+    // Form Submit unified handling mechanism
     if (wishForm) {
         wishForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            statusDisplay.innerText = "⏳ Uploading to Telegram...";
+            statusDisplay.innerText = "⏳ Processing and deploying payload...";
             statusDisplay.style.color = "#ffea00";
             
-            const formData = new FormData(wishForm);
+            const fileInput = document.getElementById('wish-image-file');
+            let base64String = null;
+
+            // Helper function to read file asynchronously safely
+            const readImageAsBase64 = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = (err) => reject(err);
+                    reader.readAsDataURL(file);
+                });
+            };
+
             try {
-                let tgData = { success: false };
-                if (typeof window.uploadToTelegram === 'function') {
-                    tgData = await window.uploadToTelegram(formData);
-                } else if (typeof uploadToTelegram === 'function') {
-                    tgData = await uploadToTelegram(formData);
-                } else {
-                    throw new Error("Upload routine API structure is not accessible!");
+                // Agar user ne koi image attach ki hai toh use encode karein
+                if (fileInput && fileInput.files.length > 0) {
+                    statusDisplay.innerText = "📸 Encoding media bytes...";
+                    base64String = await readImageAsBase64(fileInput.files[0]);
                 }
 
-                if (!tgData.success) throw new Error("Telegram Upload layer failed!");
+                statusDisplay.innerText = "🚀 Dispatching to server stream...";
                 
-                statusDisplay.innerText = "💾 Saving to Database...";
-                
-                let dbData = { success: false };
                 const payload = {
-                    title: formData.get('title'),
-                    category: formData.get('category'),
-                    sub_category: formData.get('sub_category'),
-                    tgData: tgData
+                    title: wishForm.elements['title'].value,
+                    category: wishForm.elements['category'].value,
+                    sub_category: wishForm.elements['sub_category'].value || '',
+                    image: base64String // Sent directly inside the unified object payload
                 };
 
-                if (typeof window.saveToDatabase === 'function') {
-                    dbData = await window.saveToDatabase(payload);
-                } else if (typeof saveToDatabase === 'function') {
-                    dbData = await saveToDatabase(payload);
-                }
+                // 🚀 SINGLE UNIFIED ENDPOINT CALL (Bina dependencies breakdown ke)
+                const response = await fetch('/api/add-wish-to-db', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                if (dbData.success) {
+                const serverResult = await response.json();
+
+                if (serverResult.success) {
                     statusDisplay.innerText = "✅ Wish successfully live!";
                     statusDisplay.style.color = "#00ff88";
                     wishForm.reset();
                     subCatSelect.disabled = true;
                     subCatSelect.style.opacity = "0.5";
                 } else {
-                    throw new Error(dbData.error || "Database layer execution rejected.");
+                    throw new Error(serverResult.message || "Execution dropped by backend engine.");
                 }
+
             } catch (error) {
                 statusDisplay.innerText = "🚨 Error: " + error.message;
                 statusDisplay.style.color = "#ff4a4a";
