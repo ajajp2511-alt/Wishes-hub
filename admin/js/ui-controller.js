@@ -71,14 +71,12 @@ window.loadAddWishesView = function() {
     const wishForm = document.getElementById('wishForm');
     const statusDisplay = document.getElementById('status-message');
 
-    // Safe lookup structure data parsing
     function getCategoriesData() {
         if (typeof window.categoriesConfig !== 'undefined') return window.categoriesConfig;
         if (typeof categoriesConfig !== 'undefined') return categoriesConfig;
         return null;
     }
 
-    // Dynamic dropdown data options initialization
     function populateMainCategories() {
         const categories = getCategoriesData();
         
@@ -100,7 +98,6 @@ window.loadAddWishesView = function() {
 
     populateMainCategories();
 
-    // Mapping event rule for sub-categories tracking
     if (mainCatSelect && subCatSelect) {
         mainCatSelect.addEventListener('change', (e) => {
             const selectedMain = e.target.value;
@@ -136,33 +133,67 @@ window.loadAddWishesView = function() {
             const fileInput = document.getElementById('wish-image-file');
             let base64String = null;
 
-            // Helper function to read file asynchronously safely
-            const readImageAsBase64 = (file) => {
+            // 🔥 COMPRESSION ENGINE: Image ko scale down aur quality minimize karne ke liye
+            const resizeAndCompressImage = (file) => {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = (err) => reject(err);
                     reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+
+                            // Max bound logic (1200px se badi width ko auto-scale down karega)
+                            const MAX_WIDTH = 1200;
+                            if (width > MAX_WIDTH) {
+                                height = Math.round((height * MAX_WIDTH) / width);
+                                width = MAX_WIDTH;
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            // 0.6 means 60% quality compression (Size drops directly from 8MB to ~300KB!)
+                            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                            resolve(compressedBase64);
+                        };
+                        img.onerror = (err) => reject(err);
+                    };
+                    reader.onerror = (err) => reject(err);
                 });
             };
 
             try {
-                // Agar user ne koi image attach ki hai toh use encode karein
                 if (fileInput && fileInput.files.length > 0) {
-                    statusDisplay.innerText = "📸 Encoding media bytes...";
-                    base64String = await readImageAsBase64(fileInput.files[0]);
+                    statusDisplay.innerText = "⚡ Auto-Compressing Image to Secure Network Limits...";
+                    const originalFile = fileInput.files[0];
+                    
+                    // GIF files compress nahi hongi, direct jayengi. Jpeg/Png dynamically safe shrink ho jayengi
+                    if (originalFile.type.includes('gif')) {
+                        const readGif = (file) => new Promise((res, rej) => {
+                            const r = new FileReader(); r.onload = () => res(r.result); r.onerror = e => rej(e); r.readAsDataURL(file);
+                        });
+                        base64String = await readGif(originalFile);
+                    } else {
+                        base64String = await resizeAndCompressImage(originalFile);
+                    }
                 }
 
-                statusDisplay.innerText = "🚀 Dispatching to server stream...";
+                statusDisplay.innerText = "🚀 Synchronizing with Global Servers...";
                 
                 const payload = {
                     title: wishForm.elements['title'].value,
                     category: wishForm.elements['category'].value,
                     sub_category: wishForm.elements['sub_category'].value || '',
-                    image: base64String // Sent directly inside the unified object payload
+                    image: base64String 
                 };
 
-                // 🚀 SINGLE UNIFIED ENDPOINT CALL (Bina dependencies breakdown ke)
                 const response = await fetch('/api/add-wish-to-db', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
