@@ -76,21 +76,25 @@ async function fetchWishesFromServer(gridElement) {
 
             card.style.cssText = "background:#121212; border:1px solid #333; border-radius:12px; padding:15px; margin:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 10px;";
 
-            // Media Element check karne ka logic (Photo vs Video)
+            // 📸 DUAL MEDIA LOGIC FIXED: Check direct image link first, then proxy file path
             let mediaHtml = '';
-            if (wish.telegramFileId) {
-                // Hamari naye 'get-media' proxy endpoint ka secure url banaya
-                const proxyMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
+            let finalMediaUrl = wish.imageUrl || null; // Database se seedha link check karna
 
+            // Agar direct link nahi hai, tabhi purane proxy system ko link assign karna
+            if (!finalMediaUrl && wish.telegramFileId) {
+                finalMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
+            }
+
+            if (finalMediaUrl) {
                 if (wish.fileType === 'video' || wish.fileType === 'animation') {
                     mediaHtml = `
                         <div style="width:100%; border-radius:8px; overflow:hidden; background:#000;">
-                            <video src="${proxyMediaUrl}" controls preload="metadata" style="width:100%; max-height:300px; display:block;"></video>
+                            <video src="${finalMediaUrl}" controls preload="metadata" style="width:100%; max-height:300px; display:block;"></video>
                         </div>`;
                 } else {
                     mediaHtml = `
                         <div style="width:100%; border-radius:8px; overflow:hidden; background:#000; text-align:center;">
-                            <img src="${proxyMediaUrl}" alt="Wish Media" loading="lazy" style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block;">
+                            <img src="${finalMediaUrl}" alt="Wish Media" loading="lazy" style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block; border-radius:8px;">
                         </div>`;
                 }
             }
@@ -103,7 +107,6 @@ async function fetchWishesFromServer(gridElement) {
                     </span>
                 </div>
                 
-                <!-- Media Section -->
                 ${mediaHtml}
 
                 <p style="color:#fff; font-size:16px; line-height:1.5; margin:5px 0; white-space: pre-wrap;">
@@ -140,7 +143,7 @@ function setupSearchLogic() {
             const cardText = card.getAttribute('data-text') || '';
             const cardCategory = card.getAttribute('data-category') || '';
             
-            // Agar koi active category filter set hai, toh hum check karenge 'activeCategory' global variable (jo feat-categories.js me hai)
+            // Filter configuration logic
             const matchesCategory = (typeof activeCategory === 'undefined' || activeCategory === "All" || cardCategory === activeCategory);
             const matchesSearch = cardText.includes(query);
 
