@@ -23,6 +23,9 @@ const db = getFirestore();
 const rtdb = getDatabase();
 
 export default async function handler(req, res) {
+  // Always return JSON, even on errors to prevent "Unexpected token A"
+  res.setHeader('Content-Type', 'application/json');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
@@ -35,42 +38,44 @@ export default async function handler(req, res) {
     let fileId = null;
     let fileType = 'photo';
 
-    const botToken = process.env.TG_BOT_TOKEN;
-    const chatId = process.env.TG_CHAT_ID;
+    const botToken = process.env.TG_BOT_TOKEN ? process.env.TG_BOT_TOKEN.trim() : null;
+    const chatId = process.env.TG_CHAT_ID ? process.env.TG_CHAT_ID.trim() : null;
 
-    // 2. TELEGRAM UPLOAD LOGIC (Agar image aayi hai toh)
+    const textMessage = `📌 Category: ${category || 'General'}\n📁 Sub-Category: ${sub_category || 'None'}\n\n✍️ Wish: ${title || ''}`;
+
+    // 2. TELEGRAM SECURE UPLOAD LOGIC
     if (image && botToken && chatId) {
       try {
         const mimeMatch = image.match(/^data:(image\/\w+);base64,/);
         const contentType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-        const ext = contentType.split('/')[1] || 'jpg';
         const isGif = contentType.includes('gif');
-
-        const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(base64Data, 'base64');
-        const boundary = `----WebKitFormBoundary${Math.random().toString(36).substring(2)}`;
-        
-        const telegramUrl = `https://api.telegram.org/bot${botToken}/${isGif ? 'sendAnimation' : 'sendPhoto'}`;
-        const mediaParamName = isGif ? 'animation' : 'photo';
         fileType = isGif ? 'animation' : 'photo';
 
-        const textMessage = `📌 *Category:* ${category || 'General'}\n📁 *Sub-Category:* ${sub_category || 'None'}\n\n✍️ *Wish:* ${title || ''}`;
+        // Base64 image data string extraction
+        const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+        
+        // Dynamic payload payload setup for Telegram JSON execution
+        const tgPayload = {
+          chat_id: chatId,
+          caption: textMessage,
+          parse_mode: 'HTML' // Switched to HTML to avoid Markdown character parsing errors
+        };
 
-        const parts = [
-            `--${boundary}\r\nContent-Disposition: form-data; name="chat_id"\r\n\r\n${chatId}\r\n`,
-            `--${boundary}\r\nContent-Disposition: form-data; name="caption"\r\n\r\n${textMessage}\r\n`,
-            `--${boundary}\r\nContent-Disposition: form-data; name="parse_mode"\r\n\r\nMarkdown\r\n`,
-            `--${boundary}\r\nContent-Disposition: form-data; name="${mediaParamName}"; filename="wish_media.${ext}"\r\nContent-Type: ${contentType}\r\n\r\n`
-        ];
-
-        const headerBuffer = Buffer.from(parts.join(''), 'utf-8');
-        const footerBuffer = Buffer.from(`\r\n--${boundary}--\r\n`, 'utf-8');
-        const multipartBody = Buffer.concat([headerBuffer, buffer, footerBuffer]);
+        let telegramUrl = '';
+        if (isGif) {
+          // Gifs as base64 asset proxy
+          telegramUrl = `https://api.telegram.org/bot${botToken}/sendAnimation`;
+          tgPayload.animation = image; 
+        } else {
+          // Direct Standard Input image string transmission
+          telegramUrl = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+          tgPayload.photo = image;
+        }
 
         const tgResponse = await fetch(telegramUrl, {
             method: 'POST',
-            headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}` },
-            body: multipartBody
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tgPayload)
         });
 
         const tgResult = await tgResponse.json();
@@ -85,7 +90,7 @@ export default async function handler(req, res) {
                 fileId = photos[photos.length - 1].file_id;
             }
 
-            // Public Link nikalna Telegram se
+            // Extract public download url reference path
             if (fileId) {
                 const fileInfoRes = await fetch(`https://api.telegram.org/bot${botToken}/getFile?file_id=${fileId}`);
                 const fileInfo = await fileInfoRes.json();
@@ -93,28 +98,29 @@ export default async function handler(req, res) {
                     fileUrl = `https://api.telegram.org/file/bot${botToken}/${fileInfo.result.file_path}`;
                 }
             }
+        } else {
+            console.error("Telegram Error Response:", tgResult);
+            // Catch error directly instead of crashing
         }
       } catch (tgError) {
-         console.error("Telegram Upload Failed, skipping media link:", tgError);
-         // Filter out crashes: Agar telegram fail bhi ho, toh database me save ho jaye
+         console.error("Telegram Upload Network Timeout/Failure:", tgError);
       }
     } else if (!image && botToken && chatId) {
-      // Photo nahi hai toh normal text message send karein Telegram par
+      // Direct text routing channel
       try {
-        const textMessage = `📌 *Category:* ${category || 'General'}\n📁 *Sub-Category:* ${sub_category || 'None'}\n\n✍️ *Wish:* ${title || ''}`;
         const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: 'Markdown' })
+            body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: 'HTML' })
         });
         const tgResult = await tgResponse.json();
         if (tgResult.ok) telegramMessageId = tgResult.result.message_id;
       } catch (tgTextErr) {
-        console.error("Telegram Text Failed:", tgTextErr);
+        console.error("Telegram Text Transmission Failed:", tgTextErr);
       }
     }
 
-    // 3. FIRESTORE DATABASE LOGIC
+    // 3. FIRESTORE DATABASE BACKUP
     const wishRef = db.collection('wishes').doc();
     const wishId = wishRef.id;
 
@@ -130,7 +136,7 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString()
     });
 
-    // 4. REALTIME DATABASE LOGIC
+    // 4. REALTIME DATABASE NODE SETUP
     await rtdb.ref(`wishes/${wishId}`).set({
       likes: 0,
       shares: 0,
@@ -144,7 +150,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Combined Execution Error:", error);
-    return res.status(500).json({ success: false, message: `Server Crash Prevented: ${error.message}` });
+    console.error("Global Engine Crash Log:", error);
+    return res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
   }
 }
