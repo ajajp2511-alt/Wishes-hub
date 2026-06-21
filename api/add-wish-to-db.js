@@ -3,122 +3,80 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getDatabase } from 'firebase-admin/database';
 
-let db;
-let rtdb;
+let db, rtdb;
 
 try {
   if (!getApps().length) {
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY 
-      ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') 
-      : undefined;
-
     initializeApp({
       credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: privateKey,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
       }),
       databaseURL: process.env.FIREBASE_DATABASE_URL
     });
   }
   db = getFirestore();
   rtdb = getDatabase();
-} catch (initError) {
-  console.error("Firebase startup crash bypass:", initError);
-}
+} catch (e) { console.error("Firebase Sync Init Error:", e); }
 
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
-  }
+  
+  if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method Not Allowed' });
 
   try {
     const { title, category, sub_category, image } = req.body;
-    let fileUrl = null;
     let telegramMessageId = null;
 
-    const botToken = process.env.TG_BOT_TOKEN ? process.env.TG_BOT_TOKEN.trim() : null;
-    const chatId = process.env.TG_CHAT_ID ? process.env.TG_CHAT_ID.trim() : null;
-    const textMessage = `📌 *Category:* ${category || 'General'}\n📁 *Sub-Category:* ${sub_category || 'None'}\n\n✍️ *Wish:* ${title || ''}`;
+    const botToken = process.env.TG_BOT_TOKEN?.trim();
+    const chatId = process.env.TG_CHAT_ID?.trim();
 
-    // 🚀 TELEGRAM INTEGRATION ENGINE
+    // 🚀 Telegram Notification Pipeline (For Group Alerts)
     if (botToken && chatId) {
       try {
-        let endpoint = 'sendMessage';
-        let tgPayload = { chat_id: chatId, parse_mode: 'Markdown' };
+        let endpoint = image ? 'sendPhoto' : 'sendMessage';
+        let payload = { chat_id: chatId };
 
         if (image) {
-          const isGif = image.includes('image/gif');
-          endpoint = isGif ? 'sendAnimation' : 'sendPhoto';
-          tgPayload[isGif ? 'animation' : 'photo'] = image; 
-          tgPayload.caption = textMessage;
+          payload.photo = image; // Send raw base64 to telegram
+          payload.caption = `📌 *Category:* ${category || 'General'}\n✍️ *Wish:* ${title || ''}`;
+          payload.parse_mode = 'Markdown';
         } else {
-          tgPayload.text = textMessage;
+          payload.text = `📌 *Category:* ${category || 'General'}\n✍️ *Wish:* ${title || ''}`;
+          payload.parse_mode = 'Markdown';
         }
 
-        const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(tgPayload)
+        const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        const tgResult = await tgResponse.json();
-        
-        if (tgResult && tgResult.ok) {
-          telegramMessageId = tgResult.result.message_id;
-          
-          // 🔥 PERMANENT EMBED LINK GENERATOR FROM TELEGRAM FILE_ID
-          if (image) {
-            let fileId = null;
-            if (tgResult.result.photo) {
-              const photos = tgResult.result.photo;
-              fileId = photos[photos.length - 1].file_id; // High res photo
-            } else if (tgResult.result.animation) {
-              fileId = tgResult.result.animation.file_id; // Gif format
-            }
-
-            if (fileId) {
-              // Standard Proxy link structure jo Telegram ki unique file_id se image direct website par fetch karta hai aur kabhi expire nahi hota!
-              fileUrl = `https://api.telegram.org/file/bot${botToken}/` + fileId; 
-              
-              // Fallback optimization: Agar browser direct hit block kare toh alternate standard reverse proxy:
-              // fileUrl = `https://imtqy.com/bot${botToken}/${fileId}`;
-            }
-          }
-        }
-      } catch (tgError) {
-          console.error("Telegram dynamic delivery exception:", tgError);
-      }
+        const tgJson = await tgRes.json();
+        if (tgJson.ok) telegramMessageId = tgJson.result.message_id;
+      } catch (tgErr) { console.error("Telegram channel log error:", tgErr); }
     }
 
-    // 📝 FIRESTORE PERMANENT DOCUMENT SAVE
+    // 📝 Firestore Permanent Document Entry
     const wishRef = db.collection('wishes').doc();
     const wishId = wishRef.id;
 
     await wishRef.set({
-      wishId: wishId,
+      wishId,
       title: title || '',
       category: category || 'General',
       sub_category: sub_category || '',
-      imageUrl: fileUrl, // Permanent Unique File Path Token
-      telegramMessageId: telegramMessageId || null, 
+      imageUrl: image || null, // 🔥 100% Zero Link Dependancy! Base64 directly database mein save.
+      telegramMessageId,
       createdAt: new Date().toISOString()
     });
 
-    // 📊 REALTIME COUNTERS NODE
-    try {
-      await rtdb.ref(`wishes/${wishId}`).set({ likes: 0, shares: 0, views: 0 });
-    } catch (e) {}
+    // 📊 Realtime Sync Nodes
+    try { await rtdb.ref(`wishes/${wishId}`).set({ likes: 0, shares: 0, views: 0 }); } catch(e){}
 
-    return res.status(200).json({ 
-      success: true, 
-      message: 'Wish live successfully synced with Telegram assets!', 
-      wishId 
-    });
-
-  } catch (error) {
-    return res.status(200).json({ success: false, message: `System error logs: ${error.message}` });
+    return res.status(200).json({ success: true, message: 'Wish live with direct data persistence!', wishId });
+  } catch (err) {
+    return res.status(200).json({ success: false, message: err.message });
   }
-}
+            }
