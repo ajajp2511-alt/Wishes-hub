@@ -3,7 +3,6 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getDatabase } from 'firebase-admin/database';
 
-// Global configurations to keep connections reusable
 let db;
 let rtdb;
 
@@ -25,11 +24,10 @@ try {
   db = getFirestore();
   rtdb = getDatabase();
 } catch (initError) {
-  console.error("Firebase Admin initialization crash:", initError);
+  console.error("Firebase Initialization system down:", initError);
 }
 
 export default async function handler(req, res) {
-  // Hardcoded fallback headers to prevent Vercel HTML override intercepts
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -39,77 +37,69 @@ export default async function handler(req, res) {
 
   try {
     const { title, category, sub_category, image } = req.body;
-    
-    let telegramMessageId = null;
     let fileUrl = null;
-    let fileId = null;
-    let fileType = 'photo';
+    let telegramMessageId = null;
 
     const botToken = process.env.TG_BOT_TOKEN ? process.env.TG_BOT_TOKEN.trim() : null;
     const chatId = process.env.TG_CHAT_ID ? process.env.TG_CHAT_ID.trim() : null;
+    const textMessage = `📌 *Category:* ${category || 'General'}\n📁 *Sub-Category:* ${sub_category || 'None'}\n\n✍️ *Wish:* ${title || ''}`;
 
-    const textMessage = `📌 Category: ${category || 'General'}\n📁 Sub-Category: ${sub_category || 'None'}\n\n✍️ Wish: ${title || ''}`;
-
-    // 1. ISOLATED TELEGRAM MODULE (Bina main execution stream ko block kiye)
-    if (botToken && chatId) {
+    // 🔥 1. TELEGRAM TELEGRA.PH AUTOMATIC PERMANENT LINK GENERATOR
+    if (image) {
       try {
-        if (image) {
-          const mimeMatch = image.match(/^data:(image\/\w+);base64,/);
-          const contentType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-          const isGif = contentType.includes('gif');
-          fileType = isGif ? 'animation' : 'photo';
+        // Base64 string ko binary form me badalna telegraph ke liye
+        const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, 'base64');
+        
+        const formData = new FormData();
+        const blob = new Blob([buffer], { type: 'image/jpeg' });
+        formData.append('file', blob, 'wish_image.jpg');
 
-          const tgPayload = {
-              chat_id: chatId,
-              caption: textMessage,
-              parse_mode: 'HTML'
-          };
-
-          const endpoint = isGif ? 'sendAnimation' : 'sendPhoto';
-          tgPayload[isGif ? 'animation' : 'photo'] = image;
-
-          // Executing dynamic post stream safely
-          const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/${endpoint}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(tgPayload)
-          });
-
-          const tgResult = await tgResponse.json();
-
-          if (tgResult && tgResult.ok) {
-              telegramMessageId = tgResult.result.message_id;
-              if (isGif && tgResult.result.animation) {
-                  fileId = tgResult.result.animation.file_id;
-              } else if (tgResult.result.photo) {
-                  const photos = tgResult.result.photo;
-                  fileId = photos[photos.length - 1].file_id;
-              }
-
-              if (fileId) {
-                  const fileInfoRes = await fetch(`https://api.telegram.org/bot${botToken}/getFile?file_id=${fileId}`);
-                  const fileInfo = await fileInfoRes.json();
-                  if (fileInfo && fileInfo.ok) {
-                      fileUrl = `https://api.telegram.org/file/bot${botToken}/${fileInfo.result.file_path}`;
-                  }
-              }
-          }
-        } else {
-          // Direct fallback text pipeline
-          const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: 'HTML' })
-          });
-          const tgResult = await tgResponse.json();
-          if (tgResult && tgResult.ok) telegramMessageId = tgResult.result.message_id;
+        // Telegraph public server stream par upload
+        const phResponse = await fetch('https://telegra.ph/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const phResult = await phResponse.json();
+        
+        if (Array.isArray(phResult) && phResult[0] && phResult[0].src) {
+          // Yeh link lifetime working link ban gaya!
+          fileUrl = `https://telegra.ph${phResult[0].src}`;
         }
-      } catch (tgError) {
-          console.error("Telegram dynamic integration skipped safely:", tgError);
+      } catch (tgPhErr) {
+        console.error("Telegra.ph link generation bypassed:", tgPhErr);
       }
     }
 
-    // 2. ABSOLUTE FIRESTORE EXECUTION
+    // 🚀 2. DYNAMIC BROADCAST TO YOUR TELEGRAM CHANNEL
+    if (botToken && chatId) {
+      try {
+        let endpoint = 'sendMessage';
+        let tgPayload = { chat_id: chatId, parse_mode: 'Markdown' };
+
+        if (image) {
+          const isGrid = image.includes('image/gif');
+          endpoint = isGrid ? 'sendAnimation' : 'sendPhoto';
+          tgPayload[isGrid ? 'animation' : 'photo'] = image; 
+          tgPayload.caption = textMessage;
+        } else {
+          tgPayload.text = textMessage;
+        }
+
+        const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tgPayload)
+        });
+        const tgResult = await tgResponse.json();
+        if (tgResult && tgResult.ok) telegramMessageId = tgResult.result.message_id;
+      } catch (tgError) {
+          console.error("Telegram notification channel skipped safely:", tgError);
+      }
+    }
+
+    // 📝 3. FIRESTORE DATABASE ENTRY SAVE (Permanent Telegra.ph Link Store Hoga)
     const wishRef = db.collection('wishes').doc();
     const wishId = wishRef.id;
 
@@ -118,32 +108,23 @@ export default async function handler(req, res) {
       title: title || '',
       category: category || 'General',
       sub_category: sub_category || '',
-      imageUrl: fileUrl || null,  
-      telegramFileId: fileId || null,
-      fileType: fileType,
+      imageUrl: fileUrl, // Pure Telegram Engine Server Link
       telegramMessageId: telegramMessageId || null, 
       createdAt: new Date().toISOString()
     });
 
-    // 3. REALTIME SYNC
+    // 📊 4. RTDB VIEWS SETUP
     try {
       await rtdb.ref(`wishes/${wishId}`).set({ likes: 0, shares: 0, views: 0 });
-    } catch (rtdbErr) {
-      console.error("RTDB bypass logger:", rtdbErr);
-    }
+    } catch (e) {}
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Wish live successfully synchronized!', 
+      message: 'Wish live with permanent Telegram server asset link!', 
       wishId 
     });
 
   } catch (error) {
-    console.error("Global system catch triggered:", error);
-    // Explicitly fallback JSON structure on total crash to avoid string interceptions
-    return res.status(200).json({ 
-      success: false, 
-      message: `System Bypass Active: ${error.message}` 
-    });
+    return res.status(200).json({ success: false, message: `System Error: ${error.message}` });
   }
-                                              }
+      }
