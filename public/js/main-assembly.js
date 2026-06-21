@@ -10,7 +10,7 @@ async function startApp() {
     }
 
     try {
-        // 1. Storage Check (Jaise aapka pehle ka module logic tha)
+        // 1. Storage Check
         if (typeof initStorage === 'function') {
             await initStorage();
             console.log("Storage: Loaded");
@@ -18,15 +18,15 @@ async function startApp() {
             console.warn("initStorage function nahi mila.");
         }
 
-        // 2. Dynamic Categories Load Check (Jo aapne nayi file banayi hai)
+        // 2. Dynamic Categories Load Check
         if (typeof loadCategories === 'function') {
-            loadCategories(); // Yeh function 'feat-categories.js' se aa raha hai
+            loadCategories(); 
             console.log("Categories Navigation: Loaded");
         } else {
             console.warn("loadCategories function nahi mila. HTML me script check karein.");
         }
         
-        // 3. Vercel Backend API se connect karke wishes load karna
+        // 3. Vercel Backend API Connection
         if (grid) {
             await fetchWishesFromServer(grid);
         }
@@ -51,7 +51,6 @@ async function startApp() {
 // Backend API se data aur media lekar HTML me render karne ka function
 async function fetchWishesFromServer(gridElement) {
     try {
-        // Vercel ka naya route call kiya data ke liye
         const response = await fetch('/api/get-wishes');
         const data = await response.json();
 
@@ -70,31 +69,44 @@ async function fetchWishesFromServer(gridElement) {
         data.wishes.forEach(wish => {
             const card = document.createElement('div');
             card.className = 'wish-card'; 
-            // Dataset attributes set kar rahe hain taaki filters aur search unhe read kar sakein
             card.setAttribute('data-category', wish.category || 'General');
             card.setAttribute('data-text', (wish.title || '').toLowerCase());
 
             card.style.cssText = "background:#121212; border:1px solid #333; border-radius:12px; padding:15px; margin:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 10px;";
 
-            // 📸 DUAL MEDIA LOGIC FIXED: Check direct image link first, then proxy file path
+            // 📸 BULLETPROOF DUAL MEDIA LOGIC
             let mediaHtml = '';
-            let finalMediaUrl = wish.imageUrl || null; // Database se seedha link check karna
+            let finalMediaUrl = wish.imageUrl || null;
 
-            // Agar direct link nahi hai, tabhi purane proxy system ko link assign karna
+            // Proxy recovery layer to bypass standard telegram CORS blocks
             if (!finalMediaUrl && wish.telegramFileId) {
                 finalMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
             }
 
             if (finalMediaUrl) {
-                if (wish.fileType === 'video' || wish.fileType === 'animation') {
+                // Check if the URL contains keywords for animations or gifs
+                const isGifVideo = wish.fileType === 'video' || wish.fileType === 'animation' || finalMediaUrl.includes('.mp4') || finalMediaUrl.includes('.gif');
+                
+                if (isGifVideo) {
                     mediaHtml = `
                         <div style="width:100%; border-radius:8px; overflow:hidden; background:#000;">
-                            <video src="${finalMediaUrl}" controls preload="metadata" style="width:100%; max-height:300px; display:block;"></video>
+                            <video src="${finalMediaUrl}" loop muted autoplay playsinline style="width:100%; max-height:300px; display:block;"></video>
                         </div>`;
                 } else {
+                    // Standard explicit reverse proxy pipeline injection
+                    let proxyCleanUrl = finalMediaUrl;
+                    if(finalMediaUrl.includes('api.telegram.org/file/bot')) {
+                         const rawTokenPath = finalMediaUrl.split('bot')[1];
+                         proxyCleanUrl = `https://imtqy.com/bot${rawTokenPath}`;
+                    }
+
                     mediaHtml = `
-                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#000; text-align:center;">
-                            <img src="${finalMediaUrl}" alt="Wish Media" loading="lazy" style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block; border-radius:8px;">
+                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#1e1e1e; text-align:center;">
+                            <img src="${proxyCleanUrl}" 
+                                 alt="Wish Media" 
+                                 loading="lazy" 
+                                 onerror="this.parentElement.style.display='none';"
+                                 style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block; border-radius:8px;">
                         </div>`;
                 }
             }
@@ -116,7 +128,7 @@ async function fetchWishesFromServer(gridElement) {
                 <div style="text-align:right; margin-top:5px;">
                     <button class="copy-btn" 
                             style="background:#222; color:#00f2ff; border:1px solid #00f2ff; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;"
-                            onclick="navigator.clipboard.writeText(\`${wish.title.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`); alert('Wish text copied!');">
+                            onclick="navigator.clipboard.writeText(\`${(wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`); alert('Wish text copied!');">
                         Copy Wish
                     </button>
                 </div>
@@ -143,7 +155,6 @@ function setupSearchLogic() {
             const cardText = card.getAttribute('data-text') || '';
             const cardCategory = card.getAttribute('data-category') || '';
             
-            // Filter configuration logic
             const matchesCategory = (typeof activeCategory === 'undefined' || activeCategory === "All" || cardCategory === activeCategory);
             const matchesSearch = cardText.includes(query);
 
