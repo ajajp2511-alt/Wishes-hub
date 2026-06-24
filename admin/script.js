@@ -1,55 +1,35 @@
-// Wishes Hub: Live Admin Controller
+// Wishes Hub: Main Router & Session Manager
+
 document.addEventListener('DOMContentLoaded', () => {
-    const unlockBtn = document.getElementById('unlock-btn');
-    const loginModule = document.getElementById('login-module');
-    const mainPanel = document.getElementById('main-panel');
-    const statusText = document.getElementById('status');
+    const currentPath = window.location.pathname;
 
-    if (unlockBtn) {
-        unlockBtn.addEventListener('click', async () => {
-            const passwordField = document.getElementById('admin-password-field');
-            const enteredPassword = passwordField?.value || "";
+    // 1. Session Check (Protect Dashboard)
+    // Agar koi bina login kiye index.html par aane ki koshish kare
+    if (currentPath.includes('index.html') || currentPath === '/admin/') {
+        const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
+        if (isLoggedIn !== 'true') {
+            window.location.href = '/admin/login.html';
+            return;
+        }
+    }
 
-            if (!enteredPassword.trim()) {
-                if (statusText) statusText.innerText = "🚨 Please enter a password!";
-                return;
-            }
+    // 2. Already Logged In Check (Skip Login Page)
+    // Agar user pehle se logged in hai aur login.html kholta hai, toh use direct dashboard bhejo
+    if (currentPath.includes('login.html')) {
+        const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
+        if (isLoggedIn === 'true') {
+            window.location.href = '/admin/index.html';
+            return;
+        }
+    }
 
-            if (statusText) statusText.innerText = "🔑 Connecting to server...";
-
-            try {
-                const response = await fetch('/api/verify-pass', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: enteredPassword })
-                });
-
-                const data = await response.json().catch(() => ({}));
-
-                if (response.status === 200) {
-                    if (statusText) statusText.innerText = "";
-                    if (loginModule) loginModule.style.display = 'none';
-                    if (mainPanel) mainPanel.style.display = 'block';
-                    console.log("Admin Panel Unlocked!");
-
-                    // Sahi tareeka: Agar module load hone me thoda time le, toh yeh use break nahi karega
-                    setTimeout(() => {
-                        if (typeof window.loadDefaultAdminView === 'function') {
-                            window.loadDefaultAdminView();
-                        } else {
-                            // Agar side click manually trigger karna pade
-                            const defaultLink = document.querySelector('.nav-link[data-feature="wishes"]');
-                            if (defaultLink) defaultLink.click();
-                        }
-                    }, 100);
-
-                } else {
-                    if (statusText) statusText.innerText = "🚨 Access Denied: " + (data.error || "Wrong Password!");
-                }
-            } catch (error) {
-                console.error(error);
-                if (statusText) statusText.innerText = "🚨 Connection Failed!";
-            }
+    // 3. Global Logout Handler
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('isAdminLoggedIn'); // Session clear kiya
+            window.location.href = '/admin/login.html'; // Login page par bheja
         });
     }
 });
