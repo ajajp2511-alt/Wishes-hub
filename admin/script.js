@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
 
-    // 1. Protection Router
+    // 1. Protection Router (Dashboard Security)
     if (currentPath.includes('index.html') || currentPath === '/admin/') {
         if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
-            // Updated Path to 'pages' folder
             window.location.href = '/admin/pages/login.html';
             return;
         }
@@ -18,13 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. Logout Trigger Handler
+    // 3. Global Logout Trigger Handler
     document.addEventListener('click', (e) => {
         if (e.target && e.target.id === 'logout-btn') {
             e.preventDefault();
-            localStorage.removeItem('isAdminLoggedIn');
-            // Updated Path to 'pages' folder
-            window.location.href = '/admin/pages/login.html';
+            localStorage.removeItem('isAdminLoggedIn'); // Session clear
+            window.location.href = '/admin/pages/login.html'; // Redirect to login
         }
     });
 });
