@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishes Hub - Admin System Debugger</title>
+    <link rel="stylesheet" href="debug.css">
+</head>
+<body>
+
+    <h1>🔍 Wishes Hub: Admin Console Debugger</h1>
+    <p>Yeh page aapke paths, API aur session ko check karne ke liye hai.</p>
+
+    <div class="card">
+        <h2>1. Current Location & Paths</h2>
+        <div id="path-results">Checking...</div>
+    </div>
+
+    <div class="card">
+        <h2>2. Browser Storage (Session) Test</h2>
+        <div id="storage-results">Checking...</div>
+    </div>
+
+    <div class="card">
+        <h2>3. Live API `/api/verify-pass` Test</h2>
+        <p>Yahan password daalkar test karein ki server kya response de raha hai:</p>
+        <input type="text" id="test-password" placeholder="Enter Test Password">
+        <button id="run-api-test">Test API Connection</button>
+        <pre id="api-results" style="margin-top: 15px; background: #111; padding: 10px; overflow-x: auto; color: #00ffcc;">API Test run nahi kiya gaya hai.</pre>
+    </div>
+
+    <script src="debug.js"></script>
+</body>
+</html>
