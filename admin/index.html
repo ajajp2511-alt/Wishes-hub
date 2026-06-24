@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub Admin Dashboard</title>
+    <title>Wishes Hub Admin</title>
     <link rel="stylesheet" href="/admin/style-admin.css">
 </head>
 <body>
@@ -12,26 +12,6 @@
         <div id="main-panel">
             <div class="admin-wrapper">
                 
-                <nav class="sidebar">
-                    <div class="sidebar-header">
-                        <h2>Dashboard</h2>
-                        <p>Admin Control Panel</p>
-                    </div>
-                    <ul class="nav-menu">
-                        <li><a href="#" class="nav-link active" data-feature="wishes"><span class="icon">➕</span> Add Wishes</a></li>
-                        <li><a href="#" class="nav-link" data-feature="photos"><span class="icon">🖼️</span> Manage Photos</a></li>
-                        <li><a href="#" class="nav-link" data-feature="links"><span class="icon">🔗</span> Manage Links</a></li>
-                        <li><a href="#" class="nav-link" data-feature="manager"><span class="icon">📋</span> Manage Wishes</a></li>
-                        <li><a href="#" class="nav-link" data-feature="analytics"><span class="icon">📊</span> Analytics</a></li>
-                        <li><a href="#" class="nav-link" data-feature="health"><span class="icon">🩺</span> System Health</a></li>
-                        <li><a href="#" class="nav-link" data-feature="settings"><span class="icon">⚙️</span> Settings</a></li>
-                        
-                        <li class="logout-item">
-                            <button id="logout-btn" class="btn-logout">🚪 Logout</button>
-                        </li>
-                    </ul>
-                </nav>
-
                 <main class="content-workspace">
                     <div id="dynamic-content-root"></div>
                 </main>
@@ -39,7 +19,6 @@
         </div>
     </div>
 
-    <!-- Features Scripts -->
     <script src="/admin/features/wishes/category-data.js"></script>
     <script src="/admin/features/wishes/wishes.js"></script>
     <script src="/admin/features/photos/photos.js"></script>
@@ -48,8 +27,6 @@
     <script src="/admin/features/analytics/analytics.js"></script>
     <script src="/admin/features/health/health.js"></script>
     <script src="/admin/features/settings/settings.js"></script>
-    
-    <!-- Auth & UI Controllers -->
     <script src="/admin/features/auth/admin-auth.js"></script>
     <script src="/admin/js/ui-controller.js"></script> 
     <script src="/admin/script.js"></script>
