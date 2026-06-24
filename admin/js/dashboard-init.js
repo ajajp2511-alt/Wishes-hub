@@ -1,19 +1,17 @@
-// Wishes Hub: Dashboard Auto-Initializer (New Name to Avoid Conflict)
 document.addEventListener('DOMContentLoaded', () => {
-    // Check agar user bina login ke index file par aaya hai, toh bhagao use
+    // Session Verification: Agar logged in nahi hai toh login page par bhejo
     if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
-        window.location.href = "/admin/login.html";
+        window.location.href = "/admin/pages/login.html";
         return;
     }
 
     console.log("Admin Panel Unlocked & Initialized!");
 
-    // Default view loading logic (Jo pehle login success par chalta tha)
+    // Default feature loading/click logic
     setTimeout(() => {
         if (typeof window.loadDefaultAdminView === 'function') {
             window.loadDefaultAdminView();
         } else {
-            // Agar main function directly load na ho, toh wishes link click karo
             const defaultLink = document.querySelector('.nav-link[data-feature="wishes"]');
             if (defaultLink) defaultLink.click();
         }
