@@ -1,1 +1,40 @@
+<div id="feature-content-area" class="live-preview-container">
+    
+    <div class="feature-card content-entry-card">
+        <h2 class="section-title">Add New Wish</h2>
+        
+        <div class="form-group">
+            <label for="main-category">Main Category</label>
+            <select id="main-category">
+                <option value="">Select Main Category</option>
+            </select>
+        </div>
 
+        <div class="form-group">
+            <label for="sub-category">Sub Category</label>
+            <select id="sub-category">
+                <option value="">Select Sub Category</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="wish-text">Wish Content Text</label>
+            <textarea id="wish-text" class="rich-editor" placeholder="Enter your wish text here..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="wish-image">Upload Feature Image</label>
+            <input type="file" id="wish-image" class="file-uploader">
+        </div>
+
+        <button class="primary-action-btn" id="submit-wish-btn">Submit Wish</button>
+    </div>
+
+    <div class="feature-card dynamic-preview-status-card">
+        <h3 class="subsection-title">✨ Recently Submitted Wish (Live Preview)</h3>
+        <div id="live-preview-box" class="preview-output-wrapper">
+            <p class="empty-state-text">Abhi tak koi naya data submit nahi kiya gaya hai.</p>
+        </div>
+    </div>
+
+</div>
