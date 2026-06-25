@@ -1,5 +1,5 @@
 /* ==========================================================
-   🧭 WISHES HUB - SIDEBAR LAYOUT & ANIMATION
+   🧭 WISHES HUB - SIDEBAR LAYOUT & ANIMATION (UPDATED)
    ========================================================== */
 
 .sidebar { 
@@ -9,15 +9,13 @@
     padding: 30px 20px; 
     position: fixed; 
     height: 100vh; 
-    z-index: 100; 
+    z-index: 1000; 
     transition: transform 0.3s ease-in-out;
 }
 
-/* Toggle State: Jab JS se 'hide' class add hogi, tab sidebar left chhup jayega */
+/* Desktop layout me standard status open rahega */
 .sidebar.hide {
     transform: translateX(-100%);
-    position: absolute;
-    z-index: 100;
 }
 
 .content-workspace { 
@@ -27,7 +25,6 @@
     transition: margin-left 0.3s ease-in-out;
 }
 
-/* Sidebar chhupne par workspace full-width ho jaye */
 .sidebar.hide ~ .content-workspace {
     margin-left: 0;
 }
@@ -63,36 +60,31 @@
     margin-top: auto; 
 }
 
-/* Hamburger 3-line Button styling */
-#toggle-sidebar-btn {
-    font-size: 24px;
-    background: none;
-    border: none;
-    color: var(--sidebar-bg);
-    cursor: pointer;
-    padding: 10px;
-    margin-bottom: 15px;
-    display: inline-block;
+/* Header controller setting */
+.mobile-header {
+    display: none !important; /* Computer screen par header chhupa rahega */
 }
 
-/* Responsive Tablet/Mobile Styles */
+/* 📱 RESPONSIVE MOBILE LOGIC */
 @media screen and (max-width: 768px) {
+    .mobile-header {
+        display: flex !important; /* Mobile par top bar dikhega */
+    }
+
     .sidebar { 
-        width: 280px; 
         position: fixed;
-        transform: translateX(-100%); /* Mobile par default me hidden rahega */
+        top: 55px; /* Mobile header ke thik niche se start hoga */
+        left: 0;
+        transform: translateX(-100%); /* Shuruat me hidden rahega */
     }
     
+    /* Jab active ho (3 line dabane par) */
     .sidebar.hide {
-        transform: translateX(0); /* Mobile toggle state */
+        transform: translateX(0) !important; 
     }
     
     .content-workspace { 
-        margin-left: 0; 
+        margin-left: 0 !important; 
         padding: 20px; 
-    }
-    
-    .admin-wrapper { 
-        flex-direction: column; 
     }
 }
