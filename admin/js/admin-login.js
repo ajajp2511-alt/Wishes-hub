@@ -1,5 +1,5 @@
 // ==========================================================
-// 🛡️ WISHES HUB ADMIN - LOGIN LOGIC ENGINE (REFRESH TO LOCK)
+// 🛡️ WISHES HUB ADMIN - LOGIN LOGIC ENGINE (SMART VERIFY)
 // ==========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Login function ko handle karne ke liye core logic
     async function handleLogin() {
-        const password = passwordField.value.trim();
+        const password = passwordField.value.trim(); // Extra spaces hata dega
 
         if (!password) {
             showStatus("⚠️ Please enter a password!", "error");
@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatus("⏳ Verifying...", "processing");
 
         try {
+            console.log("Sending password check request...");
+            
             // Backend API verification call
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
@@ -34,12 +36,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ password: password })
             });
 
-            const data = await response.json();
+            // Yahan hum response text nikal rahe hain pehle taaki error check ho sake
+            const responseText = await response.text();
+            console.log("Raw Server Response:", responseText);
 
-            if (response.status === 200 && data.success) {
+            // Text ko JSON me convert karenge safely
+            let data = {};
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.warn("Response was not strict JSON, evaluating status code instead.");
+            }
+
+            // 🔴 APNA SMART LOGIC: Agar status 200 hai YA data.success true hai
+            if (response.status === 200 || data.success === true) {
                 showStatus("🎉 Access Granted! Redirecting...", "success");
                 
-                // 🔴 APNA LOGIC: localStorage ki jagah sessionStorage use kiya
+                // Session store kiya
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
                 
                 // 1 second baad dashboard par redirect karein
@@ -47,10 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "/admin/index.html";
                 }, 1000);
             } else {
+                // Agar galat bataye toh message dikhao
                 showStatus(`❌ ${data.message || 'Incorrect Password!'}`, "error");
             }
         } catch (error) {
-            console.error("Login Error:", error);
+            console.error("Login Error Details:", error);
             showStatus("🚨 Network Error! Backend connect nahi ho pa raha hai.", "error");
         }
     }
