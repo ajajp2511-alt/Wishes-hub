@@ -17,20 +17,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log("Welcome to Secure Admin Panel Dashboard!");
 
-    // 2. FETCH DYNAMIC SIDEBAR TEMPLATE
+    // 2. FETCH DYNAMIC SIDEBAR TEMPLATE (Sahi Path Set Kiya)
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
-            const response = await fetch('/admin/sidebar.html');
+            // 🔴 CORRECTION: Aapki file screenshot ke mutabik pages folder me hai
+            let sidebarPath = '/admin/pages/sidebar.html';
+            
+            const response = await fetch(sidebarPath);
+            
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
-                console.log("Sidebar Loaded Successfully!");
+                console.log("Sidebar Loaded Successfully from pages/sidebar.html!");
                 
                 // Sidebar template load hone ke baad click toggle logic start hoga
                 initSidebarToggleEngine();
             } else {
-                console.error("Error: sidebar.html template not found!");
+                console.error("Error: sidebar.html template not found at " + sidebarPath);
             }
         } catch (error) {
             console.error("AJAX Error loading sidebar layout:", error);
@@ -44,19 +48,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspace = document.querySelector('.content-workspace');
 
         if (toggleBtn && sidebar) {
+            console.log("Toggle button and sidebar successfully mapped!");
+            
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                console.log("Hamburger Clicked!");
                 
                 if (window.innerWidth <= 768) {
-                    // Mobile Layout logic: uses 'show-sidebar' class
+                    // Mobile Layout logic
                     sidebar.classList.toggle('show-sidebar');
                 } else {
-                    // Desktop Layout logic: uses standard 'hide' class
+                    // Desktop Layout logic
                     sidebar.classList.toggle('hide');
                 }
             });
 
-            // Agar user mobile par sidebar khol kar main workspace area me click kare, toh sidebar auto-hide ho jaye
+            // Workspace click par auto close
             if (workspace) {
                 workspace.addEventListener('click', () => {
                     if (window.innerWidth <= 768) {
@@ -64,19 +71,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
             }
+        } else {
+            console.error("Critical: Toggle button or Sidebar structure missing from DOM!");
         }
     }
 
-    // 4. MOCK DATA FOR DROPDOWNS (Aapke UI ke testing ke liye)
-    // Jab tak aap backend dynamic loading nahi jodd rahe, dropdowns khali nahi lagenge
+    // Dropdown population
     populateDropdownsMockData();
 
     function populateDropdownsMockData() {
         const mainCat = document.getElementById('main-category');
-        const subCat = document.getElementById('sub-category');
-        
-        if (mainCat && subCat) {
-            // Mock categories loading
+        if (mainCat) {
             const categories = ["Birthday Wishes", "Anniversary", "Festival", "Good Morning"];
             categories.forEach(cat => {
                 let opt = document.createElement('option');
