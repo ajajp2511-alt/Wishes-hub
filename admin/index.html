@@ -8,9 +8,9 @@
 </head>
 <body>
 
-    <div class="mobile-header" style="background: var(--sidebar-bg); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-        <span style="font-weight: 600; font-size: 18px;">Wishes Hub Admin</span>
-        <button id="toggle-sidebar-btn" style="color: white; margin-bottom: 0; padding: 5px 10px;">☰</button>
+    <div class="mobile-header" style="background: var(--sidebar-bg); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom: 1px solid var(--sidebar-hover);">
+        <span style="font-weight: 600; font-size: 18px; font-family: 'Segoe UI', sans-serif;">Wishes Hub Admin</span>
+        <button id="toggle-sidebar-btn" style="color: white; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px 10px; line-height: 1;">☰</button>
     </div>
 
     <div class="admin-wrapper">
@@ -18,24 +18,33 @@
         <main class="content-workspace">
             <div id="feature-content-area">
                 <div class="feature-card">
-                    <h2 style="margin-bottom: 20px;">Add New Wish</h2>
+                    <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Wish</h2>
+                    
                     <div class="form-group">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Main Category</label>
                         <select id="main-category">
-                            <option>Select Main Category</option>
-                        </select>
+                            <option value="">Select Main Category</option>
+                            </select>
                     </div>
+
                     <div class="form-group">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Sub Category</label>
                         <select id="sub-category">
-                            <option>Select Sub Category</option>
-                        </select>
+                            <option value="">Select Sub Category</option>
+                            </select>
                     </div>
+
                     <div class="form-group">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Wish Content Text</label>
                         <textarea id="wish-text" class="rich-editor" placeholder="Enter your wish text here..."></textarea>
                     </div>
+
                     <div class="form-group">
-                        <input type="file" id="wish-image" style="background: #1e293b; color: white;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Upload Feature Image</label>
+                        <input type="file" id="wish-image" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border);">
                     </div>
-                    <button class="primary-action-btn">Submit Wish</button>
+
+                    <button class="primary-action-btn" id="submit-wish-btn" style="margin-top: 10px;">Submit Wish</button>
                 </div>
             </div>
         </main>
