@@ -1,32 +1,33 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE ENGINE & SIDEBAR TOGGLE
+// 🎛️ WISHES HUB ADMIN - CORE ENGINE (REFRESH TO LOCK ENABLED)
 // ==========================================================
+
+// 🔴 CRITICAL SECURITY: Page refresh hone par session turant mita do
+if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
+    sessionStorage.removeItem('isAdminLoggedIn');
+    localStorage.removeItem('isAdminLoggedIn'); // Purana bacha kucha data bhi clear
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // 1. SESSION VERIFICATION (Security Check)
-    // Agar user logged in nahi hai, toh seedhe login.html par phenko
-    if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+    // 1. SESSION VERIFICATION
+    // Agar session me login 'true' nahi hai, toh turant login page par phenko
+    if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
         window.location.href = "/admin/pages/login.html";
         return;
     }
 
-    console.log("Admin Securely Logged In!");
+    console.log("Admin Securely Logged In for this session!");
 
     // 2. SIDEBAR DYNAMIC LOADER
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
-            // Sidebar template ko fetch kar rahe hain
             const response = await fetch('/admin/sidebar.html');
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
-                
-                // Content ko sidebar wrapper ke andar lagaya
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
                 console.log("Sidebar Loaded!");
-                
-                // Sidebar load hone ke baad click toggle engine start hoga
                 initSidebarToggleEngine();
             } else {
                 console.error("Sidebar file not found (404)!");
@@ -42,16 +43,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const sidebar = document.querySelector('.sidebar');
 
         if (toggleBtn && sidebar) {
-            // JavaScript event jo click hone par 'hide' class ko adla-badli karega
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 sidebar.classList.toggle('hide');
             });
 
-            // Agar user sidebar ke bahar workspace par click kare toh mobile me sidebar chhup jaye
             document.querySelector('.content-workspace').addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('hide'); // mobile standard state me hidden rakhega
+                    sidebar.classList.remove('hide');
                 }
             });
         }
