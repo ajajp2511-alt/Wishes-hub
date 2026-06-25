@@ -1,0 +1,12 @@
+/* ==========================================================
+   ✨ WISHES HUB ADMIN - MAIN CENTRAL STYLE SHEET
+   ========================================================== */
+
+/* 1. css folder ke andar se Global Styles load karein */
+@import url('css/style-admin.css');
+
+/* 2. css folder ke andar se Sidebar Layout load karein */
+@import url('css/sidebar.css');
+
+/* 3. css folder ke andar se Login Styles load karein */
+@import url('css/login.css');
