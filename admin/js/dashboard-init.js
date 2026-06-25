@@ -1,43 +1,39 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - DASHBOARD INITIALIZER & SUBMIT LOGIC
+// 🎛️ WISHES HUB ADMIN - CENTRAL ROUTER INITIALIZER LAYER
 // ==========================================================
 
-// Security setup: Page refresh hote hi logout kar do
 if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
     sessionStorage.removeItem('isAdminLoggedIn');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // 1. SESSION CONTROL
+    // 1. SESSION ACCESS LOCK CONTROL
     if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
         window.location.href = "/admin/pages/login.html";
         return;
     }
 
-    console.log("Welcome to Secure Admin Panel Dashboard!");
+    console.log("Welcome to Secure Admin Panel Dashboard System Core!");
 
-    // 2. FETCH DYNAMIC SIDEBAR TEMPLATE
+    // 2. SIDEBAR ASYNC LOADER INTERFACES
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
             let sidebarPath = '/admin/pages/sidebar.html';
             const response = await fetch(sidebarPath);
-            
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
-                console.log("Sidebar Loaded Successfully!");
                 initSidebarToggleEngine();
-            } else {
-                console.error("Error: sidebar.html template not found!");
+                setupSidebarNavigation(); // Navigation listeners activate karein
             }
         } catch (error) {
             console.error("AJAX Error loading sidebar layout:", error);
         }
     }
 
-    // 3. ☰ BUTTON TOGGLE ENGINE
+    // 3. ☰ MOBILE RESPONSIVE NAV TOGGLE ENGINE
     function initSidebarToggleEngine() {
         const toggleBtn = document.getElementById('toggle-sidebar-btn');
         const sidebar = document.querySelector('.sidebar');
@@ -52,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     sidebar.classList.toggle('hide');
                 }
             });
-
             if (workspace) {
                 workspace.addEventListener('click', () => {
                     if (window.innerWidth <= 768) {
@@ -63,21 +58,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 4. REAL DYNAMIC DROPDOWNS LOGIC
-    populateRealCategories();
-
+    // 4. DEPENDENT DYNAMIC CATEGORY FILLER
     function populateRealCategories() {
         const mainCatDropdown = document.getElementById('main-category');
         const subCatDropdown = document.getElementById('sub-category');
         
-        if (typeof categoriesConfig === 'undefined') {
-            console.error("Critical: categoriesConfig data not found!");
-            return;
-        }
+        if (typeof categoriesConfig === 'undefined' || !mainCatDropdown || !subCatDropdown) return;
 
-        if (!mainCatDropdown || !subCatDropdown) return;
+        // Reset main dropdown to prevent duplicates
+        mainCatDropdown.innerHTML = '<option value="">Select Main Category</option>';
 
-        // Main Category Options Fill karein
         Object.keys(categoriesConfig).forEach(mainCat => {
             let opt = document.createElement('option');
             opt.value = mainCat;
@@ -85,11 +75,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             mainCatDropdown.appendChild(opt);
         });
 
-        // Main Category Change Event Listener
         mainCatDropdown.addEventListener('change', function() {
             const selectedMain = this.value;
             subCatDropdown.innerHTML = '<option value="">Select Sub Category</option>';
-            
             if (selectedMain && categoriesConfig[selectedMain]) {
                 categoriesConfig[selectedMain].forEach(subCat => {
                     let opt = document.createElement('option');
@@ -101,59 +89,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. SUBMIT WISH BUTTON WORK ENGINE
-    const submitBtn = document.getElementById('submit-wish-btn');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', async () => {
-            const mainCategory = document.getElementById('main-category').value;
-            const subCategory = document.getElementById('sub-category').value;
-            const wishText = document.getElementById('wish-text').value.trim();
-            const imageFile = document.getElementById('wish-image').files[0];
+    // 🔴 5. DYNAMIC COMPONENT CONNECTOR ENGINE (HTML + CSS Injector)
+    async function loadLivePreviewComponent() {
+        const workspaceArea = document.getElementById('feature-content-area');
+        if (!workspaceArea) return;
 
-            // Form Validation Checks
-            if (!mainCategory || !subCategory || !wishText) {
-                alert("⚠️ Please fill out Main Category, Sub Category, and Wish Text!");
-                return;
+        try {
+            // A. Dynamically CSS File link inject karein head me (agar pehle se nahi hai)
+            if (!document.getElementById('live-preview-css')) {
+                const cssLink = document.createElement('link');
+                cssLink.id = 'live-preview-css';
+                cssLink.rel = 'stylesheet';
+                cssLink.href = '/admin/css/live-preview-wish.css';
+                document.head.appendChild(cssLink);
             }
 
-            submitBtn.innerText = "⏳ Submitting...";
-            submitBtn.disabled = true;
+            // B. Dynamically HTML Component Page fetch karein
+            const response = await fetch('/admin/pages/live-preview-wish.html');
+            if (response.status === 200) {
+                const componentHtml = await response.text();
+                
+                // Content workspace container ke andar naya HTML daal dein
+                workspaceArea.parentElement.innerHTML = componentHtml;
 
-            const formData = new FormData();
-            formData.append('mainCategory', mainCategory);
-            formData.append('subCategory', subCategory);
-            formData.append('wishText', wishText);
-            if (imageFile) {
-                formData.append('wishImage', imageFile);
-            }
+                // C. Dropdowns ko database data config se fill karein
+                populateRealCategories();
 
-            try {
-                // 🔴 CORRECTION: Sahi file path lagaya jo Vercel serverless function ko hit karega
-                const response = await fetch('/api/add-wish-to-db', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (response.status === 200 || result.success) {
-                    alert("🎉 Wish successfully uploaded and added to Database!");
-                    
-                    // Fields reset after success
-                    document.getElementById('wish-text').value = "";
-                    document.getElementById('wish-image').value = "";
-                    document.getElementById('main-category').value = "";
-                    document.getElementById('sub-category').innerHTML = '<option value="">Select Sub Category</option>';
-                } else {
-                    alert(`❌ Server Error: ${result.message || 'Submission failed.'}`);
+                // D. Nayi script feature file ka submit logic engine trigger karein
+                if (typeof initLivePreviewFeature === 'function') {
+                    initLivePreviewFeature();
+                    console.log("🎉 Live Preview Component Connected and Active!");
                 }
-            } catch (error) {
-                console.error("Form Submission Error:", error);
-                alert("🚨 Network Error: Backend server response nahi de raha!");
-            } finally {
-                submitBtn.innerText = "Submit Wish";
-                submitBtn.disabled = false;
+            } else {
+                console.error("Failed to load component HTML template.");
             }
-        });
+        } catch (error) {
+            console.error("Error linking component assets:", error);
+        }
+    }
+
+    // 6. SIDEBAR MENU CLICK SETUP
+    function setupSidebarNavigation() {
+        // Maan lete hain aapke sidebar menu item par id="menu-add-wish" ya class hai
+        // Aap click ke hisab se ise load kar sakte hain. Default test ke liye hum ise auto-load kar rahe hain:
+        loadLivePreviewComponent();
     }
 });
