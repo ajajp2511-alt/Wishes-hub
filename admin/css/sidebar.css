@@ -1,5 +1,5 @@
 /* ==========================================================
-   🧭 WISHES HUB - SIDEBAR LAYOUT & ANIMATION (UPDATED)
+   🧭 WISHES HUB - SIDEBAR LAYOUT & RESPONSIVE SLIDE
    ========================================================== */
 
 .sidebar { 
@@ -11,9 +11,11 @@
     height: 100vh; 
     z-index: 1000; 
     transition: transform 0.3s ease-in-out;
+    left: 0;
+    top: 0;
 }
 
-/* Desktop layout me standard status open rahega */
+/* Desktop layout me hidden state */
 .sidebar.hide {
     transform: translateX(-100%);
 }
@@ -25,6 +27,7 @@
     transition: margin-left 0.3s ease-in-out;
 }
 
+/* Sidebar jab desktop me hide ho toh main content full area le le */
 .sidebar.hide ~ .content-workspace {
     margin-left: 0;
 }
@@ -60,26 +63,26 @@
     margin-top: auto; 
 }
 
-/* Header controller setting */
+/* Default me computer screens par mobile top bar nahi dikhega */
 .mobile-header {
-    display: none !important; /* Computer screen par header chhupa rahega */
+    display: none !important; 
 }
 
-/* 📱 RESPONSIVE MOBILE LOGIC */
+/* 📱 RESPONSIVE MOBILE SETTINGS (MAX-WIDTH: 768px) */
 @media screen and (max-width: 768px) {
     .mobile-header {
-        display: flex !important; /* Mobile par top bar dikhega */
+        display: flex !important; /* Mobile par top navbar chalu */
     }
 
     .sidebar { 
         position: fixed;
-        top: 55px; /* Mobile header ke thik niche se start hoga */
-        left: 0;
-        transform: translateX(-100%); /* Shuruat me hidden rahega */
+        top: 60px; /* Top header ke bilkul neeche se shuru ho */
+        height: calc(100vh - 60px);
+        transform: translateX(-100%); /* Default me left me chhupa rahega */
     }
     
-    /* Jab active ho (3 line dabane par) */
-    .sidebar.hide {
+    /* 🔴 MAGIC STATE: Jab JS click par toggle karega, toh ye screen par active ho jayega */
+    .sidebar.show-sidebar {
         transform: translateX(0) !important; 
     }
     
