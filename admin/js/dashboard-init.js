@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 🔴 5. SUBMIT WISH BUTTON WORK ENGINE
+    // 5. SUBMIT WISH BUTTON WORK ENGINE
     const submitBtn = document.getElementById('submit-wish-btn');
     if (submitBtn) {
         submitBtn.addEventListener('click', async () => {
@@ -119,7 +119,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitBtn.innerText = "⏳ Submitting...";
             submitBtn.disabled = true;
 
-            // Kyunki form me image file bhi hai, isliye FormData object use karenge
             const formData = new FormData();
             formData.append('mainCategory', mainCategory);
             formData.append('subCategory', subCategory);
@@ -129,18 +128,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             try {
-                // Aapke backend api endpoint par data post ho raha hai
-                const response = await fetch('/api/add-wish', {
+                // 🔴 CORRECTION: Sahi file path lagaya jo Vercel serverless function ko hit karega
+                const response = await fetch('/api/add-wish-to-db', {
                     method: 'POST',
-                    body: formData // No headers required for FormData, browser sets it automatically
+                    body: formData
                 });
 
                 const result = await response.json();
 
                 if (response.status === 200 || result.success) {
-                    alert("🎉 Wish successfully uploaded and added!");
+                    alert("🎉 Wish successfully uploaded and added to Database!");
                     
-                    // Form fields clear kar do upload hone ke baad
+                    // Fields reset after success
                     document.getElementById('wish-text').value = "";
                     document.getElementById('wish-image').value = "";
                     document.getElementById('main-category').value = "";
