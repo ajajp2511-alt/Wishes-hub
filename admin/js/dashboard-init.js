@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CENTRAL ROUTER INITIALIZER LAYER
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER
 // ==========================================================
 
 if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
@@ -8,15 +8,15 @@ if (performance.navigation.type === 1 || performance.getEntriesByType("navigatio
 
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // 1. SESSION ACCESS LOCK CONTROL
+    // 1. SESSION Access Check
     if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
         window.location.href = "/admin/pages/login.html";
         return;
     }
 
-    console.log("Welcome to Secure Admin Panel Dashboard System Core!");
+    console.log("Welcome to Secure Admin Panel Core Setup!");
 
-    // 2. SIDEBAR ASYNC LOADER INTERFACES
+    // 2. Load Sidebar
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
@@ -26,14 +26,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
                 initSidebarToggleEngine();
-                setupSidebarNavigation(); // Navigation listeners activate karein
             }
         } catch (error) {
-            console.error("AJAX Error loading sidebar layout:", error);
+            console.error("Sidebar loading error:", error);
         }
     }
 
-    // 3. ☰ MOBILE RESPONSIVE NAV TOGGLE ENGINE
+    // 3. Sidebar Engine
     function initSidebarToggleEngine() {
         const toggleBtn = document.getElementById('toggle-sidebar-btn');
         const sidebar = document.querySelector('.sidebar');
@@ -58,14 +57,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 4. DEPENDENT DYNAMIC CATEGORY FILLER
+    // 4. Dropdowns Populater Engine
     function populateRealCategories() {
         const mainCatDropdown = document.getElementById('main-category');
         const subCatDropdown = document.getElementById('sub-category');
         
         if (typeof categoriesConfig === 'undefined' || !mainCatDropdown || !subCatDropdown) return;
 
-        // Reset main dropdown to prevent duplicates
         mainCatDropdown.innerHTML = '<option value="">Select Main Category</option>';
 
         Object.keys(categoriesConfig).forEach(mainCat => {
@@ -89,13 +87,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 🔴 5. DYNAMIC COMPONENT CONNECTOR ENGINE (HTML + CSS Injector)
+    // 🔴 5. DYNAMIC HTML COMPONENT & LOGIC CONNECTOR
     async function loadLivePreviewComponent() {
-        const workspaceArea = document.getElementById('feature-content-area');
+        const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
         try {
-            // A. Dynamically CSS File link inject karein head me (agar pehle se nahi hai)
+            // A. CSS File load karein head me
             if (!document.getElementById('live-preview-css')) {
                 const cssLink = document.createElement('link');
                 cssLink.id = 'live-preview-css';
@@ -104,34 +102,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.head.appendChild(cssLink);
             }
 
-            // B. Dynamically HTML Component Page fetch karein
+            // B. HTML Component load karein workspace me
             const response = await fetch('/admin/pages/live-preview-wish.html');
             if (response.status === 200) {
                 const componentHtml = await response.text();
-                
-                // Content workspace container ke andar naya HTML daal dein
-                workspaceArea.parentElement.innerHTML = componentHtml;
+                workspaceArea.innerHTML = componentHtml;
 
-                // C. Dropdowns ko database data config se fill karein
+                // C. Config categories fill karein
                 populateRealCategories();
 
-                // D. Nayi script feature file ka submit logic engine trigger karein
+                // D. Nayi feature script logic ko fire karein
                 if (typeof initLivePreviewFeature === 'function') {
                     initLivePreviewFeature();
-                    console.log("🎉 Live Preview Component Connected and Active!");
+                    console.log("🚀 Connection Success: Button hooks activated perfectly!");
                 }
-            } else {
-                console.error("Failed to load component HTML template.");
             }
         } catch (error) {
-            console.error("Error linking component assets:", error);
+            console.error("Component connectivity broke:", error);
         }
     }
 
-    // 6. SIDEBAR MENU CLICK SETUP
-    function setupSidebarNavigation() {
-        // Maan lete hain aapke sidebar menu item par id="menu-add-wish" ya class hai
-        // Aap click ke hisab se ise load kar sakte hain. Default test ke liye hum ise auto-load kar rahe hain:
-        loadLivePreviewComponent();
-    }
+    // Trigger on load
+    loadLivePreviewComponent();
 });
