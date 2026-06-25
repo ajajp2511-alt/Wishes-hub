@@ -17,7 +17,7 @@ function initLivePreviewFeature() {
         const wishText = document.getElementById('wish-text').value.trim();
         const imageFile = document.getElementById('wish-image').files[0];
 
-        // Form fields inputs valid condition validation checks
+        // Form Validation Checks
         if (!mainCategory || !subCategory || !wishText) {
             alert("⚠️ Please fill out Main Category, Sub Category, and Wish Text!");
             return;
@@ -35,7 +35,7 @@ function initLivePreviewFeature() {
         }
 
         try {
-            // Serverless connection endpoint hit
+            // Directhit target to serverless endpoint
             const response = await fetch('/api/add-wish-to-db', {
                 method: 'POST',
                 body: formData
@@ -46,19 +46,19 @@ function initLivePreviewFeature() {
             if (response.status === 200 || result.success) {
                 alert("🎉 Wish successfully uploaded and added to Database!");
                 
-                // Realtime screen data updates layout
+                // Realtime screen data display generator engine
                 if (previewBox) {
                     previewBox.innerHTML = `
-                        <div style="font-family: sans-serif; line-height: 1.6;">
-                            <p style="margin: 4px 0;"><strong>📁 Category:</strong> <span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${mainCategory}</span> &gt; <span style="background:#f3e8ff; color:#6b21a8; padding:2px 8px; border-radius:4px; font-size:12px;">${subCategory}</span></p>
-                            <p style="margin: 12px 0 4px 0;"><strong>📝 Submitted Content:</strong></p>
-                            <div style="background: white; padding: 12px; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 14px; white-space: pre-wrap;">${wishText}</div>
-                            ${imageFile ? `<p style="margin: 10px 0 0 0; color:#16a34a; font-size:13px;">📸 Image attachment passed to server functions.</p>` : ''}
+                        <div style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;">
+                            <p style="margin: 4px 0; font-size: 14px;"><strong>📁 Category:</strong> <span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:500;">${mainCategory}</span> &gt; <span style="background:#f3e8ff; color:#6b21a8; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:500;">${subCategory}</span></p>
+                            <p style="margin: 12px 0 4px 0; font-size: 14px;"><strong>📝 Submitted Content:</strong></p>
+                            <div style="background: #ffffff; padding: 14px; border-left: 4px solid #4f46e5; border-radius: 4px; font-size: 14px; white-wrap: pre-wrap; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; color:#0f172a;">${wishText}</div>
+                            ${imageFile ? `<p style="margin: 12px 0 0 0; color:#16a34a; font-size:13px; display:flex; align-items:center; gap:4px;"><strong>📸 Image:</strong> Attached & uploaded successfully</p>` : ''}
                         </div>
                     `;
                 }
                 
-                // Clear Form controls values
+                // Clear Form Fields inputs values
                 document.getElementById('wish-text').value = "";
                 document.getElementById('wish-image').value = "";
                 document.getElementById('main-category').value = "";
@@ -74,4 +74,4 @@ function initLivePreviewFeature() {
             submitBtn.disabled = false;
         }
     });
-                  }
+}
