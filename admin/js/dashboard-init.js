@@ -1,8 +1,8 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - DASHBOARD INITIALIZER & TOGGLE LOGIC
+// 🎛️ WISHES HUB ADMIN - DASHBOARD INITIALIZER & REAL DATA CONNECT
 // ==========================================================
 
-// Security setup: Page refresh hote hi logout kar do jisse hamesha safe rahe
+// Security setup: Page refresh hote hi logout kar do
 if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
     sessionStorage.removeItem('isAdminLoggedIn');
 }
@@ -17,53 +17,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log("Welcome to Secure Admin Panel Dashboard!");
 
-    // 2. FETCH DYNAMIC SIDEBAR TEMPLATE (Sahi Path Set Kiya)
+    // 2. FETCH DYNAMIC SIDEBAR TEMPLATE
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
-            // 🔴 CORRECTION: Aapki file screenshot ke mutabik pages folder me hai
             let sidebarPath = '/admin/pages/sidebar.html';
-            
             const response = await fetch(sidebarPath);
             
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
-                console.log("Sidebar Loaded Successfully from pages/sidebar.html!");
-                
-                // Sidebar template load hone ke baad click toggle logic start hoga
+                console.log("Sidebar Loaded Successfully!");
                 initSidebarToggleEngine();
             } else {
-                console.error("Error: sidebar.html template not found at " + sidebarPath);
+                console.error("Error: sidebar.html template not found!");
             }
         } catch (error) {
             console.error("AJAX Error loading sidebar layout:", error);
         }
     }
 
-    // 3. ☰ BUTTON TOGGLE ENGINE (FOR COMPUTER & MOBILE BOTH)
+    // 3. ☰ BUTTON TOGGLE ENGINE
     function initSidebarToggleEngine() {
         const toggleBtn = document.getElementById('toggle-sidebar-btn');
         const sidebar = document.querySelector('.sidebar');
         const workspace = document.querySelector('.content-workspace');
 
         if (toggleBtn && sidebar) {
-            console.log("Toggle button and sidebar successfully mapped!");
-            
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                console.log("Hamburger Clicked!");
-                
                 if (window.innerWidth <= 768) {
-                    // Mobile Layout logic
                     sidebar.classList.toggle('show-sidebar');
                 } else {
-                    // Desktop Layout logic
                     sidebar.classList.toggle('hide');
                 }
             });
 
-            // Workspace click par auto close
             if (workspace) {
                 workspace.addEventListener('click', () => {
                     if (window.innerWidth <= 768) {
@@ -71,24 +60,48 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
             }
-        } else {
-            console.error("Critical: Toggle button or Sidebar structure missing from DOM!");
         }
     }
 
-    // Dropdown population
-    populateDropdownsMockData();
+    // 4. REAL DYNAMIC DROPDOWNS LOGIC
+    populateRealCategories();
 
-    function populateDropdownsMockData() {
-        const mainCat = document.getElementById('main-category');
-        if (mainCat) {
-            const categories = ["Birthday Wishes", "Anniversary", "Festival", "Good Morning"];
-            categories.forEach(cat => {
-                let opt = document.createElement('option');
-                opt.value = cat.toLowerCase().replace(" ", "-");
-                opt.innerText = cat;
-                mainCat.appendChild(opt);
-            });
+    function populateRealCategories() {
+        const mainCatDropdown = document.getElementById('main-category');
+        const subCatDropdown = document.getElementById('sub-category');
+        
+        // Check karein ki file load hui hai ya nahi
+        if (typeof categoriesConfig === 'undefined') {
+            console.error("Critical: categoriesConfig data not found! Path check karein.");
+            return;
         }
+
+        if (!mainCatDropdown || !subCatDropdown) return;
+
+        // A. Main Category Options Fill karein
+        Object.keys(categoriesConfig).forEach(mainCat => {
+            let opt = document.createElement('option');
+            opt.value = mainCat;
+            opt.innerText = mainCat;
+            mainCatDropdown.appendChild(opt);
+        });
+
+        // B. Main Category Change Event Listener (Sub Category badalne ke liye)
+        mainCatDropdown.addEventListener('change', function() {
+            const selectedMain = this.value;
+            
+            // Sub category dropdown ko reset karein
+            subCatDropdown.innerHTML = '<option value="">Select Sub Category</option>';
+            
+            if (selectedMain && categoriesConfig[selectedMain]) {
+                // Sahi sub categories loop karke fill karein
+                categoriesConfig[selectedMain].forEach(subCat => {
+                    let opt = document.createElement('option');
+                    opt.value = subCat;
+                    opt.innerText = subCat;
+                    subCatDropdown.appendChild(opt);
+                });
+            }
+        });
     }
 });
