@@ -1,46 +1,59 @@
+// ==========================================================
+// 🎛️ WISHES HUB ADMIN - CORE ENGINE & SIDEBAR TOGGLE
+// ==========================================================
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Session Verification: Agar logged in nahi hai toh login page par bhejo
+    
+    // 1. SESSION VERIFICATION (Security Check)
+    // Agar user logged in nahi hai, toh seedhe login.html par phenko
     if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
         window.location.href = "/admin/pages/login.html";
         return;
     }
 
-    console.log("Admin Panel Unlocked & Initialized!");
+    console.log("Admin Securely Logged In!");
 
-    // 2. Sidebar Dynamic Loader (Yeh aapke sidebar.html ko index.html me jodega)
+    // 2. SIDEBAR DYNAMIC LOADER
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
+            // Sidebar template ko fetch kar rahe hain
             const response = await fetch('/admin/sidebar.html');
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 
-                // Content workspace se theek pehle sidebar HTML insert karein
+                // Content ko sidebar wrapper ke andar lagaya
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
-                console.log("🎉 Sidebar Loaded Successfully!");
+                console.log("Sidebar Loaded!");
+                
+                // Sidebar load hone ke baad click toggle engine start hoga
+                initSidebarToggleEngine();
             } else {
-                console.error("🚨 Sidebar file nahi mili (404)!");
+                console.error("Sidebar file not found (404)!");
             }
         } catch (error) {
-            console.error("🚨 Sidebar load karne me dikkat aayi:", error);
+            console.error("Error loading sidebar:", error);
         }
     }
 
-    // 3. Default feature loading/click logic (Sidebar load hone ke thoda baad chalega)
-    setTimeout(() => {
-        if (typeof window.loadDefaultAdminView === 'function') {
-            window.loadDefaultAdminView();
-        } else {
-            const defaultLink = document.querySelector('.nav-link[data-feature="wishes"]');
-            if (defaultLink) {
-                defaultLink.click();
-            }
+    // 3. SIDEBAR MOBILE TOGGLE (3-LINE LOGIC)
+    function initSidebarToggleEngine() {
+        const toggleBtn = document.getElementById('toggle-sidebar-btn');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (toggleBtn && sidebar) {
+            // JavaScript event jo click hone par 'hide' class ko adla-badli karega
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('hide');
+            });
+
+            // Agar user sidebar ke bahar workspace par click kare toh mobile me sidebar chhup jaye
+            document.querySelector('.content-workspace').addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('hide'); // mobile standard state me hidden rakhega
+                }
+            });
         }
-        
-        // Agar aapke 'ui-controller.js' me links par click events hain, 
-        // toh use naye sidebar par apply karne ke liye re-initialize karna pad sakta hai
-        if (typeof window.initSidebarEvents === 'function') {
-            window.initSidebarEvents();
-        }
-    }, 200);
+    }
 });
