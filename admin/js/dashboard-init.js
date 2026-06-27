@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FIXED)
 // ==========================================================
 
 if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 🔴 5. DYNAMIC HTML COMPONENT & LOGIC CONNECTOR
+    // 🔴 5. DYNAMIC HTML COMPONENT & MULTI-MEDIA LOGIC CONNECTOR
     async function loadLivePreviewComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
@@ -111,10 +111,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // C. Config categories fill karein
                 populateRealCategories();
 
-                // D. Nayi feature script logic ko fire karein
-                if (typeof initLivePreviewFeature === 'function') {
-                    initLivePreviewFeature();
-                    console.log("🚀 Connection Success: Button hooks activated perfectly!");
+                // D. 🛠️ Nayi dynamic multi-media feature script logic ko fire karein
+                if (typeof initMediaUploaderFeature === 'function') {
+                    initMediaUploaderFeature();
+                    console.log("🚀 Connection Success: Media Uploader hooks activated perfectly!");
+                } else {
+                    console.warn("⚠️ Warning: initMediaUploaderFeature function nahi mila. Check karein ki media-uploader.js html me script tag me add hai ya nahi.");
                 }
             }
         } catch (error) {
