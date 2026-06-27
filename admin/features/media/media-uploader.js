@@ -23,8 +23,9 @@ function initMediaUploaderFeature() {
         const wishText = document.getElementById('wish-text').value.trim();
         const fileInput = document.getElementById('wish-image');
         const uploadedFile = fileInput ? fileInput.files[0] : null;
+        const youtubeUrl = document.getElementById('youtube-url') ? document.getElementById('youtube-url').value.trim() : "";
 
-        // Validation Checks
+        // Basic fields check
         if (!mainCategory || !subCategory || !wishText) {
             alert("⚠️ Please fill out Main Category, Sub Category, and Wish Text!");
             return;
@@ -33,27 +34,47 @@ function initMediaUploaderFeature() {
         newSubmitBtn.innerText = "⏳ Uploading Media...";
         newSubmitBtn.disabled = true;
 
-        // 🧠 AUTOMATIC FILE DETECTOR LAYER
+        // 🧠 AUTOMATIC DETECTION ENGINE & PREVIEW INJECTOR LAYER
         let detectedType = "none";
         let previewHtmlSnippet = "";
 
-        if (uploadedFile) {
+        // A. Handle YouTube Link first if provided
+        if (youtubeUrl) {
+            detectedType = "youtube";
+            let videoId = "";
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = youtubeUrl.match(regExp);
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+                previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>📺 YouTube Video Preview:</strong></p>
+                                      <iframe width="100%" height="220" src="https://www.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2F${videoId}&url=${encodeURIComponent(youtubeUrl)}" frameborder="0" allowfullscreen style="border-radius:6px; background:#000;"></iframe>`;
+            } else {
+                previewHtmlSnippet = `<p style="margin: 10px 0 0 0; color:#dc2626;">⚠️ Invalid YouTube Link Provided!</p>`;
+            }
+        } 
+        // B. Parse Uploaded Local Files dynamically if no YouTube link is used
+        else if (uploadedFile) {
             const mime = uploadedFile.type;
+            const tempUrl = URL.createObjectURL(uploadedFile);
             
             if (mime.startsWith('image/')) {
                 detectedType = "image";
-                const tempUrl = URL.createObjectURL(uploadedFile);
                 previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>📸 Image Preview:</strong></p>
                                       <img src="${tempUrl}" style="max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #e2e8f0;" />`;
             } else if (mime.startsWith('video/')) {
                 detectedType = "video";
-                const tempUrl = URL.createObjectURL(uploadedFile);
                 previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎥 Video Player Preview:</strong></p>
                                       <video src="${tempUrl}" controls style="max-width: 100%; max-height: 220px; border-radius: 6px; background:#000;"></video>`;
+            } else if (mime.startsWith('audio/')) {
+                // 🔴 SMART SONG/AUDIO LAYER INTERFACE DETECTOR
+                detectedType = "audio";
+                previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎵 Song / Audio Player Preview:</strong></p>
+                                      <audio src="${tempUrl}" controls style="width: 100%; margin-top:5px;"></audio>
+                                      <span style="font-size:12px; color:#64748b; display:block; margin-top:4px;">File: ${uploadedFile.name}</span>`;
             } else {
                 detectedType = "document";
-                previewHtmlSnippet = `<p style="margin: 10px 0 0 0; color:#0284c7; font-size:13px; display:flex; align-items:center; gap:6px;">
-                                        📄 <strong>Document Detected:</strong> ${uploadedFile.name} (${(uploadedFile.size / (1024*1024)).toFixed(2)} MB)
+                previewHtmlSnippet = `<p style="margin: 10px 0 0 0; color:#0284c7; font-size:13px;">
+                                        📄 <strong>Document:</strong> ${uploadedFile.name} (${(uploadedFile.size / (1024*1024)).toFixed(2)} MB)
                                       </p>`;
             }
         }
@@ -62,13 +83,14 @@ function initMediaUploaderFeature() {
         formData.append('mainCategory', mainCategory);
         formData.append('subCategory', subCategory);
         formData.append('wishText', wishText);
-        formData.append('detectedFileType', detectedType); // Server ko auto report pass karein
+        formData.append('detectedFileType', detectedType);
+        formData.append('youtubeUrl', youtubeUrl);
+        
         if (uploadedFile) {
-            formData.append('wishImage', uploadedFile); // File append payload
+            formData.append('wishImage', uploadedFile); 
         }
 
         try {
-            // Serverless configuration endpoint integration
             const response = await fetch('/api/add-wish-to-db', {
                 method: 'POST',
                 body: formData
@@ -77,9 +99,8 @@ function initMediaUploaderFeature() {
             const result = await response.json();
 
             if (response.status === 200 || result.success) {
-                alert(`🎉 Successfully saved! Detected media: ${detectedType.toUpperCase()}`);
+                alert(`🎉 Successfully saved! Detected Format: ${detectedType.toUpperCase()}`);
                 
-                // Dynamic Master Live Preview Switcher Injections
                 if (previewBox) {
                     previewBox.innerHTML = `
                         <div style="font-family: system-ui, sans-serif; line-height: 1.6;">
@@ -91,9 +112,10 @@ function initMediaUploaderFeature() {
                     `;
                 }
                 
-                // Fields State Cleaning Loops
+                // Reset states
                 document.getElementById('wish-text').value = "";
                 if (fileInput) fileInput.value = "";
+                if (document.getElementById('youtube-url')) document.getElementById('youtube-url').value = "";
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').innerHTML = '<option value="">Select Sub Category</option>';
             } else {
@@ -101,7 +123,7 @@ function initMediaUploaderFeature() {
             }
         } catch (error) {
             console.error("Critical Stream Interrupted:", error);
-            alert("🚨 Network Error: Backend pipeline response nahi de raha!");
+            alert("🚨 Network Error: Backend server properly response nahi de raha!");
         } finally {
             newSubmitBtn.innerText = "Submit Wish";
             newSubmitBtn.disabled = false;
