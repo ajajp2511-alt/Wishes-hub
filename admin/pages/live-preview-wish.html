@@ -1,7 +1,7 @@
 <div id="feature-content-area" class="live-preview-container">
     
     <div class="feature-card content-entry-card">
-        <h2 class="section-title">Add New Wish</h2>
+        <h2 class="section-title">Add New Multi-Media Wish</h2>
         
         <div class="form-group">
             <label for="main-category">Main Category</label>
@@ -23,17 +23,22 @@
         </div>
 
         <div class="form-group">
-            <label for="wish-image">Upload Feature Image</label>
+            <label for="wish-image">Upload Asset File (Image, Video, Song/Audio, Docs)</label>
             <input type="file" id="wish-image" class="file-uploader">
+        </div>
+
+        <div class="form-group">
+            <label for="youtube-url">Or YouTube Video Link (Optional)</label>
+            <input type="url" id="youtube-url" class="text-input" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
         <button class="primary-action-btn" id="submit-wish-btn">Submit Wish</button>
     </div>
 
     <div class="feature-card dynamic-preview-status-card">
-        <h3 class="subsection-title">✨ Recently Submitted Wish (Live Preview)</h3>
+        <h3 class="subsection-title">✨ Smart Media Live Preview Status</h3>
         <div id="live-preview-box" class="preview-output-wrapper">
-            <p class="empty-state-text">Abhi tak koi naya data submit nahi kiya gaya hai.</p>
+            <p class="empty-state-text">Abhi tak koi naya data ya file upload nahi ki gayi hai.</p>
         </div>
     </div>
 
