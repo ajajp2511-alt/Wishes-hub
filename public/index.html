@@ -8,18 +8,15 @@
 </head>
 <body>
 
-    <header style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a;">
-        <h1 style="margin: 0; font-family: 'Segoe UI', sans-serif; color: #00f2ff; font-size: 24px;">Wishes Hub</h1>
-        <div id="header-actions">
-            </div>
+    <header class="main-header">
+        <h1>Wishes Hub</h1>
+        <div id="header-actions"></div>
     </header>
 
-    <section style="padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, #111, #0a0a0a);">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <input type="text" id="search-input" placeholder="Search special wishes..." 
-                   style="width: 100%; padding: 15px 20px; border-radius: 30px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; outline: none; box-sizing: border-box;">
-            
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+    <section class="hero-search-section">
+        <div class="search-wrapper">
+            <input type="text" id="search-input" placeholder="Search special wishes...">
+            <div class="chips-container">
                 <span class="chip active" onclick="filterByTag('All')">All</span>
                 <span class="chip" onclick="filterByTag('Good Morning')">#GoodMorning</span>
                 <span class="chip" onclick="filterByTag('Birthday')">#Birthday</span>
@@ -65,8 +62,8 @@
             </div>
         </section>
 
-        <div id="ad-container-1" style="width: 100%; text-align: center; margin: 10px 0; min-height: 90px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-            <span style="color: #666; font-size: 12px;">Responsive Ad Space (AdMob / AdSense)</span>
+        <div id="ad-container-1" class="ad-wrapper-box">
+            <span>Responsive Ad Space (AdMob / AdSense)</span>
         </div>
 
         <section>
@@ -78,51 +75,27 @@
             </div>
         </section>
 
-        <section style="padding: 20px; background: #111; border-radius: 12px; border: 1px solid #222;">
-            <h3 style="margin-top: 0; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Trending Searches</h3>
-            <div style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 13px;">
-                <a href="?q=diwali" style="color: #aaa; text-decoration: none;">Best Diwali Wishes 2026</a> • 
-                <a href="?q=morning" style="color: #aaa; text-decoration: none;">Good Morning Suvichar</a> • 
-                <a href="?q=birthday" style="color: #aaa; text-decoration: none;">Romantic Birthday Status</a>
+        <section class="trending-box">
+            <h3>Trending Searches</h3>
+            <div class="trending-links">
+                <a href="?q=diwali">Best Diwali Wishes 2026</a> • 
+                <a href="?q=morning">Good Morning Suvichar</a> • 
+                <a href="?q=birthday">Romantic Birthday Status</a>
             </div>
         </section>
 
     </div>
 
-    <footer style="margin-top: 50px; background: #050505; padding: 30px 20px; text-align: center; border-top: 1px solid #111; font-size: 13px; color: #666;">
-        <p style="margin: 0 0 10px 0;">&copy; 2026 Wishes Hub | Developed by Patel Studio</p>
-        <div style="display: flex; justify-content: center; gap: 15px;">
-            <a href="#" style="color: #666; text-decoration: none;">About Us</a> | 
-            <a href="#" style="color: #666; text-decoration: none;">Privacy Policy</a> | 
-            <a href="#" style="color: #666; text-decoration: none;">Contact</a>
+    <footer class="main-footer">
+        <p>&copy; 2026 Wishes Hub | Developed by Patel Studio</p>
+        <div class="footer-links">
+            <a href="#">About Us</a> | 
+            <a href="#">Privacy Policy</a> | 
+            <a href="#">Contact</a>
         </div>
     </footer>
 
     <script src="js/main-assembly.js"></script>
-
-    <script>
-        function filterByTag(tagName) {
-            const searchInput = document.getElementById('search-input');
-            if(!searchInput) return;
-            
-            // Chips active state switch handler
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if(tagName === 'All') {
-                searchInput.value = '';
-            } else {
-                searchInput.value = tagName;
-            }
-            // Trigger input event to let main search filter everything instantly
-            searchInput.dispatchEvent(new Event('input'));
-        }
-
-        function shareDailyWish() {
-            const text = document.getElementById('daily-wish-text').innerText;
-            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + "\n\n👉 More Wishes: " + window.location.href)}`;
-            window.open(waUrl, '_blank');
-        }
-    </script>
+    <script src="js/ui-interactions.js"></script>
 </body>
-        </html>
+                        </html>
