@@ -1,0 +1,41 @@
+/* ==========================================================================
+   MODULAR ROWS & STRUCTURE ELEMENTS (Main Containers Alignment)
+   ========================================================================== */
+
+.main-container {
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Section Common Headers layout */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 5px;
+}
+
+.section-header h2 {
+    color: #ffffff;
+    font-size: 20px;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.view-all-btn {
+    color: var(--primary-neon);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+.view-all-btn:hover {
+    opacity: 0.8;
+}
