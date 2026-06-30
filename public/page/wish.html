@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wish Detail | Wishes Hub</title>
+    <link rel="stylesheet" href="../style-css/style-ui.css">
+    <style>
+        .single-wish-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .back-btn {
+            display: inline-block;
+            color: var(--primary-neon, #00f2ff);
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .full-wish-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .wish-detail-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #fff;
+            white-space: pre-wrap;
+            margin: 20px 0;
+        }
+        .action-button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .action-btn:hover { opacity: 0.9; }
+        .btn-copy { background: #222; color: var(--primary-neon, #00f2ff); border: 1px solid var(--primary-neon, #00f2ff); }
+        .btn-wa { background: #25D366; color: white; }
+    </style>
+</head>
+<body style="background: #0a0a0a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif;">
+
+    <div class="single-wish-container">
+        <a href="../index.html" class="back-btn">← Back to Wishes Hub</a>
+
+        <main class="full-wish-card">
+            <div id="wish-category-tag" style="display:inline-block; background:#00f2ff; color:#000; font-size:12px; padding:4px 10px; border-radius:20px; font-weight:bold; margin-bottom:15px;">
+                Loading...
+            </div>
+
+            <div id="wish-media-box" style="width:100%; display:none; border-radius:12px; overflow:hidden; background:#000; margin-bottom:15px;"></div>
+
+            <p id="wish-display-text" class="wish-detail-text">Loading your special wish...</p>
+
+            <div class="action-button-group">
+                <button class="action-btn btn-copy" id="single-copy-btn">Copy Text</button>
+                <button class="action-btn btn-wa" id="single-wa-btn">Share on WhatsApp</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="wish-view.js"></script>
+</body>
+  </html>
