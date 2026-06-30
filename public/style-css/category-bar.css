@@ -17,11 +17,10 @@
 #category-bar::-webkit-scrollbar {
     display: none; /* Hide for Chrome/Safari */
 }
-
-.chip {
+chip {
     padding: 8px 20px;
     border-radius: 20px;
-    border: 1px solid var(--primary-neon);
+    border:  solid var(--primary-neon);
     background: transparent;
     color: white;
     white-space: nowrap;
