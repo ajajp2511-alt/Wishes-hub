@@ -3,38 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub | Professional Studio</title>
-    <link rel="stylesheet" href="style-ui.css">
+    <title>Wishes Hub | Patel Studio</title>
+    <link rel="stylesheet" href="style-css/style-ui.css">
 </head>
-<body style="background: #0a0a0a; color: #fff; margin: 0; font-family: sans-serif;">
+<body>
 
-    <header id="main-header" style="padding: 20px; text-align: center; background: #111;">
-        <h1 style="color: #00f2ff; margin: 0;">Wishes Hub</h1>
-        <input type="text" id="search-input" placeholder="Search wishes..." style="width: 80%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none; background: #1a1a1a; color: #fff;">
+    <header style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a;">
+        <h1 style="margin: 0; font-family: 'Segoe UI', sans-serif; color: #00f2ff; font-size: 24px;">Wishes Hub</h1>
+        <div id="header-actions">
+            </div>
     </header>
 
-    <nav id="category-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: #151515; white-space: nowrap; border-bottom: 1px solid #333;"></nav>
+    <section style="padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, #111, #0a0a0a);">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <input type="text" id="search-input" placeholder="Search special wishes..." 
+                   style="width: 100%; padding: 15px 20px; border-radius: 30px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; outline: none; box-sizing: border-box;">
+            
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <span class="chip active" onclick="filterByTag('All')">All</span>
+                <span class="chip" onclick="filterByTag('Good Morning')">#GoodMorning</span>
+                <span class="chip" onclick="filterByTag('Birthday')">#Birthday</span>
+                <span class="chip" onclick="filterByTag('Motivation')">#Motivation</span>
+                <span class="chip" onclick="filterByTag('Festival')">#Festival</span>
+            </div>
+        </div>
+    </section>
 
-    <main class="main-container" style="padding: 15px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
-        
-        <section id="wish-of-the-day-section"></section>
-        <section id="upcoming-festivals-section"></section>
-        <section id="trending-wishes-section"></section>
-        
-        <section id="latest-wishes-section">
-            <div id="wishes-grid" class="grid-container">
-                <p id="loading-msg" style="color: white; text-align: center; padding: 50px;">Initializing System...</p>
+    <div class="main-container">
+
+        <section id="wish-of-the-day-section">
+            <div class="wish-of-the-day-banner">
+                <span class="banner-badge">Wish of the Day</span>
+                <p class="banner-text" id="daily-wish-text">Zindagi me ek hi niyam rakho—kabhi haar mat maano. Have a Great Day! ✨</p>
+                <div class="banner-actions">
+                    <button class="wa-spec" onclick="shareDailyWish()">Share on WhatsApp</button>
+                </div>
             </div>
         </section>
 
-    </main>
+        <section>
+            <div class="section-header">
+                <h2>Upcoming Festivals</h2>
+            </div>
+            <div class="festival-slider-container">
+                <a href="#" class="festival-item-card">
+                    <div class="festival-icon-circle">🌸</div>
+                    <span class="festival-name">Diwali</span>
+                </a>
+                <a href="#" class="festival-item-card">
+                    <div class="festival-icon-circle">🪁</div>
+                    <span class="festival-name">Makar S.</span>
+                </a>
+                <a href="#" class="festival-item-card">
+                    <div class="festival-icon-circle">❤️</div>
+                    <span class="festival-name">Rakhi</span>
+                </a>
+                <a href="#" class="festival-item-card">
+                    <div class="festival-icon-circle">🎨</div>
+                    <span class="festival-name">Holi</span>
+                </a>
+            </div>
+        </section>
 
-    <script src="features/wishes/category-data.js"></script> 
-    <script src="features/wishes/feat-categories.js"></script> 
-    <script src="features/storage/feat-storage.js"></script>
-    <script src="js/action-handlers.js"></script> 
-    
-    <script type="module" src="js/main-assembly.js"></script>
+        <div id="ad-container-1" style="width: 100%; text-align: center; margin: 10px 0; min-height: 90px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+            <span style="color: #666; font-size: 12px;">Responsive Ad Space (AdMob / AdSense)</span>
+        </div>
 
+        <section>
+            <div class="section-header">
+                <h2>Latest Wishes</h2>
+            </div>
+            <div id="wishes-grid" class="grid-container">
+                <p style="color: #666;">Initializing Patel Studio Engine...</p>
+            </div>
+        </section>
+
+        <section style="padding: 20px; background: #111; border-radius: 12px; border: 1px solid #222;">
+            <h3 style="margin-top: 0; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Trending Searches</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 13px;">
+                <a href="?q=diwali" style="color: #aaa; text-decoration: none;">Best Diwali Wishes 2026</a> • 
+                <a href="?q=morning" style="color: #aaa; text-decoration: none;">Good Morning Suvichar</a> • 
+                <a href="?q=birthday" style="color: #aaa; text-decoration: none;">Romantic Birthday Status</a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer style="margin-top: 50px; background: #050505; padding: 30px 20px; text-align: center; border-top: 1px solid #111; font-size: 13px; color: #666;">
+        <p style="margin: 0 0 10px 0;">&copy; 2026 Wishes Hub | Developed by Patel Studio</p>
+        <div style="display: flex; justify-content: center; gap: 15px;">
+            <a href="#" style="color: #666; text-decoration: none;">About Us</a> | 
+            <a href="#" style="color: #666; text-decoration: none;">Privacy Policy</a> | 
+            <a href="#" style="color: #666; text-decoration: none;">Contact</a>
+        </div>
+    </footer>
+
+    <script src="js/main-assembly.js"></script>
+
+    <script>
+        function filterByTag(tagName) {
+            const searchInput = document.getElementById('search-input');
+            if(!searchInput) return;
+            
+            // Chips active state switch handler
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(tagName === 'All') {
+                searchInput.value = '';
+            } else {
+                searchInput.value = tagName;
+            }
+            // Trigger input event to let main search filter everything instantly
+            searchInput.dispatchEvent(new Event('input'));
+        }
+
+        function shareDailyWish() {
+            const text = document.getElementById('daily-wish-text').innerText;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + "\n\n👉 More Wishes: " + window.location.href)}`;
+            window.open(waUrl, '_blank');
+        }
+    </script>
 </body>
-</html>
+        </html>
