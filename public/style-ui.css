@@ -1,7 +1,7 @@
-/* Wishes Hub: Master CSS Bundler */
-@import url('variables-base.css');
-@import url('layout-sections.css');
-@import url('category-bar.css');
-@import url('festivals-grid-cards.css');
-@import url('wish-features.css');
-@import url('utilities.css');
+/* Wishes Hub: Master CSS Bundler (Path Fixed) */
+@import url('style-css/variables-base.css');
+@import url('style-css/layout-sections.css');
+@import url('style-css/category-bar.css');
+@import url('style-css/festivals-grid-cards.css');
+@import url('style-css/wish-features.css');
+@import url('style-css/utilities.css');
