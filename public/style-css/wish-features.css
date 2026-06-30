@@ -1,0 +1,75 @@
+/* ==========================================================================
+   FEATURE A & C: Premium Banner & Trending Row Slider
+   ========================================================================== */
+
+/* FEATURE A: Wish of the Day (Premium Banner) */
+.wish-of-the-day-banner {
+    background: linear-gradient(135deg, #161616 0%, #1c2326 100%);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    border-radius: 16px;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 242, 255, 0.05);
+}
+
+.banner-badge {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--primary-neon);
+    color: #000;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(0, 242, 255, 0.4);
+}
+
+.banner-text {
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 10px 0 20px 0;
+    font-style: italic;
+}
+
+.banner-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.banner-actions button {
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.banner-actions button.wa-spec {
+    background: #25D366;
+    border: none;
+    color: white;
+}
+
+/* FEATURE C: Trending Wishes Slider (Horizontal Row Layout) */
+.horizontal-slider {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 10px 5px 20px 5px;
+    scrollbar-width: none;
+}
+
+.horizontal-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.horizontal-slider .wish-card {
+    flex: 0 0 280px; /* Forced structural width configuration */
+}
