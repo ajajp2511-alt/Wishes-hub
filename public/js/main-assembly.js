@@ -1,49 +1,40 @@
-// Wishes Hub: Master Assembly Script (Upgraded for Modular Rows)
+// Wishes Hub: Master Assembly Script (Independent Stable Engine)
 // Patel Studio - 2026
-
-// 1. Naye UI layout modules ko top par import karein
-import { renderWishOfTheDay, renderFestivalSlider } from '../features/highlights/highlights-handlers.js';
-import { renderTrendingRow, renderLatestGrid } from '../features/wishes/home-rows.js';
 
 async function startApp() {
     console.log("Wishes Hub: System Booting...");
     
-    // Main components ke divs ko check karna
-    const containerCheck = document.getElementById('trending-wishes-section');
-    if(containerCheck) {
-        console.log("Initializing Patel Studio Modular UI Engine...");
+    const oldGrid = document.getElementById('wishes-grid');
+    const newSection = document.getElementById('latest-wishes-section');
+    const targetElement = oldGrid || newSection;
+    
+    if (targetElement && oldGrid) {
+        targetElement.innerHTML = "<p style='color:#00f2ff; padding:20px;'>Initializing Patel Studio Engine...</p>";
     }
 
     try {
-        // 1. Storage Check
         if (typeof initStorage === 'function') {
             await initStorage();
             console.log("Storage: Loaded");
-        } else {
-            console.warn("initStorage function nahi mila.");
         }
 
-        // 2. Dynamic Categories Load Check
         if (typeof loadCategories === 'function') {
             loadCategories(); 
             console.log("Categories Navigation: Loaded");
-        } else {
-            console.warn("loadCategories function nahi mila. HTML me script check karein.");
         }
         
-        // 3. Modular Server Fetch and Render (Vercel Backend API Connection)
-        await fetchAndAssembleHomeSections();
+        if (targetElement) {
+            await fetchWishesFromServer(targetElement);
+        }
         
-        // 4. Live Search Setup
         setupSearchLogic();
         
         console.log("Wishes Hub: All Systems Online");
 
     } catch (error) {
         console.error("Boot Error:", error);
-        const errorContainer = document.getElementById('wish-of-the-day-section');
-        if(errorContainer) {
-            errorContainer.innerHTML = `
+        if (targetElement) {
+            targetElement.innerHTML = `
                 <div style="color:#ff4444; padding:20px; border:1px solid #ff4444; border-radius:10px; background:#121212;">
                     <h3>Launch Error</h3>
                     <p>${error.message}</p>
@@ -52,8 +43,7 @@ async function startApp() {
     }
 }
 
-// Data ko fetch karke sahi rows me distribute karne ka intelligent function
-async function fetchAndAssembleHomeSections() {
+async function fetchWishesFromServer(gridElement) {
     try {
         const response = await fetch('/api/get-wishes');
         const data = await response.json();
@@ -63,66 +53,89 @@ async function fetchAndAssembleHomeSections() {
         }
 
         if (!data.wishes || data.wishes.length === 0) {
-            console.warn("Server par koi wishes data nahi mila.");
+            gridElement.innerHTML = "<p style='color:#fff; padding:20px;'>Abhi tak koi wishes available nahi hain.</p>";
             return;
         }
 
-        // 📸 DUAL MEDIA PROCESSING ENGINE (Aapka original logic optimized for cards)
-        const processedWishes = data.wishes.map(wish => {
+        gridElement.innerHTML = ""; 
+
+        data.wishes.forEach(wish => {
+            const card = document.createElement('div');
+            card.className = 'wish-card'; 
+            card.setAttribute('data-category', wish.category || 'General');
+            card.setAttribute('data-text', (wish.title || '').toLowerCase());
+            card.style.cursor = "pointer"; // Cursor pointer kiya taaki pata chale click hoga
+
+            // 📸 MEDIA LOGIC
+            let mediaHtml = '';
             let finalMediaUrl = wish.imageUrl || null;
+
             if (!finalMediaUrl && wish.telegramFileId) {
                 finalMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
             }
-            if (finalMediaUrl && finalMediaUrl.includes('api.telegram.org/file/bot')) {
-                const rawTokenPath = finalMediaUrl.split('bot')[1];
-                finalMediaUrl = `https://imtqy.com/bot${rawTokenPath}`;
+
+            if (finalMediaUrl) {
+                const isGifVideo = wish.fileType === 'video' || wish.fileType === 'animation' || finalMediaUrl.includes('.mp4') || finalMediaUrl.includes('.gif');
+                
+                if (isGifVideo) {
+                    mediaHtml = `
+                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#000; margin-bottom: 10px;">
+                            <video src="${finalMediaUrl}" loop muted autoplay playsinline style="width:100%; max-height:250px; display:block; object-fit:cover;"></video>
+                        </div>`;
+                } else {
+                    let proxyCleanUrl = finalMediaUrl;
+                    if(finalMediaUrl.includes('api.telegram.org/file/bot')) {
+                         const rawTokenPath = finalMediaUrl.split('bot')[1];
+                         proxyCleanUrl = `https://imtqy.com/bot${rawTokenPath}`;
+                    }
+
+                    mediaHtml = `
+                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#1e1e1e; text-align:center; margin-bottom: 10px;">
+                            <img src="${proxyCleanUrl}" alt="Wish Media" loading="lazy" onerror="this.parentElement.style.display='none';" style="max-width:100%; max-height:250px; object-fit:contain; display:inline-block; border-radius:8px;">
+                        </div>`;
+                }
             }
-            
-            return {
-                id: wish._id || Math.random().toString(36).substr(2, 9),
-                text: wish.title || 'No Text',
-                category: wish.category || 'General',
-                likes: wish.likes || 0,
-                mediaUrl: finalMediaUrl,
-                fileType: wish.fileType || 'photo'
-            };
+
+            const safeCopyText = (wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+
+            // Card Content HTML
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 8px; border-radius:20px; font-weight:bold;">
+                        #${wish.category || 'General'}
+                    </span>
+                </div>
+                
+                ${mediaHtml}
+
+                <p class="wish-text" style="color:#fff; font-size:16px; line-height:1.5; margin:5px 0; white-space: pre-wrap;">
+                    ${wish.title || 'No Text'}
+                </p>
+                
+                <div style="text-align:right; margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#00f2ff; font-size:12px; font-weight:bold;">View Details →</span>
+                    <button class="copy-btn" 
+                            style="background:#222; color:#00f2ff; border:1px solid #00f2ff; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;"
+                            onclick="event.stopPropagation(); navigator.clipboard.writeText(\`${safeCopyText}\`); alert('Wish text copied!');">
+                        Copy
+                    </button>
+                </div>
+            `;
+
+            // 🔥 CLICK EVENT: Poore card par click karne se single page khulega
+            card.addEventListener('click', () => {
+                window.location.href = `page/wish.html?id=${wish._id}`;
+            });
+
+            gridElement.appendChild(card);
         });
 
-        // 🧠 SECTION SEPARATION LOGIC (Pure data ko algorithms ke through filter karna)
-        
-        // A. Wish of the Day (Pehla wish banner banega)
-        const wishOfTheDayData = processedWishes[0]; 
-
-        // B. Dynamic Upcoming Festivals (Mocking via categories present or custom array)
-        const dynamicFestivals = [
-            { name: "Raksha Bandhan", slug: "raksha-bandhan", icon: "✨" },
-            { name: "Independence Day", slug: "independence-day", icon: "🇮🇳" },
-            { name: "Janmashtami", slug: "janmashtami", icon: "🍯" }
-        ];
-
-        // C. Trending Wishes (Wishes jinpe highest likes hon)
-        const trendingWishes = [...processedWishes]
-            .sort((a, b) => b.likes - a.likes)
-            .slice(0, 6); // Top 6 for Horizontal Slider
-
-        // D. Latest Wishes (Peeche se naye elements)
-        const latestWishes = [...processedWishes]
-            .reverse()
-            .slice(0, 8); // Top 8 for Grid Layout
-
-        // 3. Modular Rendering Call (Har file me data inject karna)
-        renderWishOfTheDay('wish-of-the-day-section', wishOfTheDayData);
-        renderFestivalSlider('upcoming-festivals-section', dynamicFestivals);
-        renderTrendingRow('trending-wishes-section', trendingWishes);
-        renderLatestGrid('latest-wishes-section', latestWishes);
-
     } catch (error) {
-        console.error("Fetch and Assembly Error:", error);
-        throw error;
+        console.error("Fetch Error:", error);
+        gridElement.innerHTML = `<p style='color:#ff4444; padding:20px;'>Wishes load nahi ho payi: ${error.message}</p>`;
     }
 }
 
-// Real-time Search Box Code Integration
 function setupSearchLogic() {
     const searchInput = document.getElementById('search-input');
     if (!searchInput) return;
@@ -140,7 +153,7 @@ function setupSearchLogic() {
             const matchesSearch = cardText.includes(query);
 
             if (matchesCategory && matchesSearch) {
-                card.style.display = "flex";
+                card.style.display = "block";
             } else {
                 card.style.display = "none";
             }
@@ -148,5 +161,8 @@ function setupSearchLogic() {
     });
 }
 
-// Boot the Patel Studio Core Engine
-document.addEventListener('DOMContentLoaded', startApp);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startApp);
+} else {
+    startApp();
+}
