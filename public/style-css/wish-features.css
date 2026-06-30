@@ -16,7 +16,7 @@
     position: absolute;
     top: -12px;
     left: 20px;
-    background: var(--primary-neon);
+    background: var(--primary-neon, #00f2ff);
     color: #000;
     font-size: 11px;
     font-weight: bold;
@@ -49,12 +49,28 @@
     font-weight: bold;
     font-size: 14px;
     transition: all 0.2s;
+    outline: none; /* Default focus outline hatane ke liye */
 }
 
+.banner-actions button:hover {
+    background: #333;
+}
+
+/* FIX: Premium & Interactive WhatsApp Button Style */
 .banner-actions button.wa-spec {
     background: #25D366;
     border: none;
     color: white;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.banner-actions button.wa-spec:hover {
+    background: #20ba5a;
+    transform: translateY(-1px);
+}
+
+.banner-actions button.wa-spec:active {
+    transform: translateY(1px);
 }
 
 /* FEATURE C: Trending Wishes Slider (Horizontal Row Layout) */
@@ -72,4 +88,4 @@
 
 .horizontal-slider .wish-card {
     flex: 0 0 280px; /* Forced structural width configuration */
-}
+                    }
