@@ -17,10 +17,12 @@
 #category-bar::-webkit-scrollbar {
     display: none; /* Hide for Chrome/Safari */
 }
-chip {
+
+/* FIX: Added dot (.) before chip and specified border width */
+.chip {
     padding: 8px 20px;
     border-radius: 20px;
-    border:  solid var(--primary-neon);
+    border: 1px solid var(--primary-neon, #00f2ff);
     background: transparent;
     color: white;
     white-space: nowrap;
@@ -29,7 +31,7 @@ chip {
 }
 
 .chip.active {
-    background: var(--primary-neon);
+    background: var(--primary-neon, #00f2ff);
     color: black;
-    box-shadow: 0 0 15px var(--primary-neon);
+    box-shadow: 0 0 15px var(--primary-neon, #00f2ff);
 }
