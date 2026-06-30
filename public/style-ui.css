@@ -1,8 +1,9 @@
-/* Wishes Hub: Master CSS Bundler (Path Fixed) */
+/* Wishes Hub: Master CSS Bundler */
 @import url('style-css/variables-base.css');
 @import url('style-css/layout-sections.css');
 @import url('style-css/category-bar.css');
 @import url('style-css/festivals-grid-cards.css');
 @import url('style-css/wish-features.css');
 @import url('style-css/utilities.css');
-@import url('style-css/contact-page.css'); /* ← FIX: Nayi file ka path link yahan jod diya */
+@import url('style-css/contact-page.css');
+@import url('style-css/privacy-page.css'); /* ← Nayi file yahan connect ho gayi */
