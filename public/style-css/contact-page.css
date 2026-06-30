@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Wishes Hub: Contact Form Styles (Dedicated Asset Module)
+   ========================================================================== */
+
+.contact-card-box {
+    margin-top: 20px;
+    padding: 30px;
+}
+
+.contact-card-box h2 {
+    color: var(--primary-neon, #00f2ff);
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.contact-card-box p {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.contact-form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group-block label {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.form-group-block input[type="text"],
+.form-group-block input[type="email"],
+.form-group-block textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    color: white;
+    outline: none;
+    font-size: 15px;
+}
+
+.form-group-block textarea {
+    resize: vertical;
+}
+
+.contact-submit-btn {
+    background: var(--primary-neon, #00f2ff);
+    color: black;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
+    transition: transform 0.2s;
+}
+
+.contact-submit-btn:hover {
+    transform: translateY(-1px);
+}
