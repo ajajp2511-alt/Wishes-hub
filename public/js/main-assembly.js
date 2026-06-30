@@ -1,12 +1,17 @@
-// Wishes Hub: Master Assembly Script
+// Wishes Hub: Master Assembly Script (Upgraded for Modular Rows)
 // Patel Studio - 2026
+
+// 1. Naye UI layout modules ko top par import karein
+import { renderWishOfTheDay, renderFestivalSlider } from '../features/highlights/highlights-handlers.js';
+import { renderTrendingRow, renderLatestGrid } from '../features/wishes/home-rows.js';
 
 async function startApp() {
     console.log("Wishes Hub: System Booting...");
-    const grid = document.getElementById('wishes-grid');
     
-    if(grid) {
-        grid.innerHTML = "<p style='color:#00f2ff; padding:20px;'>Initializing Patel Studio Engine...</p>";
+    // Main components ke divs ko check karna
+    const containerCheck = document.getElementById('trending-wishes-section');
+    if(containerCheck) {
+        console.log("Initializing Patel Studio Modular UI Engine...");
     }
 
     try {
@@ -26,10 +31,8 @@ async function startApp() {
             console.warn("loadCategories function nahi mila. HTML me script check karein.");
         }
         
-        // 3. Vercel Backend API Connection
-        if (grid) {
-            await fetchWishesFromServer(grid);
-        }
+        // 3. Modular Server Fetch and Render (Vercel Backend API Connection)
+        await fetchAndAssembleHomeSections();
         
         // 4. Live Search Setup
         setupSearchLogic();
@@ -38,9 +41,10 @@ async function startApp() {
 
     } catch (error) {
         console.error("Boot Error:", error);
-        if(grid) {
-            grid.innerHTML = `
-                <div style="color:#ff4444; padding:20px; border:1px solid #ff4444; border-radius:10px;">
+        const errorContainer = document.getElementById('wish-of-the-day-section');
+        if(errorContainer) {
+            errorContainer.innerHTML = `
+                <div style="color:#ff4444; padding:20px; border:1px solid #ff4444; border-radius:10px; background:#121212;">
                     <h3>Launch Error</h3>
                     <p>${error.message}</p>
                 </div>`;
@@ -48,8 +52,8 @@ async function startApp() {
     }
 }
 
-// Backend API se data aur media lekar HTML me render karne ka function
-async function fetchWishesFromServer(gridElement) {
+// Data ko fetch karke sahi rows me distribute karne ka intelligent function
+async function fetchAndAssembleHomeSections() {
     try {
         const response = await fetch('/api/get-wishes');
         const data = await response.json();
@@ -58,87 +62,63 @@ async function fetchWishesFromServer(gridElement) {
             throw new Error(data.message || "Server error occurred.");
         }
 
-        if (data.wishes.length === 0) {
-            gridElement.innerHTML = "<p style='color:#fff; padding:20px;'>Abhi tak koi wishes available nahi hain.</p>";
+        if (!data.wishes || data.wishes.length === 0) {
+            console.warn("Server par koi wishes data nahi mila.");
             return;
         }
 
-        gridElement.innerHTML = ""; // Loader text clear kiya
-
-        // Loop chalakar har ek wish ko screen par show karna
-        data.wishes.forEach(wish => {
-            const card = document.createElement('div');
-            card.className = 'wish-card'; 
-            card.setAttribute('data-category', wish.category || 'General');
-            card.setAttribute('data-text', (wish.title || '').toLowerCase());
-
-            card.style.cssText = "background:#121212; border:1px solid #333; border-radius:12px; padding:15px; margin:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 10px;";
-
-            // 📸 BULLETPROOF DUAL MEDIA LOGIC
-            let mediaHtml = '';
+        // 📸 DUAL MEDIA PROCESSING ENGINE (Aapka original logic optimized for cards)
+        const processedWishes = data.wishes.map(wish => {
             let finalMediaUrl = wish.imageUrl || null;
-
-            // Proxy recovery layer to bypass standard telegram CORS blocks
             if (!finalMediaUrl && wish.telegramFileId) {
                 finalMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
             }
-
-            if (finalMediaUrl) {
-                // Check if the URL contains keywords for animations or gifs
-                const isGifVideo = wish.fileType === 'video' || wish.fileType === 'animation' || finalMediaUrl.includes('.mp4') || finalMediaUrl.includes('.gif');
-                
-                if (isGifVideo) {
-                    mediaHtml = `
-                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#000;">
-                            <video src="${finalMediaUrl}" loop muted autoplay playsinline style="width:100%; max-height:300px; display:block;"></video>
-                        </div>`;
-                } else {
-                    // Standard explicit reverse proxy pipeline injection
-                    let proxyCleanUrl = finalMediaUrl;
-                    if(finalMediaUrl.includes('api.telegram.org/file/bot')) {
-                         const rawTokenPath = finalMediaUrl.split('bot')[1];
-                         proxyCleanUrl = `https://imtqy.com/bot${rawTokenPath}`;
-                    }
-
-                    mediaHtml = `
-                        <div style="width:100%; border-radius:8px; overflow:hidden; background:#1e1e1e; text-align:center;">
-                            <img src="${proxyCleanUrl}" 
-                                 alt="Wish Media" 
-                                 loading="lazy" 
-                                 onerror="this.parentElement.style.display='none';"
-                                 style="max-width:100%; max-height:300px; object-fit:contain; display:inline-block; border-radius:8px;">
-                        </div>`;
-                }
+            if (finalMediaUrl && finalMediaUrl.includes('api.telegram.org/file/bot')) {
+                const rawTokenPath = finalMediaUrl.split('bot')[1];
+                finalMediaUrl = `https://imtqy.com/bot${rawTokenPath}`;
             }
-
-            // Card HTML Layout setup
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 8px; border-radius:20px; font-weight:bold;">
-                        ${wish.category || 'General'}
-                    </span>
-                </div>
-                
-                ${mediaHtml}
-
-                <p style="color:#fff; font-size:16px; line-height:1.5; margin:5px 0; white-space: pre-wrap;">
-                    ${wish.title || 'No Text'}
-                </p>
-                
-                <div style="text-align:right; margin-top:5px;">
-                    <button class="copy-btn" 
-                            style="background:#222; color:#00f2ff; border:1px solid #00f2ff; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;"
-                            onclick="navigator.clipboard.writeText(\`${(wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`); alert('Wish text copied!');">
-                        Copy Wish
-                    </button>
-                </div>
-            `;
-            gridElement.appendChild(card);
+            
+            return {
+                id: wish._id || Math.random().toString(36).substr(2, 9),
+                text: wish.title || 'No Text',
+                category: wish.category || 'General',
+                likes: wish.likes || 0,
+                mediaUrl: finalMediaUrl,
+                fileType: wish.fileType || 'photo'
+            };
         });
 
+        // 🧠 SECTION SEPARATION LOGIC (Pure data ko algorithms ke through filter karna)
+        
+        // A. Wish of the Day (Pehla wish banner banega)
+        const wishOfTheDayData = processedWishes[0]; 
+
+        // B. Dynamic Upcoming Festivals (Mocking via categories present or custom array)
+        const dynamicFestivals = [
+            { name: "Raksha Bandhan", slug: "raksha-bandhan", icon: "✨" },
+            { name: "Independence Day", slug: "independence-day", icon: "🇮🇳" },
+            { name: "Janmashtami", slug: "janmashtami", icon: "🍯" }
+        ];
+
+        // C. Trending Wishes (Wishes jinpe highest likes hon)
+        const trendingWishes = [...processedWishes]
+            .sort((a, b) => b.likes - a.likes)
+            .slice(0, 6); // Top 6 for Horizontal Slider
+
+        // D. Latest Wishes (Peeche se naye elements)
+        const latestWishes = [...processedWishes]
+            .reverse()
+            .slice(0, 8); // Top 8 for Grid Layout
+
+        // 3. Modular Rendering Call (Har file me data inject karna)
+        renderWishOfTheDay('wish-of-the-day-section', wishOfTheDayData);
+        renderFestivalSlider('upcoming-festivals-section', dynamicFestivals);
+        renderTrendingRow('trending-wishes-section', trendingWishes);
+        renderLatestGrid('latest-wishes-section', latestWishes);
+
     } catch (error) {
-        console.error("Fetch Error:", error);
-        gridElement.innerHTML = `<p style='color:#ff4444; padding:20px;'>Wishes load nahi ho payi: ${error.message}</p>`;
+        console.error("Fetch and Assembly Error:", error);
+        throw error;
     }
 }
 
@@ -152,7 +132,8 @@ function setupSearchLogic() {
         const cards = document.querySelectorAll('.wish-card');
 
         cards.forEach(card => {
-            const cardText = card.getAttribute('data-text') || '';
+            const cardBody = card.querySelector('.wish-text');
+            const cardText = cardBody ? cardBody.innerText.toLowerCase() : '';
             const cardCategory = card.getAttribute('data-category') || '';
             
             const matchesCategory = (typeof activeCategory === 'undefined' || activeCategory === "All" || cardCategory === activeCategory);
@@ -167,5 +148,5 @@ function setupSearchLogic() {
     });
 }
 
-// Start the engine
+// Boot the Patel Studio Core Engine
 document.addEventListener('DOMContentLoaded', startApp);
