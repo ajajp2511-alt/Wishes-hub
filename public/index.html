@@ -5,24 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub | Professional Studio</title>
     <link rel="stylesheet" href="style-ui.css">
-    </head>
-<body>
+</head>
+<body style="background: #0a0a0a; color: #fff; margin: 0; font-family: sans-serif;">
 
     <header id="main-header" style="padding: 20px; text-align: center; background: #111;">
         <h1 style="color: #00f2ff; margin: 0;">Wishes Hub</h1>
-        <input type="text" id="search-input" placeholder="Search wishes..." style="width: 80%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none;">
+        <input type="text" id="search-input" placeholder="Search wishes..." style="width: 80%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none; background: #1a1a1a; color: #fff;">
     </header>
 
     <nav id="category-bar" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: #151515; white-space: nowrap; border-bottom: 1px solid #333;"></nav>
 
-    <main id="wishes-grid" class="grid-container">
-        <p id="loading-msg" style="color: white; text-align: center; padding: 50px;">Initializing System...</p>
+    <main class="main-container" style="padding: 15px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
+        
+        <section id="wish-of-the-day-section"></section>
+        <section id="upcoming-festivals-section"></section>
+        <section id="trending-wishes-section"></section>
+        
+        <section id="latest-wishes-section">
+            <div id="wishes-grid" class="grid-container">
+                <p id="loading-msg" style="color: white; text-align: center; padding: 50px;">Initializing System...</p>
+            </div>
+        </section>
+
     </main>
 
     <script src="features/wishes/category-data.js"></script> 
-    <script src="features/wishes/feat-categories.js"></script> <!-- Nayi file yahan connect hui -->
+    <script src="features/wishes/feat-categories.js"></script> 
     <script src="features/storage/feat-storage.js"></script>
-    <script src="js/main-assembly.js"></script>
+    <script src="js/action-handlers.js"></script> 
+    
+    <script type="module" src="js/main-assembly.js"></script>
 
 </body>
 </html>
