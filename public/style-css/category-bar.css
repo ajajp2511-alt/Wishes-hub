@@ -17,20 +17,15 @@
 #category-bar::-webkit-scrollbar {
     display: none; /* Hide for Chrome/Safari */
 }
-
 .chip {
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: 1px solid var(--primary-neon);
-    background: transparent;
-    color: white;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: 0.3s;
+    color: #aaaaaa; /* Dark background par dikhne ke liye light grey */
+    background: #1a1a1a;
+    border: 1px solid #333;
+    /* Baaki aapka purana code */
 }
 
 .chip.active {
-    background: var(--primary-neon);
-    color: black;
-    box-shadow: 0 0 15px var(--primary-neon);
+    color: #000000; /* Active hone par text black ho jaye */
+    background: #00f2ff; /* Cyan highlight */
 }
+.
