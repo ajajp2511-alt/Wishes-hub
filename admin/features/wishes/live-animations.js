@@ -1,7 +1,7 @@
 // admin/features/wishes/live-animations.js
 
-// JADU: Ab alag-alag files se import nahi karna padega, sab kuch single line me index file se aayega!
-import { Confetti, Heart, FireworkSpark, RainDrop } from './modules/index.js';
+// JADU: Ab sab kuch single line me index file se aayega, naye modules ke sath!
+import { Confetti, Heart, FireworkSpark, RainDrop, GlitchLine, GoldGlitter } from './modules/index.js';
 
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
@@ -23,6 +23,7 @@ function runLoop() {
         particles[i].update();
         particles[i].draw(ctx);
         
+        // Phat chuke, fade ho chuke ya screen se bahar gaye particles ko remove karo
         if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0)) {
             particles.splice(i, 1);
             i--;
@@ -65,6 +66,14 @@ export function triggerLiveAnimation(animId) {
         
     } else if (animId === "anim_lofi_rain") {
         for (let i = 0; i < 80; i++) particles.push(new RainDrop(canvas));
+
+    } else if (animId === "anim_cyberpunk_glitch") {
+        // Glitch lines trigger loop
+        for (let i = 0; i < 8; i++) particles.push(new GlitchLine(canvas));
+
+    } else if (animId === "anim_golden_glitter_shower") {
+        // Gold dust trigger loop
+        for (let i = 0; i < 100; i++) particles.push(new GoldGlitter(canvas));
     }
     
     runLoop();
