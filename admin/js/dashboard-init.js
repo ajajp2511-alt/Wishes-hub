@@ -1,5 +1,6 @@
 // ==========================================================
 // 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FIXED)
+// Patel Studio - 2026
 // ==========================================================
 
 if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
@@ -25,14 +26,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
+                
+                // Sidebar HTML inject hone ke baad dynamic event controllers bind karein
                 initSidebarToggleEngine();
+                bindSidebarDynamicNavigation(); 
             }
         } catch (error) {
+            document.querySelectorAll('.admin-wrapper ul li').forEach(li => li.classList.remove('active'));
             console.error("Sidebar loading error:", error);
         }
     }
 
-    // 3. Sidebar Engine
+    // 3. Sidebar Responsive Toggle View Engine
     function initSidebarToggleEngine() {
         const toggleBtn = document.getElementById('toggle-sidebar-btn');
         const sidebar = document.querySelector('.sidebar');
@@ -55,6 +60,62 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
         }
+    }
+
+    // ====================================================================
+    // 🔥 NEW CRITICAL INTEGRATION: Trapping Clicks On Dynamic Sidebar Links
+    // ====================================================================
+    function bindSidebarDynamicNavigation() {
+        // Document level delegation taaki dynamic links miss na ho skein
+        document.body.addEventListener('click', function(e) {
+            const link = e.target.closest('.nav-link') || e.target.closest('[data-feature]');
+            if (!link) return;
+
+            e.preventDefault();
+            
+            // Purane links se active class hata kar current link par lagao
+            document.querySelectorAll('.nav-link, [data-feature]').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            const feature = link.getAttribute('data-feature') || '';
+            const targetFeature = feature.toLowerCase().trim();
+            const workspaceArea = document.querySelector('.content-workspace');
+
+            if (!workspaceArea) return;
+
+            console.log(`📡 Router routing screen focus to: ${targetFeature}`);
+
+            if (targetFeature === 'wishes') {
+                // Add Wish default framework layout render karein
+                loadLivePreviewComponent();
+            } 
+            else if (targetFeature === 'settings') {
+                // Settings module logic settings.js se trigger karein
+                if (typeof window.renderSettingsModule === 'function') {
+                    window.renderSettingsModule(workspaceArea);
+                } else {
+                    workspaceArea.innerHTML = `
+                        <div style="padding: 20px; color:#fff;">
+                            <h2 style="color:#ff4a4a;">⚠️ Component Error</h2>
+                            <p style="color:#94a3b8; margin-top:10px;">settings.js context is strictly missing or failed to initialize.</p>
+                        </div>`;
+                }
+            } 
+            else {
+                // Dusre features ka standard development placeholder
+                workspaceArea.innerHTML = `
+                    <div style="padding: 20px; color:#fff;">
+                        <h2>📋 ${feature.toUpperCase()} Panel</h2>
+                        <p style="color:#94a3b8; margin-top:10px;">This section is under active development.</p>
+                    </div>`;
+            }
+
+            // Mobile view me click hote hi sidebar automatic close ho jaye
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar && window.innerWidth <= 768) {
+                sidebar.classList.remove('show-sidebar');
+            }
+        });
     }
 
     // 4. Dropdowns Populater Engine
@@ -87,13 +148,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 🔴 5. DYNAMIC HTML COMPONENT & MULTI-MEDIA LOGIC CONNECTOR
+    // 5. DYNAMIC HTML COMPONENT & MULTI-MEDIA LOGIC CONNECTOR
     async function loadLivePreviewComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
         try {
-            // A. CSS File load karein head me
             if (!document.getElementById('live-preview-css')) {
                 const cssLink = document.createElement('link');
                 cssLink.id = 'live-preview-css';
@@ -102,21 +162,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.head.appendChild(cssLink);
             }
 
-            // B. HTML Component load karein workspace me
             const response = await fetch('/admin/pages/live-preview-wish.html');
             if (response.status === 200) {
                 const componentHtml = await response.text();
                 workspaceArea.innerHTML = componentHtml;
 
-                // C. Config categories fill karein
                 populateRealCategories();
 
-                // D. 🛠️ Nayi dynamic multi-media feature script logic ko fire karein
                 if (typeof initMediaUploaderFeature === 'function') {
                     initMediaUploaderFeature();
                     console.log("🚀 Connection Success: Media Uploader hooks activated perfectly!");
                 } else {
-                    console.warn("⚠️ Warning: initMediaUploaderFeature function nahi mila. Check karein ki media-uploader.js html me script tag me add hai ya nahi.");
+                    console.warn("⚠️ Warning: initMediaUploaderFeature function nahi mila.");
                 }
             }
         } catch (error) {
