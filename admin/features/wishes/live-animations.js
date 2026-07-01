@@ -1,7 +1,17 @@
 // admin/features/wishes/live-animations.js
 
-// JADU: Ab sab kuch single line me index file se aayega, naye modules ke sath!
-import { Confetti, Heart, FireworkSpark, RainDrop, GlitchLine, GoldGlitter } from './modules/index.js';
+// JADU: Saare 9 modules ab ek single line mein index file se import ho rahe hain!
+import { 
+    Confetti, 
+    Heart, 
+    FireworkSpark, 
+    RainDrop, 
+    GlitchLine, 
+    GoldGlitter, 
+    StarryNight, 
+    BubblePop, 
+    AnimePowerUp 
+} from './modules/index.js';
 
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
@@ -24,7 +34,8 @@ function runLoop() {
         particles[i].draw(ctx);
         
         // Phat chuke, fade ho chuke ya screen se bahar gaye particles ko remove karo
-        if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0)) {
+        // StarryNight ke liye check badla hai kyunki wo screen par hi rehte hain aur alpha loop chalta hai
+        if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0 && !particles[i].constructor.name.includes('StarryNight'))) {
             particles.splice(i, 1);
             i--;
         }
@@ -68,12 +79,22 @@ export function triggerLiveAnimation(animId) {
         for (let i = 0; i < 80; i++) particles.push(new RainDrop(canvas));
 
     } else if (animId === "anim_cyberpunk_glitch") {
-        // Glitch lines trigger loop
         for (let i = 0; i < 8; i++) particles.push(new GlitchLine(canvas));
 
     } else if (animId === "anim_golden_glitter_shower") {
-        // Gold dust trigger loop
         for (let i = 0; i < 100; i++) particles.push(new GoldGlitter(canvas));
+
+    } else if (animId === "anim_starry_constellation") {
+        // Night calm aur astrology ke timtimate tare
+        for (let i = 0; i < 120; i++) particles.push(new StarryNight(canvas));
+
+    } else if (animId === "anim_bubble_wrap_pop") {
+        // Quirky fun aur jokes ke floating bubbles
+        for (let i = 0; i < 35; i++) particles.push(new BubblePop(canvas));
+
+    } else if (animId === "anim_anime_power_up") {
+        // Attitude aur gym swag ke dynamic vertical lines
+        for (let i = 0; i < 50; i++) particles.push(new AnimePowerUp(canvas));
     }
     
     runLoop();
