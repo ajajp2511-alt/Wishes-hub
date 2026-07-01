@@ -1,6 +1,6 @@
-// admin/features/wishes/live-animations.js
+// admin/js/live-animations.js
 
-// JADU: Saare 9 modules ab ek single line mein index file se import ho rahe hain!
+// JADU FIX: Ek level peeche (../) ja kar features/modules tak accurate mapping!
 import { 
     Confetti, 
     Heart, 
@@ -11,7 +11,7 @@ import {
     StarryNight, 
     BubblePop, 
     AnimePowerUp 
-} from './modules/index.js';
+} from '../features/modules/index.js';
 
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
@@ -19,28 +19,27 @@ let particles = [];
 let animationFrameId;
 let animationIntervals = [];
 
-function resize() {
+function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-window.addEventListener('resize', resize);
-resize();
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
-function runLoop() {
+function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     for (let i = 0; i < particles.length; i++) {
         particles[i].update();
-        particles[i].draw(ctx);
+        particles[i].draw(ctx); // Naye modules ko render karne ke liye ctx provide kiya
         
-        // Phat chuke, fade ho chuke ya screen se bahar gaye particles ko remove karo
-        // StarryNight ke liye check badla hai kyunki wo screen par hi rehte hain aur alpha loop chalta hai
-        if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0 && !particles[i].constructor.name.includes('StarryNight'))) {
+        // Faded ya boundary ke baahar gaye particles ko clean up karo
+        if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0)) {
             particles.splice(i, 1);
             i--;
         }
     }
-    animationFrameId = requestAnimationFrame(runLoop);
+    animationFrameId = requestAnimationFrame(animate);
 }
 
 function resetEngine() {
@@ -50,20 +49,20 @@ function resetEngine() {
     particles = [];
 }
 
-// MAIN TRIGGER ENGINE
-export function triggerLiveAnimation(animId) {
+// MAIN TRIGGER FUNCTION: Pure 9 new modular animations ko handle karega
+export function triggerAnimation(animId) {
     resetEngine();
     
     if (animId === "anim_confetti_blast") {
-        for(let i=0; i<100; i++) particles.push(new Confetti(canvas));
+        for(let i = 0; i < 100; i++) particles.push(new Confetti(canvas));
         
     } else if (animId === "anim_hearts_vortex") {
-        const flow = setInterval(() => {
+        const heartInterval = setInterval(() => {
             if(particles.length < 150) {
-                for(let i=0; i<3; i++) particles.push(new Heart(canvas));
+                for(let i = 0; i < 3; i++) particles.push(new Heart(canvas));
             }
         }, 80);
-        animationIntervals.push(flow);
+        animationIntervals.push(heartInterval);
         
     } else if (animId === "anim_neon_fireworks") {
         const fireworkTimer = setInterval(() => {
@@ -85,17 +84,14 @@ export function triggerLiveAnimation(animId) {
         for (let i = 0; i < 100; i++) particles.push(new GoldGlitter(canvas));
 
     } else if (animId === "anim_starry_constellation") {
-        // Night calm aur astrology ke timtimate tare
         for (let i = 0; i < 120; i++) particles.push(new StarryNight(canvas));
 
     } else if (animId === "anim_bubble_wrap_pop") {
-        // Quirky fun aur jokes ke floating bubbles
         for (let i = 0; i < 35; i++) particles.push(new BubblePop(canvas));
 
     } else if (animId === "anim_anime_power_up") {
-        // Attitude aur gym swag ke dynamic vertical lines
         for (let i = 0; i < 50; i++) particles.push(new AnimePowerUp(canvas));
     }
     
-    runLoop();
+    animate();
 }
