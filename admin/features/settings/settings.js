@@ -1,8 +1,9 @@
 // admin/features/settings/settings.js
 
 window.renderSettingsModule = function(container) {
+    // 1. Pura HTML Structure Container me Inject Karna
     container.innerHTML = `
-        <link rel="stylesheet" href="../css/admin-logo-upload.css">
+        <link rel="stylesheet" href="/admin/css/admin-logo-upload.css">
 
         <div class="feature-card animate-fade">
             <div class="card-header">
@@ -52,13 +53,15 @@ window.renderSettingsModule = function(container) {
             </div>
     `;
 
-    // UI render hone ke thik baad Admin Logo Module ko initialize karna
+    // 2. CRITICAL FIX: HTML render hote hi uploader script ko re-initialize karna
     if (window.AdminLogoUploader && typeof window.AdminLogoUploader.init === 'function') {
         window.AdminLogoUploader.init();
     } else {
-        // Agar script thoda der se load ho rahi ho toh safety safe-check
+        // Agar main file (`admin-logo-uploader.js`) thoda late load ho toh safety backup check
         setTimeout(() => {
-            if (window.AdminLogoUploader) window.AdminLogoUploader.init();
-        }, 300);
+            if (window.AdminLogoUploader) {
+                window.AdminLogoUploader.init();
+            }
+        }, 100);
     }
 };
