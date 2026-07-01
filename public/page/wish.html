@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wish Detail | Wishes Hub</title>
+    <!-- Aapka purana main UI styleheet -->
     <link rel="stylesheet" href="../style-css/style-ui.css">
+    <!-- JADU: Naya Animation CSS file link kiya -->
+    <link rel="stylesheet" href="../style-css/animations.css">
+    
     <style>
         .single-wish-container {
             max-width: 600px;
             margin: 40px auto;
             padding: 20px;
+            position: relative; 
+            z-index: 10;
         }
         .back-btn {
             display: inline-block;
@@ -59,6 +65,11 @@
 </head>
 <body style="background: #0a0a0a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif;">
 
+    <!-- Animation Overlay Container -->
+    <div id="animation-overlay">
+        <canvas id="animation-canvas"></canvas>
+    </div>
+
     <div class="single-wish-container">
         <a href="../index.html" class="back-btn">← Back to Wishes Hub</a>
 
@@ -78,6 +89,6 @@
         </main>
     </div>
 
-    <script src="wish-view.js"></script>
+    <script type="module" src="wish-view.js"></script>
 </body>
-  </html>
+</html>
