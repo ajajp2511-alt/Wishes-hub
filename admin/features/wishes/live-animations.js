@@ -1,9 +1,13 @@
 // admin/features/wishes/live-animations.js
 
+// JADU: Ab alag-alag files se import nahi karna padega, sab kuch single line me index file se aayega!
+import { Confetti, Heart, FireworkSpark, RainDrop } from './modules/index.js';
+
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 let animationFrameId;
+let animationIntervals = [];
 
 function resize() {
     canvas.width = window.innerWidth;
@@ -12,62 +16,14 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-// --- CONFETTI DESIGN MODULE ---
-class Confetti {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height - canvas.height;
-        this.size = Math.random() * 6 + 4;
-        this.speedY = Math.random() * 4 + 2;
-        this.speedX = Math.random() * 2 - 1;
-        this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-    }
-    update() {
-        this.y += this.speedY;
-        this.x += this.speedX;
-    }
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
-    }
-}
-
-// --- HEARTS DESIGN MODULE ---
-class Heart {
-    constructor() {
-        this.x = canvas.width / 2;
-        this.y = canvas.height / 2;
-        this.size = Math.random() * 8 + 4;
-        this.angle = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 3 + 1;
-        this.alpha = 1;
-        this.fade = Math.random() * 0.01 + 0.005;
-    }
-    update() {
-        this.x += Math.cos(this.angle) * this.speed;
-        this.y += Math.sin(this.angle) * this.speed;
-        this.alpha -= this.fade;
-    }
-    draw() {
-        if (this.alpha <= 0) return;
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = `hsl(${Math.random() * 20 + 340}, 100%, 65%)`;
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.bezierCurveTo(this.x - this.size, this.y - this.size, this.x - this.size*2, this.y + this.size, this.x, this.y + this.size*2);
-        ctx.bezierCurveTo(this.x + this.size*2, this.y + this.size, this.x + this.size, this.y - this.size, this.x, this.y);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
 function runLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     for (let i = 0; i < particles.length; i++) {
         particles[i].update();
-        particles[i].draw();
-        if (particles[i].y > canvas.height || particles[i].alpha <= 0) {
+        particles[i].draw(ctx);
+        
+        if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0)) {
             particles.splice(i, 1);
             i--;
         }
@@ -75,19 +31,41 @@ function runLoop() {
     animationFrameId = requestAnimationFrame(runLoop);
 }
 
-export function triggerLiveAnimation(animId) {
+function resetEngine() {
     cancelAnimationFrame(animationFrameId);
+    animationIntervals.forEach(clearInterval);
+    animationIntervals = [];
     particles = [];
+}
+
+// MAIN TRIGGER ENGINE
+export function triggerLiveAnimation(animId) {
+    resetEngine();
     
     if (animId === "anim_confetti_blast") {
-        for(let i=0; i<100; i++) particles.push(new Confetti());
+        for(let i=0; i<100; i++) particles.push(new Confetti(canvas));
+        
     } else if (animId === "anim_hearts_vortex") {
         const flow = setInterval(() => {
             if(particles.length < 150) {
-                for(let i=0; i<3; i++) particles.push(new Heart());
+                for(let i=0; i<3; i++) particles.push(new Heart(canvas));
             }
         }, 80);
-        setTimeout(() => clearInterval(flow), 4000);
+        animationIntervals.push(flow);
+        
+    } else if (animId === "anim_neon_fireworks") {
+        const fireworkTimer = setInterval(() => {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height * 0.6);
+            const colors = ['#00f2ff', '#ff007f', '#00ff66', '#ffff00'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 60; i++) particles.push(new FireworkSpark(x, y, randomColor));
+        }, 1200);
+        animationIntervals.push(fireworkTimer);
+        
+    } else if (animId === "anim_lofi_rain") {
+        for (let i = 0; i < 80; i++) particles.push(new RainDrop(canvas));
     }
+    
     runLoop();
-              }
+}
