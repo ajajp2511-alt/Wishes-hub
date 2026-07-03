@@ -25,6 +25,9 @@ function initMediaUploaderFeature() {
         const uploadedFile = fileInput ? fileInput.files[0] : null;
         const youtubeUrl = document.getElementById('youtube-url') ? document.getElementById('youtube-url').value.trim() : "";
 
+        // 🎙️ CHECK FOR VOICE RECORDING FROM THE OTHER MODULE
+        const recordedVoiceBlob = window.currentRecordedAudioBlob;
+
         // Basic fields check
         if (!mainCategory || !subCategory || !wishText) {
             alert("⚠️ Please fill out Main Category, Sub Category, and Wish Text!");
@@ -52,7 +55,14 @@ function initMediaUploaderFeature() {
                 previewHtmlSnippet = `<p style="margin: 10px 0 0 0; color:#dc2626;">⚠️ Invalid YouTube Link Provided!</p>`;
             }
         } 
-        // B. Parse Uploaded Local Files dynamically if no YouTube link is used
+        // B. Handle Live Recorded Voice Audio if available
+        else if (recordedVoiceBlob) {
+            detectedType = "voice";
+            const tempVoiceUrl = URL.createObjectURL(recordedVoiceBlob);
+            previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎙️ Recorded Voice Preview:</strong></p>
+                                  <audio src="${tempVoiceUrl}" controls style="width: 100%; margin-top:5px;"></audio>`;
+        }
+        // C. Parse Uploaded Local Files dynamically if no YouTube/Voice link is used
         else if (uploadedFile) {
             const mime = uploadedFile.type;
             const tempUrl = URL.createObjectURL(uploadedFile);
@@ -86,7 +96,10 @@ function initMediaUploaderFeature() {
         formData.append('detectedFileType', detectedType);
         formData.append('youtubeUrl', youtubeUrl);
         
-        if (uploadedFile) {
+        // Append file parameters context-wise
+        if (recordedVoiceBlob) {
+            formData.append('wishImage', recordedVoiceBlob, 'recorded-voice.wav'); // Live voice data appending safely
+        } else if (uploadedFile) {
             formData.append('wishImage', uploadedFile); 
         }
 
@@ -118,6 +131,11 @@ function initMediaUploaderFeature() {
                 if (document.getElementById('youtube-url')) document.getElementById('youtube-url').value = "";
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').innerHTML = '<option value="">Select Sub Category</option>';
+                
+                // Reset global voice cache safely
+                window.currentRecordedAudioBlob = null;
+                const voicePreview = document.getElementById('voice-preview-container');
+                if (voicePreview) voicePreview.innerHTML = "";
             } else {
                 alert(`❌ Server Error: ${result.message || 'Submission failed.'}`);
             }
@@ -130,3 +148,8 @@ function initMediaUploaderFeature() {
         }
     });
 }
+
+// 🔌 ENGINE INITIALIZATION TRIGGER
+document.addEventListener("DOMContentLoaded", () => {
+    initMediaUploaderFeature();
+});
