@@ -76,4 +76,9 @@ function initVoiceRecorderFeature() {
             stopBtn.style.background = "#64748b";
         }
     });
-                                                                      }
+}
+
+// 🔌 VOICE ENGINE INITIALIZATION TRIGGER
+document.addEventListener("DOMContentLoaded", () => {
+    initVoiceRecorderFeature();
+});
