@@ -16,7 +16,10 @@ function initMediaUploaderFeature() {
     submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
 
     newSubmitBtn.addEventListener('click', async (e) => {
+        // 🛑 STOP REFRESH / RELOAD SYSTEM COMPLETELY
         e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation(); 
 
         const mainCategory = document.getElementById('main-category').value;
         const subCategory = document.getElementById('sub-category').value;
@@ -76,7 +79,6 @@ function initMediaUploaderFeature() {
                 previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎥 Video Player Preview:</strong></p>
                                       <video src="${tempUrl}" controls style="max-width: 100%; max-height: 220px; border-radius: 6px; background:#000;"></video>`;
             } else if (mime.startsWith('audio/')) {
-                // 🔴 SMART SONG/AUDIO LAYER INTERFACE DETECTOR
                 detectedType = "audio";
                 previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎵 Song / Audio Player Preview:</strong></p>
                                       <audio src="${tempUrl}" controls style="width: 100%; margin-top:5px;"></audio>
@@ -96,9 +98,8 @@ function initMediaUploaderFeature() {
         formData.append('detectedFileType', detectedType);
         formData.append('youtubeUrl', youtubeUrl);
         
-        // Append file parameters context-wise
         if (recordedVoiceBlob) {
-            formData.append('wishImage', recordedVoiceBlob, 'recorded-voice.wav'); // Live voice data appending safely
+            formData.append('wishImage', recordedVoiceBlob, 'recorded-voice.wav'); 
         } else if (uploadedFile) {
             formData.append('wishImage', uploadedFile); 
         }
@@ -125,14 +126,13 @@ function initMediaUploaderFeature() {
                     `;
                 }
                 
-                // Reset states
+                // Form Fields Reset
                 document.getElementById('wish-text').value = "";
                 if (fileInput) fileInput.value = "";
                 if (document.getElementById('youtube-url')) document.getElementById('youtube-url').value = "";
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').innerHTML = '<option value="">Select Sub Category</option>';
                 
-                // Reset global voice cache safely
                 window.currentRecordedAudioBlob = null;
                 const voicePreview = document.getElementById('voice-preview-container');
                 if (voicePreview) voicePreview.innerHTML = "";
@@ -149,7 +149,6 @@ function initMediaUploaderFeature() {
     });
 }
 
-// 🔌 ENGINE INITIALIZATION TRIGGER
 document.addEventListener("DOMContentLoaded", () => {
     initMediaUploaderFeature();
 });
