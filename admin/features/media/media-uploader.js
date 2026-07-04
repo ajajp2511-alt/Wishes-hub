@@ -7,8 +7,8 @@ function initMediaUploaderFeature() {
     const previewBox = document.getElementById('live-preview-box');
 
     if (!submitBtn) {
-        console.warn("Uploader trigger targets missing from current view.");
-        return;
+        console.warn("Uploader trigger targets missing from current view. Retrying...");
+        return false; // Return false taaki pta chale load nahi hua
     }
 
     // Double binding events reset clear tool
@@ -16,7 +16,6 @@ function initMediaUploaderFeature() {
     submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
 
     newSubmitBtn.addEventListener('click', async (e) => {
-        // 🛑 STOP REFRESH / RELOAD SYSTEM COMPLETELY
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation(); 
@@ -28,10 +27,8 @@ function initMediaUploaderFeature() {
         const uploadedFile = fileInput ? fileInput.files[0] : null;
         const youtubeUrl = document.getElementById('youtube-url') ? document.getElementById('youtube-url').value.trim() : "";
 
-        // 🎙️ CHECK FOR VOICE RECORDING FROM THE OTHER MODULE
         const recordedVoiceBlob = window.currentRecordedAudioBlob;
 
-        // Basic fields check
         if (!mainCategory || !subCategory || !wishText) {
             alert("⚠️ Please fill out Main Category, Sub Category, and Wish Text!");
             return;
@@ -40,11 +37,9 @@ function initMediaUploaderFeature() {
         newSubmitBtn.innerText = "⏳ Uploading Media...";
         newSubmitBtn.disabled = true;
 
-        // 🧠 AUTOMATIC DETECTION ENGINE & PREVIEW INJECTOR LAYER
         let detectedType = "none";
         let previewHtmlSnippet = "";
 
-        // A. Handle YouTube Link first if provided
         if (youtubeUrl) {
             detectedType = "youtube";
             let videoId = "";
@@ -58,14 +53,12 @@ function initMediaUploaderFeature() {
                 previewHtmlSnippet = `<p style="margin: 10px 0 0 0; color:#dc2626;">⚠️ Invalid YouTube Link Provided!</p>`;
             }
         } 
-        // B. Handle Live Recorded Voice Audio if available
         else if (recordedVoiceBlob) {
             detectedType = "voice";
             const tempVoiceUrl = URL.createObjectURL(recordedVoiceBlob);
             previewHtmlSnippet = `<p style="margin: 10px 0 4px 0;"><strong>🎙️ Recorded Voice Preview:</strong></p>
                                   <audio src="${tempVoiceUrl}" controls style="width: 100%; margin-top:5px;"></audio>`;
         }
-        // C. Parse Uploaded Local Files dynamically if no YouTube/Voice link is used
         else if (uploadedFile) {
             const mime = uploadedFile.type;
             const tempUrl = URL.createObjectURL(uploadedFile);
@@ -126,7 +119,6 @@ function initMediaUploaderFeature() {
                     `;
                 }
                 
-                // Form Fields Reset
                 document.getElementById('wish-text').value = "";
                 if (fileInput) fileInput.value = "";
                 if (document.getElementById('youtube-url')) document.getElementById('youtube-url').value = "";
@@ -147,8 +139,22 @@ function initMediaUploaderFeature() {
             newSubmitBtn.disabled = false;
         }
     });
+
+    return true;
 }
 
+// 🔌 SMART DELAY INITIALIZATION TRIGGER
+// Yeh dashboard-init.js ke overwrite hone ke baad hi chalega taaki elements gayab na hon
 document.addEventListener("DOMContentLoaded", () => {
-    initMediaUploaderFeature();
+    // Pehle turant chalane ki koshish karein
+    const success = initMediaUploaderFeature();
+    
+    // Agar 2 second baad dashboard-init dubara overwrite karta hai, toh hum dobara bind karenge
+    setTimeout(() => {
+        console.log("Re-binding features to ensure persistent dashboard injection...");
+        initMediaUploaderFeature();
+        if (typeof initVoiceRecorderFeature === "function") {
+            initVoiceRecorderFeature(); // Voice module ko bhi dubara check karega
+        }
+    }, 2500); // 2.5 seconds ka delay taaki dashboard fully reset hona band ho jaye
 });
