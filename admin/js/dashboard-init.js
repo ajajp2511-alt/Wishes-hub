@@ -3,8 +3,10 @@
 // Patel Studio - 2026
 // ==========================================================
 
-if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === "reload") {
-    sessionStorage.removeItem('isAdminLoggedIn');
+// 🛑 FIXED: Soft reload ya dynamic components fetch karne par session delete nahi hoga!
+// Session tabhi hatega jab user browser tab band karega ya manually logout karega.
+if (!sessionStorage.getItem('isAdminLoggedIn')) {
+    console.log("No active session found.");
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -32,7 +34,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 bindSidebarDynamicNavigation(); 
             }
         } catch (error) {
-            document.querySelectorAll('.admin-wrapper ul li').forEach(li => li.classList.remove('active'));
+            if (document.querySelectorAll('.admin-wrapper ul li').length > 0) {
+                document.querySelectorAll('.admin-wrapper ul li').forEach(li => li.classList.remove('active'));
+            }
             console.error("Sidebar loading error:", error);
         }
     }
@@ -66,14 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 🔥 NEW CRITICAL INTEGRATION: Trapping Clicks On Dynamic Sidebar Links
     // ====================================================================
     function bindSidebarDynamicNavigation() {
-        // Document level delegation taaki dynamic links miss na ho skein
         document.body.addEventListener('click', function(e) {
             const link = e.target.closest('.nav-link') || e.target.closest('[data-feature]');
             if (!link) return;
 
             e.preventDefault();
             
-            // Purane links se active class hata kar current link par lagao
             document.querySelectorAll('.nav-link, [data-feature]').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
@@ -86,11 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log(`📡 Router routing screen focus to: ${targetFeature}`);
 
             if (targetFeature === 'wishes') {
-                // Add Wish default framework layout render karein
                 loadLivePreviewComponent();
             } 
             else if (targetFeature === 'settings') {
-                // Settings module logic settings.js se trigger karein
                 if (typeof window.renderSettingsModule === 'function') {
                     window.renderSettingsModule(workspaceArea);
                 } else {
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             } 
             else {
-                // Dusre features ka standard development placeholder
                 workspaceArea.innerHTML = `
                     <div style="padding: 20px; color:#fff;">
                         <h2>📋 ${feature.toUpperCase()} Panel</h2>
@@ -110,7 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>`;
             }
 
-            // Mobile view me click hote hi sidebar automatic close ho jaye
             const sidebar = document.querySelector('.sidebar');
             if (sidebar && window.innerWidth <= 768) {
                 sidebar.classList.remove('show-sidebar');
@@ -181,6 +179,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Trigger on load
     loadLivePreviewComponent();
 });
