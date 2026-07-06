@@ -1,7 +1,40 @@
 // ==========================================================
-// 🚀 MODULE: YOUTUBE DYNAMIC PREVIEW PLAYER UTILITY
+// 🚀 MODULE: YOUTUBE SEARCH ENGINE & DYNAMIC PREVIEW PLAYER
 // ==========================================================
 
+// --- PART 1: YOUTUBE API CONNECTOR ---
+async function searchYouTubeSongs(query) {
+    if (!query) {
+        alert("Please enter a song name or YouTube link!");
+        return [];
+    }
+
+    try {
+        // Aapki banayi hui alag backend file ko hit karega
+        const response = await fetch(`/api/get-youtube-song?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+            // YouTube response ko format karke return karna taaki easy use ho sake
+            return data.items.map(item => {
+                // Agar direct ID search hai toh item.id direct string hoti hai, agar text search hai toh item.id.videoId hoti hai
+                const videoId = typeof item.id === 'string' ? item.id : item.id.videoId;
+                return {
+                    videoId: videoId,
+                    title: item.snippet.title,
+                    thumbnail: item.snippet.thumbnails.default.url
+                };
+            });
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching from YouTube API:", error);
+        alert("Failed to search song. Check server log.");
+        return [];
+    }
+}
+
+// --- PART 2: DYNAMIC PREVIEW PLAYER UTILITY (YOUR ORIGINAL CODE) ---
 let currentPlayingIframe = null;
 
 function attachYouTubePreviewFields(track, containerRow) {
