@@ -1,161 +1,79 @@
-// api/add-wish-to-db.js
-// Wishes Hub: Secure Data Persistence + Self-Healing Firebase Init
+// ==========================================================
+// 📡 WISHES HUB BACKEND - API ROUTER (COMPLETE ENGINE)
 // Patel Studio - 2026
+// ==========================================================
 
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getDatabase } from 'firebase-admin/database';
+import admin from 'firebase-admin';
 
-let db = null;
-let rtdb = null;
-
-// 🔥 SAFE INITIALIZATION FUNCTION WITH INSTANCE MAPPING
-function initFirebase() {
-  if (db && rtdb) return { db, rtdb };
-
-  const dbUrl = process.env.FIREBASE_DATABASE_URL;
-
-  if (!getApps().length) {
-    const projectId = process.env.FIREBASE_PROJECT_ID;
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    let privateKey = process.env.FIREBASE_PRIVATE_KEY;
-
-    if (!projectId || !clientEmail || !privateKey) {
-      throw new Error("Vercel Dashboard par Firebase ke Variables missing hain!");
+// 1. FIREBASE ADMIN SDK CRASH-PROOF INITIALIZATION
+if (!admin.apps.length) {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                // Private key ke new lines (\n) ko correctly handle karne ke liye replace lagaya hai
+                privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+            }),
+            databaseURL: process.env.FIREBASE_DATABASE_URL
+        });
+        console.log("🚀 Firebase Admin Engine initialized successfully!");
+    } catch (error) {
+        console.error("🚨 Firebase Admin Initialization Failed:", error);
     }
-
-    // Vercel multi-line string newline handle text fix
-    if (privateKey.includes('\\n')) {
-      privateKey = privateKey.replace(/\\n/g, '\n');
-    }
-
-    initializeApp({
-      credential: cert({ projectId, clientEmail, privateKey }),
-      databaseURL: dbUrl
-    });
-  }
-
-  db = getFirestore();
-  // 🔥 FIX: RTDB ko database url parameter explicit dena zaroori hai
-  rtdb = getDatabase(dbUrl ? dbUrl : undefined); 
-  
-  return { db, rtdb };
 }
 
+// 2. CORE ROUTER HANDLER
 export default async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method Not Allowed' });
-
-  try {
-    // Firebase initialize karke instance lena
-    const { db: activeDb, rtdb: activeRtdb } = initFirebase();
-
-    // Destructure parameter fields
-    const { wishId, title, category, sub_category, image, youtubeId, songTitle, thumbnail } = req.body;
-
-    // =========================================================================
-    // 🔥 CONDITION 1: AGAR SIRF GAANA LINK KARNA HAI EXISTING WISH KE SATH
-    // =========================================================================
-    if (wishId && youtubeId) {
-      await activeDb.collection('wishes').doc(wishId).update({
-        backgroundMusicId: youtubeId,
-        musicTitle: songTitle || ''
-      });
-
-      await activeDb.collection('youtube_songs_cache').doc(youtubeId).set({
-        youtubeId: youtubeId,
-        title: songTitle || '',
-        thumbnail: thumbnail || '',
-        searchKeyword: (songTitle || '').toLowerCase(),
-        savedAt: Date.now()
-      }, { merge: true });
-
-      return res.status(200).json({ success: true, message: 'Song successfully linked to wish and globally cached!' });
+    // Sirf POST requests ko allow karein
+    if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, message: 'Method Not Allowed. Use POST.' });
     }
 
-    // =========================================================================
-    // 🔥 CONDITION 2: STANDARD NAYI WISH ENTRY PIPELINE
-    // =========================================================================
-    let telegramMessageId = null;
-    const botToken = process.env.TG_BOT_TOKEN?.trim();
-    const chatId = process.env.TG_CHAT_ID?.trim();
+    try {
+        // Frontend payload data extract karein
+        const { title, category, sub_category, image } = req.body;
 
-    // Telegram Notification Pipeline (FIXED FOR BASE64 STRINGS)
-    if (botToken && chatId) {
-      try {
-        let endpoint = 'sendMessage';
-        let payload = { chat_id: chatId };
-
-        // FIX: Agar image ek normal URL hai tabhi sendPhoto use karein. 
-        // Agar base64 string hai (data:image...), toh use text message mein convert kar dein taaki API crash na ho.
-        if (image && image.startsWith('http')) {
-          endpoint = 'sendPhoto';
-          payload.photo = image;
-          payload.caption = `📌 *Category:* ${category || 'General'}\n📂 *Sub-Category:* ${sub_category || 'None'}\n✍️ *Wish:* ${title || ''}`;
-          payload.parse_mode = 'Markdown';
-        } else {
-          endpoint = 'sendMessage';
-          payload.text = `📌 *Category:* ${category || 'General'}\n📂 *Sub-Category:* ${sub_category || 'None'}\n✍️ *Wish:* ${title || ''}${image ? '\n🖼️ _[Image Attached in Database]_' : ''}`;
-          payload.parse_mode = 'Markdown';
+        // Validation check
+        if (!title || !category) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Missing Required Fields: Wish Content Text and Category are mandatory.' 
+            });
         }
 
-        const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+        // Realtime Database instance secure karein
+        const db = admin.database();
+        
+        // 'wishes' node ke andar ek naya auto-generated key reference banayein
+        const wishesRef = db.ref('wishes').push();
+
+        // Database payload structure object
+        const wishData = {
+            id: wishesRef.key,
+            title: title,
+            category: category,
+            sub_category: sub_category || '',
+            image: image || null, // Base64 string ya image URL string
+            createdAt: new Date().toISOString()
+        };
+
+        // Data ko Realtime Database mein insert karein
+        await wishesRef.set(wishData);
+
+        // Success response pipeline
+        return res.status(200).json({
+            success: true,
+            message: 'Data successfully pushed onto the engine database.',
+            wishId: wishesRef.key
         });
-        const tgJson = await tgRes.json();
-        if (tgJson.ok) telegramMessageId = tgJson.result.message_id;
-      } catch (tgErr) { 
-        console.error("Telegram channel log error:", tgErr.message); 
-      }
+
+    } catch (error) {
+        console.error("🚨 Server Pipeline Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: 'Pipeline rejected packet entry.',
+            error: error.message
+        });
     }
-
-    // Firestore Permanent Document Entry
-    const wishRef = activeDb.collection('wishes').doc();
-    const newWishId = wishRef.id;
-
-    const wishPayload = {
-      wishId: newWishId,
-      title: title || '',
-      category: category || 'General',
-      sub_category: sub_category || '',
-      imageUrl: image || null, // Base64 image yahan Firestore mein bilkul sahi save hogi
-      telegramMessageId,
-      createdAt: new Date().toISOString()
-    };
-
-    if (youtubeId) {
-      wishPayload.backgroundMusicId = youtubeId;
-      wishPayload.musicTitle = songTitle || '';
-
-      await activeDb.collection('youtube_songs_cache').doc(youtubeId).set({
-        youtubeId: youtubeId,
-        title: songTitle || '',
-        thumbnail: thumbnail || '',
-        searchKeyword: (songTitle || '').toLowerCase(),
-        savedAt: Date.now()
-      }, { merge: true });
-    }
-
-    await wishRef.set(wishPayload);
-
-    // Realtime Sync Nodes
-    if (activeRtdb) {
-      try { 
-        await activeRtdb.ref(`wishes/${newWishId}`).set({ likes: 0, shares: 0, views: 0 }); 
-      } catch(e){
-        console.error("RTDB Sync Error: ", e.message);
-      }
-    }
-
-    return res.status(200).json({ success: true, message: 'Wish live with direct data persistence!', wishId: newWishId });
-  } catch (err) {
-    return res.status(500).json({ success: false, errorType: 'DatabaseCrash', message: err.message });
-  }
 }
