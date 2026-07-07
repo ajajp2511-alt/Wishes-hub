@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ success: false, message: 'Search query or YouTube URL is required' });
   }
 
-  // Vercel Dashboard se secure YouTube Token uthana
+  // Vercel Dashboard se secure YouTube Token (API KEY) uthana
   const youtubeToken = process.env.YOUTUBE_TOKEN;
   if (!youtubeToken) {
     return res.status(500).json({ success: false, message: 'YouTube Token missing on Vercel' });
@@ -26,28 +26,38 @@ export default async function handler(req, res) {
     // Check karna ki input YouTube URL hai ya normal search text
     if (query.includes("youtube.com/") || query.includes("youtu.be/")) {
       let videoId = "";
-      if (query.includes("v=")) {
-        videoId = query.split("v=")[1].split("&")[0];
-      } else if (query.includes("youtu.be/")) {
-        videoId = query.split("youtu.be/")[1].split("?")[0];
+      
+      // Regex pattern jo har tarah ke YouTube URL se 11 characters ki accurate video ID nikal leta hai
+      const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = query.match(regExp);
+      
+      if (match && match[1]) {
+        videoId = match[1];
+      } else {
+        return res.status(400).json({ success: false, message: 'Invalid YouTube URL structure' });
       }
 
-      // Specific video ka data nikalne ka URL
-      apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}`;
+      // Specific video ka data nikalne ka URL (URL me hi key attach karni hai)
+      apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${youtubeToken}`;
     } else {
-      // Normal text search ke liye URL (Top 5 video results)
-      apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video`;
+      // Normal text search ke liye URL (URL me hi key attach karni hai)
+      apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video&key=${youtubeToken}`;
     }
 
-    // YouTube API ko request bhejna Vercel wale Token ke sath
+    // YouTube API ko request bhejna (Headers se Authorization hata diya hai)
     const ytResponse = await fetch(apiUrl, {
       headers: {
-        'Authorization': `Bearer ${youtubeToken}`,
         'Accept': 'application/json'
       }
     });
 
     const ytData = await ytResponse.json();
+
+    // Agar Google API se koi internal error aaye toh use catch karna
+    if (ytData.error) {
+      return res.status(ytData.error.code || 500).json({ success: false, message: ytData.error.message });
+    }
+
     return res.status(200).json(ytData);
 
   } catch (error) {
