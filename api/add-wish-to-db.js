@@ -85,18 +85,22 @@ export default async function handler(req, res) {
     const botToken = process.env.TG_BOT_TOKEN?.trim();
     const chatId = process.env.TG_CHAT_ID?.trim();
 
-    // Telegram Notification Pipeline
+    // Telegram Notification Pipeline (FIXED FOR BASE64 STRINGS)
     if (botToken && chatId) {
       try {
-        let endpoint = image ? 'sendPhoto' : 'sendMessage';
+        let endpoint = 'sendMessage';
         let payload = { chat_id: chatId };
 
-        if (image) {
+        // FIX: Agar image ek normal URL hai tabhi sendPhoto use karein. 
+        // Agar base64 string hai (data:image...), toh use text message mein convert kar dein taaki API crash na ho.
+        if (image && image.startsWith('http')) {
+          endpoint = 'sendPhoto';
           payload.photo = image;
-          payload.caption = `📌 *Category:* ${category || 'General'}\n✍️ *Wish:* ${title || ''}`;
+          payload.caption = `📌 *Category:* ${category || 'General'}\n📂 *Sub-Category:* ${sub_category || 'None'}\n✍️ *Wish:* ${title || ''}`;
           payload.parse_mode = 'Markdown';
         } else {
-          payload.text = `📌 *Category:* ${category || 'General'}\n✍️ *Wish:* ${title || ''}`;
+          endpoint = 'sendMessage';
+          payload.text = `📌 *Category:* ${category || 'General'}\n📂 *Sub-Category:* ${sub_category || 'None'}\n✍️ *Wish:* ${title || ''}${image ? '\n🖼️ _[Image Attached in Database]_' : ''}`;
           payload.parse_mode = 'Markdown';
         }
 
@@ -107,7 +111,9 @@ export default async function handler(req, res) {
         });
         const tgJson = await tgRes.json();
         if (tgJson.ok) telegramMessageId = tgJson.result.message_id;
-      } catch (tgErr) { console.error("Telegram channel log error:", tgErr.message); }
+      } catch (tgErr) { 
+        console.error("Telegram channel log error:", tgErr.message); 
+      }
     }
 
     // Firestore Permanent Document Entry
@@ -119,7 +125,7 @@ export default async function handler(req, res) {
       title: title || '',
       category: category || 'General',
       sub_category: sub_category || '',
-      imageUrl: image || null,
+      imageUrl: image || null, // Base64 image yahan Firestore mein bilkul sahi save hogi
       telegramMessageId,
       createdAt: new Date().toISOString()
     };
@@ -141,7 +147,11 @@ export default async function handler(req, res) {
 
     // Realtime Sync Nodes
     if (activeRtdb) {
-      try { await activeRtdb.ref(`wishes/${newWishId}`).set({ likes: 0, shares: 0, views: 0 }); } catch(e){}
+      try { 
+        await activeRtdb.ref(`wishes/${newWishId}`).set({ likes: 0, shares: 0, views: 0 }); 
+      } catch(e){
+        console.error("RTDB Sync Error: ", e.message);
+      }
     }
 
     return res.status(200).json({ success: true, message: 'Wish live with direct data persistence!', wishId: newWishId });
