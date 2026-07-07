@@ -17,142 +17,17 @@
     <div class="admin-wrapper">
         
         <main class="content-workspace">
-            <div id="dynamic-content-root">
-                <div class="feature-card">
-                    <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Multi-Media Wish</h2>
-                    
-                    <!-- Direct Inline Onsubmit Handler Setup -->
-                    <form id="wishForm" onsubmit="handleDirectUpload(event)">
-                        
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Main Category</label>
-                            <select id="main-category" name="category" required>
-                                <option value="">Select Main Category</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Sub Category</label>
-                            <select id="sub-category" name="sub_category">
-                                <option value="">Select Sub Category</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Wish Content Text</label>
-                            <textarea id="wish-text" name="title" class="rich-editor" required placeholder="Enter your wish text here..."></textarea>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">YouTube URL (Optional)</label>
-                            <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=..." style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; box-sizing: border-box;">
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                            <button type="button" id="search-yt-btn" style="background: #4f46e5; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔍 Search on YouTube</button>
-                            <button type="button" id="start-rec-btn" style="background: #ef4444; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔴 Record Voice</button>
-                            <button type="button" id="stop-rec-btn" disabled style="background: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Stop</button>
-                        </div>
-
-                        <div id="voice-preview-container" style="margin-bottom: 15px;"></div>
-
-                        <div class="form-group" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Search Song / Track</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="song-search-query" placeholder="Type song name, artist, or movie..." style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff;">
-                                <button type="button" id="track-search-btn" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Search</button>
-                            </div>
-                            <div id="song-results-container" style="margin-top: 10px;"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Upload Feature Image</label>
-                            <input type="file" id="wish-image-file" name="image" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
-                        </div>
-
-                        <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
-
-                        <!-- Status Message Display -->
-                        <p id="status-message" style="margin-top: 15px; font-weight: bold; font-size: 15px; color: #ffea00;"></p>
-
-                        <button type="submit" class="primary-action-btn" id="submit-wish-btn" style="margin-top: 20px; width: 100%; padding: 12px; background: #2563eb; color: white; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">Submit Wish</button>
-                    
-                    </form>
-                </div>
-            </div>
+            <!-- 🔥 Yeh root area active hona zaroori hai, JS isi ke andar HTML dynamically render karega -->
+            <div id="dynamic-content-root"></div>
         </main>
 
     </div>
 
-    <script src="/admin/features/wishes/category-data.js"></script>
-    <script src="/admin/features/media/media-uploader.js"></script>
-    <script src="/admin/features/settings/settings.js"></script> 
-    <script src="/admin/js/ui-controller.js"></script>
-    <script src="/admin/js/dashboard-init.js"></script>
-    <script type="module" src="/admin/js/admin-logo-uploader.js"></script>
-
-    <!-- 🔥 FOOLPROOF INLINE SUBMIT ENGINE -->
-    <script>
-        async function handleDirectUpload(event) {
-            event.preventDefault();
-            
-            const statusDisplay = document.getElementById('status-message');
-            if (statusDisplay) {
-                statusDisplay.innerText = "⏳ Processing and connection initialization...";
-                statusDisplay.style.color = "#ffea00";
-            }
-
-            try {
-                const fileInput = document.getElementById('wish-image-file');
-                let base64String = null;
-
-                // Base64 conversion engine
-                if (fileInput && fileInput.files.length > 0) {
-                    if (statusDisplay) statusDisplay.innerText = "⚡ Reading image stream...";
-                    const file = fileInput.files[0];
-                    base64String = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = error => reject(error);
-                    });
-                }
-
-                if (statusDisplay) statusDisplay.innerText = "🚀 Deploying data payload to API route...";
-
-                const payload = {
-                    title: document.getElementById('wish-text').value,
-                    category: document.getElementById('main-category').value,
-                    sub_category: document.getElementById('sub-category').value || '',
-                    image: base64String
-                };
-
-                const response = await fetch('/api/add-wish-to-db', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    if (statusDisplay) {
-                        statusDisplay.innerText = "✅ Wish successfully pushed live!";
-                        statusDisplay.style.color = "#00ff88";
-                    }
-                    document.getElementById('wishForm').reset();
-                } else {
-                    throw new Error(result.message || "Server dropped connection request.");
-                }
-
-            } catch (err) {
-                if (statusDisplay) {
-                    statusDisplay.innerText = "🚨 Engine Error: " + err.message;
-                    statusDisplay.style.color = "#ff4a4a";
-                }
-                alert("Upload failed: " + err.message);
-            }
-        }
-    </script>
+    <!-- 🔥 Cache todne ke liye sabhi files ke piche ?v=2.1 attach kiya hai -->
+    <script src="/admin/features/wishes/category-data.js?v=2.1"></script>
+    <script src="/admin/features/media/media-uploader.js?v=2.1"></script>
+    <script src="/admin/features/settings/settings.js?v=2.1"></script> 
+    <script src="/admin/js/dashboard-init.js?v=2.1"></script>
+    <script type="module" src="/admin/js/admin-logo-uploader.js?v=2.1"></script>
 </body>
 </html>
