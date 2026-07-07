@@ -70,8 +70,9 @@
             <div class="section-header">
                 <h2>Latest Wishes</h2>
             </div>
+            <!-- 🔥 Data isi grid container ke andar automatic inject hoga -->
             <div id="wishes-grid" class="grid-container">
-                <p style="color: #666;">Initializing Patel Studio Engine...</p>
+                <p style="color: #666; text-align: center; padding: 20px;">Initializing Patel Studio Engine...</p>
             </div>
         </section>
 
@@ -90,13 +91,15 @@
         <p>&copy; 2026 Wishes Hub | Developed by Patel Studio</p>
         <div class="footer-links">
              <a href="page/about.html">About Us</a> | 
-    <a href="page/privacy.html">Privacy Policy</a> |
-            <!-- FIX: Path linked to page folder -->
-            <a href="page/contact.html">Contact</a>
+             <a href="page/privacy.html">Privacy Policy</a> |
+             <a href="page/contact.html">Contact</a>
         </div>
     </footer>
 
+    <!-- Core Scripts Assembly -->
     <script src="js/main-assembly.js"></script>
     <script src="js/ui-interactions.js"></script>
+    <!-- 🔥 Yeh script load hona sabsay zaroori tha data display karne ke liye -->
+    <script src="js/wish-view.js"></script>
 </body>
 </html>
