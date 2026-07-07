@@ -1,139 +1,138 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - LIVE DATA FETCH & AUDIO ENGINE
+// 🌐 WISHES HUB USER PANEL - LIVE RENDER & SEARCH ENGINE
 // Patel Studio - 2026
 // ==========================================================
 
-// Global variable database se aaya hua data store karne ke liye
-window.currentWishData = null;
+let allWishesData = []; // Pure database ka backup search/filter ke liye
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Sabse pehle URL se specific wish ki ID uthayenge (E.g., wishes-hub.vercel.app/?id=-O1abcde...)
-    const urlParams = new URLSearchParams(window.location.search);
-    const wishId = urlParams.get('id');
+    // Page open hote hi Firebase database se wishes uthayenge
+    loadWishesFromFirebase();
 
-    if (wishId) {
-        // Agar URL me specific wish ID hai, toh use fetch karenge
-        fetchSingleWishFromDatabase(wishId);
-    } else {
-        // Agar ID nahi hai, toh check karenge ki kya sabhi wishes dikhani hain ya koi latest default load karni hai
-        fetchLatestWishDefault();
-    }
-
-    // 2. Browser ki Autoplay Policy bypass karne ke liye Open Button par Event Listener
-    const openButton = document.getElementById('open-wish-btn');
-    if (openButton) {
-        openButton.addEventListener('click', () => {
-            console.log("👉 Open Wish button clicked!");
-
-            // Check karenge ki data load hua hai aur usme youtube URL/ID hai ya nahi
-            if (window.currentWishData && window.currentWishData.youtubeUrl) {
-                // YouTube URL se 11 character ki Video ID nikalenge
-                const videoId = extractYouTubeId(window.currentWishData.youtubeUrl);
-                if (videoId) {
-                    initBackgroundMusic(videoId);
-                }
-            } else {
-                console.log("ℹ️ No background music linked or data not loaded yet.");
-            }
-
-            // Aapka greeting card reveal karne ka animation function agar koi hai toh use yahan call karein:
-            // revealCardAnimation();
+    // Live Search Input Listener setup
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            filterWishes(query, 'All');
         });
     }
 });
 
-// 3. Specific Wish Data Fetch karne ka dynamic pipeline
-async function fetchSingleWishFromDatabase(id) {
+// 1. Firebase database se live data read pipeline
+async function loadWishesFromFirebase() {
+    const gridContainer = document.getElementById('wishes-grid');
+    if (!gridContainer) return;
+
     try {
-        const targetDatabaseEndpoint = `https://wishes-hub-default-rtdb.firebaseio.com/wishes/${id}.json`;
-        
-        const response = await fetch(targetDatabaseEndpoint);
-        if (!response.ok) throw new Error("Database network pipeline failed.");
+        const endpoint = "https://wishes-hub-default-rtdb.firebaseio.com/wishes.json";
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error("Failed to connect with database endpoint.");
 
         const data = await response.json();
 
         if (!data) {
-            console.error("🚨 Wish data not found in database for ID:", id);
-            showErrorOnUI("Wish not found!");
+            gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1;">✨ No wishes found. Add some from Admin Panel!</p>`;
             return;
         }
 
-        // Data ko global variable me set kar rahe hain taaki click event access kar sake
-        window.currentWishData = data;
-        
-        // UI render function ko trigger karein (Text aur Image set karne ke liye)
-        renderWishContentToUI(data);
+        // Object data ko standard array format me convert karke reverse (Latest First) kar rahe hain
+        allWishesData = Object.keys(data).map(key => data[key]).reverse();
 
-    } catch (error) {
-        console.error("🚨 Fetch single wish exception:", error);
-        showErrorOnUI("Failed to connect to database stream.");
-    }
-}
-
-// 4. Fallback: Agar link me ID na ho toh latest wish default load karne ke liye
-async function fetchLatestWishDefault() {
-    try {
-        const targetDatabaseEndpoint = "https://wishes-hub-default-rtdb.firebaseio.com/wishes.json?orderBy=\"$key\"&limitToLast=1";
-        const response = await fetch(targetDatabaseEndpoint);
-        const data = await response.json();
-
-        if (data) {
-            const key = Object.keys(data)[0];
-            window.currentWishData = data[key];
-            renderWishContentToUI(window.currentWishData);
+        // Pehli wish ko 'Wish of the Day' banner me automatic lagane ke liye (Optional)
+        if (allWishesData.length > 0 && document.getElementById('daily-wish-text')) {
+            document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
         }
+
+        // Cards layout render trigger karein
+        renderCardsToGrid(allWishesData);
+
     } catch (error) {
-        console.log("No default wish loaded:", error);
+        console.error("🚨 Grid Loader Error:", error);
+        gridContainer.innerHTML = `<p style="color: #ef4444; text-align: center; grid-column: 1/-1;">❌ Connection Error: Unable to sync live feeds.</p>`;
     }
 }
 
-// 5. Database ka text aur image screen par fit karne ka engine
-function renderWishContentToUI(wish) {
-    // HTML Elements jahan data dikhana hai (Aap apne actual selectors ke hisab se badal sakte hain)
-    const textNode = document.getElementById('wish-text-display') || document.querySelector('.wish-text');
-    const imageNode = document.getElementById('wish-image-display') || document.querySelector('.wish-banner');
+// 2. DOM Display/Card Matrix Generator
+function renderCardsToGrid(wishesArray) {
+    const gridContainer = document.getElementById('wishes-grid');
+    if (!gridContainer) return;
 
-    if (textNode && wish.title) {
-        textNode.innerText = wish.title;
-    }
-    if (imageNode && wish.image) {
-        imageNode.src = wish.image;
-        imageNode.style.display = 'block';
-    }
-    console.log("✅ Dynamic wish text and assets successfully rendered on UI nodes.");
-}
+    gridContainer.innerHTML = ""; // Purana status clear karein
 
-// 6. Audio Player / Iframe Injection Engine
-function initBackgroundMusic(youtubeId) {
-    let audioContainer = document.getElementById('wishes-audio-container');
-    if (!audioContainer) {
-        audioContainer = document.createElement('div');
-        audioContainer.id = 'wishes-audio-container';
-        audioContainer.style.cssText = "position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden;";
-        document.body.appendChild(audioContainer);
+    if (wishesArray.length === 0) {
+        gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1;">No matching wishes found.</p>`;
+        return;
     }
 
-    audioContainer.innerHTML = `
-        <iframe 
-            src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=1&playlist=${youtubeId}&enablejsapi=1&mute=0" 
-            allow="autoplay; encrypted-media" 
-            frameborder="0">
-        </iframe>
-    `;
-    console.log("🎵 Background music channel started for YouTube Video ID:", youtubeId);
+    wishesArray.forEach(wish => {
+        // Element Wrapper Card creation
+        const card = document.createElement('div');
+        card.className = 'wish-item-card'; // Aapke style-ui.css ke element card match karne ke liye
+        card.style.cssText = "background: #fff; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; border: 1px solid #eaeaea;";
+
+        // Category indicator tag layout
+        const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #4f46e5; background: #eeebff; padding: 3px 8px; border-radius: 4px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
+        
+        // Image layout banner handle
+        const imageHtml = wish.image ? `<img src="${wish.image}" alt="Wish Banner" style="width: 100%; border-radius: 8px; max-height: 18px0px; object-fit: cover; display: block;">` : '';
+
+        // Dynamic Text sharing logic for WhatsApp button
+        const encodedText = encodeURIComponent(`${wish.title}\n\nRead more special wishes on Wishes Hub! ✨`);
+
+        card.innerHTML = `
+            ${tagHtml}
+            ${imageHtml}
+            <p style="font-size: 15px; color: #333; line-height: 1.5; margin: 5px 0; white-space: pre-wrap;">${wish.title}</p>
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #f5f5f5;">
+                <small style="color: #aaa; font-size: 11px;">📅 ${wish.createdAt ? new Date(wish.createdAt).toLocaleDateString() : 'Today'}</small>
+                <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" style="font-size: 12px; color: #25d366; font-weight: bold; text-decoration: none;">Share 🟢</a>
+            </div>
+        `;
+
+        gridContainer.appendChild(card);
+    });
 }
 
-// Helper: Pura YouTube URL (`https://...`) se id extract karne ke liye safe regex helper
-function extractYouTubeId(url) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-}
+// 3. Search input & Category Chips processing switcher
+function filterWishes(searchQuery, tagQuery) {
+    let filtered = allWishesData;
 
-// Helper: Frontend par error flash karne ke liye
-function showErrorOnUI(msg) {
-    const textNode = document.getElementById('wish-text-display') || document.querySelector('.wish-text');
-    if (textNode) {
-        textNode.innerText = `❌ ${msg}`;
+    // Search bar filtration logic
+    if (searchQuery) {
+        filtered = filtered.filter(wish => 
+            (wish.title && wish.title.toLowerCase().includes(searchQuery)) ||
+            (wish.category && wish.category.toLowerCase().includes(searchQuery))
+        );
     }
+
+    // Top Category chips filtration logic
+    if (tagQuery && tagQuery !== 'All') {
+        filtered = filtered.filter(wish => wish.category && wish.category.toLowerCase() === tagQuery.toLowerCase());
+    }
+
+    renderCardsToGrid(filtered);
 }
+
+// 4. Global category chip click catcher
+window.filterByTag = function(tagName) {
+    // Active chip highlight state toggle style setup
+    const chips = document.querySelectorAll('.chip');
+    chips.forEach(chip => {
+        chip.classList.remove('active');
+        if (chip.innerText.replace('#', '').toLowerCase() === tagName.toLowerCase() || (tagName === 'All' && chip.innerText === 'All')) {
+            chip.classList.add('active');
+        }
+    });
+
+    const currentSearch = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
+    filterWishes(currentSearch, tagName);
+};
+
+// Daily wish share module click launcher
+window.shareDailyWish = function() {
+    const text = document.getElementById('daily-wish-text')?.innerText || "";
+    if (text) {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + "\n\nDownloaded via Wishes Hub! 🌸")}`, '_blank');
+    }
+};
