@@ -32,14 +32,14 @@ async function fetchLiveWishes(isBackground = false) {
     }
 
     try {
-        // 🟢 FIX: Vercel ke serverless handler se connected endpoint + Cache busting timestamp
+        // Vercel serverless endpoint + Cache busting timestamp
         const endpoint = `/api/get-wishes?t=${new Date().getTime()}`;
         const response = await fetch(endpoint);
         
         if (!response.ok) throw new Error("Cloud network refused response.");
         let result = await response.json();
 
-        // Agar response fail ho ya wishes array na miley
+        // Agar response sahi na ho ya wishes array empty ho
         if (!result.success || !result.wishes || result.wishes.length === 0) {
             if (allWishesData.length === 0) {
                 gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
@@ -47,29 +47,41 @@ async function fetchLiveWishes(isBackground = false) {
             return;
         }
 
-        // Data hash check taaki faltu me UI re-render na ho agar data same hai
+        // Data hash check taaki bar-bar UI reload na ho agar data me change na ho
         const currentDataHash = JSON.stringify(result.wishes);
         if (currentDataHash === lastDataHash) return; 
         lastDataHash = currentDataHash;
 
-        // Backend se mila hua array direct save karein
+        console.log("Raw Frontend Received Wishes Sample:", result.wishes[0]);
+
+        // 🟢 UNIVERSAL FALLBACK FIELD MAPPING (Admin panel ke kisi bhi variation ko padhne ke liye)
         allWishesData = result.wishes.map(item => {
+            // Check karein ki string kis key me chupi hai
+            let extractedTitle = item.title || item.text || item.wishText || item.message || item.wish || '';
+            
+            // Agar poora item hi direct ek string hai
+            if (typeof item === 'string') extractedTitle = item;
+
             return {
                 id: item.id,
-                title: item.title || item.text || item.wishText || item.message || '',
+                title: extractedTitle.toString().trim(),
                 category: item.category || 'General',
                 image: item.image || null,
                 createdAt: item.createdAt || new Date().toISOString()
             };
-        }).filter(wish => wish.title.trim() !== '');
+        });
 
-        // Daily Wish Text section update karein (Latest Card)
-        if (allWishesData.length > 0 && document.getElementById('daily-wish-text')) {
-            document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
+        // Agar kuch bhi match nahi hua, toh filtration hata kar check karein
+        console.log("⚡ Total Processed Cards for UI:", allWishesData.length);
+
+        if (allWishesData.length > 0) {
+            if (document.getElementById('daily-wish-text')) {
+                document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
+            }
+            renderCardsToGrid(allWishesData);
+        } else {
+            gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">⚠️ Fields mismatch: Title keys are empty in Firestore.</p>`;
         }
-
-        renderCardsToGrid(allWishesData);
-        console.log("⚡ Auto-Sync Complete. Active Cards:", allWishesData.length);
 
     } catch (error) {
         console.error("🚨 Cloud Engine Error:", error);
@@ -97,7 +109,7 @@ function renderCardsToGrid(wishesArray) {
         card.innerHTML = `
             ${tagHtml}
             ${imageHtml}
-            <p style="font-size: 15px; color: #333; line-height: 1.5; margin: 5px 0; white-space: pre-wrap;">${wish.title}</p>
+            <p style="font-size: 15px; color: #333; line-height: 1.5; margin: 5px 0; white-space: pre-wrap;">${wish.title || 'Empty Wish Content'}</p>
             <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #f5f5f5;">
                 <small style="color: #aaa; font-size: 11px;">📅 ${new Date(wish.createdAt).toLocaleDateString()}</small>
                 <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" style="font-size: 12px; color: #25d366; font-weight: bold; text-decoration: none;">Share 🟢</a>
