@@ -1,14 +1,21 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - REAL-TIME LIVE STREAM ENGINE
+// 🌐 WISHES HUB USER PANEL - LIGHTWEIGHT BACKGROUND REFRESH ENGINE
 // Patel Studio - 2026
 // ==========================================================
 
 let allWishesData = []; 
+let lastDataHash = ""; // Data change detect karne ke liye tracker
 
-// 1. Firebase Cdn Scripts ko dynamically load karne ka system (Taaki SDK install na karna pade)
 document.addEventListener('DOMContentLoaded', () => {
-    injectFirebaseSDKAndListen();
+    // Pehli baar page load hote hi immediately data fetch karein
+    fetchLiveWishes();
 
+    // 🔥 REAL-TIME ENGINE: Har 4 seconds me background me automatic naya data check hoga
+    setInterval(() => {
+        fetchLiveWishes(true); // true matlab background silent check
+    }, 4000);
+
+    // Live Search Input Listener setup
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -18,56 +25,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function injectFirebaseSDKAndListen() {
+// Main Core Fetch Pipeline
+async function fetchLiveWishes(isBackground = false) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
-    // Loader State
-    gridContainer.innerHTML = `<p style="color: #666; text-align: center; grid-column: 1/-1;">📡 Establishing live connection stream...</p>`;
-
-    // Firebase App aur Database scripts dynamically attach kar rahe hain
-    const fbApp = document.createElement('script');
-    fbApp.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js";
-    document.head.appendChild(fbApp);
-
-    fbApp.onload = () => {
-        const fbDb = document.createElement('script');
-        fbDb.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js";
-        document.head.appendChild(fbDb);
-
-        fbDb.onload = () => {
-            // Live connection initialization
-            startFirebaseLiveListener();
-        };
-    };
-}
-
-// 2. Real-time Listener Engine (Main Magic)
-function startFirebaseLiveListener() {
-    const gridContainer = document.getElementById('wishes-grid');
-
-    // Aapke project ke configs setup
-    const firebaseConfig = {
-        databaseURL: "https://wishes-hub-default-rtdb.firebaseio.com/"
-    };
-
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    // Agar pehli baar load ho raha ho toh screen par syncing dikhayein
+    if (!isBackground && allWishesData.length === 0) {
+        gridContainer.innerHTML = `<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 20px;">📡 Syncing with Patel Studio live cloud feeds...</p>`;
     }
 
-    const dbRef = firebase.database().ref('wishes');
-
-    // 🔥 '.on' lagane se database me kuch bhi badlega, ye function automatic chalega bina refresh ke!
-    dbRef.on('value', (snapshot) => {
-        const data = snapshot.val();
+    try {
+        // Cache bypass timestamp taaki har scan me bilkul fresh entry mile
+        const endpoint = `https://wishes-hub-default-rtdb.firebaseio.com/wishes.json?t=${new Date().getTime()}`;
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) throw new Error("Cloud database rejected the payload request.");
+        const data = await response.json();
 
         if (!data) {
             gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No wishes found. Add some from Admin Panel!</p>`;
             return;
         }
 
-        // Convert object to array and reverse (Latest First)
+        // Data hashing checking - Agar database me koi naya change nahi hua toh re-render nahi karega (Performance optimization)
+        const currentDataHash = JSON.stringify(data);
+        if (currentDataHash === lastDataHash) {
+            return; // No new data, exit silently
+        }
+        lastDataHash = currentDataHash;
+
+        // Convert Object Matrix into Array Format (Latest First)
         allWishesData = Object.keys(data).map(key => {
             return {
                 id: key,
@@ -78,32 +66,30 @@ function startFirebaseLiveListener() {
             };
         }).reverse();
 
-        // Wish of the Day automatic update
+        // Wish of the Day Banner Auto sync
         if (allWishesData.length > 0 && document.getElementById('daily-wish-text')) {
             document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
         }
 
-        // Live Grid Render
+        // Fresh dynamic cards inject karein
         renderCardsToGrid(allWishesData);
-        console.log("⚡ Live Feed Synced! Total Records:", allWishesData.length);
+        console.log("⚡ Live Cloud Feed Synced successfully.");
 
-    }, (error) => {
-        console.error("🚨 Live Stream Error:", error);
-        gridContainer.innerHTML = `<p style="color: #ef4444; text-align: center; grid-column: 1/-1;">❌ Sync Failed. Reconnecting...</p>`;
-    });
+    } catch (error) {
+        console.error("🚨 Cloud Engine Error:", error);
+        // Agar connection error background me aaye toh running cards ko crash mat hone dena
+        if (allWishesData.length === 0) {
+            gridContainer.innerHTML = `<p style="color: #ef4444; text-align: center; grid-column: 1/-1; padding: 20px;">❌ Connection Error: Unable to sync live feeds.</p>`;
+        }
+    }
 }
 
-// 3. Grid UI Builder Matrix
+// UI HTML Card Generator Layout
 function renderCardsToGrid(wishesArray) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
     gridContainer.innerHTML = ""; 
-
-    if (wishesArray.length === 0) {
-        gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">No matching wishes found.</p>`;
-        return;
-    }
 
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
@@ -112,7 +98,7 @@ function renderCardsToGrid(wishesArray) {
 
         const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #4f46e5; background: #eeebff; padding: 3px 8px; border-radius: 4px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
         const imageHtml = wish.image ? `<img src="${wish.image}" alt="Wish Banner" style="width: 100%; border-radius: 8px; max-height: 180px; object-fit: cover; display: block;">` : '';
-        const encodedText = encodeURIComponent(`${wish.title}\n\nRead more on Wishes Hub! ✨`);
+        const encodedText = encodeURIComponent(`${wish.title}\n\nRead more special wishes on Wishes Hub! ✨`);
 
         card.innerHTML = `
             ${tagHtml}
@@ -128,7 +114,7 @@ function renderCardsToGrid(wishesArray) {
     });
 }
 
-// 4. Search and Filter Engine
+// Filters Matrix
 function filterWishes(searchQuery, tagQuery) {
     let filtered = allWishesData;
 
