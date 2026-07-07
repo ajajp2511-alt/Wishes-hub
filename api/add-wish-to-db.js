@@ -9,9 +9,11 @@ import { getDatabase } from 'firebase-admin/database';
 let db = null;
 let rtdb = null;
 
-// 🔥 SAFE INITIALIZATION FUNCTION
+// 🔥 SAFE INITIALIZATION FUNCTION WITH INSTANCE MAPPING
 function initFirebase() {
   if (db && rtdb) return { db, rtdb };
+
+  const dbUrl = process.env.FIREBASE_DATABASE_URL;
 
   if (!getApps().length) {
     const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -29,12 +31,14 @@ function initFirebase() {
 
     initializeApp({
       credential: cert({ projectId, clientEmail, privateKey }),
-      databaseURL: process.env.FIREBASE_DATABASE_URL
+      databaseURL: dbUrl
     });
   }
 
   db = getFirestore();
-  rtdb = getDatabase();
+  // 🔥 FIX: RTDB ko database url parameter explicit dena zaroori hai
+  rtdb = getDatabase(dbUrl ? dbUrl : undefined); 
+  
   return { db, rtdb };
 }
 
@@ -142,7 +146,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, message: 'Wish live with direct data persistence!', wishId: newWishId });
   } catch (err) {
-    // 🔴 CRITICAL STATUS CHANGE: Server internal errors ke liye status 500 return karein taaki frontend catch kar sake
     return res.status(500).json({ success: false, errorType: 'DatabaseCrash', message: err.message });
   }
 }
