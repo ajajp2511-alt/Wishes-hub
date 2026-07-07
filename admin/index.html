@@ -17,65 +17,73 @@
     <div class="admin-wrapper">
         
         <main class="content-workspace">
-            <div id="feature-content-area">
+            <div id="dynamic-content-root"> <!-- 🔥 CHANGED: ID to match ui-controller.js contentRoot -->
                 <div class="feature-card">
-                    <!-- 🔥 UPDATED KEY: HEADING APNE AAP UPDATE HO JAYEGI -->
                     <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Multi-Media Wish</h2>
                     
-                    <div class="form-group">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Main Category</label>
-                        <select id="main-category">
-                            <option value="">Select Main Category</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Sub Category</label>
-                        <select id="sub-category">
-                            <option value="">Select Sub Category</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Wish Content Text</label>
-                        <textarea id="wish-text" class="rich-editor" placeholder="Enter your wish text here..."></textarea>
-                    </div>
-
-                    <!-- 🛠️ ADDED: YOUTUBE LINK INPUT FIELD -->
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">YouTube URL (Optional)</label>
-                        <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=..." style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; box-sizing: border-box;">
-                    </div>
-
-                    <!-- 🎙️ ADDED: INTERACTION BUTTONS FOR YOUTUBE & VOICE -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <button type="button" id="search-yt-btn" style="background: #4f46e5; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔍 Search on YouTube</button>
-                        <button type="button" id="start-rec-btn" style="background: #ef4444; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔴 Record Voice</button>
-                        <button type="button" id="stop-rec-btn" disabled style="background: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Stop</button>
-                    </div>
-
-                    <!-- 🎙️ ADDED: VOICE PLAYER LIVE PREVIEW CONTAINER -->
-                    <div id="voice-preview-container" style="margin-bottom: 15px;"></div>
-
-                    <!-- 🎵 ADDED: SEARCH SONG / TRACK INTEGRATION SECTION -->
-                    <div class="form-group" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Search Song / Track</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="song-search-query" placeholder="Type song name, artist, or movie..." style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff;">
-                            <button type="button" id="track-search-btn" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Search</button>
+                    <!-- 🛠️ ADDED FORM TAG HERE -->
+                    <form id="wishForm">
+                        
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Main Category</label>
+                            <select id="main-category" name="category" required>
+                                <option value="">Select Main Category</option>
+                            </select>
                         </div>
-                        <div id="song-results-container" style="margin-top: 10px;"></div>
-                    </div>
 
-                    <div class="form-group">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Upload Feature Image</label>
-                        <input type="file" id="wish-image" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
-                    </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Sub Category</label>
+                            <select id="sub-category" name="sub_category" required disabled style="opacity: 0.5;">
+                                <option value="">Select Sub Category</option>
+                            </select>
+                        </div>
 
-                    <!-- 🔴 ADDED: LIVE PREVIEW BOX (Jo successfully save hone par dynamic data dikhayega) -->
-                    <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Wish Content Text</label>
+                            <textarea id="wish-text" name="title" class="rich-editor" required placeholder="Enter your wish text here..."></textarea>
+                        </div>
 
-                    <button class="primary-action-btn" id="submit-wish-btn" style="margin-top: 20px; width: 100%; padding: 12px; background: #2563eb; color: white; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">Submit Wish</button>
+                        <!-- YOUTUBE LINK INPUT FIELD -->
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">YouTube URL (Optional)</label>
+                            <input type="text" id="youtube-url" placeholder="https://www.youtube.com/watch?v=..." style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; box-sizing: border-box;">
+                        </div>
+
+                        <!-- INTERACTION BUTTONS FOR YOUTUBE & VOICE -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <button type="button" id="search-yt-btn" style="background: #4f46e5; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔍 Search on YouTube</button>
+                            <button type="button" id="start-rec-btn" style="background: #ef4444; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">🔴 Record Voice</button>
+                            <button type="button" id="stop-rec-btn" disabled style="background: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Stop</button>
+                        </div>
+
+                        <!-- VOICE PLAYER LIVE PREVIEW CONTAINER -->
+                        <div id="voice-preview-container" style="margin-bottom: 15px;"></div>
+
+                        <!-- SEARCH SONG / TRACK INTEGRATION SECTION -->
+                        <div class="form-group" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Search Song / Track</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="song-search-query" placeholder="Type song name, artist, or movie..." style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff;">
+                                <button type="button" id="track-search-btn" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Search</button>
+                            </div>
+                            <div id="song-results-container" style="margin-top: 10px;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Upload Feature Image</label>
+                            <input type="file" id="wish-image-file" name="image" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- LIVE PREVIEW BOX -->
+                        <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+
+                        <!-- STATUS MESSAGE FOR LIVE TEXT UPDATES -->
+                        <p id="status-message" style="margin-top: 15px; font-weight: bold; font-size: 15px;"></p>
+
+                        <!-- SUBMIT BUTTON -->
+                        <button type="submit" class="primary-action-btn" id="submit-wish-btn" style="margin-top: 20px; width: 100%; padding: 12px; background: #2563eb; color: white; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">Submit Wish</button>
+                    
+                    </form> <!-- 🛠️ CLOSED FORM TAG HERE -->
                 </div>
             </div>
         </main>
@@ -85,8 +93,9 @@
     <script src="/admin/features/wishes/category-data.js"></script>
     <script src="/admin/features/media/media-uploader.js"></script>
     <script src="/admin/features/settings/settings.js"></script> 
+    <script src="/admin/js/ui-controller.js"></script> <!-- 🔥 ADDED: Taaki aapki controller script load ho -->
     <script src="/admin/js/dashboard-init.js"></script>
     
     <script type="module" src="/admin/js/admin-logo-uploader.js"></script>
 </body>
-</html>
+    </html>
