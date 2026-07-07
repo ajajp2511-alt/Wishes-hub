@@ -50,6 +50,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 🟢 FIXED: Vercel aur Browser caching ko rokne ke liye headers
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     const db = getFirestore();
     const wishesRef = db.collection('wishes');
     const snapshot = await wishesRef.orderBy('createdAt', 'desc').get();
