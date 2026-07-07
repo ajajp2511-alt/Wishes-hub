@@ -4,6 +4,15 @@
 import { db } from '../../config/firebaseAdmin'; 
 
 export default async function handler(req, res) {
+  // CORS Headers lagana zaroori hai taaki frontend request block na ho
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
@@ -14,6 +23,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 🛡️ SAFETY CHECK: Pehle dekhein ki kya database sahi se load hua hai
+    if (!db) {
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Firebase Database admin instance is undefined. Check config/firebaseAdmin.js initialization.' 
+      });
+    }
+
     const cleanQuery = query.trim().toLowerCase();
     const songCacheRef = db.collection('youtube_songs_cache');
 
@@ -52,10 +69,9 @@ export default async function handler(req, res) {
     // ===================================================
     // STEP 2: AGAR LOCAL ME NAHI MILA, TOH YOUTUBE API USE KARO
     // ===================================================
-    // 🔥 FIX: Vercel ke variable name ke sath sync kiya
     const youtubeToken = process.env.YOUTUBE_API_KEY; 
     if (!youtubeToken) {
-      return res.status(500).json({ success: false, message: 'YouTube Token missing on server configuration' });
+      return res.status(500).json({ success: false, message: 'YouTube Token (YOUTUBE_API_KEY) missing on server configuration' });
     }
 
     let apiUrl = "";
@@ -94,13 +110,13 @@ export default async function handler(req, res) {
     }
 
     if (ytData.error) {
-      return res.status(ytData.error.code || 500).json({ success: false, message: ytData.error.message });
+      return res.status(ytData.error.code || 500).json({ success: false, errorDetails: ytData.error, message: ytData.error.message });
     }
 
     return res.status(200).json({ source: 'youtube_api', items: ytData.items });
 
   } catch (error) {
-    console.error("Error in YouTube handler:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error caught inside handler:", error);
+    return res.status(500).json({ success: false, errorStack: error.stack, message: error.message });
   }
 }
