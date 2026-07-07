@@ -9,7 +9,7 @@ let lastDataHash = "";
 document.addEventListener('DOMContentLoaded', () => {
     fetchLiveWishes();
 
-    // Har 4 seconds me background scanning active rakhein
+    // Har 4 seconds me background scanning active rakhein (Real-time syncing)
     setInterval(() => {
         fetchLiveWishes(true); 
     }, 4000);
@@ -32,46 +32,38 @@ async function fetchLiveWishes(isBackground = false) {
     }
 
     try {
-        // 🔥 FIX 1: Pura database root level fetch kar rahe hain taaki admin panel kisi bhi node par save kare, data block na ho
-        const endpoint = `https://wishes-hub-default-rtdb.firebaseio.com/.json?t=${new Date().getTime()}`;
+        // 🟢 FIX: Vercel ke serverless handler se connected endpoint + Cache busting timestamp
+        const endpoint = `/api/get-wishes?t=${new Date().getTime()}`;
         const response = await fetch(endpoint);
         
         if (!response.ok) throw new Error("Cloud network refused response.");
-        let rawData = await response.json();
+        let result = await response.json();
 
-        if (!rawData) {
-            gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
+        // Agar response fail ho ya wishes array na miley
+        if (!result.success || !result.wishes || result.wishes.length === 0) {
+            if (allWishesData.length === 0) {
+                gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
+            }
             return;
         }
 
-        const currentDataHash = JSON.stringify(rawData);
+        // Data hash check taaki faltu me UI re-render na ho agar data same hai
+        const currentDataHash = JSON.stringify(result.wishes);
         if (currentDataHash === lastDataHash) return; 
         lastDataHash = currentDataHash;
 
-        // 🔥 FIX 2: AUTO PATH DETECTION LOGIC
-        // Agar admin panel data ko 'wishes' key me daalta hai toh wo uthayenge, nahi toh direct root data ko read karenge
-        let targetData = rawData.wishes ? rawData.wishes : rawData;
-
-        // Agar data string format me wrapped hai, toh map karne se pehle sanitize karein
-        if (typeof targetData !== 'object') {
-            return;
-        }
-
-        allWishesData = Object.keys(targetData).map(key => {
-            const item = targetData[key];
+        // Backend se mila hua array direct save karein
+        allWishesData = result.wishes.map(item => {
             return {
-                id: key,
-                // Admin panel ke kisi bhi field name variation ko dynamic catch karne ke liye fallback fields:
-                title: item.title || item.text || item.wishText || item.message || (typeof item === 'string' ? item : ''),
+                id: item.id,
+                title: item.title || item.text || item.wishText || item.message || '',
                 category: item.category || 'General',
                 image: item.image || null,
                 createdAt: item.createdAt || new Date().toISOString()
             };
-        })
-        // Sirf un entries ko filter out karein jisme kuch content ho
-        .filter(wish => wish.title.trim() !== '')
-        .reverse();
+        }).filter(wish => wish.title.trim() !== '');
 
+        // Daily Wish Text section update karein (Latest Card)
         if (allWishesData.length > 0 && document.getElementById('daily-wish-text')) {
             document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
         }
