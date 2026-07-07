@@ -1,54 +1,73 @@
 // api/add-wish-to-db.js
-// Wishes Hub: Secure Data Persistence + Double-Saving Song Cache
+// Wishes Hub: Secure Data Persistence + Self-Healing Firebase Init
 // Patel Studio - 2026
 
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getDatabase } from 'firebase-admin/database';
 
-let db, rtdb;
+let db = null;
+let rtdb = null;
 
-try {
+// 🔥 SAFE INITIALIZATION FUNCTION
+function initFirebase() {
+  if (db && rtdb) return { db, rtdb };
+
   if (!getApps().length) {
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new Error("Vercel Dashboard par Firebase ke Variables missing hain!");
+    }
+
+    // Vercel multi-line string newline handle text fix
+    if (privateKey.includes('\\n')) {
+      privateKey = privateKey.replace(/\\n/g, '\n');
+    }
+
     initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
-      }),
+      credential: cert({ projectId, clientEmail, privateKey }),
       databaseURL: process.env.FIREBASE_DATABASE_URL
     });
   }
+
   db = getFirestore();
   rtdb = getDatabase();
-} catch (e) { console.error("Firebase Sync Init Error:", e); }
+  return { db, rtdb };
+}
 
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method Not Allowed' });
 
   try {
-    // Destructure naye song parameter fields: wishId (for updates), youtubeId, songTitle, thumbnail
+    // Firebase initialize karke instance lena
+    const { db: activeDb, rtdb: activeRtdb } = initFirebase();
+
+    // Destructure parameter fields
     const { wishId, title, category, sub_category, image, youtubeId, songTitle, thumbnail } = req.body;
 
     // =========================================================================
     // 🔥 CONDITION 1: AGAR SIRF GAANA LINK KARNA HAI EXISTING WISH KE SATH
     // =========================================================================
     if (wishId && youtubeId) {
-      // 1. Specific Wish document me background music data attach karna
-      await db.collection('wishes').doc(wishId).update({
+      await activeDb.collection('wishes').doc(wishId).update({
         backgroundMusicId: youtubeId,
         musicTitle: songTitle || ''
       });
 
-      // 2. Global Song Cache Collection me save karna taaki YouTube Credit bar-bar waste na ho
-      await db.collection('youtube_songs_cache').doc(youtubeId).set({
+      await activeDb.collection('youtube_songs_cache').doc(youtubeId).set({
         youtubeId: youtubeId,
         title: songTitle || '',
         thumbnail: thumbnail || '',
-        searchKeyword: (songTitle || '').toLowerCase(), // Future search optimisation ke liye
+        searchKeyword: (songTitle || '').toLowerCase(),
         savedAt: Date.now()
       }, { merge: true });
 
@@ -56,7 +75,7 @@ export default async function handler(req, res) {
     }
 
     // =========================================================================
-    // 🔥 CONDITION 2: STANDARD NAYI WISH ENTRY PIPELINE (EXISTING CODE)
+    // 🔥 CONDITION 2: STANDARD NAYI WISH ENTRY PIPELINE
     // =========================================================================
     let telegramMessageId = null;
     const botToken = process.env.TG_BOT_TOKEN?.trim();
@@ -84,11 +103,11 @@ export default async function handler(req, res) {
         });
         const tgJson = await tgRes.json();
         if (tgJson.ok) telegramMessageId = tgJson.result.message_id;
-      } catch (tgErr) { console.error("Telegram channel log error:", tgErr); }
+      } catch (tgErr) { console.error("Telegram channel log error:", tgErr.message); }
     }
 
     // Firestore Permanent Document Entry
-    const wishRef = db.collection('wishes').doc();
+    const wishRef = activeDb.collection('wishes').doc();
     const newWishId = wishRef.id;
 
     const wishPayload = {
@@ -101,13 +120,11 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString()
     };
 
-    // Agar nayi wish ke sath hi song pass kiya hai admin ne toh use add kar dena
     if (youtubeId) {
       wishPayload.backgroundMusicId = youtubeId;
       wishPayload.musicTitle = songTitle || '';
 
-      // Is gaane ko bhi global cache me sath hi sath daal dete hain
-      await db.collection('youtube_songs_cache').doc(youtubeId).set({
+      await activeDb.collection('youtube_songs_cache').doc(youtubeId).set({
         youtubeId: youtubeId,
         title: songTitle || '',
         thumbnail: thumbnail || '',
@@ -119,10 +136,13 @@ export default async function handler(req, res) {
     await wishRef.set(wishPayload);
 
     // Realtime Sync Nodes
-    try { await rtdb.ref(`wishes/${newWishId}`).set({ likes: 0, shares: 0, views: 0 }); } catch(e){}
+    if (activeRtdb) {
+      try { await activeRtdb.ref(`wishes/${newWishId}`).set({ likes: 0, shares: 0, views: 0 }); } catch(e){}
+    }
 
     return res.status(200).json({ success: true, message: 'Wish live with direct data persistence!', wishId: newWishId });
   } catch (err) {
-    return res.status(200).json({ success: false, message: err.message });
+    // 🔴 CRITICAL STATUS CHANGE: Server internal errors ke liye status 500 return karein taaki frontend catch kar sake
+    return res.status(500).json({ success: false, errorType: 'DatabaseCrash', message: err.message });
   }
 }
