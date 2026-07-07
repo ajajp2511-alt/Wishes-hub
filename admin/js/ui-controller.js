@@ -26,6 +26,139 @@ if (navLinks.length > 0) {
     });
 }
 
+// Global Event Delegation Setup (Prevents broken listeners on re-renders)
+if (contentRoot) {
+    // 1. Dynamic Dropdown Change Handler
+    contentRoot.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'main-category') {
+            const subCatSelect = document.getElementById('sub-category');
+            if (!subCatSelect) return;
+
+            const selectedMain = e.target.value;
+            const categories = window.loadAddWishesView.getCategoriesData() || {};
+            const subCategories = categories[selectedMain] || [];
+
+            subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
+
+            if (subCategories.length > 0) {
+                subCategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subCatSelect.appendChild(option);
+                });
+                subCatSelect.disabled = false;
+                subCatSelect.style.opacity = "1";
+            } else {
+                subCatSelect.innerHTML = '<option value="" disabled selected>No Sub Categories</option>';
+                subCatSelect.disabled = true;
+                subCatSelect.style.opacity = "0.5";
+            }
+        }
+    });
+
+    // 2. Dynamic Form Submit Handler
+    contentRoot.addEventListener('submit', async (e) => {
+        if (e.target && e.target.id === 'wishForm') {
+            e.preventDefault();
+            const wishForm = e.target;
+            const statusDisplay = document.getElementById('status-message');
+            const subCatSelect = document.getElementById('sub-category');
+            
+            if (!statusDisplay) return;
+
+            statusDisplay.innerText = "⏳ Processing and deploying payload...";
+            statusDisplay.style.color = "#ffea00";
+            
+            const fileInput = document.getElementById('wish-image-file');
+            let base64String = null;
+
+            const resizeAndCompressImage = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+
+                            const MAX_WIDTH = 1200;
+                            if (width > MAX_WIDTH) {
+                                height = Math.round((height * MAX_WIDTH) / width);
+                                width = MAX_WIDTH;
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                            resolve(compressedBase64);
+                        };
+                        img.onerror = (err) => reject(err);
+                    };
+                    reader.onerror = (err) => reject(err);
+                });
+            };
+
+            try {
+                if (fileInput && fileInput.files.length > 0) {
+                    statusDisplay.innerText = "⚡ Auto-Compressing Image to Secure Network Limits...";
+                    const originalFile = fileInput.files[0];
+                    
+                    if (originalFile.type.includes('gif')) {
+                        const readGif = (file) => new Promise((res, rej) => {
+                            const r = new FileReader(); r.onload = () => res(r.result); r.onerror = ev => rej(ev); r.readAsDataURL(file);
+                        });
+                        base64String = await readGif(originalFile);
+                    } else {
+                        base64String = await resizeAndCompressImage(originalFile);
+                    }
+                }
+
+                statusDisplay.innerText = "🚀 Synchronizing with Global Servers...";
+                
+                const payload = {
+                    title: wishForm.elements['title'].value,
+                    category: wishForm.elements['category'].value,
+                    sub_category: wishForm.elements['sub_category'].value || '',
+                    image: base64String 
+                };
+
+                const response = await fetch('/api/add-wish-to-db', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const serverResult = await response.json();
+
+                if (serverResult.success) {
+                    statusDisplay.innerText = "✅ Wish successfully live!";
+                    statusDisplay.style.color = "#00ff88";
+                    wishForm.reset();
+                    if (subCatSelect) {
+                        subCatSelect.disabled = true;
+                        subCatSelect.style.opacity = "0.5";
+                        subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
+                    }
+                } else {
+                    throw new Error(serverResult.message || "Execution dropped by backend engine.");
+                }
+
+            } catch (error) {
+                statusDisplay.innerText = "🚨 Error: " + error.message;
+                statusDisplay.style.color = "#ff4a4a";
+            }
+        }
+    });
+}
+
 // Main Window view engine
 window.loadAddWishesView = function() {
     if (!contentRoot) return;
@@ -66,19 +199,9 @@ window.loadAddWishesView = function() {
         </div>
     `;
 
-    const mainCatSelect = document.getElementById('main-category');
-    const subCatSelect = document.getElementById('sub-category');
-    const wishForm = document.getElementById('wishForm');
-    const statusDisplay = document.getElementById('status-message');
-
-    function getCategoriesData() {
-        if (typeof window.categoriesConfig !== 'undefined') return window.categoriesConfig;
-        if (typeof categoriesConfig !== 'undefined') return categoriesConfig;
-        return null;
-    }
-
     function populateMainCategories() {
-        const categories = getCategoriesData();
+        const mainCatSelect = document.getElementById('main-category');
+        const categories = window.loadAddWishesView.getCategoriesData();
         
         if (!categories || Object.keys(categories).length === 0) {
             setTimeout(populateMainCategories, 80);
@@ -97,128 +220,14 @@ window.loadAddWishesView = function() {
     }
 
     populateMainCategories();
+};
 
-    if (mainCatSelect && subCatSelect) {
-        mainCatSelect.addEventListener('change', (e) => {
-            const selectedMain = e.target.value;
-            const categories = getCategoriesData() || {};
-            const subCategories = categories[selectedMain] || [];
-
-            subCatSelect.innerHTML = '<option value="" disabled selected>Select Sub Category</option>';
-
-            if (subCategories.length > 0) {
-                subCategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    subCatSelect.appendChild(option);
-                });
-                subCatSelect.disabled = false;
-                subCatSelect.style.opacity = "1";
-            } else {
-                subCatSelect.innerHTML = '<option value="" disabled selected>No Sub Categories</option>';
-                subCatSelect.disabled = true;
-                subCatSelect.style.opacity = "0.5";
-            }
-        });
-    }
-
-    // Form Submit unified handling mechanism
-    if (wishForm) {
-        wishForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            statusDisplay.innerText = "⏳ Processing and deploying payload...";
-            statusDisplay.style.color = "#ffea00";
-            
-            const fileInput = document.getElementById('wish-image-file');
-            let base64String = null;
-
-            // 🔥 COMPRESSION ENGINE: Image ko scale down aur quality minimize karne ke liye
-            const resizeAndCompressImage = (file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = (event) => {
-                        const img = new Image();
-                        img.src = event.target.result;
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            let width = img.width;
-                            let height = img.height;
-
-                            // Max bound logic (1200px se badi width ko auto-scale down karega)
-                            const MAX_WIDTH = 1200;
-                            if (width > MAX_WIDTH) {
-                                height = Math.round((height * MAX_WIDTH) / width);
-                                width = MAX_WIDTH;
-                            }
-
-                            canvas.width = width;
-                            canvas.height = height;
-                            
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-
-                            // 0.6 means 60% quality compression (Size drops directly from 8MB to ~300KB!)
-                            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                            resolve(compressedBase64);
-                        };
-                        img.onerror = (err) => reject(err);
-                    };
-                    reader.onerror = (err) => reject(err);
-                });
-            };
-
-            try {
-                if (fileInput && fileInput.files.length > 0) {
-                    statusDisplay.innerText = "⚡ Auto-Compressing Image to Secure Network Limits...";
-                    const originalFile = fileInput.files[0];
-                    
-                    // GIF files compress nahi hongi, direct jayengi. Jpeg/Png dynamically safe shrink ho jayengi
-                    if (originalFile.type.includes('gif')) {
-                        const readGif = (file) => new Promise((res, rej) => {
-                            const r = new FileReader(); r.onload = () => res(r.result); r.onerror = e => rej(e); r.readAsDataURL(file);
-                        });
-                        base64String = await readGif(originalFile);
-                    } else {
-                        base64String = await resizeAndCompressImage(originalFile);
-                    }
-                }
-
-                statusDisplay.innerText = "🚀 Synchronizing with Global Servers...";
-                
-                const payload = {
-                    title: wishForm.elements['title'].value,
-                    category: wishForm.elements['category'].value,
-                    sub_category: wishForm.elements['sub_category'].value || '',
-                    image: base64String 
-                };
-
-                const response = await fetch('/api/add-wish-to-db', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const serverResult = await response.json();
-
-                if (serverResult.success) {
-                    statusDisplay.innerText = "✅ Wish successfully live!";
-                    statusDisplay.style.color = "#00ff88";
-                    wishForm.reset();
-                    subCatSelect.disabled = true;
-                    subCatSelect.style.opacity = "0.5";
-                } else {
-                    throw new Error(serverResult.message || "Execution dropped by backend engine.");
-                }
-
-            } catch (error) {
-                statusDisplay.innerText = "🚨 Error: " + error.message;
-                statusDisplay.style.color = "#ff4a4a";
-            }
-        });
-    }
-}
+// Helper inside function namespace to keep global scope clean
+window.loadAddWishesView.getCategoriesData = function() {
+    if (typeof window.categoriesConfig !== 'undefined') return window.categoriesConfig;
+    if (typeof categoriesConfig !== 'undefined') return categoriesConfig;
+    return null;
+};
 
 window.loadDefaultAdminView = function() {
     window.loadAddWishesView();
