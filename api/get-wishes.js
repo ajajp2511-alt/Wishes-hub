@@ -28,38 +28,43 @@ if (!getApps().length && config) {
 }
 
 export default async function handler(req, res) {
+  // CORS Headers taaki browser data ko block na kare
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
   try {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-
     const db = getFirestore();
-    
-    // 🔍 WARNING: Check karein ki Firebase me collection ka naam exact 'wishes' hi hai na?
     const wishesRef = db.collection('wishes');
-    const snapshot = await wishesRef.orderBy('createdAt', 'desc').get();
+    
+    // Agar 'createdAt' ordering me issue ho, toh pehle bina order ke saari documents utha lete hain
+    const snapshot = await wishesRef.get();
 
-    // 🟢 LOG 1: Check karne ke liye ki total kitne documents mile
-    console.log(`Database snapshot received. Total docs found: ${snapshot.size}`);
-
-    if (snapshot.empty) {
-      return res.status(200).json({ success: true, wishes: [] });
-    }
+    console.log(`=== CLOUD ENGINE SCAN ===`);
+    console.log(`Total documents successfully pulled from Firestore: ${snapshot.docs.length}`);
 
     const wishesList = [];
-    snapshot.forEach(doc => {
+    
+    // Bina kisi filter ke direct array build karein
+    snapshot.docs.forEach(doc => {
+      const docData = doc.data();
       wishesList.push({
         id: doc.id,
-        ...doc.data()
+        ...docData
       });
     });
 
-    // 🟢 LOG 2: Pehle item ka data dekhne ke liye fields sahi hain ya nahi
-    console.log("First wish item sample structure:", JSON.stringify(wishesList[0]));
+    // 🟢 FORCED VERIFY LOG: Yeh ab har haal me Vercel dashboard par dikhega
+    console.log(`Sending Payload to Frontend. Total Items: ${wishesList.length}`);
+    if (wishesList.length > 0) {
+      console.log("Sample Data Structure Payload:", JSON.stringify(wishesList[0]));
+    }
 
     return res.status(200).json({
       success: true,
@@ -67,7 +72,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Backend Handler Error:", error.message);
+    console.error("🚨 CRITICAL BACKEND ERROR:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
 }
