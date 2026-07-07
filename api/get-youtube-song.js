@@ -1,7 +1,7 @@
 // Wishes Hub: Local Cache First + YouTube API Fallback Search
 // Patel Studio - 2026
 
-import { db } from '../../config/firebaseAdmin'; // Aapke firebase admin sdk initialization ka sahi path yahan check kar lein
+import { db } from '../../config/firebaseAdmin'; 
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -22,7 +22,6 @@ export default async function handler(req, res) {
     // ===================================================
     let localSnapshot;
     
-    // Check kar rahe hain ki input koi direct 11-char ki videoId hai ya YouTube URL hai
     const youtubeIdRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const urlMatch = query.match(youtubeIdRegex);
     
@@ -32,17 +31,15 @@ export default async function handler(req, res) {
     } else if (cleanQuery.length === 11 && !cleanQuery.includes(" ")) {
       localSnapshot = await songCacheRef.where('youtubeId', '==', query).limit(5).get();
     } else {
-      // Normal text search ke liye searchKeyword match karenge (jo save karte waqt toLowerCase kiya tha)
       localSnapshot = await songCacheRef.where('searchKeyword', '==', cleanQuery).limit(5).get();
     }
 
-    // Agar local database me gaana mil jata hai
     if (localSnapshot && !localSnapshot.empty) {
       const cachedSongs = [];
       localSnapshot.forEach(doc => {
         const data = doc.data();
         cachedSongs.push({
-          id: data.youtubeId, // Frontend string condition check handle karne ke liye
+          id: data.youtubeId, 
           snippet: {
             title: data.title,
             thumbnails: { default: { url: data.thumbnail } }
@@ -55,9 +52,10 @@ export default async function handler(req, res) {
     // ===================================================
     // STEP 2: AGAR LOCAL ME NAHI MILA, TOH YOUTUBE API USE KARO
     // ===================================================
-    const youtubeToken = process.env.YOUTUBE_TOKEN;
+    // 🔥 FIX: Vercel ke variable name ke sath sync kiya
+    const youtubeToken = process.env.YOUTUBE_API_KEY; 
     if (!youtubeToken) {
-      return res.status(500).json({ success: false, message: 'YouTube Token missing' });
+      return res.status(500).json({ success: false, message: 'YouTube Token missing on server configuration' });
     }
 
     let apiUrl = "";
@@ -74,7 +72,6 @@ export default async function handler(req, res) {
     // STEP 3: CREDIT KHATAM HONE PAR BACKUP HANDLING
     // ===================================================
     if (ytData.error && (ytData.error.code === 403 || ytData.error.message.includes('quota'))) {
-      // YouTube quota khatam! Fallback karke Firestore se koi bhi top 5 saved gaane nikalna
       const backupSnapshot = await db.collection('youtube_songs_cache').limit(5).get();
       const backupSongs = [];
       
@@ -96,7 +93,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Agar koi dusra technical error ho Google API ka
     if (ytData.error) {
       return res.status(ytData.error.code || 500).json({ success: false, message: ytData.error.message });
     }
