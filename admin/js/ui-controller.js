@@ -123,10 +123,11 @@ if (contentRoot) {
 
                 statusDisplay.innerText = "🚀 Synchronizing with Global Servers...";
                 
+                // FIXED DATA EXTRACTION METHOD
                 const payload = {
-                    title: wishForm.elements['title'].value,
-                    category: wishForm.elements['category'].value,
-                    sub_category: wishForm.elements['sub_category'].value || '',
+                    title: wishForm.querySelector('textarea[name="title"]').value,
+                    category: document.getElementById('main-category').value,
+                    sub_category: document.getElementById('sub-category').value || '',
                     image: base64String 
                 };
 
