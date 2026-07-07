@@ -1,21 +1,19 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - LIGHTWEIGHT BACKGROUND REFRESH ENGINE
+// 🌐 WISHES HUB USER PANEL - UNIVERSAL PATH SYNC ENGINE
 // Patel Studio - 2026
 // ==========================================================
 
 let allWishesData = []; 
-let lastDataHash = ""; // Data change detect karne ke liye tracker
+let lastDataHash = ""; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Pehli baar page load hote hi immediately data fetch karein
     fetchLiveWishes();
 
-    // 🔥 REAL-TIME ENGINE: Har 4 seconds me background me automatic naya data check hoga
+    // Har 4 seconds me background scanning active rakhein
     setInterval(() => {
-        fetchLiveWishes(true); // true matlab background silent check
+        fetchLiveWishes(true); 
     }, 4000);
 
-    // Live Search Input Listener setup
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -25,66 +23,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Main Core Fetch Pipeline
 async function fetchLiveWishes(isBackground = false) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
-    // Agar pehli baar load ho raha ho toh screen par syncing dikhayein
     if (!isBackground && allWishesData.length === 0) {
-        gridContainer.innerHTML = `<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 20px;">📡 Syncing with Patel Studio live cloud feeds...</p>`;
+        gridContainer.innerHTML = `<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 20px;">📡 Fetching live updates from cloud feeds...</p>`;
     }
 
     try {
-        // Cache bypass timestamp taaki har scan me bilkul fresh entry mile
-        const endpoint = `https://wishes-hub-default-rtdb.firebaseio.com/wishes.json?t=${new Date().getTime()}`;
+        // 🔥 FIX 1: Pura database root level fetch kar rahe hain taaki admin panel kisi bhi node par save kare, data block na ho
+        const endpoint = `https://wishes-hub-default-rtdb.firebaseio.com/.json?t=${new Date().getTime()}`;
         const response = await fetch(endpoint);
         
-        if (!response.ok) throw new Error("Cloud database rejected the payload request.");
-        const data = await response.json();
+        if (!response.ok) throw new Error("Cloud network refused response.");
+        let rawData = await response.json();
 
-        if (!data) {
-            gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No wishes found. Add some from Admin Panel!</p>`;
+        if (!rawData) {
+            gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
             return;
         }
 
-        // Data hashing checking - Agar database me koi naya change nahi hua toh re-render nahi karega (Performance optimization)
-        const currentDataHash = JSON.stringify(data);
-        if (currentDataHash === lastDataHash) {
-            return; // No new data, exit silently
-        }
+        const currentDataHash = JSON.stringify(rawData);
+        if (currentDataHash === lastDataHash) return; 
         lastDataHash = currentDataHash;
 
-        // Convert Object Matrix into Array Format (Latest First)
-        allWishesData = Object.keys(data).map(key => {
+        // 🔥 FIX 2: AUTO PATH DETECTION LOGIC
+        // Agar admin panel data ko 'wishes' key me daalta hai toh wo uthayenge, nahi toh direct root data ko read karenge
+        let targetData = rawData.wishes ? rawData.wishes : rawData;
+
+        // Agar data string format me wrapped hai, toh map karne se pehle sanitize karein
+        if (typeof targetData !== 'object') {
+            return;
+        }
+
+        allWishesData = Object.keys(targetData).map(key => {
+            const item = targetData[key];
             return {
                 id: key,
-                title: data[key].title || data[key].text || data[key].wishText || '',
-                category: data[key].category || '',
-                image: data[key].image || null,
-                createdAt: data[key].createdAt || new Date().toISOString()
+                // Admin panel ke kisi bhi field name variation ko dynamic catch karne ke liye fallback fields:
+                title: item.title || item.text || item.wishText || item.message || (typeof item === 'string' ? item : ''),
+                category: item.category || 'General',
+                image: item.image || null,
+                createdAt: item.createdAt || new Date().toISOString()
             };
-        }).reverse();
+        })
+        // Sirf un entries ko filter out karein jisme kuch content ho
+        .filter(wish => wish.title.trim() !== '')
+        .reverse();
 
-        // Wish of the Day Banner Auto sync
         if (allWishesData.length > 0 && document.getElementById('daily-wish-text')) {
             document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
         }
 
-        // Fresh dynamic cards inject karein
         renderCardsToGrid(allWishesData);
-        console.log("⚡ Live Cloud Feed Synced successfully.");
+        console.log("⚡ Auto-Sync Complete. Active Cards:", allWishesData.length);
 
     } catch (error) {
         console.error("🚨 Cloud Engine Error:", error);
-        // Agar connection error background me aaye toh running cards ko crash mat hone dena
         if (allWishesData.length === 0) {
-            gridContainer.innerHTML = `<p style="color: #ef4444; text-align: center; grid-column: 1/-1; padding: 20px;">❌ Connection Error: Unable to sync live feeds.</p>`;
+            gridContainer.innerHTML = `<p style="color: #ef4444; text-align: center; grid-column: 1/-1; padding: 20px;">❌ Sync Error: Database structural mismatch.</p>`;
         }
     }
 }
 
-// UI HTML Card Generator Layout
 function renderCardsToGrid(wishesArray) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
@@ -114,7 +116,6 @@ function renderCardsToGrid(wishesArray) {
     });
 }
 
-// Filters Matrix
 function filterWishes(searchQuery, tagQuery) {
     let filtered = allWishesData;
 
