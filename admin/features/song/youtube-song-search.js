@@ -34,7 +34,7 @@ async function searchYouTubeSongs(query) {
     }
 }
 
-// --- PART 2: DYNAMIC PREVIEW PLAYER UTILITY (YOUR ORIGINAL CODE) ---
+// --- PART 2: DYNAMIC PREVIEW PLAYER UTILITY & LIVE DB LINKER ---
 let currentPlayingIframe = null;
 
 function attachYouTubePreviewFields(track, containerRow) {
@@ -81,4 +81,72 @@ function attachYouTubePreviewFields(track, containerRow) {
 
     containerRow.appendChild(playBtn);
     containerRow.appendChild(playerWrapper);
+
+    // ==========================================================
+    // ➕ MODIFICATION: GAANA SELECT KARNE KA NAYA BUTTON
+    // ==========================================================
+    const selectBtn = document.createElement('button');
+    selectBtn.type = "button";
+    selectBtn.innerText = "📌 Select Song";
+    selectBtn.style.cssText = "margin-left: 8px; padding: 4px 8px; font-size: 11px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;";
+
+    selectBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+
+        // Admin panel me jo active editing wishId hai, use global variable ya modal se uthana hoga
+        const currentWishId = window.currentEditingWishId; 
+        
+        if (!currentWishId) {
+            alert("Error: Active Wish ID missing! Please select or create a wish first.");
+            return;
+        }
+
+        selectBtn.innerText = "⏳ Saving...";
+        selectBtn.disabled = true;
+
+        const success = await linkSongToWishAndCache(currentWishId, track);
+
+        if (success) {
+            selectBtn.innerText = "✅ Selected";
+            selectBtn.style.background = "#059669";
+        } else {
+            selectBtn.innerText = "📌 Select Song";
+            selectBtn.disabled = false;
+        }
+    });
+
+    containerRow.appendChild(selectBtn);
+}
+
+// --- PART 3: BACKEND API PIPE INTEGRATION ---
+async function linkSongToWishAndCache(wishId, track) {
+    const payload = {
+        wishId: wishId,
+        youtubeId: track.videoId,
+        songTitle: track.title,
+        thumbnail: track.thumbnail
+    };
+
+    try {
+        const response = await fetch('/api/add-wish-to-db', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const resData = await response.json();
+        if (resData.success) {
+            alert("Song successfully saved to Collection & linked to Wish!");
+            return true;
+        } else {
+            alert("Database Error: " + resData.message);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error connecting to save API:", error);
+        alert("Failed to save song to database.");
+        return false;
+    }
 }
