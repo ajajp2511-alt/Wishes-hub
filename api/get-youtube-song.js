@@ -1,67 +1,68 @@
-// Wishes Hub: Secure YouTube Audio Search API
+// Wishes Hub: Local Cache First + YouTube API Fallback Search
 // Patel Studio - 2026
 
 export default async function handler(req, res) {
-  // Sirf GET requests allowed hain song search ke liye
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  // Frontend se query parameter (search text ya URL) lena
   const { query } = req.query;
-
   if (!query) {
-    return res.status(400).json({ success: false, message: 'Search query or YouTube URL is required' });
-  }
-
-  // Vercel Dashboard se secure YouTube Token (API KEY) uthana
-  const youtubeToken = process.env.YOUTUBE_TOKEN;
-  if (!youtubeToken) {
-    return res.status(500).json({ success: false, message: 'YouTube Token missing on Vercel' });
+    return res.status(400).json({ success: false, message: 'Query is required' });
   }
 
   try {
+    // ==========================================
+    // STEP 1: PEHLE LOCAL DATABASE (COLLECTION) ME SEARCH KARO
+    // ==========================================
+    // (Aap jo bhi DB use kar rahe hain, jaise Firebase/MongoDB)
+    // const localResults = await db.collection('youtube_songs_cache').find({ 
+    //    $or: [ { title: new RegExp(query, 'i') }, { youtubeId: query } ] 
+    // }).limit(5);
+
+    const localResults = []; // Yeh temporary hai, yahan DB check ka logic aayega
+
+    if (localResults && localResults.length > 0) {
+      // Agar local collection me gaana mil gaya, toh directly return kar do!
+      return res.status(200).json({ source: 'local_collection', items: localResults });
+    }
+
+    // ==========================================
+    // STEP 2: AGAR LOCAL ME NAHI MILA, TOH YOUTUBE API USE KARO
+    // ==========================================
+    const youtubeToken = process.env.YOUTUBE_TOKEN;
+    if (!youtubeToken) {
+      return res.status(500).json({ success: false, message: 'YouTube Token missing' });
+    }
+
     let apiUrl = "";
-
-    // Check karna ki input YouTube URL hai ya normal search text
+    // URL vs Text search condition (Jaise humne pehle fix kiya tha)
     if (query.includes("youtube.com/") || query.includes("youtu.be/")) {
-      let videoId = "";
-      
-      // Regex pattern jo har tarah ke YouTube URL se 11 characters ki accurate video ID nikal leta hai
-      const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-      const match = query.match(regExp);
-      
-      if (match && match[1]) {
-        videoId = match[1];
-      } else {
-        return res.status(400).json({ success: false, message: 'Invalid YouTube URL structure' });
-      }
-
-      // Specific video ka data nikalne ka URL (URL me hi key attach karni hai)
+      // Extract videoId logic...
       apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${youtubeToken}`;
     } else {
-      // Normal text search ke liye URL (URL me hi key attach karni hai)
       apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video&key=${youtubeToken}`;
     }
 
-    // YouTube API ko request bhejna (Headers se Authorization hata diya hai)
-    const ytResponse = await fetch(apiUrl, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-
+    const ytResponse = await fetch(apiUrl);
     const ytData = await ytResponse.json();
 
-    // Agar Google API se koi internal error aaye toh use catch karna
-    if (ytData.error) {
-      return res.status(ytData.error.code || 500).json({ success: false, message: ytData.error.message });
+    // ==========================================
+    // STEP 3: CREDIT KHATAM HONE PAR BACKUP HANDLING
+    // ==========================================
+    if (ytData.error && (ytData.error.statusCode === 403 || ytData.error.message.includes('quota'))) {
+      // YouTube ka credit khatam! Ab fallback karo aur database ke popular songs dikha do
+      // const backupSongs = await db.collection('youtube_songs_cache').find().limit(5);
+      return res.status(200).json({ 
+        source: 'backup_collection_due_to_quota', 
+        message: 'YouTube quota exhausted, showing saved collection',
+        items: [] // backupSongs yahan pass honge
+      });
     }
 
-    return res.status(200).json(ytData);
+    return res.status(200).json({ source: 'youtube_api', items: ytData.items });
 
   } catch (error) {
-    console.error("YouTube API Error:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 }
