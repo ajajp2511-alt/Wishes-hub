@@ -7,72 +7,73 @@ const getFirebaseConfig = () => {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKey) {
-    console.error("Missing Firebase env variables");
     return null;
   }
   privateKey = privateKey.replace(/\\n/g, '\n');
   return { projectId, clientEmail, privateKey };
 };
 
+// Global level par database instance initialize karein taaki freeze na ho
+let db;
 const config = getFirebaseConfig();
 
 if (!getApps().length && config) {
   try {
-    initializeApp({
+    const app = initializeApp({
       credential: cert(config),
       databaseURL: process.env.FIREBASE_DATABASE_URL
     });
+    db = getFirestore(app);
   } catch (err) {
     console.error("Initialization failed:", err.message);
   }
+} else if (getApps().length) {
+  db = getFirestore();
 }
 
 export default async function handler(req, res) {
-  // CORS Headers taaki browser data ko block na kare
+  // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
 
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  try {
-    const db = getFirestore();
-    const wishesRef = db.collection('wishes');
-    
-    // Agar 'createdAt' ordering me issue ho, toh pehle bina order ke saari documents utha lete hain
-    const snapshot = await wishesRef.get();
+  if (!db) {
+    console.error("🚨 DB Instance is not ready!");
+    return res.status(500).json({ success: false, message: "Database connection failed" });
+  }
 
-    console.log(`=== CLOUD ENGINE SCAN ===`);
-    console.log(`Total documents successfully pulled from Firestore: ${snapshot.docs.length}`);
+  try {
+    console.log("=== CLOUD ENGINE SCAN START ===");
+    
+    // Simple aur direct collection call bina kisi complex query ke
+    const wishesRef = db.collection('wishes');
+    const snapshot = await wishesRef.get().catch(err => {
+      throw new Error("Firestore Read Timeout/Error: " + err.message);
+    });
+
+    console.log(`Documents fetched count: ${snapshot.docs.length}`);
 
     const wishesList = [];
-    
-    // Bina kisi filter ke direct array build karein
     snapshot.docs.forEach(doc => {
-      const docData = doc.data();
       wishesList.push({
         id: doc.id,
-        ...docData
+        ...doc.data()
       });
     });
 
-    // 🟢 FORCED VERIFY LOG: Yeh ab har haal me Vercel dashboard par dikhega
-    console.log(`Sending Payload to Frontend. Total Items: ${wishesList.length}`);
-    if (wishesList.length > 0) {
-      console.log("Sample Data Structure Payload:", JSON.stringify(wishesList[0]));
-    }
-
+    console.log(`=== SCAN COMPLETED. Sending ${wishesList.length} items ===`);
+    
     return res.status(200).json({
       success: true,
       wishes: wishesList
     });
 
   } catch (error) {
-    console.error("🚨 CRITICAL BACKEND ERROR:", error.message);
+    console.error("🚨 CRITICAL ERROR:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
 }
