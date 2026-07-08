@@ -1,5 +1,5 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getDatabase } from 'firebase-admin/database'; // 🟢 Change: Firestore ki jagah Realtime Database standard import kiya
 
 const getFirebaseConfig = () => {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -26,12 +26,11 @@ const getDatabaseInstance = () => {
     if (getApps().length === 0) {
       const app = initializeApp({
         credential: cert(config),
-        databaseURL: process.env.FIREBASE_DATABASE_URL
+        databaseURL: process.env.FIREBASE_DATABASE_URL // 🟢 Ensure databaseURL perfectly assigned ho (.env file mein)
       });
-      return getFirestore(app);
+      return getDatabase(app); // 🟢 Return Realtime Database Instance
     } else {
-      // Pehle se initialized app se firestore instance nikaalein
-      return getFirestore();
+      return getDatabase(); // 🟢 Return Pre-initialized Realtime Database Instance
     }
   } catch (err) {
     console.error("🚨 Firebase Initialization failed:", err.message);
@@ -49,33 +48,43 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  // Request handle hote waqt DB instance secure karein
+  // Request handle hote waqt Realtime DB instance secure karein
   const db = getDatabaseInstance();
 
   if (!db) {
-    console.error("🚨 DB Instance is not ready!");
+    console.error("🚨 Realtime DB Instance is not ready!");
     return res.status(500).json({ success: false, message: "Database connection failed" });
   }
 
   try {
-    console.log("=== CLOUD ENGINE SCAN START ===");
+    console.log("=== CLOUD ENGINE SCAN START (REALTIME DATABASE) ===");
     
-    const wishesRef = db.collection('wishes');
-    const snapshot = await wishesRef.get().catch(err => {
-      throw new Error("Firestore Read Timeout/Error: " + err.message);
+    // Admin backend me data 'wishes' node par push hota hai
+    const wishesRef = db.ref('wishes');
+    
+    // Realtime Database data snapshot read snapshot pipeline
+    const snapshot = await wishesRef.once('value').catch(err => {
+      throw new Error("Realtime DB Read Timeout/Error: " + err.message);
     });
 
-    console.log(`Documents fetched count: ${snapshot.docs.length}`);
-
+    const rawData = snapshot.val();
     const wishesList = [];
-    snapshot.docs.forEach(doc => {
-      wishesList.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
 
-    console.log(`=== SCAN COMPLETED. Sending ${wishesList.length} items ===`);
+    if (rawData) {
+      // JSON Object data map ko array format me bundle karein
+      Object.keys(rawData).forEach(key => {
+        wishesList.push({
+          id: key,
+          ...rawData[key]
+        });
+      });
+
+      // 🔴 CRITICAL ADDITION FOR USER EXPERIENCE: 
+      // Nayi uploads (latest updates) ko User panel par sabse pehle (top par) lane ke liye sort kiya
+      wishesList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    console.log(`=== SCAN COMPLETED. Sending ${wishesList.length} items from Realtime DB ===`);
     
     return res.status(200).json({
       success: true,
