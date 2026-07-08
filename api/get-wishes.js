@@ -7,29 +7,37 @@ const getFirebaseConfig = () => {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKey) {
+    console.error("🚨 Missing Firebase Environment Variables!");
     return null;
   }
+  
+  // Handle new lines properly in private key
   privateKey = privateKey.replace(/\\n/g, '\n');
   return { projectId, clientEmail, privateKey };
 };
 
-// Global level par database instance initialize karein taaki freeze na ho
-let db;
-const config = getFirebaseConfig();
+// Database Initialization Helper Function (Serverless Safe)
+const getDatabaseInstance = () => {
+  const config = getFirebaseConfig();
+  if (!config) return null;
 
-if (!getApps().length && config) {
   try {
-    const app = initializeApp({
-      credential: cert(config),
-      databaseURL: process.env.FIREBASE_DATABASE_URL
-    });
-    db = getFirestore(app);
+    // Agar koi app initialized nahi hai, toh initialize karein
+    if (getApps().length === 0) {
+      const app = initializeApp({
+        credential: cert(config),
+        databaseURL: process.env.FIREBASE_DATABASE_URL
+      });
+      return getFirestore(app);
+    } else {
+      // Pehle se initialized app se firestore instance nikaalein
+      return getFirestore();
+    }
   } catch (err) {
-    console.error("Initialization failed:", err.message);
+    console.error("🚨 Firebase Initialization failed:", err.message);
+    return null;
   }
-} else if (getApps().length) {
-  db = getFirestore();
-}
+};
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -41,6 +49,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
+  // Request handle hote waqt DB instance secure karein
+  const db = getDatabaseInstance();
+
   if (!db) {
     console.error("🚨 DB Instance is not ready!");
     return res.status(500).json({ success: false, message: "Database connection failed" });
@@ -49,7 +60,6 @@ export default async function handler(req, res) {
   try {
     console.log("=== CLOUD ENGINE SCAN START ===");
     
-    // Simple aur direct collection call bina kisi complex query ke
     const wishesRef = db.collection('wishes');
     const snapshot = await wishesRef.get().catch(err => {
       throw new Error("Firestore Read Timeout/Error: " + err.message);
