@@ -1,1 +1,63 @@
+/* Wishes Hub - Dark Theme Styles by Patel Studio */
 
+/* Jab body par .dark-theme class active hogi, tab ye rang badal jayenge */
+body.dark-theme {
+    background-color: #121212 !important; /* Ethereal Dark Background */
+    color: #e0e0e0 !important; /* Light text for readability */
+}
+
+/* Header dynamic adjustment */
+body.dark-theme .main-header {
+    background-color: #1f1f1f !important;
+    border-bottom: 1px solid #333;
+}
+
+/* Search Input Box in Dark Mode */
+body.dark-theme #search-input {
+    background-color: #242424 !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+}
+
+/* Chips/Tags styles for Zen theme */
+body.dark-theme .chip {
+    background-color: #242424 !important;
+    color: #aaaaaa !important;
+}
+
+body.dark-theme .chip.active {
+    background-color: #bb86fc !important; /* Soft Purple highlight */
+    color: #121212 !important;
+}
+
+/* Wish of the day section adjustment */
+body.dark-theme .wish-of-the-day-banner {
+    background-color: #1f1f1f !important;
+    border: 1px solid #333 !important;
+}
+
+body.dark-theme .banner-text {
+    color: #ffffff !important;
+}
+
+/* Festival Cards adjustment */
+body.dark-theme .festival-item-card {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border: 1px solid #2d2d2d;
+}
+
+body.dark-theme .festival-icon-circle {
+    background-color: #2d2d2d !important;
+}
+
+/* Footer adjustment */
+body.dark-theme .main-footer {
+    background-color: #121212 !important;
+    border-top: 1px solid #2d2d2d;
+    color: #777777 !important;
+}
+
+body.dark-theme .footer-links a {
+    color: #bb86fc !important;
+}
