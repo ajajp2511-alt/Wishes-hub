@@ -99,14 +99,8 @@
         </div>
     </footer>
 
-    <!-- 🔥 Daily Wish WhatsApp Share Handler Script -->
-    <script>
-        function shareDailyWish() {
-            const wishText = document.getElementById('daily-wish-text')?.innerText || '';
-            const shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(wishText + '\n\n👉 See More Here: ' + window.location.origin)}`;
-            window.open(shareUrl, '_blank');
-        }
-    </script>
+    <!-- 📲 Nayi WhatsApp Share File Yahan Connect Kar Di Hai -->
+    <script src="js/whatsapp-share.js"></script>
 
     <!-- Core Feed Script -->
     <script src="js/home-feed.js"></script>
