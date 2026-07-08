@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (RE-BUILT)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -29,7 +29,7 @@ async function fetchLiveWishes(isBackground = false) {
     if (!gridContainer) return;
 
     if (!isBackground && allWishesData.length === 0) {
-        gridContainer.innerHTML = `<p style="color: #666; text-align: center; grid-column: 1/-1; padding: 20px;">📡 Fetching live updates from cloud feeds...</p>`;
+        gridContainer.innerHTML = `<p style="color: #fff; text-align: center; grid-column: 1/-1; padding: 20px;">📡 Fetching live updates from cloud feeds...</p>`;
     }
 
     try {
@@ -41,7 +41,7 @@ async function fetchLiveWishes(isBackground = false) {
 
         if (!result.success || !result.wishes || result.wishes.length === 0) {
             if (allWishesData.length === 0) {
-                gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
+                gridContainer.innerHTML = `<p style="color: #fff; text-align: center; grid-column: 1/-1; padding: 20px;">✨ No database entries found.</p>`;
             }
             return;
         }
@@ -56,14 +56,7 @@ async function fetchLiveWishes(isBackground = false) {
         allWishesData = result.wishes.map(item => {
             if (!item) return null;
 
-            let extractedTitle = '';
-            if (typeof item === 'string') {
-                extractedTitle = item;
-            } else {
-                extractedTitle = item.title || item.wishText || item.text || '';
-            }
-
-            // Image handling safely for proxy or direct URL
+            let extractedTitle = item.title || item.wishText || item.text || '';
             let finalImage = item.image || item.fileUrl || item.imageUrl || null;
 
             return {
@@ -94,17 +87,22 @@ function renderCardsToGrid(wishesArray) {
 
     gridContainer.innerHTML = ""; 
 
+    // Grid row layout explicit injection to bypass theme issues
+    gridContainer.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 10px 0;";
+
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
         card.className = 'wish-item-card'; 
-        card.style.cssText = "background: #fff; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 12px; border: 1px solid #eaeaea; text-align: left; cursor: pointer; transition: transform 0.2s;";
         
-        // CARD TAP LOGIC: Pure card ya image par tap karne se page open hoga
+        // Dark theme optimization styling applied directly via JS to override custom layout conflicts
+        card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer; transition: transform 0.2s;";
+        
+        // Card tap redirection
         card.setAttribute('onclick', `navigateToWish(event, '${wish.id}')`);
 
-        const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #4f46e5; background: #eeebff; padding: 4px 8px; border-radius: 4px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
+        const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
         
-        // IMAGE DISPLAY RENDERER WITH TELEGRAM BYPASS
+        // IMAGE LOGIC & TELEGRAM CDN CONVERSION
         let imageHtml = '';
         if (wish.image) {
             let srcUrl = wish.image;
@@ -112,21 +110,25 @@ function renderCardsToGrid(wishesArray) {
                 const rawPath = srcUrl.split('bot')[1];
                 srcUrl = `https://imtqy.com/bot${rawPath}`;
             }
-            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; display: block; margin-bottom: 4px;">`;
+            // Explicit dimensions so images never crash or render 0px height
+            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;" onerror="this.src='https://placehold.co/600x400/2a2a2a/ffffff?text=Image+Loading...'">`;
+        } else {
+            // Placeholder fallback so layout never feels broken
+            imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Media Post</div>`;
         }
 
         const encodedText = encodeURIComponent(`${wish.title}\n\nRead more special wishes on Wishes Hub! ✨`);
 
         card.innerHTML = `
-            ${tagHtml}
             ${imageHtml}
-            <p style="font-size: 15px; color: #333; line-height: 1.5; margin: 5px 0; white-space: pre-wrap; font-weight: 500;">${wish.title || 'Empty Wish Content'}</p>
+            ${tagHtml}
+            <p style="font-size: 16px; color: #ffffff; line-height: 1.5; margin: 5px 0; white-space: pre-wrap; font-weight: bold;">${wish.title || 'Empty Wish Content'}</p>
             
-            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #f5f5f5;">
-                <span class="view-details-text" style="font-size: 13px; color: #4f46e5; font-weight: bold;">View Details →</span>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button onclick="event.stopPropagation(); copyTextToClipboard('${wish.title.replace(/'/g, "\\'")}')" style="font-size: 12px; background: #eeebff; color: #4f46e5; border: none; padding: 4px 10px; border-radius: 6px; font-weight: bold; cursor: pointer;">Copy</button>
-                    <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" onclick="event.stopPropagation();" style="font-size: 13px; color: #25d366; font-weight: bold; text-decoration: none;">Share 🟢</a>
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #333;">
+                <span class="view-details-text" style="font-size: 13px; color: #00e5ff; font-weight: bold;">View Details →</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button onclick="event.stopPropagation(); copyTextToClipboard('${wish.title.replace(/'/g, "\\'")}')" style="font-size: 12px; background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Copy</button>
+                    <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" onclick="event.stopPropagation();" style="font-size: 12px; background: #25d366; color: #fff; font-weight: bold; padding: 6px 12px; border-radius: 8px; text-decoration: none; text-align: center;">Share</a>
                 </div>
             </div>
         `;
