@@ -96,10 +96,16 @@
         </div>
     </footer>
 
-    <!-- Core Scripts Assembly -->
-    <script src="js/main-assembly.js"></script>
-    <script src="js/ui-interactions.js"></script>
-    <!-- 🔥 Yeh script load hona sabsay zaroori tha data display karne ke liye -->
-    <script src="js/wish-view.js"></script>
+    <!-- 🔥 Daily Wish WhatsApp Share Handler Script -->
+    <script>
+        function shareDailyWish() {
+            const wishText = document.getElementById('daily-wish-text')?.innerText || '';
+            const shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(wishText + '\n\n👉 See More Here: ' + window.location.origin)}`;
+            window.open(shareUrl, '_blank');
+        }
+    </script>
+
+    <!-- Core Feed Script (Purani sabhi grid scripts ko is single script se replace kiya hai) -->
+    <script src="js/home-feed.js"></script>
 </body>
 </html>
