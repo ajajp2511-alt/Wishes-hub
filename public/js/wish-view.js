@@ -1,12 +1,13 @@
-// Wishes Hub: Single Wish Viewer Engine
+// Wishes Hub: Single Wish Viewer Engine + Deep Debugger
 // Patel Studio - 2026
 
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Wish Viewer Active...");
+    console.log("=== WISH VIEWER DEBUG ENGINE START ===");
 
     // 1. URL se ?id=... nikalna
     const urlParams = new URLSearchParams(window.location.search);
     const wishId = urlParams.get('id');
+    console.log("📌 URL se mili Wish ID:", wishId);
 
     const tagElement = document.getElementById('wish-category-tag');
     const textElement = document.getElementById('wish-display-text');
@@ -15,42 +16,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     const waBtn = document.getElementById('single-wa-btn');
 
     if (!wishId) {
+        console.error("❌ Error: URL me koi ID nahi mili!");
         if (textElement) textElement.innerHTML = "<span style='color:#ff4444;'>Error: No Wish ID specified in URL!</span>";
         if (tagElement) tagElement.style.display = 'none';
         return;
     }
 
     try {
-        // 2. Server se wishes ka data mangwana
+        // 2. Server se wishes ka data mangwana (Cache busting enabled)
         const endpoint = `/api/get-wishes?t=${new Date().getTime()}`;
+        console.log("📡 Fetching data from:", endpoint);
         const response = await fetch(endpoint);
         const data = await response.json();
 
+        console.log("📦 Raw Database Response:", data);
+
         if (!data.success || !data.wishes) {
-            throw new Error("Backend data fail ho gaya.");
+            throw new Error("Backend data fetch status failed or wishes empty.");
         }
 
-        // 3. FIX: 'w._id' ki jagah 'w.id' se find kiya jo Realtime DB me save ho raha hai
-        const currentWish = data.wishes.find(w => w.id === wishId || w._id === wishId);
+        // 3. Array ke andar search match debug check
+        console.log("🔍 Database me total items:", data.wishes.length);
+        if (data.wishes.length > 0) {
+            console.log("💡 Sample item 1 from DB:", data.wishes[0]);
+        }
+
+        // Safe lowercase check aur alag-alag key permutations (.id ya ._id ya .key)
+        const currentWish = data.wishes.find(w => {
+            if (!w) return false;
+            const dbId = String(w.id || w._id || w.key || '').trim();
+            const targetId = String(wishId).trim();
+            return dbId === targetId;
+        });
 
         if (!currentWish) {
+            console.error(`❌ Data Match Failed! Database me ID "${wishId}" nahi mili.`);
             if (textElement) textElement.innerHTML = "<span style='color:#ff4444;'>Oops! Yeh wish database me nahi mili.</span>";
             if (tagElement) tagElement.style.display = 'none';
             return;
         }
 
+        console.log("🎯 Match Found Success! Data object:", currentWish);
+
         // 4. Data ko HTML page par render (set) karna
-        const displayTitle = currentWish.title || currentWish.wishText || 'No Text Content';
+        const displayTitle = currentWish.title || currentWish.wishText || currentWish.text || 'No Text Content';
+        const displayCategory = currentWish.category || currentWish.mainCategory || 'General';
         
-        if (tagElement) tagElement.innerText = `#${currentWish.category || currentWish.mainCategory || 'General'}`;
+        if (tagElement) {
+            tagElement.innerText = `#${displayCategory}`;
+            tagElement.style.display = 'inline-block';
+        }
         if (textElement) textElement.innerText = displayTitle;
 
         // 📸 Media Logic (Images / Animations / Telegram Links)
         if (mediaBox) {
-            // Naye aur purane dono variables ko safely match kiya
             let finalMediaUrl = currentWish.image || currentWish.imageUrl || null;
             
-            // Agar seedha photo url nahi hai but telegram file ID hai to hum proxy API hit karenge
             if (!finalMediaUrl && currentWish.telegramFileId) {
                 finalMediaUrl = `/api/get-media?fileId=${currentWish.telegramFileId}&type=${currentWish.fileType || 'photo'}`;
             }
@@ -62,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (isVideoGif) {
                     mediaBox.innerHTML = `<video src="${finalMediaUrl}" loop muted autoplay playsinline style="width:100%; display:block; object-fit:cover; border-radius:12px;"></video>`;
                 } else {
-                    // Telegram file proxy bypass logic
                     let proxyUrl = finalMediaUrl;
                     if (finalMediaUrl.includes('api.telegram.org/file/bot')) {
                         const rawPath = finalMediaUrl.split('bot')[1];
@@ -75,26 +95,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        // 5. COPY Button working safely
+        // 5. COPY Button working
         if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                const textToCopy = currentWish.title || currentWish.wishText || '';
+            copyBtn.onclick = () => {
+                const textToCopy = textElement ? textElement.innerText : (currentWish.title || '');
                 navigator.clipboard.writeText(textToCopy);
                 alert('Wish text successfully copy ho gaya! 🔥');
-            });
+            };
         }
 
-        // 6. WHATSAPP SHARE Button working safely
+        // 6. WHATSAPP SHARE Button working
         if (waBtn) {
-            waBtn.addEventListener('click', () => {
-                const textToShare = currentWish.title || currentWish.wishText || '';
+            waBtn.onclick = () => {
+                const textToShare = textElement ? textElement.innerText : (currentWish.title || '');
                 const shareText = encodeURIComponent(`${textToShare}\n\nFull Post Yahan Dekhein 👇\n${window.location.href}`);
                 window.open(`https://api.whatsapp.com/send?text=${shareText}`, '_blank');
-            });
+            };
         }
 
     } catch (error) {
-        console.error("View Render Crash:", error);
+        console.error("🚨 View Render Crash:", error);
         if (textElement) textElement.innerHTML = `<span style='color:#ff4444;'>Engine Error: ${error.message}</span>`;
     }
 });
