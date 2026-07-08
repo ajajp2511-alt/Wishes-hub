@@ -2,20 +2,19 @@
 // Patel Studio - 2026
 
 export default async function handler(req, res) {
-  // Sirf GET requests allowed hain media display ke liye
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  // Frontend se query parameters me fileId aur type aayenge
   const { fileId, type } = req.query;
 
   if (!fileId) {
     return res.status(400).json({ success: false, message: 'File ID is required' });
   }
 
-  // Vercel se aapka Telegram Token uthana
-  const token = process.env.TELEGRAM_TOKEN;
+  // FIXED: Dono me se jo bhi token Vercel par save ho, use pick kar le (Fallback mechanism)
+  const token = process.env.TG_BOT_TOKEN || process.env.TELEGRAM_TOKEN;
+  
   if (!token) {
     return res.status(500).json({ success: false, message: 'Telegram Token missing on server' });
   }
@@ -31,7 +30,6 @@ export default async function handler(req, res) {
     }
 
     const filePath = infoData.result.file_path;
-    // Real secure download link jahan humara token use ho raha hai
     const fileDownloadUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
 
     // 2. Telegram ke server se real media fetch karna
@@ -41,12 +39,17 @@ export default async function handler(req, res) {
       throw new Error('Failed to fetch media from Telegram servers');
     }
 
-    // 3. Browser ko batana ki ye image hai ya video taaki wo sahi se render kare
-    const contentType = mediaResponse.headers.get('content-type') || (type === 'video' ? 'video/mp4' : 'image/jpeg');
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day cache taaki bar-bar load na lena pade
+    // Dynamic type extension checker taaki format crash na ho
+    let defaultContentType = 'image/jpeg';
+    if (filePath.endsWith('.gif')) defaultContentType = 'image/gif';
+    else if (filePath.endsWith('.mp4')) defaultContentType = 'video/mp4';
+    else if (type === 'video') defaultContentType = 'video/mp4';
 
-    // Data stream ya buffer ko sidhe browser tak pass karna
+    const contentType = mediaResponse.headers.get('content-type') || defaultContentType;
+    
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day cache
+
     const arrayBuffer = await mediaResponse.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
