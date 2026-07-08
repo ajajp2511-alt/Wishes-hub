@@ -5,6 +5,7 @@
 
 let allWishesData = []; 
 let lastDataHash = ""; 
+let currentSelectedTag = "All"; // Active tag tracking ke liye global state
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchLiveWishes();
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
-            filterWishes(query, 'All');
+            filterWishes(query, currentSelectedTag);
         });
     }
 });
@@ -54,31 +55,38 @@ async function fetchLiveWishes(isBackground = false) {
 
         console.log("Raw Frontend Received Wishes Sample:", result.wishes[0]);
 
-        // 🟢 UNIVERSAL FALLBACK FIELD MAPPING (Admin panel ke kisi bhi variation ko padhne ke liye)
+        // 🟢 UNIVERSAL FALLBACK FIELD MAPPING
         allWishesData = result.wishes.map(item => {
-            // Check karein ki string kis key me chupi hai
-            let extractedTitle = item.title || item.text || item.wishText || item.message || item.wish || '';
+            if (!item) return null;
+
+            let extractedTitle = '';
             
             // Agar poora item hi direct ek string hai
-            if (typeof item === 'string') extractedTitle = item;
+            if (typeof item === 'string') {
+                extractedTitle = item;
+            } else {
+                extractedTitle = item.title || item.text || item.wishText || item.message || item.wish || '';
+            }
 
             return {
-                id: item.id,
+                id: item.id || Math.random().toString(36).substr(2, 9),
                 title: extractedTitle.toString().trim(),
                 category: item.category || 'General',
                 image: item.image || null,
                 createdAt: item.createdAt || new Date().toISOString()
             };
-        });
+        }).filter(Boolean); // Kisi bhi null entry ko filter out karne ke liye
 
-        // Agar kuch bhi match nahi hua, toh filtration hata kar check karein
         console.log("⚡ Total Processed Cards for UI:", allWishesData.length);
 
         if (allWishesData.length > 0) {
             if (document.getElementById('daily-wish-text')) {
                 document.getElementById('daily-wish-text').innerText = allWishesData[0].title;
             }
-            renderCardsToGrid(allWishesData);
+            
+            // 🔥 FIX: Background update hone par active filters re-apply honge!
+            const currentSearch = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
+            filterWishes(currentSearch, currentSelectedTag);
         } else {
             gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">⚠️ Fields mismatch: Title keys are empty in Firestore.</p>`;
         }
@@ -96,6 +104,11 @@ function renderCardsToGrid(wishesArray) {
     if (!gridContainer) return;
 
     gridContainer.innerHTML = ""; 
+
+    if (wishesArray.length === 0) {
+        gridContainer.innerHTML = `<p style="color: #888; text-align: center; grid-column: 1/-1; padding: 20px;">🔍 No wishes match your current filters.</p>`;
+        return;
+    }
 
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
@@ -138,6 +151,8 @@ function filterWishes(searchQuery, tagQuery) {
 }
 
 window.filterByTag = function(tagName) {
+    currentSelectedTag = tagName; // Save selection to global state
+    
     const chips = document.querySelectorAll('.chip');
     chips.forEach(chip => {
         chip.classList.remove('active');
