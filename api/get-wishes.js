@@ -1,5 +1,8 @@
+// Wishes Hub: Realtime Database Fetch Engine
+// Patel Studio - 2026
+
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getDatabase } from 'firebase-admin/database'; // 🟢 Change: Firestore ki jagah Realtime Database standard import kiya
+import { getDatabase } from 'firebase-admin/database';
 
 const getFirebaseConfig = () => {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -11,7 +14,6 @@ const getFirebaseConfig = () => {
     return null;
   }
   
-  // Handle new lines properly in private key
   privateKey = privateKey.replace(/\\n/g, '\n');
   return { projectId, clientEmail, privateKey };
 };
@@ -22,15 +24,14 @@ const getDatabaseInstance = () => {
   if (!config) return null;
 
   try {
-    // Agar koi app initialized nahi hai, toh initialize karein
     if (getApps().length === 0) {
       const app = initializeApp({
         credential: cert(config),
-        databaseURL: process.env.FIREBASE_DATABASE_URL // 🟢 Ensure databaseURL perfectly assigned ho (.env file mein)
+        databaseURL: process.env.FIREBASE_DATABASE_URL
       });
-      return getDatabase(app); // 🟢 Return Realtime Database Instance
+      return getDatabase(app);
     } else {
-      return getDatabase(); // 🟢 Return Pre-initialized Realtime Database Instance
+      return getDatabase();
     }
   } catch (err) {
     console.error("🚨 Firebase Initialization failed:", err.message);
@@ -48,7 +49,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  // Request handle hote waqt Realtime DB instance secure karein
   const db = getDatabaseInstance();
 
   if (!db) {
@@ -59,10 +59,7 @@ export default async function handler(req, res) {
   try {
     console.log("=== CLOUD ENGINE SCAN START (REALTIME DATABASE) ===");
     
-    // Admin backend me data 'wishes' node par push hota hai
     const wishesRef = db.ref('wishes');
-    
-    // Realtime Database data snapshot read snapshot pipeline
     const snapshot = await wishesRef.once('value').catch(err => {
       throw new Error("Realtime DB Read Timeout/Error: " + err.message);
     });
@@ -71,16 +68,19 @@ export default async function handler(req, res) {
     const wishesList = [];
 
     if (rawData) {
-      // JSON Object data map ko array format me bundle karein
       Object.keys(rawData).forEach(key => {
+        const item = rawData[key];
+        
+        // 🛠️ FALLBACK INJECTION: Taaki frontend ko har haal me sahi ID aur image key mile
         wishesList.push({
           id: key,
-          ...rawData[key]
+          ...item,
+          title: item.title || item.wishText || '', // Dono keys ko handle kar liya
+          image: item.image || item.fileUrl || null // Naye/Purane image formats ke liye safe link
         });
       });
 
-      // 🔴 CRITICAL ADDITION FOR USER EXPERIENCE: 
-      // Nayi uploads (latest updates) ko User panel par sabse pehle (top par) lane ke liye sort kiya
+      // Latest updates ko top par lane ke liye sorting
       wishesList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
