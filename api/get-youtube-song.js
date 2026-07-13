@@ -1,8 +1,6 @@
 // Wishes Hub: Local Cache First + YouTube API Fallback Search
 // Patel Studio - 2026
 
-import { db } from '../../config/firebaseAdmin'; 
-
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,10 +25,14 @@ export default async function handler(req, res) {
     let cachedSongs = [];
 
     // ===================================================
-    // STEP 1: FIRESTORE CACHE CHECK (WITH SAFETY TRY)
+    // STEP 1: SAFE FIRESTORE CACHE CHECK
     // ===================================================
-    if (db) {
-      try {
+    try {
+      // Dynamic import to prevent deployment compile crashes if module behaves strictly
+      const firebaseAdmin = require('../../config/firebaseAdmin');
+      const db = firebaseAdmin.db;
+
+      if (db) {
         const songCacheRef = db.collection('youtube_songs_cache');
         let localSnapshot;
         
@@ -59,9 +61,9 @@ export default async function handler(req, res) {
           });
           return res.status(200).json({ source: 'local_collection', items: cachedSongs });
         }
-      } catch (dbError) {
-        console.error("Firestore error ignored to fallback to YouTube:", dbError);
       }
+    } catch (dbError) {
+      console.log("Firestore safe bypass execution:", dbError.message);
     }
 
     // ===================================================
@@ -69,9 +71,9 @@ export default async function handler(req, res) {
     // ===================================================
     const youtubeToken = process.env.YOUTUBE_API_KEY; 
     if (!youtubeToken) {
-      return res.status(500).json({ 
+      return res.status(200).json({ 
         success: false, 
-        message: 'SERVER ERROR: YOUTUBE_API_KEY missing in Vercel Environment Variables!' 
+        message: 'YOUTUBE_API_KEY is missing in Vercel Dashboard Environment Variables!' 
       });
     }
 
@@ -89,30 +91,15 @@ export default async function handler(req, res) {
     const ytData = await ytResponse.json();
 
     if (ytData.error) {
-      // Agar API limit ki dikat ho toh fallback database return karo
-      if (ytData.error.code === 403 || ytData.error.message.includes('quota')) {
-        if (db) {
-          const backupSnapshot = await db.collection('youtube_songs_cache').limit(5).get();
-          const backupSongs = [];
-          backupSnapshot.forEach(doc => {
-            const data = doc.data();
-            backupSongs.push({
-              id: data.youtubeId,
-              snippet: {
-                title: data.title + " (Saved)",
-                thumbnails: { default: { url: data.thumbnail } }
-              }
-            });
-          });
-          return res.status(200).json({ source: 'backup_quota_fallback', items: backupSongs });
-        }
-      }
-      return res.status(500).json({ success: false, message: `YouTube API Error: ${ytData.error.message}` });
+      return res.status(200).json({ 
+        success: false, 
+        message: `YouTube API Key Error: ${ytData.error.message} (Status: ${ytData.error.code})` 
+      });
     }
 
-    return res.status(200).json({ source: 'youtube_api', items: ytData.items || [] });
+    return res.status(200).json({ success: true, source: 'youtube_api', items: ytData.items || [] });
 
   } catch (error) {
-    return res.status(500).json({ success: false, message: `Server Crash: ${error.message}` });
+    return res.status(200).json({ success: false, message: `Server Fallback Crash: ${error.message}` });
   }
-      }
+        }
