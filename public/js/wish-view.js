@@ -1,11 +1,11 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (FINAL STABLE)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (DECODE MATCH)
 // Patel Studio - 2026
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const wishId = urlParams.get('id');
+    let wishId = urlParams.get('id');
 
     const tagElement = document.getElementById('wish-category-tag');
     const textElement = document.getElementById('wish-display-text');
@@ -18,21 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    // 🚨 FIX: Decode dynamic URL strings to support Firebase dash ids
+    wishId = decodeURIComponent(wishId).trim();
+
     try {
         const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
         const data = await response.json();
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // 🚨 FIXED MATCHING: Backend explicit 'id' key bhej raha hai, usey sabse pehle match karenge
+        // Strict fallback search loop
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
-            
-            // Backend format 'id' ko prioritize karein, fallback ke liye bakki keys
             const dbId = w.id || w._id || w.key || '';
             
-            // Unwanted characters clean karke strict string check karein
-            return String(dbId).trim().toLowerCase() === String(wishId).trim().toLowerCase();
+            // Clean strings securely without removing valid dash (-) symbols
+            return String(dbId).trim() === wishId;
         });
 
         if (!currentWish) {
@@ -56,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (mediaBox) {
             let mediaUrl = currentWish.image || currentWish.fileUrl || currentWish.imageUrl || null;
             if (mediaUrl) {
-                // Telegram file link converter using weserv proxy
                 if (mediaUrl.includes('api.telegram.org/file/bot')) {
                     mediaUrl = `https://images.weserv.nl/?url=${encodeURIComponent(mediaUrl)}`;
                 }
