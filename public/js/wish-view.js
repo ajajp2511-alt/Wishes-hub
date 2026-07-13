@@ -1,10 +1,9 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (HARDWARE SPLIT)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (LIGHTWEIGHT)
 // Patel Studio - 2026
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 🚨 REGEX FALLBACK PARSER: URLSearchParams drop errors block karne ke liye split execution
     let wishId = null;
     try {
         const urlSegments = window.location.href.split('id=');
@@ -38,26 +37,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     let currentWish = null;
     let wishesArray = [];
 
-    // STAGE 1: Live API Fetch Engine Scan
+    // Pehle fatfat local storage se check karte hain taaki loading instant ho
     try {
-        const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
-        const data = await response.json();
-        if (data && data.success && data.wishes) {
-            wishesArray = data.wishes;
-        }
-    } catch (error) {
-        console.warn("⚠️ Fetch bypass active.");
-    }
+        const localCache = localStorage.getItem('wishes_hub_db_cache');
+        if (localCache) wishesArray = JSON.parse(localCache);
+    } catch(e) {}
 
-    // STAGE 2: LocalStorage Recovery Core Matrix
+    // Agar local cache nahi hai, tabhi API network load call chalegi
     if (!wishesArray || wishesArray.length === 0) {
         try {
-            const localCache = localStorage.getItem('wishes_hub_db_cache');
-            if (localCache) wishesArray = JSON.parse(localCache);
-        } catch(e) {}
+            const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
+            const data = await response.json();
+            if (data && data.success && data.wishes) {
+                wishesArray = data.wishes;
+            }
+        } catch (error) {
+            console.warn("⚠️ Network fetch stalled.");
+        }
     }
 
-    // STAGE 3: Heavy Fuzzy Scan Execution
     if (wishesArray && wishesArray.length > 0) {
         currentWish = wishesArray.find(w => {
             if (!w) return false;
@@ -74,10 +72,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Fallback Emergency Render Loop: Agar upar ke dono options fail ho jayein tab bhi blank screen ya error mat dikhao!
     if (!currentWish && wishesArray && wishesArray.length > 0) {
-        console.log("⚠️ Emergency recovery fallback triggered.");
-        currentWish = wishesArray[0]; // Renders first post automatically instead of crashing
+        currentWish = wishesArray[0]; 
     }
 
     if (!currentWish) {
@@ -87,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // UI Field secure distribution binding
     const mainText = currentWish.title || currentWish.wishText || currentWish.text || '';
     const mainCategory = currentWish.category || currentWish.mainCategory || 'General';
 
