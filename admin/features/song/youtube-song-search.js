@@ -1,6 +1,7 @@
 // ==========================================================
 // 🚀 MODULE: YOUTUBE SEARCH ENGINE & DYNAMIC PREVIEW PLAYER
 // ==========================================================
+// Wishes Hub - Patel Studio (2026)
 
 // --- PART 1: YOUTUBE API CONNECTOR ---
 async function searchYouTubeSongs(query) {
@@ -152,20 +153,31 @@ async function linkSongToWishAndCache(wishId, track) {
 }
 
 // ==========================================================
-// 🔗 CONNECTION: UI ELEMENTS INTEGRATION
+// 🔗 CONNECTION: UI ELEMENTS INTEGRATION (UPDATED FOR YOUR FORM)
 // ==========================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // Screen par dikhne wale input box aur green "Search" button ko bind karna
-    const searchInput = document.querySelector('input[placeholder*="Type song name"]');
-    const searchButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent.includes('Search'));
+    // 1. Aapke layout ke hissab se "Search Song / Track" label ke baad wale input ko dynamic check se nikalega
+    const searchInput = Array.from(document.querySelectorAll('input')).find(el => {
+        const prev = el.previousElementSibling;
+        return (prev && prev.textContent.includes('Search Song')) || el.closest('div')?.textContent.includes('Search Song');
+    }) || document.querySelectorAll('input')[1]; // Fallback positioning
+
+    // 2. Green "Search" button ko target karega text match se
+    const searchButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent.trim() === 'Search');
     
-    // Results ko dikhane ke liye input field ke niche ek temporary area dhoondhna ya banana
+    // Results container area configuration
     let resultsDiv = document.getElementById("youtubeSearchResultsArea");
     if (!resultsDiv && searchInput) {
         resultsDiv = document.createElement("div");
         resultsDiv.id = "youtubeSearchResultsArea";
-        resultsDiv.style.cssText = "margin-top: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;";
-        searchInput.parentNode.appendChild(resultsDiv);
+        resultsDiv.style.cssText = "margin-top: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; width: 100%; text-align: left;";
+        
+        // Input control line ke parent node me list render box push karega
+        if (searchInput.parentNode && searchInput.parentNode.parentNode) {
+            searchInput.parentNode.parentNode.appendChild(resultsDiv);
+        } else if (searchInput.parentNode) {
+            searchInput.parentNode.appendChild(resultsDiv);
+        }
     }
 
     if (searchButton && searchInput) {
@@ -174,28 +186,29 @@ document.addEventListener("DOMContentLoaded", () => {
             const query = searchInput.value.trim();
             if (!query) return alert("Please enter a track name to search!");
 
-            resultsDiv.innerHTML = "<p style='font-size: 13px; color: gray;'>Searching...</p>";
+            resultsDiv.innerHTML = "<p style='font-size: 13px; color: #4f46e5; font-weight: 500; margin: 10px 0;'>🔍 Searching tracks...</p>";
             
             const songs = await searchYouTubeSongs(query);
-            resultsDiv.innerHTML = ""; // clear loading state
+            resultsDiv.innerHTML = ""; // Loader clean setup
 
             if (songs.length === 0) {
-                resultsDiv.innerHTML = "<p style='font-size: 13px; color: red;'>No songs found.</p>";
+                resultsDiv.innerHTML = "<p style='font-size: 13px; color: #ef4444; margin: 10px 0;'>❌ No songs found or API quota limit reached.</p>";
                 return;
             }
 
             songs.forEach(track => {
                 const row = document.createElement("div");
-                row.style.cssText = "display: flex; align-items: center; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; gap: 10px;";
+                row.style.cssText = "display: flex; align-items: center; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
                 row.innerHTML = `
-                    <img src="${track.thumbnail}" style="width: 50px; height: 35px; border-radius: 4px; object-fit: cover;">
-                    <span style="font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${track.title}</span>
+                    <img src="${track.thumbnail}" style="width: 50px; height: 35px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+                    <span style="font-size: 13px; font-weight: 500; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${track.title}">${track.title}</span>
                 `;
                 
-                // Audio preview control button lagana
                 attachYouTubePreviewFields(track, row);
                 resultsDiv.appendChild(row);
             });
         });
+    } else {
+        console.error("Wishes Hub Selector Warning: DOM elements are not bound correctly.");
     }
 });
