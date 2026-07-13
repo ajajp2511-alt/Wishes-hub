@@ -1,21 +1,11 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (LIGHTWEIGHT)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (HYBRID DEEP SCAN)
 // Patel Studio - 2026
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-    let wishId = null;
-    try {
-        const urlSegments = window.location.href.split('id=');
-        if (urlSegments.length > 1) {
-            wishId = urlSegments[1].split('&')[0];
-        }
-    } catch(e) {}
-
-    if (!wishId) {
-        const urlParams = new URLSearchParams(window.location.search);
-        wishId = urlParams.get('id');
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    let wishId = urlParams.get('id');
 
     const tagElement = document.getElementById('wish-category-tag');
     const textElement = document.getElementById('wish-display-text');
@@ -30,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const getCleanAlphaNum = (str) => String(str).replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase();
     
+    // Multiple decoding checks to destroy any encoding anomalies
     let decodedWishId = wishId;
     try { decodedWishId = decodeURIComponent(wishId); } catch(e){}
     
@@ -37,32 +28,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     let currentWish = null;
     let wishesArray = [];
 
-    // Pehle fatfat local storage se check karte hain taaki loading instant ho
+    // STAGE 1: Live Network Fetch Scan
     try {
-        const localCache = localStorage.getItem('wishes_hub_db_cache');
-        if (localCache) wishesArray = JSON.parse(localCache);
-    } catch(e) {}
+        const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
+        const data = await response.json();
+        if (data && data.success && data.wishes) {
+            wishesArray = data.wishes;
+        }
+    } catch (error) {
+        console.warn("⚠️ Network fetch stalled, activating LocalStorage fallback engine.");
+    }
 
-    // Agar local cache nahi hai, tabhi API network load call chalegi
+    // STAGE 2: LocalStorage Recovery (If Network gives empty array or drops)
     if (!wishesArray || wishesArray.length === 0) {
         try {
-            const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
-            const data = await response.json();
-            if (data && data.success && data.wishes) {
-                wishesArray = data.wishes;
-            }
-        } catch (error) {
-            console.warn("⚠️ Network fetch stalled.");
+            const localCache = localStorage.getItem('wishes_hub_db_cache');
+            if (localCache) wishesArray = JSON.parse(localCache);
+        } catch(e) {
+            console.error("🚨 Cache parse break:", e);
         }
     }
 
+    // STAGE 3: Heavy Hybrid Search Matrix
     if (wishesArray && wishesArray.length > 0) {
+        // Direct Alphanumeric Matrix Match
         currentWish = wishesArray.find(w => {
             if (!w) return false;
             const dbId = w.id || w._id || w.key || '';
             return getCleanAlphaNum(dbId) === cleanUrlId;
         });
 
+        // Strict Substring Fallback Match (If dynamic length mapping changes)
         if (!currentWish) {
             currentWish = wishesArray.find(w => {
                 if (!w) return false;
@@ -72,10 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    if (!currentWish && wishesArray && wishesArray.length > 0) {
-        currentWish = wishesArray[0]; 
-    }
-
+    // Error UI render if both engines collapse
     if (!currentWish) {
         if (textElement) textElement.innerHTML = "<span style='color:#ff5252; font-weight:bold;'>Oops! Yeh wish database me nahi mili.</span>";
         if (tagElement) tagElement.style.display = 'none';
@@ -83,6 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    // Render operational view
     const mainText = currentWish.title || currentWish.wishText || currentWish.text || '';
     const mainCategory = currentWish.category || currentWish.mainCategory || 'General';
 
@@ -92,6 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         tagElement.style.display = 'inline-block';
     }
 
+    // Media engine proxy parser
     if (mediaBox) {
         let mediaUrl = currentWish.image || currentWish.fileUrl || currentWish.imageUrl || null;
         if (mediaUrl) {
@@ -105,6 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Share & Action Logic
     if (copyBtn) {
         copyBtn.onclick = () => {
             navigator.clipboard.writeText(mainText);
