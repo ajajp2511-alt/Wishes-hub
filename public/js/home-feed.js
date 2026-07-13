@@ -1,15 +1,14 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (CACHE BUSTER)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (HIGH PERFORMANCE)
 // Patel Studio - 2026
 // ==========================================================
 
 let allWishesData = []; 
-let lastDataHash = ""; 
 let currentSelectedTag = "All"; 
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Sirf ek baar load karenge taaki network slow na ho
     fetchLiveWishes();
-    setInterval(() => { fetchLiveWishes(true); }, 4000);
 
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function fetchLiveWishes(isBackground = false) {
+async function fetchLiveWishes() {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
@@ -30,12 +29,8 @@ async function fetchLiveWishes(isBackground = false) {
 
         if (!result.success || !result.wishes || result.wishes.length === 0) return;
 
-        const currentDataHash = JSON.stringify(result.wishes);
-        if (currentDataHash === lastDataHash) return; 
-        lastDataHash = currentDataHash;
-
-        // Forced backup injected to storage engine
-        localStorage.setItem('wishes_hub_db_cache', currentDataHash);
+        // Local cache save for detail view fallback
+        localStorage.setItem('wishes_hub_db_cache', JSON.stringify(result.wishes));
 
         allWishesData = result.wishes.map(item => {
             if (!item) return null;
@@ -66,12 +61,14 @@ function renderCardsToGrid(wishesArray) {
     gridContainer.innerHTML = ""; 
     gridContainer.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 10px 0;";
 
+    // Fast Document Fragment for smooth rendering
+    const fragment = document.createDocumentFragment();
+
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
         card.className = 'wish-item-card'; 
         card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer;";
         
-        // Anti-cache wrapper logic triggered safely
         card.setAttribute('onclick', `navigateToWish(event, \`${wish.id}\`)`);
 
         const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
@@ -82,7 +79,7 @@ function renderCardsToGrid(wishesArray) {
             if (srcUrl.includes('api.telegram.org/file/bot')) {
                 srcUrl = `https://images.weserv.nl/?url=${encodeURIComponent(srcUrl)}`;
             }
-            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
+            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" loading="lazy" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
         } else {
             imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
         }
@@ -102,13 +99,14 @@ function renderCardsToGrid(wishesArray) {
                 </div>
             </div>
         `;
-        gridContainer.appendChild(card);
+        fragment.appendChild(card);
     });
+
+    gridContainer.appendChild(fragment);
 }
 
 window.navigateToWish = function(event, wishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
-    // 🚨 CACHE BUSTER INJECTION: Appends dynamic timestamp token to instantly burst vercel cache layers
     window.location.href = `/page/wish.html?id=${encodeURIComponent(wishId)}&v=${new Date().getTime()}`;
 };
 
