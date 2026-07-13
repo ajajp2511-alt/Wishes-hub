@@ -78,6 +78,7 @@ export default async function handler(req, res) {
     if (urlMatch && urlMatch[1]) {
       apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${urlMatch[1]}&key=${youtubeToken}`;
     } else {
+      // CORRECTION HERE: q=${encodeURIComponent(q)} ko badal kar q=${encodeURIComponent(query)} kiya hai
       apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video&key=${youtubeToken}`;
     }
 
