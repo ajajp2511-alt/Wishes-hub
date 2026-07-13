@@ -4,7 +4,7 @@
 import { db } from '../../config/firebaseAdmin'; 
 
 export default async function handler(req, res) {
-  // CORS Headers lagana zaroori hai taaki frontend request block na ho
+  // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -19,105 +19,100 @@ export default async function handler(req, res) {
 
   const { query } = req.query;
   if (!query) {
-    return res.status(400).json({ success: false, message: 'Query is required' });
+    return res.status(400).json({ success: false, message: 'Query parameter is missing' });
   }
 
   try {
-    // 🛡️ SAFETY CHECK: Pehle dekhein ki kya database sahi se load hua hai
-    if (!db) {
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Firebase Database admin instance is undefined. Check config/firebaseAdmin.js initialization.' 
-      });
-    }
-
     const cleanQuery = query.trim().toLowerCase();
-    const songCacheRef = db.collection('youtube_songs_cache');
+    let cachedSongs = [];
 
     // ===================================================
-    // STEP 1: PEHLE LOCAL DATABASE (FIRESTORE) ME SEARCH KARO
+    // STEP 1: FIRESTORE CACHE CHECK (WITH SAFETY TRY)
     // ===================================================
-    let localSnapshot;
-    
-    const youtubeIdRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const urlMatch = query.match(youtubeIdRegex);
-    
-    if (urlMatch && urlMatch[1]) {
-      const extractedId = urlMatch[1];
-      localSnapshot = await songCacheRef.where('youtubeId', '==', extractedId).limit(5).get();
-    } else if (cleanQuery.length === 11 && !cleanQuery.includes(" ")) {
-      localSnapshot = await songCacheRef.where('youtubeId', '==', query).limit(5).get();
-    } else {
-      localSnapshot = await songCacheRef.where('searchKeyword', '==', cleanQuery).limit(5).get();
+    if (db) {
+      try {
+        const songCacheRef = db.collection('youtube_songs_cache');
+        let localSnapshot;
+        
+        const youtubeIdRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const urlMatch = query.match(youtubeIdRegex);
+        
+        if (urlMatch && urlMatch[1]) {
+          const extractedId = urlMatch[1];
+          localSnapshot = await songCacheRef.where('youtubeId', '==', extractedId).limit(5).get();
+        } else if (cleanQuery.length === 11 && !cleanQuery.includes(" ")) {
+          localSnapshot = await songCacheRef.where('youtubeId', '==', query).limit(5).get();
+        } else {
+          localSnapshot = await songCacheRef.where('searchKeyword', '==', cleanQuery).limit(5).get();
+        }
+
+        if (localSnapshot && !localSnapshot.empty) {
+          localSnapshot.forEach(doc => {
+            const data = doc.data();
+            cachedSongs.push({
+              id: data.youtubeId, 
+              snippet: {
+                title: data.title,
+                thumbnails: { default: { url: data.thumbnail } }
+              }
+            });
+          });
+          return res.status(200).json({ source: 'local_collection', items: cachedSongs });
+        }
+      } catch (dbError) {
+        console.error("Firestore error ignored to fallback to YouTube:", dbError);
+      }
     }
 
-    if (localSnapshot && !localSnapshot.empty) {
-      const cachedSongs = [];
-      localSnapshot.forEach(doc => {
-        const data = doc.data();
-        cachedSongs.push({
-          id: data.youtubeId, 
-          snippet: {
-            title: data.title,
-            thumbnails: { default: { url: data.thumbnail } }
-          }
-        });
-      });
-      return res.status(200).json({ source: 'local_collection', items: cachedSongs });
-    }
-
     // ===================================================
-    // STEP 2: AGAR LOCAL ME NAHI MILA, TOH YOUTUBE API USE KARO
+    // STEP 2: YOUTUBE API ACCELERATION
     // ===================================================
     const youtubeToken = process.env.YOUTUBE_API_KEY; 
     if (!youtubeToken) {
-      return res.status(500).json({ success: false, message: 'YouTube Token (YOUTUBE_API_KEY) missing on server configuration' });
+      return res.status(500).json({ 
+        success: false, 
+        message: 'SERVER ERROR: YOUTUBE_API_KEY missing in Vercel Environment Variables!' 
+      });
     }
+
+    const youtubeIdRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const urlMatch = query.match(youtubeIdRegex);
 
     let apiUrl = "";
     if (urlMatch && urlMatch[1]) {
       apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${urlMatch[1]}&key=${youtubeToken}`;
     } else {
-      // CORRECTION HERE: q=${encodeURIComponent(q)} ko badal kar q=${encodeURIComponent(query)} kiya hai
       apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video&key=${youtubeToken}`;
     }
 
     const ytResponse = await fetch(apiUrl);
     const ytData = await ytResponse.json();
 
-    // ===================================================
-    // STEP 3: CREDIT KHATAM HONE PAR BACKUP HANDLING
-    // ===================================================
-    if (ytData.error && (ytData.error.code === 403 || ytData.error.message.includes('quota'))) {
-      const backupSnapshot = await db.collection('youtube_songs_cache').limit(5).get();
-      const backupSongs = [];
-      
-      backupSnapshot.forEach(doc => {
-        const data = doc.data();
-        backupSongs.push({
-          id: data.youtubeId,
-          snippet: {
-            title: data.title + " (Saved)",
-            thumbnails: { default: { url: data.thumbnail } }
-          }
-        });
-      });
-
-      return res.status(200).json({ 
-        source: 'backup_collection_due_to_quota', 
-        message: 'YouTube quota exhausted, showing saved collection',
-        items: backupSongs
-      });
-    }
-
     if (ytData.error) {
-      return res.status(ytData.error.code || 500).json({ success: false, errorDetails: ytData.error, message: ytData.error.message });
+      // Agar API limit ki dikat ho toh fallback database return karo
+      if (ytData.error.code === 403 || ytData.error.message.includes('quota')) {
+        if (db) {
+          const backupSnapshot = await db.collection('youtube_songs_cache').limit(5).get();
+          const backupSongs = [];
+          backupSnapshot.forEach(doc => {
+            const data = doc.data();
+            backupSongs.push({
+              id: data.youtubeId,
+              snippet: {
+                title: data.title + " (Saved)",
+                thumbnails: { default: { url: data.thumbnail } }
+              }
+            });
+          });
+          return res.status(200).json({ source: 'backup_quota_fallback', items: backupSongs });
+        }
+      }
+      return res.status(500).json({ success: false, message: `YouTube API Error: ${ytData.error.message}` });
     }
 
-    return res.status(200).json({ source: 'youtube_api', items: ytData.items });
+    return res.status(200).json({ source: 'youtube_api', items: ytData.items || [] });
 
   } catch (error) {
-    console.error("Error caught inside handler:", error);
-    return res.status(500).json({ success: false, errorStack: error.stack, message: error.message });
+    return res.status(500).json({ success: false, message: `Server Crash: ${error.message}` });
   }
-}
+      }
