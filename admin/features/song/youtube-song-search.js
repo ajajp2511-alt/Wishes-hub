@@ -11,14 +11,11 @@ async function searchYouTubeSongs(query) {
     }
 
     try {
-        // Aapki banayi hui alag backend file ko hit karega
         const response = await fetch(`/api/get-youtube-song?query=${encodeURIComponent(query)}`);
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
-            // YouTube response ko format karke return karna taaki easy use ho sake
             return data.items.map(item => {
-                // Agar direct ID search hai toh item.id direct string hoti hai, agar text search hai toh item.id.videoId hoti hai
                 const videoId = typeof item.id === 'string' ? item.id : item.id.videoId;
                 return {
                     videoId: videoId,
@@ -41,20 +38,17 @@ let currentPlayingIframe = null;
 function attachYouTubePreviewFields(track, containerRow) {
     if (!track || !containerRow) return;
 
-    // Create a mini play button container inside the row
     const playBtn = document.createElement('button');
     playBtn.type = "button";
     playBtn.innerText = "▶️ Listen";
     playBtn.style.cssText = "margin-left: auto; padding: 4px 8px; font-size: 11px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;";
 
-    // Hidden container for the embedded dynamic audio/video stream
     const playerWrapper = document.createElement('div');
     playerWrapper.style.display = "none";
 
     playBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stops row selection trigger logic
+        e.stopPropagation();
 
-        // Toggle condition if clicked again on the same video
         if (currentPlayingIframe === playerWrapper) {
             playerWrapper.innerHTML = "";
             playerWrapper.style.display = "none";
@@ -63,7 +57,6 @@ function attachYouTubePreviewFields(track, containerRow) {
             return;
         }
 
-        // Stop any other currently playing video stream
         if (currentPlayingIframe) {
             currentPlayingIframe.innerHTML = "";
             currentPlayingIframe.style.display = "none";
@@ -71,7 +64,6 @@ function attachYouTubePreviewFields(track, containerRow) {
             openBtns.forEach(b => { if(b.innerText === "⏹️ Stop") b.innerText = "▶️ Listen"; });
         }
 
-        // Inject background minimal invisible/tiny iframe to hear preview track
         playerWrapper.innerHTML = `
             <iframe width="100" height="40" src="https://www.youtube.com/embed/${track.videoId}?autoplay=1" frameborder="0" allow="autoplay" style="border:none; margin-top:5px; border-radius:4px;"></iframe>
         `;
@@ -83,36 +75,39 @@ function attachYouTubePreviewFields(track, containerRow) {
     containerRow.appendChild(playBtn);
     containerRow.appendChild(playerWrapper);
 
-    // ==========================================================
-    // ➕ MODIFICATION: GAANA SELECT KARNE KA NAYA BUTTON
-    // ==========================================================
     const selectBtn = document.createElement('button');
     selectBtn.type = "button";
-    selectBtn.innerText = "📌 Select Song";
+    selectBtn.innerText = "📌 Select";
     selectBtn.style.cssText = "margin-left: 8px; padding: 4px 8px; font-size: 11px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;";
 
     selectBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
 
-        // Admin panel me jo active editing wishId hai, use global variable ya modal se uthana hoga
-        const currentWishId = window.currentEditingWishId; 
-        
-        if (!currentWishId) {
-            alert("Error: Active Wish ID missing! Please select or create a wish first.");
-            return;
+        // Target YouTube URL field and fill it instantly
+        const ytUrlInput = Array.from(document.querySelectorAll('input')).find(el => {
+            return el.value.includes('youtube.com') || el.placeholder.includes('youtube.com') || (el.previousElementSibling && el.previousElementSibling.textContent.includes('YouTube URL'));
+        }) || document.querySelectorAll('input')[0]; 
+
+        if (ytUrlInput) {
+            ytUrlInput.value = `https://www.youtube.com/watch?v=${track.videoId}`;
+            ytUrlInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
-        selectBtn.innerText = "⏳ Saving...";
-        selectBtn.disabled = true;
-
-        const success = await linkSongToWishAndCache(currentWishId, track);
-
-        if (success) {
-            selectBtn.innerText = "✅ Selected";
-            selectBtn.style.background = "#059669";
+        const currentWishId = window.currentEditingWishId; 
+        if (currentWishId) {
+            selectBtn.innerText = "⏳ Saving...";
+            selectBtn.disabled = true;
+            const success = await linkSongToWishAndCache(currentWishId, track);
+            if (success) {
+                selectBtn.innerText = "✅ Saved";
+                selectBtn.style.background = "#059669";
+            } else {
+                selectBtn.innerText = "📌 Select";
+                selectBtn.disabled = false;
+            }
         } else {
-            selectBtn.innerText = "📌 Select Song";
-            selectBtn.disabled = false;
+            selectBtn.innerText = "✅ Selected";
+            selectBtn.style.background = "#3b82f6";
         }
     });
 
@@ -131,84 +126,86 @@ async function linkSongToWishAndCache(wishId, track) {
     try {
         const response = await fetch('/api/add-wish-to-db', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
         const resData = await response.json();
-        if (resData.success) {
-            alert("Song successfully saved to Collection & linked to Wish!");
-            return true;
-        } else {
-            alert("Database Error: " + resData.message);
-            return false;
-        }
+        return resData.success;
     } catch (error) {
         console.error("Error connecting to save API:", error);
-        alert("Failed to save song to database.");
         return false;
     }
 }
 
 // ==========================================================
-// 🔗 CONNECTION: UI ELEMENTS INTEGRATION (UPDATED FOR YOUR FORM)
+// 🔗 CONNECTION: DYNAMIC EVENT DELEGATION (FOR DYNAMIC FORMS)
 // ==========================================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Aapke layout ke hissab se "Search Song / Track" label ke baad wale input ko dynamic check se nikalega
-    const searchInput = Array.from(document.querySelectorAll('input')).find(el => {
-        const prev = el.previousElementSibling;
-        return (prev && prev.textContent.includes('Search Song')) || el.closest('div')?.textContent.includes('Search Song');
-    }) || document.querySelectorAll('input')[1]; // Fallback positioning
-
-    // 2. Green "Search" button ko target karega text match se
-    const searchButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent.trim() === 'Search');
-    
-    // Results container area configuration
-    let resultsDiv = document.getElementById("youtubeSearchResultsArea");
-    if (!resultsDiv && searchInput) {
-        resultsDiv = document.createElement("div");
-        resultsDiv.id = "youtubeSearchResultsArea";
-        resultsDiv.style.cssText = "margin-top: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; width: 100%; text-align: left;";
+// Kyunki form runtime par render hota hai, hum pure document par click sunenge
+document.addEventListener("click", async (e) => {
+    // Check karenge ki click hua element "Search" text wala button hai ya nahi
+    if (e.target && e.target.tagName === "BUTTON" && e.target.textContent.trim() === "Search") {
         
-        // Input control line ke parent node me list render box push karega
-        if (searchInput.parentNode && searchInput.parentNode.parentNode) {
-            searchInput.parentNode.parentNode.appendChild(resultsDiv);
-        } else if (searchInput.parentNode) {
-            searchInput.parentNode.appendChild(resultsDiv);
-        }
-    }
+        // Pata lagao ki yeh hamare gaane wala search hai ya koi aur (Screenshot me search ke barabar me input field hai)
+        const parentRow = e.target.closest('div');
+        if (!parentRow) return;
 
-    if (searchButton && searchInput) {
-        searchButton.addEventListener("click", async (e) => {
-            e.preventDefault();
-            const query = searchInput.value.trim();
-            if (!query) return alert("Please enter a track name to search!");
+        const searchInput = parentRow.querySelector('input');
+        if (!searchInput) return;
 
-            resultsDiv.innerHTML = "<p style='font-size: 13px; color: #4f46e5; font-weight: 500; margin: 10px 0;'>🔍 Searching tracks...</p>";
-            
-            const songs = await searchYouTubeSongs(query);
-            resultsDiv.innerHTML = ""; // Loader clean setup
-
-            if (songs.length === 0) {
-                resultsDiv.innerHTML = "<p style='font-size: 13px; color: #ef4444; margin: 10px 0;'>❌ No songs found or API quota limit reached.</p>";
-                return;
+        // Ensure karo ki yeh "Search Song / Track" section ka hi input hai
+        const sectionText = parentRow.parentNode?.textContent || "";
+        if (!sectionText.includes("Search Song")) {
+            // Agar normal tree fail ho toh backup find lagao
+            const allInputs = document.querySelectorAll('input');
+            if (allInputs.length > 0) {
+                // Tum hi ho wale screenshot ke input ko extract karna
+                var fallbackInput = Array.from(allInputs).find(i => i.value.trim().length > 0 && !i.value.includes('http'));
             }
+        }
 
-            songs.forEach(track => {
-                const row = document.createElement("div");
-                row.style.cssText = "display: flex; align-items: center; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
-                row.innerHTML = `
-                    <img src="${track.thumbnail}" style="width: 50px; height: 35px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
-                    <span style="font-size: 13px; font-weight: 500; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${track.title}">${track.title}</span>
-                `;
-                
-                attachYouTubePreviewFields(track, row);
-                resultsDiv.appendChild(row);
-            });
+        const activeInput = searchInput || fallbackInput;
+        if (!activeInput) return;
+
+        const query = activeInput.value.trim();
+        if (!query) {
+            alert("Please enter a track name!");
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Purane result area ko dhoondhna ya naya banana
+        let resultsDiv = document.getElementById("youtubeSearchResultsArea");
+        if (!resultsDiv) {
+            resultsDiv = document.createElement("div");
+            resultsDiv.id = "youtubeSearchResultsArea";
+            resultsDiv.style.cssText = "margin-top: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; width: 100%; text-align: left; padding: 2px;";
+            
+            // Input wale container ke theek niche insert karna
+            parentRow.parentNode.appendChild(resultsDiv);
+        }
+
+        resultsDiv.innerHTML = "<p style='font-size: 13px; color: #4f46e5; font-weight: 600; margin: 8px 0;'>🔍 Fetching from stream channels...</p>";
+        
+        const songs = await searchYouTubeSongs(query);
+        resultsDiv.innerHTML = ""; 
+
+        if (songs.length === 0) {
+            resultsDiv.innerHTML = "<p style='font-size: 13px; color: #ef4444; margin: 8px 0;'>❌ No matching tracks found.</p>";
+            return;
+        }
+
+        songs.forEach(track => {
+            const row = document.createElement("div");
+            row.style.cssText = "display: flex; align-items: center; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #ffffff; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 4px;";
+            row.innerHTML = `
+                <img src="${track.thumbnail}" style="width: 48px; height: 34px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+                <span style="font-size: 12px; font-weight: 500; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;" title="${track.title}">${track.title}</span>
+            `;
+            
+            attachYouTubePreviewFields(track, row);
+            resultsDiv.appendChild(row);
         });
-    } else {
-        console.error("Wishes Hub Selector Warning: DOM elements are not bound correctly.");
     }
 });
