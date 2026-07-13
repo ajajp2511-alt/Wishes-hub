@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (FINAL FIXED)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (STRICT URL FIX)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -34,11 +34,9 @@ async function fetchLiveWishes(isBackground = false) {
         if (currentDataHash === lastDataHash) return; 
         lastDataHash = currentDataHash;
 
-        // 🚨 CRITICAL: Asli IDs ko extract karna bina kisi custom string generator ke
         allWishesData = result.wishes.map(item => {
             if (!item) return null;
-            // Agar unique ID '_id' mein hai ya 'id' mein, usey prioritize karein
-            const cleanId = item._id || item.id || item.key || null;
+            const cleanId = item.id || item._id || item.key || null;
             let extractedTitle = item.title || item.wishText || item.text || '';
             let finalImage = item.image || item.fileUrl || item.imageUrl || null;
 
@@ -48,7 +46,7 @@ async function fetchLiveWishes(isBackground = false) {
                 category: item.category || item.mainCategory || 'General',
                 image: finalImage
             };
-        }).filter(item => item && item.id); // Sirf wahi items rakhein jinki ID valid ho
+        }).filter(item => item && item.id);
 
         if (allWishesData.length > 0) {
             filterWishes(document.getElementById('search-input')?.value.toLowerCase().trim() || "", currentSelectedTag);
@@ -70,20 +68,17 @@ function renderCardsToGrid(wishesArray) {
         card.className = 'wish-item-card'; 
         card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer;";
         
-        // Asli ID URL query parameter mein bhej rahe hain
-        card.setAttribute('onclick', `navigateToWish(event, '${wish.id}')`);
+        // 🚨 FIX: Safe parameter passing using encodeURIComponent to protect dashes (-)
+        card.setAttribute('onclick', `navigateToWish(event, '${encodeURIComponent(wish.id)}')`);
 
         const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
         
         let imageHtml = '';
         if (wish.image) {
             let srcUrl = wish.image;
-            
-            // 🛠️ FIX: Telegram direct URLs ko safe cache proxy ke through pass karein
             if (srcUrl.includes('api.telegram.org/file/bot')) {
                 srcUrl = `https://images.weserv.nl/?url=${encodeURIComponent(srcUrl)}`;
             }
-            
             imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
         } else {
             imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
@@ -108,9 +103,9 @@ function renderCardsToGrid(wishesArray) {
     });
 }
 
-window.navigateToWish = function(event, wishId) {
+window.navigateToWish = function(event, encodedWishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
-    window.location.href = `/page/wish.html?id=${wishId}`;
+    window.location.href = `/page/wish.html?id=${encodedWishId}`;
 };
 
 window.copyTextToClipboard = function(text) {
