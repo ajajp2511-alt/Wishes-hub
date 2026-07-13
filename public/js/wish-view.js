@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (DECODE MATCH)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (FUZZY STRIP MATCH)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -18,8 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 🚨 FIX: Decode dynamic URL strings to support Firebase dash ids
-    wishId = decodeURIComponent(wishId).trim();
+    // Alphanumeric character extractor logic (Strips symbols to prevent parse collapse)
+    const getCleanAlphaNum = (str) => String(str).replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase();
+    const cleanUrlId = getCleanAlphaNum(decodeURIComponent(wishId));
 
     try {
         const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
@@ -27,13 +28,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // Strict fallback search loop
+        // FUZZY IDENTIFIER LOOKUP LOOP
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
             const dbId = w.id || w._id || w.key || '';
-            
-            // Clean strings securely without removing valid dash (-) symbols
-            return String(dbId).trim() === wishId;
+            return getCleanAlphaNum(dbId) === cleanUrlId;
         });
 
         if (!currentWish) {
