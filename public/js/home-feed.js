@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (STRICT URL FIX)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (TOTAL BULLETPROOF)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -68,8 +68,8 @@ function renderCardsToGrid(wishesArray) {
         card.className = 'wish-item-card'; 
         card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer;";
         
-        // 🚨 FIX: Safe parameter passing using encodeURIComponent to protect dashes (-)
-        card.setAttribute('onclick', `navigateToWish(event, '${encodeURIComponent(wish.id)}')`);
+        // Dynamic generic click string argument wrapper
+        card.setAttribute('onclick', `navigateToWish(event, \`${wish.id}\`)`);
 
         const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
         
@@ -103,9 +103,9 @@ function renderCardsToGrid(wishesArray) {
     });
 }
 
-window.navigateToWish = function(event, encodedWishId) {
+window.navigateToWish = function(event, wishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
-    window.location.href = `/page/wish.html?id=${encodedWishId}`;
+    window.location.href = `/page/wish.html?id=${encodeURIComponent(wishId)}`;
 };
 
 window.copyTextToClipboard = function(text) {
