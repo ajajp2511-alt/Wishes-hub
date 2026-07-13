@@ -78,9 +78,12 @@ function renderCardsToGrid(wishesArray) {
         let imageHtml = '';
         if (wish.image) {
             let srcUrl = wish.image;
+            
+            // 🛠️ FIX: Telegram direct URLs ko safe cache proxy ke through pass karein
             if (srcUrl.includes('api.telegram.org/file/bot')) {
-                srcUrl = `https://imtqy.com/bot${srcUrl.split('bot')[1]}`;
+                srcUrl = `https://images.weserv.nl/?url=${encodeURIComponent(srcUrl)}`;
             }
+            
             imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
         } else {
             imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
