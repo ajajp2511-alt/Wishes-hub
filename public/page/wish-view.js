@@ -18,23 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 🚨 FIX 1: Clean and decode URL strings thoroughly
-    wishId = decodeURIComponent(wishId).trim().toLowerCase();
+    // 🚨 FIX: Strict case retention (Hataya toLowerCase)
+    wishId = decodeURIComponent(wishId).trim();
 
     try {
-        // Absolute path routing ensuring Vercel structure match
         const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
         const data = await response.json();
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // 🚨 FIX 2: Strict but Case-Insensitive fallback search loop
+        // 🚨 CASE-SENSITIVE SECURE FILTER LOOP
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
             const dbId = w.id || w._id || w.key || '';
             
-            // Convert both side IDs to lowercase to bypass exact string mismatches in browser URLs
-            return String(dbId).trim().toLowerCase() === wishId;
+            // Firebase push IDs are strictly case-sensitive (-OxP_gI != -oxp_gi)
+            return String(dbId).trim() === wishId;
         });
 
         if (!currentWish) {
