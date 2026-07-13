@@ -150,3 +150,52 @@ async function linkSongToWishAndCache(wishId, track) {
         return false;
     }
 }
+
+// ==========================================================
+// 🔗 CONNECTION: UI ELEMENTS INTEGRATION
+// ==========================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // Screen par dikhne wale input box aur green "Search" button ko bind karna
+    const searchInput = document.querySelector('input[placeholder*="Type song name"]');
+    const searchButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent.includes('Search'));
+    
+    // Results ko dikhane ke liye input field ke niche ek temporary area dhoondhna ya banana
+    let resultsDiv = document.getElementById("youtubeSearchResultsArea");
+    if (!resultsDiv && searchInput) {
+        resultsDiv = document.createElement("div");
+        resultsDiv.id = "youtubeSearchResultsArea";
+        resultsDiv.style.cssText = "margin-top: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;";
+        searchInput.parentNode.appendChild(resultsDiv);
+    }
+
+    if (searchButton && searchInput) {
+        searchButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (!query) return alert("Please enter a track name to search!");
+
+            resultsDiv.innerHTML = "<p style='font-size: 13px; color: gray;'>Searching...</p>";
+            
+            const songs = await searchYouTubeSongs(query);
+            resultsDiv.innerHTML = ""; // clear loading state
+
+            if (songs.length === 0) {
+                resultsDiv.innerHTML = "<p style='font-size: 13px; color: red;'>No songs found.</p>";
+                return;
+            }
+
+            songs.forEach(track => {
+                const row = document.createElement("div");
+                row.style.cssText = "display: flex; align-items: center; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; gap: 10px;";
+                row.innerHTML = `
+                    <img src="${track.thumbnail}" style="width: 50px; height: 35px; border-radius: 4px; object-fit: cover;">
+                    <span style="font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${track.title}</span>
+                `;
+                
+                // Audio preview control button lagana
+                attachYouTubePreviewFields(track, row);
+                resultsDiv.appendChild(row);
+            });
+        });
+    }
+});
