@@ -1,14 +1,15 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (HIGH PERFORMANCE)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (CACHE INJECTOR)
 // Patel Studio - 2026
 // ==========================================================
 
 let allWishesData = []; 
+let lastDataHash = ""; 
 let currentSelectedTag = "All"; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Sirf ek baar load karenge taaki network slow na ho
     fetchLiveWishes();
+    setInterval(() => { fetchLiveWishes(true); }, 4000);
 
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function fetchLiveWishes() {
+async function fetchLiveWishes(isBackground = false) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
@@ -29,8 +30,12 @@ async function fetchLiveWishes() {
 
         if (!result.success || !result.wishes || result.wishes.length === 0) return;
 
-        // Local cache save for detail view fallback
-        localStorage.setItem('wishes_hub_db_cache', JSON.stringify(result.wishes));
+        const currentDataHash = JSON.stringify(result.wishes);
+        if (currentDataHash === lastDataHash) return; 
+        lastDataHash = currentDataHash;
+
+        // Save raw response securely for fallback disaster recovery
+        localStorage.setItem('wishes_hub_db_cache', currentDataHash);
 
         allWishesData = result.wishes.map(item => {
             if (!item) return null;
@@ -61,9 +66,6 @@ function renderCardsToGrid(wishesArray) {
     gridContainer.innerHTML = ""; 
     gridContainer.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 10px 0;";
 
-    // Fast Document Fragment for smooth rendering
-    const fragment = document.createDocumentFragment();
-
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
         card.className = 'wish-item-card'; 
@@ -79,7 +81,7 @@ function renderCardsToGrid(wishesArray) {
             if (srcUrl.includes('api.telegram.org/file/bot')) {
                 srcUrl = `https://images.weserv.nl/?url=${encodeURIComponent(srcUrl)}`;
             }
-            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" loading="lazy" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
+            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
         } else {
             imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
         }
@@ -99,15 +101,13 @@ function renderCardsToGrid(wishesArray) {
                 </div>
             </div>
         `;
-        fragment.appendChild(card);
+        gridContainer.appendChild(card);
     });
-
-    gridContainer.appendChild(fragment);
 }
 
 window.navigateToWish = function(event, wishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
-    window.location.href = `/page/wish.html?id=${encodeURIComponent(wishId)}&v=${new Date().getTime()}`;
+    window.location.href = `/page/wish.html?id=${encodeURIComponent(wishId)}`;
 };
 
 window.copyTextToClipboard = function(text) {
