@@ -34,7 +34,6 @@ async function searchYouTubeSongs(query) {
                 };
             });
         } else {
-            // Direct error details extracted from catch structure
             alert(data.message || "Failed to parse matching tracks. Check keys.");
             return [];
         }
@@ -51,13 +50,17 @@ let currentPlayingIframe = null;
 function attachYouTubePreviewFields(track, containerRow) {
     if (!track || !containerRow) return;
 
+    // Actions Wrapper to hold buttons and player neatly
+    const actionWrapper = document.createElement('div');
+    actionWrapper.style.cssText = "display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0;";
+
     const playBtn = document.createElement('button');
     playBtn.type = "button";
     playBtn.innerText = "▶️ Listen";
-    playBtn.style.cssText = "margin-left: auto; padding: 4px 8px; font-size: 11px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;";
+    playBtn.style.cssText = "padding: 6px 10px; font-size: 11px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: background 0.2s;";
 
     const playerWrapper = document.createElement('div');
-    playerWrapper.style.display = "none";
+    playerWrapper.style.cssText = "display: none; width: 120px; height: 40px; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);";
 
     playBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -66,6 +69,7 @@ function attachYouTubePreviewFields(track, containerRow) {
             playerWrapper.innerHTML = "";
             playerWrapper.style.display = "none";
             playBtn.innerText = "▶️ Listen";
+            playBtn.style.background = "#4f46e5";
             currentPlayingIframe = null;
             return;
         }
@@ -74,24 +78,27 @@ function attachYouTubePreviewFields(track, containerRow) {
             currentPlayingIframe.innerHTML = "";
             currentPlayingIframe.style.display = "none";
             const openBtns = containerRow.parentNode.querySelectorAll('button');
-            openBtns.forEach(b => { if(b.innerText === "⏹️ Stop") b.innerText = "▶️ Listen"; });
+            openBtns.forEach(b => { 
+                if(b.innerText === "⏹️ Stop") {
+                    b.innerText = "▶️ Listen";
+                    b.style.background = "#4f46e5";
+                }
+            });
         }
 
         playerWrapper.innerHTML = `
-            <iframe width="100" height="40" src="https://www.youtube.com/embed/${track.videoId}?autoplay=1" frameborder="0" allow="autoplay" style="border:none; margin-top:5px; border-radius:4px;"></iframe>
+            <iframe width="120" height="40" src="https://www.youtube.com/embed/${track.videoId}?autoplay=1" frameborder="0" allow="autoplay" style="border:none; width: 100%; height: 100%;"></iframe>
         `;
         playerWrapper.style.display = "block";
         playBtn.innerText = "⏹️ Stop";
+        playBtn.style.background = "#ef4444";
         currentPlayingIframe = playerWrapper;
     });
-
-    containerRow.appendChild(playBtn);
-    containerRow.appendChild(playerWrapper);
 
     const selectBtn = document.createElement('button');
     selectBtn.type = "button";
     selectBtn.innerText = "📌 Select";
-    selectBtn.style.cssText = "margin-left: 8px; padding: 4px 8px; font-size: 11px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;";
+    selectBtn.style.cssText = "padding: 6px 10px; font-size: 11px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: background 0.2s;";
 
     selectBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -123,7 +130,11 @@ function attachYouTubePreviewFields(track, containerRow) {
         }
     });
 
-    containerRow.appendChild(selectBtn);
+    // Add everything inside action wrapper smoothly
+    actionWrapper.appendChild(playBtn);
+    actionWrapper.appendChild(playerWrapper);
+    actionWrapper.appendChild(selectBtn);
+    containerRow.appendChild(actionWrapper);
 }
 
 // --- PART 3: BACKEND API PIPE INTEGRATION ---
@@ -161,18 +172,7 @@ document.addEventListener("click", async (e) => {
         const searchInput = parentRow.querySelector('input');
         if (!searchInput) return;
 
-        const sectionText = parentRow.parentNode?.textContent || "";
-        if (!sectionText.includes("Search Song")) {
-            const allInputs = document.querySelectorAll('input');
-            if (allInputs.length > 0) {
-                var fallbackInput = Array.from(allInputs).find(i => i.value.trim().length > 0 && !i.value.includes('http'));
-            }
-        }
-
-        const activeInput = searchInput || fallbackInput;
-        if (!activeInput) return;
-
-        const query = activeInput.value.trim();
+        const query = searchInput.value.trim();
         if (!query) {
             alert("Please enter a track name!");
             return;
@@ -185,7 +185,7 @@ document.addEventListener("click", async (e) => {
         if (!resultsDiv) {
             resultsDiv = document.createElement("div");
             resultsDiv.id = "youtubeSearchResultsArea";
-            resultsDiv.style.cssText = "margin-top: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; width: 100%; text-align: left; padding: 2px;";
+            resultsDiv.style.cssText = "margin-top: 14px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; width: 100%; text-align: left; padding: 4px; border-radius: 8px;";
             
             parentRow.parentNode.appendChild(resultsDiv);
         }
@@ -202,12 +202,17 @@ document.addEventListener("click", async (e) => {
 
         songs.forEach(track => {
             const row = document.createElement("div");
-            row.style.cssText = "display: flex; align-items: center; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #ffffff; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 4px;";
-            row.innerHTML = `
+            row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #ffffff; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 2px;";
+            
+            // Content Wrapper for Text and Thumbnail to prevent squeeze
+            const metaWrapper = document.createElement('div');
+            metaWrapper.style.cssText = "display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;";
+            metaWrapper.innerHTML = `
                 <img src="${track.thumbnail}" style="width: 48px; height: 34px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
-                <span style="font-size: 12px; font-weight: 500; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;" title="${track.title}">${track.title}</span>
+                <span style="font-size: 12px; font-weight: 500; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;" title="${track.title}">${track.title}</span>
             `;
             
+            row.appendChild(metaWrapper);
             attachYouTubePreviewFields(track, row);
             resultsDiv.appendChild(row);
         });
