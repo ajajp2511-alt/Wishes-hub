@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (COMPLETE FIXED)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (FINAL STABLE)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -24,24 +24,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // 🚨 DEBUG LOGS: Browser Console (F12) me check karne ke liye
-        console.log("👉 URL Param se mili ID:", wishId, "Type:", typeof wishId);
-        if (data.wishes.length > 0) {
-            console.log("👉 DB samples:", data.wishes.slice(0, 3).map(w => ({ _id: w._id, id: w.id, key: w.key })));
-        }
-
-        // 🚨 SUPER FLEXIBLE ID MATCHING LOGIC
+        // 🚨 FIXED MATCHING: Backend explicit 'id' key bhej raha hai, usey sabse pehle match karenge
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
             
-            // Sabhi possible ID keys ko nikal kar check karte hain
-            const dbId = w._id || w.id || w.key || '';
+            // Backend format 'id' ko prioritize karein, fallback ke liye bakki keys
+            const dbId = w.id || w._id || w.key || '';
             
-            // Clean dynamic string strings comparison
-            const cleanDbId = String(dbId).replace(/["']/g, '').trim().toLowerCase();
-            const cleanUrlId = String(wishId).replace(/["']/g, '').trim().toLowerCase();
-            
-            return cleanDbId === cleanUrlId;
+            // Unwanted characters clean karke strict string check karein
+            return String(dbId).trim().toLowerCase() === String(wishId).trim().toLowerCase();
         });
 
         if (!currentWish) {
@@ -61,11 +52,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             tagElement.style.display = 'inline-block';
         }
 
-        // Image loading logic
+        // Image loading logic with stable proxy
         if (mediaBox) {
             let mediaUrl = currentWish.image || currentWish.fileUrl || currentWish.imageUrl || null;
             if (mediaUrl) {
-                // Telegram URLs proxy logic standard code format
+                // Telegram file link converter using weserv proxy
                 if (mediaUrl.includes('api.telegram.org/file/bot')) {
                     mediaUrl = `https://images.weserv.nl/?url=${encodeURIComponent(mediaUrl)}`;
                 }
