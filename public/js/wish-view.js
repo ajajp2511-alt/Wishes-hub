@@ -24,16 +24,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // 🚨 FIX: Strict mapping aur ID match filtering logic
+        // 🚨 FIX: Flexible aur safe ID verification check logic
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
-            const dbId = String(w._id || w.id || w.key || '').trim();
-            return dbId === String(wishId).trim();
+            const dbId = w._id || w.id || w.key || '';
+            return String(dbId).trim() === String(wishId).trim();
         });
 
         if (!currentWish) {
             if (textElement) textElement.innerHTML = "<span style='color:#ff5252; font-weight:bold;'>Oops! Yeh wish database me nahi mili.</span>";
             if (tagElement) tagElement.style.display = 'none';
+            if (mediaBox) mediaBox.style.display = 'none';
             return;
         }
 
@@ -51,8 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (mediaBox) {
             let mediaUrl = currentWish.image || currentWish.fileUrl || currentWish.imageUrl || null;
             if (mediaUrl) {
+                // 🛠️ FIX: Telegram URLs ko weserv proxy ke sath update kiya
                 if (mediaUrl.includes('api.telegram.org/file/bot')) {
-                    mediaUrl = `https://imtqy.com/bot${mediaUrl.split('bot')[1]}`;
+                    mediaUrl = `https://images.weserv.nl/?url=${encodeURIComponent(mediaUrl)}`;
                 }
                 mediaBox.style.display = 'block';
                 mediaBox.innerHTML = `<img src="${mediaUrl}" style="width:100%; max-height:380px; object-fit:contain; border-radius:12px; display:block; margin: 0 auto 15px;">`;
