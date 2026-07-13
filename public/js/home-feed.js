@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (CACHE INJECTOR)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (STRICT URL FIX)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -33,9 +33,6 @@ async function fetchLiveWishes(isBackground = false) {
         const currentDataHash = JSON.stringify(result.wishes);
         if (currentDataHash === lastDataHash) return; 
         lastDataHash = currentDataHash;
-
-        // Save raw response securely for fallback disaster recovery
-        localStorage.setItem('wishes_hub_db_cache', currentDataHash);
 
         allWishesData = result.wishes.map(item => {
             if (!item) return null;
@@ -71,7 +68,8 @@ function renderCardsToGrid(wishesArray) {
         card.className = 'wish-item-card'; 
         card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer;";
         
-        card.setAttribute('onclick', `navigateToWish(event, \`${wish.id}\`)`);
+        // 🚨 FIX: Safe parameter passing using encodeURIComponent to protect dashes (-)
+        card.setAttribute('onclick', `navigateToWish(event, '${encodeURIComponent(wish.id)}')`);
 
         const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
         
@@ -105,9 +103,9 @@ function renderCardsToGrid(wishesArray) {
     });
 }
 
-window.navigateToWish = function(event, wishId) {
+window.navigateToWish = function(event, encodedWishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
-    window.location.href = `/page/wish.html?id=${encodeURIComponent(wishId)}`;
+    window.location.href = `/page/wish.html?id=${encodedWishId}`;
 };
 
 window.copyTextToClipboard = function(text) {
