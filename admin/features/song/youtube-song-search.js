@@ -11,7 +11,18 @@ async function searchYouTubeSongs(query) {
     }
 
     try {
-        const response = await fetch(`/api/get-youtube-song?query=${encodeURIComponent(query)}`);
+        // Absolute dynamic path configuration to prevent route block or relative network drop
+        const currentOrigin = window.location.origin;
+        const targetUrl = `${currentOrigin}/api/get-youtube-song?query=${encodeURIComponent(query)}`;
+        
+        const response = await fetch(targetUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
         const data = await response.json();
 
         if (response.ok && data.items) {
@@ -24,13 +35,12 @@ async function searchYouTubeSongs(query) {
                 };
             });
         } else {
-            // Server ka exact error message screen par alert karega
             alert(data.message || "Failed to fetch results from backend.");
             return [];
         }
     } catch (error) {
-        console.error("Network Error:", error);
-        alert("Network error or route block.");
+        console.error("Network Error Details:", error);
+        alert("Network error or route block. Please make sure api/get-youtube-song.js is in your root api/ folder.");
         return [];
     }
 }
@@ -86,7 +96,6 @@ function attachYouTubePreviewFields(track, containerRow) {
     selectBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
 
-        // Target YouTube URL field and fill it instantly
         const ytUrlInput = Array.from(document.querySelectorAll('input')).find(el => {
             return el.value.includes('youtube.com') || el.placeholder.includes('youtube.com') || (el.previousElementSibling && el.previousElementSibling.textContent.includes('YouTube URL'));
         }) || document.querySelectorAll('input')[0]; 
@@ -127,7 +136,7 @@ async function linkSongToWishAndCache(wishId, track) {
     };
 
     try {
-        const response = await fetch('/api/add-wish-to-db', {
+        const response = await fetch(`${window.location.origin}/api/add-wish-to-db`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -141,7 +150,7 @@ async function linkSongToWishAndCache(wishId, track) {
 }
 
 // ==========================================================
-// 🔗 CONNECTION: DYNAMIC EVENT DELEGATION (FOR DYNAMIC FORMS)
+// 🔗 CONNECTION: DYNAMIC EVENT DELEGATION
 // ==========================================================
 document.addEventListener("click", async (e) => {
     if (e.target && e.target.tagName === "BUTTON" && e.target.textContent.trim() === "Search") {
