@@ -14,7 +14,7 @@ async function searchYouTubeSongs(query) {
         const response = await fetch(`/api/get-youtube-song?query=${encodeURIComponent(query)}`);
         const data = await response.json();
 
-        if (data.items && data.items.length > 0) {
+        if (response.ok && data.items) {
             return data.items.map(item => {
                 const videoId = typeof item.id === 'string' ? item.id : item.id.videoId;
                 return {
@@ -23,11 +23,14 @@ async function searchYouTubeSongs(query) {
                     thumbnail: item.snippet.thumbnails.default.url
                 };
             });
+        } else {
+            // Server ka exact error message screen par alert karega
+            alert(data.message || "Failed to fetch results from backend.");
+            return [];
         }
-        return [];
     } catch (error) {
-        console.error("Error fetching from YouTube API:", error);
-        alert("Failed to search song. Check server log.");
+        console.error("Network Error:", error);
+        alert("Network error or route block.");
         return [];
     }
 }
@@ -140,25 +143,19 @@ async function linkSongToWishAndCache(wishId, track) {
 // ==========================================================
 // 🔗 CONNECTION: DYNAMIC EVENT DELEGATION (FOR DYNAMIC FORMS)
 // ==========================================================
-// Kyunki form runtime par render hota hai, hum pure document par click sunenge
 document.addEventListener("click", async (e) => {
-    // Check karenge ki click hua element "Search" text wala button hai ya nahi
     if (e.target && e.target.tagName === "BUTTON" && e.target.textContent.trim() === "Search") {
         
-        // Pata lagao ki yeh hamare gaane wala search hai ya koi aur (Screenshot me search ke barabar me input field hai)
         const parentRow = e.target.closest('div');
         if (!parentRow) return;
 
         const searchInput = parentRow.querySelector('input');
         if (!searchInput) return;
 
-        // Ensure karo ki yeh "Search Song / Track" section ka hi input hai
         const sectionText = parentRow.parentNode?.textContent || "";
         if (!sectionText.includes("Search Song")) {
-            // Agar normal tree fail ho toh backup find lagao
             const allInputs = document.querySelectorAll('input');
             if (allInputs.length > 0) {
-                // Tum hi ho wale screenshot ke input ko extract karna
                 var fallbackInput = Array.from(allInputs).find(i => i.value.trim().length > 0 && !i.value.includes('http'));
             }
         }
@@ -175,14 +172,12 @@ document.addEventListener("click", async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // Purane result area ko dhoondhna ya naya banana
         let resultsDiv = document.getElementById("youtubeSearchResultsArea");
         if (!resultsDiv) {
             resultsDiv = document.createElement("div");
             resultsDiv.id = "youtubeSearchResultsArea";
             resultsDiv.style.cssText = "margin-top: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; width: 100%; text-align: left; padding: 2px;";
             
-            // Input wale container ke theek niche insert karna
             parentRow.parentNode.appendChild(resultsDiv);
         }
 
