@@ -11,7 +11,6 @@ async function searchYouTubeSongs(query) {
     }
 
     try {
-        // Absolute dynamic path configuration to prevent route block or relative network drop
         const currentOrigin = window.location.origin;
         const targetUrl = `${currentOrigin}/api/get-youtube-song?query=${encodeURIComponent(query)}`;
         
@@ -25,7 +24,7 @@ async function searchYouTubeSongs(query) {
         
         const data = await response.json();
 
-        if (response.ok && data.items) {
+        if (response.ok && data.success && data.items) {
             return data.items.map(item => {
                 const videoId = typeof item.id === 'string' ? item.id : item.id.videoId;
                 return {
@@ -35,12 +34,13 @@ async function searchYouTubeSongs(query) {
                 };
             });
         } else {
-            alert(data.message || "Failed to fetch results from backend.");
+            // Direct error details extracted from catch structure
+            alert(data.message || "Failed to parse matching tracks. Check keys.");
             return [];
         }
     } catch (error) {
         console.error("Network Error Details:", error);
-        alert("Network error or route block. Please make sure api/get-youtube-song.js is in your root api/ folder.");
+        alert("Network processing failed on dynamic resolution.");
         return [];
     }
 }
