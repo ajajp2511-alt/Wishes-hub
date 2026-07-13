@@ -1,5 +1,5 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (FIXED MATCH)
+// 🌐 WISHES HUB USER PANEL - DETAIL VIEW ENGINE (COMPLETE FIXED)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -24,11 +24,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!data.success || !data.wishes) throw new Error("Data fetching failed");
 
-        // 🚨 FIX: Flexible aur safe ID verification check logic
+        // 🚨 DEBUG LOGS: Browser Console (F12) me check karne ke liye
+        console.log("👉 URL Param se mili ID:", wishId, "Type:", typeof wishId);
+        if (data.wishes.length > 0) {
+            console.log("👉 DB samples:", data.wishes.slice(0, 3).map(w => ({ _id: w._id, id: w.id, key: w.key })));
+        }
+
+        // 🚨 SUPER FLEXIBLE ID MATCHING LOGIC
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
+            
+            // Sabhi possible ID keys ko nikal kar check karte hain
             const dbId = w._id || w.id || w.key || '';
-            return String(dbId).trim() === String(wishId).trim();
+            
+            // Clean dynamic string strings comparison
+            const cleanDbId = String(dbId).replace(/["']/g, '').trim().toLowerCase();
+            const cleanUrlId = String(wishId).replace(/["']/g, '').trim().toLowerCase();
+            
+            return cleanDbId === cleanUrlId;
         });
 
         if (!currentWish) {
@@ -52,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (mediaBox) {
             let mediaUrl = currentWish.image || currentWish.fileUrl || currentWish.imageUrl || null;
             if (mediaUrl) {
-                // 🛠️ FIX: Telegram URLs ko weserv proxy ke sath update kiya
+                // Telegram URLs proxy logic standard code format
                 if (mediaUrl.includes('api.telegram.org/file/bot')) {
                     mediaUrl = `https://images.weserv.nl/?url=${encodeURIComponent(mediaUrl)}`;
                 }
