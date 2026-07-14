@@ -1,5 +1,5 @@
 // ==========================================================
-// 🚀 ENGINE: PRODUCTION-READY DYNAMIC VOICE RECORDER
+// 🚀 ENGINE: FOOLPROOF DYNAMIC VOICE RECORDER (Patel Studio)
 // ==========================================================
 // Wishes Hub - Patel Studio (2026)
 
@@ -21,26 +21,50 @@
     }
 
     function initVoiceRecorderFeature() {
-        // DOM dynamic query scanning via Text Content mapping
         const allButtons = Array.from(document.querySelectorAll('button'));
         
-        const startBtn = allButtons.find(el => el.textContent.includes('Record Voice'));
-        const stopBtn = allButtons.find(el => el.textContent.includes('Stop'));
+        // 🔍 MULTI-LAYER SCANNING: Buttons dhoondhne ka sabse solid tarika
+        let startBtn = document.getElementById('start-rec-btn');
+        let stopBtn = document.getElementById('stop-rec-btn');
+
+        if (!startBtn) {
+            // Text Content matching (Case-insensitive aur trim ke sath)
+            startBtn = allButtons.find(el => {
+                const text = el.textContent.trim().toLowerCase();
+                return text.includes('record') || text.includes('voice');
+            });
+        }
+
+        if (!stopBtn) {
+            stopBtn = allButtons.find(el => {
+                const text = el.textContent.trim().toLowerCase();
+                return text === 'stop' || text.includes('stop');
+            });
+        }
+
+        // AGAR AB BHI NAHI MILA: Toh unke position/sequence ke aadhar par pakdenge (Red aur Gray buttons)
+        if (!startBtn && allButtons.length >= 3) {
+            // UI design ke mutabik: 1st search on YT (blue), 2nd record (red), 3rd stop (gray)
+            // Hum unke inline styles ya placement se track karte hain
+            startBtn = allButtons.find(el => el.style.backgroundColor?.includes('red') || el.style.background?.includes('red') || el.textContent.includes('Voice'));
+        }
 
         if (!startBtn || !stopBtn) return;
         
-        // Agar listener pehle se mapped hai, toh runtime processing skip karein
+        // Agar listener pehle se mapped hai, toh repeat execution rokein
         if (activeVoiceListener === startBtn) return;
         activeVoiceListener = startBtn;
 
-        // Dynamic preview holder inject karna (Agar pehle se maujood nahi hai)
+        console.log("System: Voice recorder successfully hooked onto elements!", startBtn, stopBtn);
+
+        // Dynamic preview holder container inject karna
         let previewContainer = document.getElementById('voice-preview-container');
         if (!previewContainer) {
             previewContainer = document.createElement('div');
             previewContainer.id = 'voice-preview-container';
             previewContainer.style.cssText = "width: 100%; margin-top: 15px; display: none; transition: all 0.2s ease-in-out;";
             
-            // Buttons ke wrapper container ke thik niche insert karna
+            // Buttons ke immediate parent div ke niche attach karna
             const buttonRow = startBtn.parentElement;
             if (buttonRow) {
                 buttonRow.parentNode.insertBefore(previewContainer, buttonRow.nextSibling);
@@ -70,7 +94,7 @@
                     const audioUrl = URL.createObjectURL(window.currentRecordedAudioBlob);
                     
                     previewContainer.innerHTML = `
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-family: sans-serif;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-family: sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <p style="font-size: 12px; color: #10b981; margin: 0 0 6px 0; font-weight: 600;">✅ Voice Recording Captured!</p>
                             <audio src="${audioUrl}" controls style="width: 100%; height: 40px; display: block;"></audio>
                         </div>
@@ -85,7 +109,7 @@
                 
                 // UI Interactive Updates
                 startBtn.disabled = true;
-                startBtn.textContent = "🎙️ Recording...";
+                startBtn.innerHTML = "🎙️ Recording...";
                 startBtn.style.opacity = "0.6";
                 
                 stopBtn.disabled = false;
@@ -105,7 +129,7 @@
                 
                 // Reset UI Target states
                 startBtn.disabled = false;
-                startBtn.textContent = "Record Voice";
+                startBtn.innerHTML = "Record Voice";
                 startBtn.style.opacity = "1";
                 
                 stopBtn.disabled = true;
