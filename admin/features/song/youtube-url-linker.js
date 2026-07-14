@@ -1,17 +1,20 @@
 // ==========================================================
-// 🚀 ENGINE: SPA-COMPATIBLE YOUTUBE URL INSTANT PREVIEW LINKER
+// 🚀 ENGINE: SPA-COMPATIBLE YOUTUBE URL INSTANT PREVIEW LINKER (SHORTS SUPPORT)
 // ==========================================================
 // Wishes Hub - Patel Studio (2026)
 
 (function() {
     let activeInputListener = null;
 
-    // URL se 11-digit YouTube Video ID nikaalne ka utility function
+    // URL se 11-digit YouTube Video ID nikaalne ka updated utility function (Supports Shorts & Standard)
     function extractYouTubeVideoId(url) {
         if (!url) return null;
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        
+        // RegEx jo standard watch?v=, youtu.be, embed, aur shorts/ formats sabhi ko handle karta hai
+        const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/;
         const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+        
+        return (match && match[1]) ? match[1] : null;
     }
 
     // Dynamic Preview Box ko render aur update karne ka logic
@@ -24,6 +27,7 @@
             const currentIframe = previewContainer.querySelector('iframe');
             if (currentIframe && currentIframe.src.includes(videoId)) return;
 
+            // Preview player template: Patel Studio Custom Responsive Video Strip
             previewContainer.innerHTML = `
                 <iframe 
                     width="100%" 
@@ -62,12 +66,13 @@
         if (activeInputListener === ytUrlInput) return;
         activeInputListener = ytUrlInput;
 
-        // Preview box banana agar pehle se nahi bana hai
+        // Preview box banana agar pehle se nahi bina hai
         let previewContainer = document.getElementById("instantYtUrlPreviewBox");
         if (!previewContainer) {
             previewContainer = document.createElement("div");
             previewContainer.id = "instantYtUrlPreviewBox";
-            previewContainer.style.cssText = "margin-top: 12px; display: none; width: 100%; max-width: 400px; height: 75px; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.06); transition: all 0.2s ease-in-out;";
+            // Design Layout Styling - Jo aapke input box ke thik niche perfectly set baithegi
+            previewContainer.style.cssText = "margin-top: 12px; display: none; width: 100%; max-width: 400px; height: 180px; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.06); transition: all 0.2s ease-in-out;";
             ytUrlInput.parentNode.insertBefore(previewContainer, ytUrlInput.nextSibling);
         }
 
