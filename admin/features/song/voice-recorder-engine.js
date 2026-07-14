@@ -1,14 +1,14 @@
 // ==========================================================
-// 🚀 ENGINE: ULTRA-ROBUST TEXT-NORMALIZED VOICE RECORDER (Patel Studio)
+// 🚀 ENGINE: STRUCTURAL DOM-PROXIMITY VOICE RECORDER (Patel Studio)
 // ==========================================================
 // Wishes Hub - Patel Studio (2026)
 
 (function() {
     let mediaRecorder = null;
     let audioChunks = [];
-    window.currentRecordedAudioBlob = null; // Save binary for form submit
+    window.currentRecordedAudioBlob = null; // Holds recorded binary file
 
-    // YouTube background music auto-pause helper
+    // Background YouTube Music Pause Helper
     function pauseBackgroundMusic() {
         if (typeof window.ytPlayer !== 'undefined' && window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
             window.ytPlayer.pauseVideo();
@@ -18,22 +18,16 @@
         }
     }
 
-    // Clean text helper: Emojis, spaces, aur special characters ko hatakar sirf normal letters bachaata hai
-    function normalizeText(str) {
-        if (!str) return "";
-        return str.replace(/[^a-zA-Z]/g, '').toLowerCase();
-    }
-
-    // Dynamic Preview box generation and injection
-    function getOrCreatePreviewContainer(clickedElement) {
+    // Dynamic Preview Container Generator
+    function getOrCreatePreviewContainer(clickedBtn) {
         let previewContainer = document.getElementById('voice-preview-container');
         if (!previewContainer) {
             previewContainer = document.createElement('div');
             previewContainer.id = 'voice-preview-container';
             previewContainer.style.cssText = "width: 100%; margin-top: 15px; display: none; transition: all 0.2s ease-in-out;";
             
-            // Hum is container ko buttons ke parent wrapper row ke niche insert karenge
-            const buttonRow = clickedElement.parentElement;
+            // Is container ko buttons row ke thik niche inject karein
+            const buttonRow = clickedBtn.parentElement;
             if (buttonRow) {
                 buttonRow.parentNode.insertBefore(previewContainer, buttonRow.nextSibling);
             }
@@ -45,10 +39,8 @@
     async function startRecording(startBtn, stopBtn) {
         audioChunks = [];
         try {
-            // Background audio clash clear karein
             pauseBackgroundMusic();
 
-            // Native browser microphone permissions prompt
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             
@@ -71,13 +63,12 @@
                 `;
                 previewContainer.style.display = "block";
                 
-                // Hardware mic streams stop karein
                 stream.getTracks().forEach(track => track.stop());
             };
 
             mediaRecorder.start();
             
-            // Button states toggle
+            // UI Visual Feedback
             startBtn.disabled = true;
             startBtn.style.opacity = "0.5";
             
@@ -87,8 +78,8 @@
             }
 
         } catch (err) {
-            console.error("Microphone Access Error:", err);
-            alert("🚨 Mic Error: Please allow microphone permissions or make sure you are using an HTTPS secure connection.");
+            console.error("Microphone Integration Failed:", err);
+            alert("🚨 Mic Error: Mic allow kijiye ya settings check kijiye.");
         }
     }
 
@@ -97,7 +88,6 @@
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
             mediaRecorder.stop();
             
-            // Reset state parameters
             startBtn.disabled = false;
             startBtn.style.opacity = "1";
             
@@ -108,51 +98,61 @@
         }
     }
 
-    // ⚡ SUPER DELEGATION LISTENER (Pure page par click track karega)
+    // ⚡ INTERACTIVE CLICK SCANNERS (DOM Structural Mapping)
     document.addEventListener('click', function(e) {
-        // Kisi bhi clicked element ke upar target identify karna (Chahe div ho, span ho, button ya anchor)
-        const targetElement = e.target.closest('button, div, a, span');
-        if (!targetElement) return;
+        // Kisi bhi click target element (div, span, button, a) ko find karna
+        const clickedEl = e.target.closest('button, div, a, span');
+        if (!clickedEl) return;
 
-        // Clean match check karein
-        const cleanedText = normalizeText(targetElement.textContent);
+        // 🔍 STEP 1: YouTube input field dhoondhein
+        const ytInput = Array.from(document.querySelectorAll('input')).find(el => {
+            return el.value.includes('youtube.com') || 
+                   el.placeholder.includes('youtube.com') || 
+                   (el.id && el.id.toLowerCase().includes('youtube')) ||
+                   (el.previousElementSibling && el.previousElementSibling.textContent.includes('YouTube URL'));
+        });
 
-        // 1. Agar user ne Record Voice button click kiya
-        if (cleanedText === "recordvoice" || cleanedText.includes("recordvoice")) {
+        if (!ytInput) return; // Agar form hi screen par nahi hai toh skip karein
+
+        // 🔍 STEP 2: YouTube Input ke parent div ke andar ke saare buttons/divs nikalen
+        // Yeh hume pure button row (Search, Record, Stop) ki access dega
+        const buttonRow = ytInput.parentElement ? ytInput.parentElement.querySelector('div, .buttons-row') || ytInput.nextElementSibling : null;
+        if (!buttonRow) return;
+
+        // Row ke andar ke saare clickable child elements
+        const rowClickables = Array.from(buttonRow.querySelectorAll('button, div, a, span'));
+        if (rowClickables.length < 2) return;
+
+        // 🎨 STEP 3: Background color ya style ke base par components identify karna
+        // Record Button (Red background wala color range)
+        const recordBtn = rowClickables.find(el => {
+            const bg = window.getComputedStyle(el).backgroundColor;
+            // Matches red tones: rgb(239, 68, 68), hex #EF4444, etc.
+            return bg.includes('239') || bg.includes('244') || bg.includes('255') || el.textContent.toLowerCase().includes('record');
+        });
+
+        // Stop Button (Gray/Slate background color range ya Red button ke immediate right wala sibling)
+        const stopBtn = rowClickables.find(el => {
+            const bg = window.getComputedStyle(el).backgroundColor;
+            // Matches slate/gray: rgb(100, 116, 139), etc.
+            return bg.includes('100') || bg.includes('116') || bg.includes('139') || el.textContent.toLowerCase().includes('step') || el.textContent.toLowerCase().includes('stop');
+        });
+
+        if (!recordBtn || !stopBtn) return;
+
+        // ⚡ Click Verification
+        if (clickedEl === recordBtn || recordBtn.contains(e.target)) {
             e.preventDefault();
-            
-            // Usi same div row ke andar "Stop" button dhoondhein
-            const parentRow = targetElement.parentElement;
-            let stopBtn = null;
-            if (parentRow) {
-                stopBtn = Array.from(parentRow.querySelectorAll('button, div, a, span')).find(el => {
-                    return normalizeText(el.textContent) === "stop";
-                });
-            }
-
-            console.log("System: Normalized 'Record Voice' click detected!");
-            startRecording(targetElement, stopBtn);
+            console.log("System: Structural 'Record Voice' click validated!");
+            startRecording(recordBtn, stopBtn);
         }
 
-        // 2. Agar user ne Stop button click kiya
-        if (cleanedText === "stop") {
+        if (clickedEl === stopBtn || stopBtn.contains(e.target)) {
             e.preventDefault();
-            
-            // Usi same div row ke andar "Record Voice" button dhoondhein
-            const parentRow = targetElement.parentElement;
-            let startBtn = null;
-            if (parentRow) {
-                startBtn = Array.from(parentRow.querySelectorAll('button, div, a, span')).find(el => {
-                    return normalizeText(el.textContent) === "recordvoice";
-                });
-            }
-
-            if (startBtn) {
-                console.log("System: Normalized 'Stop' click detected!");
-                stopRecording(startBtn, targetElement);
-            }
+            console.log("System: Structural 'Stop' click validated!");
+            stopRecording(recordBtn, stopBtn);
         }
     });
 
-    console.log("System: Dynamic Text-Normalized Voice Recorder Engine Online.");
+    console.log("System: Proximity-Based Structural Voice Engine Active.");
 })();
