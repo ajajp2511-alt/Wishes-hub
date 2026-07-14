@@ -1,5 +1,5 @@
 // ==========================================================
-// 🚀 ENGINE: SPA-COMPATIBLE VOICE RECORDER (Auto-Pause Conflict Logic)
+// 🚀 ENGINE: PRODUCTION-READY DYNAMIC VOICE RECORDER
 // ==========================================================
 // Wishes Hub - Patel Studio (2026)
 
@@ -7,77 +7,113 @@
     let activeVoiceListener = null;
     let mediaRecorder = null;
     let audioChunks = [];
+    window.currentRecordedAudioBlob = null; // Binary storage for form submissions
 
-    // Helper: YouTube Player ko pause karne ke liye (Agar active ho)
+    // Conflict Control: Recording shuru hone par YouTube player ko rokna
     function pauseBackgroundMusic() {
         if (typeof window.ytPlayer !== 'undefined' && window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
             window.ytPlayer.pauseVideo();
-            console.log("System: Background music paused for recording.");
+            
+            // YouTube trimmer button text ko bhi reset karein agar active ho
+            const playPauseBtn = document.getElementById('mp3PlayPauseBtn');
+            if (playPauseBtn) playPauseBtn.textContent = 'Play';
         }
     }
 
-    function initVoiceRecorder() {
-        // Dynamic DOM lookup: Buttons dhundhna
-        const startBtn = document.getElementById('start-rec-btn');
-        const stopBtn = document.getElementById('stop-rec-btn');
-        const previewContainer = document.getElementById('voice-preview-container');
+    function initVoiceRecorderFeature() {
+        // DOM dynamic query scanning via Text Content mapping
+        const allButtons = Array.from(document.querySelectorAll('button'));
+        
+        const startBtn = allButtons.find(el => el.textContent.includes('Record Voice'));
+        const stopBtn = allButtons.find(el => el.textContent.includes('Stop'));
 
         if (!startBtn || !stopBtn) return;
-        if (activeVoiceListener === startBtn) return; // Pehle se bind hai
+        
+        // Agar listener pehle se mapped hai, toh runtime processing skip karein
+        if (activeVoiceListener === startBtn) return;
         activeVoiceListener = startBtn;
 
-        // Start Recording Event
-        startBtn.onclick = async () => {
+        // Dynamic preview holder inject karna (Agar pehle se maujood nahi hai)
+        let previewContainer = document.getElementById('voice-preview-container');
+        if (!previewContainer) {
+            previewContainer = document.createElement('div');
+            previewContainer.id = 'voice-preview-container';
+            previewContainer.style.cssText = "width: 100%; margin-top: 15px; display: none; transition: all 0.2s ease-in-out;";
+            
+            // Buttons ke wrapper container ke thik niche insert karna
+            const buttonRow = startBtn.parentElement;
+            if (buttonRow) {
+                buttonRow.parentNode.insertBefore(previewContainer, buttonRow.nextSibling);
+            }
+        }
+
+        // 🔴 START RECORDING HANDLER
+        startBtn.onclick = async (e) => {
+            e.preventDefault();
             audioChunks = [];
+            
             try {
-                // Conflict Management: Recording shuru karne se pehle gaana pause
+                // Background clash dynamic checking
                 pauseBackgroundMusic();
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 
-                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
                 mediaRecorder.onstop = () => {
                     window.currentRecordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(window.currentRecordedAudioBlob);
                     
-                    if (previewContainer) {
-                        previewContainer.innerHTML = `
-                            <div style="margin-top:10px; padding:10px; background:#f1f5f9; border-radius:8px;">
-                                <p style="font-size:12px; color:#10b981; margin:0 0 5px 0;">✅ Recording Captured!</p>
-                                <audio src="${audioUrl}" controls style="width:100%; height:40px;"></audio>
-                            </div>
-                        `;
-                    }
+                    previewContainer.innerHTML = `
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-family: sans-serif;">
+                            <p style="font-size: 12px; color: #10b981; margin: 0 0 6px 0; font-weight: 600;">✅ Voice Recording Captured!</p>
+                            <audio src="${audioUrl}" controls style="width: 100%; height: 40px; display: block;"></audio>
+                        </div>
+                    `;
+                    previewContainer.style.display = "block";
+                    
+                    // Release hardware mic components
                     stream.getTracks().forEach(track => track.stop());
                 };
 
                 mediaRecorder.start();
+                
+                // UI Interactive Updates
                 startBtn.disabled = true;
-                startBtn.innerText = "🎙️ Recording...";
-                startBtn.style.background = "#94a3b8";
+                startBtn.textContent = "🎙️ Recording...";
+                startBtn.style.opacity = "0.6";
+                
                 stopBtn.disabled = false;
-                stopBtn.style.background = "#1e293b";
+                stopBtn.style.opacity = "1";
 
             } catch (err) {
-                alert("🚨 Microphome access denied! Settings check karein.");
+                console.error("Microphone integration failed:", err);
+                alert("🚨 Mic Error: Please grant permission or check your device settings.");
             }
         };
 
-        // Stop Recording Event
-        stopBtn.onclick = () => {
+        // ⏹️ STOP RECORDING HANDLER
+        stopBtn.onclick = (e) => {
+            e.preventDefault();
             if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 mediaRecorder.stop();
+                
+                // Reset UI Target states
                 startBtn.disabled = false;
-                startBtn.innerText = "🔴 Start Record";
-                startBtn.style.background = "#ef4444";
+                startBtn.textContent = "Record Voice";
+                startBtn.style.opacity = "1";
+                
                 stopBtn.disabled = true;
-                stopBtn.style.background = "#64748b";
+                stopBtn.style.opacity = "0.6";
             }
         };
     }
 
-    // SPA Wrapper Loop: Har 1 second mein active buttons dhoondhna
-    setInterval(initVoiceRecorder, 1000);
+    // SPA Core Engine Watcher Loop: Runs every 1 second
+    setInterval(initVoiceRecorderFeature, 1000);
 })();
