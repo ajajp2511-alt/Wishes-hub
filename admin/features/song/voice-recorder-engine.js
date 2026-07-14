@@ -1,84 +1,83 @@
 // ==========================================================
-// 🚀 MODULE: VOICE RECORDER ENGINE (Media API Connector)
+// 🚀 ENGINE: SPA-COMPATIBLE VOICE RECORDER (Auto-Pause Conflict Logic)
 // ==========================================================
+// Wishes Hub - Patel Studio (2026)
 
-window.currentRecordedAudioBlob = null; // Holds binary audio safely globally
-
-function initVoiceRecorderFeature() {
-    const startBtn = document.getElementById('start-rec-btn');
-    const stopBtn = document.getElementById('stop-rec-btn');
-    const previewContainer = document.getElementById('voice-preview-container');
-
-    if (!startBtn || !stopBtn) return;
-
+(function() {
+    let activeVoiceListener = null;
     let mediaRecorder = null;
     let audioChunks = [];
 
-    // 🔴 1. START RECORDING LOGIC
-    startBtn.addEventListener('click', async () => {
-        audioChunks = []; // Clear previous garbage session chunks
-        
-        try {
-            // Request native microphone access permission
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            mediaRecorder = new MediaRecorder(stream);
-            
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunks.push(event.data);
-                }
-            };
+    // Helper: YouTube Player ko pause karne ke liye (Agar active ho)
+    function pauseBackgroundMusic() {
+        if (typeof window.ytPlayer !== 'undefined' && window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
+            window.ytPlayer.pauseVideo();
+            console.log("System: Background music paused for recording.");
+        }
+    }
 
-            mediaRecorder.onstop = () => {
-                // Compile raw audio chunks into standard WAV/WebM blob structure
-                window.currentRecordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+    function initVoiceRecorder() {
+        // Dynamic DOM lookup: Buttons dhundhna
+        const startBtn = document.getElementById('start-rec-btn');
+        const stopBtn = document.getElementById('stop-rec-btn');
+        const previewContainer = document.getElementById('voice-preview-container');
+
+        if (!startBtn || !stopBtn) return;
+        if (activeVoiceListener === startBtn) return; // Pehle se bind hai
+        activeVoiceListener = startBtn;
+
+        // Start Recording Event
+        startBtn.onclick = async () => {
+            audioChunks = [];
+            try {
+                // Conflict Management: Recording shuru karne se pehle gaana pause
+                pauseBackgroundMusic();
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
                 
-                // Render instant audio playback control inside panel box
-                const audioUrl = URL.createObjectURL(window.currentRecordedAudioBlob);
-                previewContainer.innerHTML = `
-                    <p style="font-size:12px; color:#10b981; margin: 4px 0; font-weight:600;">✅ Recording Captured successfully!</p>
-                    <audio src="${audioUrl}" controls style="width:100%; height:40px; margin-top:5px;"></audio>
-                `;
+                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                
+                mediaRecorder.onstop = () => {
+                    window.currentRecordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(window.currentRecordedAudioBlob);
+                    
+                    if (previewContainer) {
+                        previewContainer.innerHTML = `
+                            <div style="margin-top:10px; padding:10px; background:#f1f5f9; border-radius:8px;">
+                                <p style="font-size:12px; color:#10b981; margin:0 0 5px 0;">✅ Recording Captured!</p>
+                                <audio src="${audioUrl}" controls style="width:100%; height:40px;"></audio>
+                            </div>
+                        `;
+                    }
+                    stream.getTracks().forEach(track => track.stop());
+                };
 
-                // Stop hardware mic stream track components properly
-                stream.getTracks().forEach(track => track.stop());
-            };
+                mediaRecorder.start();
+                startBtn.disabled = true;
+                startBtn.innerText = "🎙️ Recording...";
+                startBtn.style.background = "#94a3b8";
+                stopBtn.disabled = false;
+                stopBtn.style.background = "#1e293b";
 
-            // Begin dynamic pipeline streaming
-            mediaRecorder.start();
-            
-            // Toggle controller UI interactive statuses
-            startBtn.disabled = true;
-            startBtn.innerText = "🎙️ Recording...";
-            startBtn.style.background = "#94a3b8";
-            
-            stopBtn.disabled = false;
-            stopBtn.style.background = "#1e293b";
+            } catch (err) {
+                alert("🚨 Microphome access denied! Settings check karein.");
+            }
+        };
 
-        } catch (err) {
-            console.error("Mic pipeline initialization failed:", err);
-            alert("🚨 Error: Mic permission denied or system connection failed.");
-        }
-    });
+        // Stop Recording Event
+        stopBtn.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                startBtn.disabled = false;
+                startBtn.innerText = "🔴 Start Record";
+                startBtn.style.background = "#ef4444";
+                stopBtn.disabled = true;
+                stopBtn.style.background = "#64748b";
+            }
+        };
+    }
 
-    // ⏹️ 2. STOP RECORDING LOGIC
-    stopBtn.addEventListener('click', () => {
-        if (mediaRecorder && mediaRecorder.state !== "inactive") {
-            mediaRecorder.stop();
-            
-            // Reset state interactive UI targets
-            startBtn.disabled = false;
-            startBtn.innerText = "🔴 Start Record";
-            startBtn.style.background = "#ef4444";
-            
-            stopBtn.disabled = true;
-            stopBtn.style.background = "#64748b";
-        }
-    });
-}
-
-// 🔌 VOICE ENGINE INITIALIZATION TRIGGER
-document.addEventListener("DOMContentLoaded", () => {
-    initVoiceRecorderFeature();
-});
+    // SPA Wrapper Loop: Har 1 second mein active buttons dhoondhna
+    setInterval(initVoiceRecorder, 1000);
+})();
