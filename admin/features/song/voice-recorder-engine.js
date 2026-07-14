@@ -1,14 +1,14 @@
 // ==========================================================
-// 🚀 ENGINE: ULTRA-ROBUST EVENT-DELEGATED VOICE RECORDER
+// 🚀 ENGINE: ULTRA-ROBUST TEXT-NORMALIZED VOICE RECORDER (Patel Studio)
 // ==========================================================
 // Wishes Hub - Patel Studio (2026)
 
 (function() {
     let mediaRecorder = null;
     let audioChunks = [];
-    window.currentRecordedAudioBlob = null; // Binary storage for form submissions
+    window.currentRecordedAudioBlob = null; // Save binary for form submit
 
-    // Helper: YouTube Player ko pause karne ke liye (Agar active ho)
+    // YouTube background music auto-pause helper
     function pauseBackgroundMusic() {
         if (typeof window.ytPlayer !== 'undefined' && window.ytPlayer && typeof window.ytPlayer.pauseVideo === 'function') {
             window.ytPlayer.pauseVideo();
@@ -18,16 +18,22 @@
         }
     }
 
-    // Dynamic Preview Box generator
-    function getOrCreatePreviewContainer(clickedButton) {
+    // Clean text helper: Emojis, spaces, aur special characters ko hatakar sirf normal letters bachaata hai
+    function normalizeText(str) {
+        if (!str) return "";
+        return str.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    }
+
+    // Dynamic Preview box generation and injection
+    function getOrCreatePreviewContainer(clickedElement) {
         let previewContainer = document.getElementById('voice-preview-container');
         if (!previewContainer) {
             previewContainer = document.createElement('div');
             previewContainer.id = 'voice-preview-container';
             previewContainer.style.cssText = "width: 100%; margin-top: 15px; display: none; transition: all 0.2s ease-in-out;";
             
-            // Buttons ke row waale parent container ke thik niche inject karein
-            const buttonRow = clickedButton.parentElement;
+            // Hum is container ko buttons ke parent wrapper row ke niche insert karenge
+            const buttonRow = clickedElement.parentElement;
             if (buttonRow) {
                 buttonRow.parentNode.insertBefore(previewContainer, buttonRow.nextSibling);
             }
@@ -39,10 +45,10 @@
     async function startRecording(startBtn, stopBtn) {
         audioChunks = [];
         try {
-            // Audio conflict clear karein
+            // Background audio clash clear karein
             pauseBackgroundMusic();
 
-            // Microphone permission request
+            // Native browser microphone permissions prompt
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             
@@ -65,17 +71,15 @@
                 `;
                 previewContainer.style.display = "block";
                 
-                // Mic hardware off karein
+                // Hardware mic streams stop karein
                 stream.getTracks().forEach(track => track.stop());
             };
 
             mediaRecorder.start();
             
-            // UI Status Update
+            // Button states toggle
             startBtn.disabled = true;
-            startBtn.dataset.originalText = startBtn.innerHTML; // Purana state save karein
-            startBtn.innerHTML = "🎙️ Recording...";
-            startBtn.style.opacity = "0.6";
+            startBtn.style.opacity = "0.5";
             
             if (stopBtn) {
                 stopBtn.disabled = false;
@@ -84,7 +88,7 @@
 
         } catch (err) {
             console.error("Microphone Access Error:", err);
-            alert("🚨 Mic Error: Please check device permissions or use HTTPS secure connection.");
+            alert("🚨 Mic Error: Please allow microphone permissions or make sure you are using an HTTPS secure connection.");
         }
     }
 
@@ -93,57 +97,62 @@
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
             mediaRecorder.stop();
             
-            // Reset UI State
+            // Reset state parameters
             startBtn.disabled = false;
-            startBtn.innerHTML = startBtn.dataset.originalText || "🔴 Record Voice";
             startBtn.style.opacity = "1";
             
             if (stopBtn) {
                 stopBtn.disabled = true;
-                stopBtn.style.opacity = "0.6";
+                stopBtn.style.opacity = "0.5";
             }
         }
     }
 
-    // ⚡ EVENT DELEGATION: Screen par kahi bhi click ho, hum target dhoond lenge
+    // ⚡ SUPER DELEGATION LISTENER (Pure page par click track karega)
     document.addEventListener('click', function(e) {
-        // Sabse pehle check karein ki click kisi button par hua hai ya button ke andar ke text/icon par
-        const button = e.target.closest('button');
-        if (!button) return;
+        // Kisi bhi clicked element ke upar target identify karna (Chahe div ho, span ho, button ya anchor)
+        const targetElement = e.target.closest('button, div, a, span');
+        if (!targetElement) return;
 
-        const buttonText = button.textContent.trim().toLowerCase();
+        // Clean match check karein
+        const cleanedText = normalizeText(targetElement.textContent);
 
-        // 1. Agar RECORD button click hua hai
-        if (buttonText.includes('record') || buttonText.includes('voice')) {
+        // 1. Agar user ne Record Voice button click kiya
+        if (cleanedText === "recordvoice" || cleanedText.includes("recordvoice")) {
             e.preventDefault();
             
-            // Stop button ko dhoondhein jo isi row mein hai
-            const parentRow = button.parentElement;
-            const stopBtn = parentRow ? Array.from(parentRow.querySelectorAll('button')).find(el => {
-                return el.textContent.trim().toLowerCase().includes('stop');
-            }) : null;
+            // Usi same div row ke andar "Stop" button dhoondhein
+            const parentRow = targetElement.parentElement;
+            let stopBtn = null;
+            if (parentRow) {
+                stopBtn = Array.from(parentRow.querySelectorAll('button, div, a, span')).find(el => {
+                    return normalizeText(el.textContent) === "stop";
+                });
+            }
 
-            console.log("System: Record Voice trigger detected!");
-            startRecording(button, stopBtn);
+            console.log("System: Normalized 'Record Voice' click detected!");
+            startRecording(targetElement, stopBtn);
         }
 
-        // 2. Agar STOP button click hua hai
-        if (buttonText === 'stop' || buttonText.includes('stop')) {
+        // 2. Agar user ne Stop button click kiya
+        if (cleanedText === "stop") {
             e.preventDefault();
             
-            // Start button ko dhoondhein jo isi row mein hai
-            const parentRow = button.parentElement;
-            const startBtn = parentRow ? Array.from(parentRow.querySelectorAll('button')).find(el => {
-                const txt = el.textContent.trim().toLowerCase();
-                return txt.includes('record') || txt.includes('voice');
-            }) : null;
+            // Usi same div row ke andar "Record Voice" button dhoondhein
+            const parentRow = targetElement.parentElement;
+            let startBtn = null;
+            if (parentRow) {
+                startBtn = Array.from(parentRow.querySelectorAll('button, div, a, span')).find(el => {
+                    return normalizeText(el.textContent) === "recordvoice";
+                });
+            }
 
             if (startBtn) {
-                console.log("System: Stop Recording trigger detected!");
-                stopRecording(startBtn, button);
+                console.log("System: Normalized 'Stop' click detected!");
+                stopRecording(startBtn, targetElement);
             }
         }
     });
 
-    console.log("System: Ultra-Robust Voice Recorder Engine Initialized.");
+    console.log("System: Dynamic Text-Normalized Voice Recorder Engine Online.");
 })();
