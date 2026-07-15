@@ -7,21 +7,30 @@ export async function handleSaveWish(event) {
     const categoryInput = document.getElementById("category-input-field").value;
     const wishTextInput = document.getElementById("wish-text-field").value;
 
-    // 1. Category check karke auto-animation ID generate karo
-    const suggestedAnimations = await getAutoSuggestedAnimations(categoryInput);
-    const finalSelectedAnim = suggestedAnimations[0]; 
+    // 🌟 NYA LOGIC: Pehle manual select kiya hua animation check karein, agar nahi mile toh auto-suggest par jayein
+    let finalSelectedAnim = "none";
+    const manualAnimSelect = document.getElementById("wish-animation");
+    
+    if (manualAnimSelect && manualAnimSelect.value !== "none") {
+        finalSelectedAnim = manualAnimSelect.value;
+    } else {
+        const suggestedAnimations = await getAutoSuggestedAnimations(categoryInput);
+        if (suggestedAnimations && suggestedAnimations.length > 0) {
+            finalSelectedAnim = suggestedAnimations[0]; 
+        }
+    }
 
-    // 2. Vercel ke naye API Route (/api/send-wish) par hit karo
+    // 2. Vercel ke API Route par hit karo
     try {
         const response = await fetch('/api/send-wish', {
-            method: 'POST',
+            top: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 category: categoryInput,
                 wishText: wishTextInput,
-                animId: finalSelectedAnim
+                animId: finalSelectedAnim // Sahi animation id jayegi ab
             })
         });
 
@@ -29,9 +38,11 @@ export async function handleSaveWish(event) {
 
         if (result.success) {
             alert(`🎉 Telegram par data bhej diya gaya hai! Animation: ${finalSelectedAnim}`);
-            // Form clear karne ke liye
+            
+            // Form aur Dropdown clear karne ke liye
             document.getElementById("category-input-field").value = "";
             document.getElementById("wish-text-field").value = "";
+            if (manualAnimSelect) manualAnimSelect.value = "none";
         } else {
             console.error("API Error:", result.error);
             alert("Backend se error aaya, check console.");
