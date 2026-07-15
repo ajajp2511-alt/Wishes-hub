@@ -215,7 +215,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
 
-        // 🔥 ATTACH DIRECT HOOK INJECTOR
+        // 🎨 HOOK 1: Form structure render hone ke baad Dropdown Inject karna
+        if (window.AnimationManager) {
+            window.AnimationManager.initSelector();
+        }
+
+        // Safe check bindings for existing features
         const submissionBtn = document.getElementById('submit-wish-btn');
         if (submissionBtn) {
             submissionBtn.addEventListener('click', async () => {
@@ -259,12 +264,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             statusBox.innerText = "📡 Routing package stream to server pipeline...";
 
-            const payload = {
+            // Initial Basic Payload Packet Setup
+            let payload = {
                 title: textVal,
                 category: categoryVal,
                 sub_category: document.getElementById('sub-category').value || '',
                 image: base64String
             };
+
+            // 🎨 HOOK 2: Form submit hone se pehle payload me animation attach karna
+            if (window.AnimationManager) {
+                payload = window.AnimationManager.preparePayload(payload);
+            }
 
             const response = await fetch('/api/add-wish-to-db', {
                 method: 'POST',
@@ -283,6 +294,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').value = "";
                 if(fileInput) fileInput.value = "";
+
+                // 🎨 HOOK 3: Successful insertion ke baad animation manager states ko default par reset karna
+                if (window.AnimationManager) {
+                    window.AnimationManager.reset();
+                }
             } else {
                 throw new Error(result.message || "Pipeline rejected packet entry.");
             }
