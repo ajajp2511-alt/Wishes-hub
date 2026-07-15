@@ -1,20 +1,22 @@
 // ==========================================================
-// 🎨 WISHES HUB - ANIMATION SELECTOR MODULE
+// 🎨 WISHES HUB - ANIMATION SELECTOR MODULE (FIXED)
 // Patel Studio - 2026
 // ==========================================================
 
-const AnimationSelector = {
-    // 1. Form ke andar Dropdown render karne ke liye HTML template
+export const AnimationSelector = {
+    // 1. Form ke andar Dropdown render karne ke liye HTML template (Fixed Colors for Light/Dark Theme Compatibility)
     render: function() {
         return `
             <div class="form-group" style="margin-top: 20px; margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Select Animation</label>
-                <select id="wish-animation" style="width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; background: #fff; box-sizing: border-box; outline: none; color: var(--text-main);">
-                    <option value="none">No Animation</option>
-                    <option value="confetti">Confetti 🎉</option>
-                    <option value="hearts">Hearts ❤️</option>
-                    <option value="snow">Snowfall ❄️</option>
-                    <option value="fireworks">Fireworks 🎆</option>
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #64748b; font-family: inherit;">
+                    Select Animation
+                </label>
+                <select id="wish-animation" style="width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; background: #ffffff; color: #1e293b !important; box-sizing: border-box; outline: none; -webkit-appearance: select; cursor: pointer; font-family: inherit;">
+                    <option value="none" style="color: #1e293b; background-color: #ffffff;">No Animation</option>
+                    <option value="confetti" style="color: #1e293b; background-color: #ffffff;">Confetti 🎉</option>
+                    <option value="hearts" style="color: #1e293b; background-color: #ffffff;">Hearts ❤️</option>
+                    <option value="snow" style="color: #1e293b; background-color: #ffffff;">Snowfall ❄️</option>
+                    <option value="fireworks" style="color: #1e293b; background-color: #ffffff;">Fireworks 🎆</option>
                 </select>
             </div>
         `;
@@ -35,5 +37,5 @@ const AnimationSelector = {
     }
 };
 
-// Global level par register kiya taaki kisi bhi file se access ho sake
+// Global level aur module export dono setups ko handle kiya taaki dashboard-init aur animation-manager dono ko bina error ke data mile
 window.AnimationSelector = AnimationSelector;
