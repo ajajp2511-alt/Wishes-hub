@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
-        // 🔥 HTML FIX: Added proper form framework inside the template injection
         const secureComponentHtml = `
             <div class="feature-card">
                 <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Multi-Media Wish</h2>
@@ -215,9 +214,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
 
-        // 🎨 HOOK 1: Form structure render hone ke baad Dropdown Inject karna
-        if (window.AnimationManager) {
+        // 🎨 HOOK 1 (FIXED): Timing interval check lagaya taaki async modules safely render ho sakein
+        if (window.AnimationManager && typeof window.AnimationManager.initSelector === 'function') {
             window.AnimationManager.initSelector();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.AnimationManager && typeof window.AnimationManager.initSelector === 'function') {
+                    window.AnimationManager.initSelector();
+                    clearInterval(checkInterval);
+                }
+            }, 100);
+            
+            setTimeout(() => clearInterval(checkInterval), 3000);
         }
 
         // Safe check bindings for existing features
