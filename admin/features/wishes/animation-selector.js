@@ -1,9 +1,9 @@
 // ==========================================================
-// 🎨 WISHES HUB - ANIMATION SELECTOR MODULE (FIXED)
+// 🎨 WISHES HUB - ANIMATION SELECTOR MODULE (RESOLVED)
 // Patel Studio - 2026
 // ==========================================================
 
-export const AnimationSelector = {
+const AnimationSelector = {
     // 1. Form ke andar Dropdown render karne ke liye HTML template (Fixed Colors for Light/Dark Theme Compatibility)
     render: function() {
         return `
@@ -11,12 +11,12 @@ export const AnimationSelector = {
                 <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #64748b; font-family: inherit;">
                     Select Animation
                 </label>
-                <select id="wish-animation" style="width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; background: #ffffff; color: #1e293b !important; box-sizing: border-box; outline: none; -webkit-appearance: select; cursor: pointer; font-family: inherit;">
-                    <option value="none" style="color: #1e293b; background-color: #ffffff;">No Animation</option>
-                    <option value="confetti" style="color: #1e293b; background-color: #ffffff;">Confetti 🎉</option>
-                    <option value="hearts" style="color: #1e293b; background-color: #ffffff;">Hearts ❤️</option>
-                    <option value="snow" style="color: #1e293b; background-color: #ffffff;">Snowfall ❄️</option>
-                    <option value="fireworks" style="color: #1e293b; background-color: #ffffff;">Fireworks 🎆</option>
+                <select id="wish-animation" style="width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; background: #ffffff !important; color: #1e293b !important; box-sizing: border-box; outline: none; -webkit-appearance: select; cursor: pointer; font-family: inherit;">
+                    <option value="none" style="color: #1e293b !important; background-color: #ffffff !important;">No Animation</option>
+                    <option value="confetti" style="color: #1e293b !important; background-color: #ffffff !important;">Confetti 🎉</option>
+                    <option value="hearts" style="color: #1e293b !important; background-color: #ffffff !important;">Hearts ❤️</option>
+                    <option value="snow" style="color: #1e293b !important; background-color: #ffffff !important;">Snowfall ❄️</option>
+                    <option value="fireworks" style="color: #1e293b !important; background-color: #ffffff !important;">Fireworks 🎆</option>
                 </select>
             </div>
         `;
@@ -37,5 +37,7 @@ export const AnimationSelector = {
     }
 };
 
-// Global level aur module export dono setups ko handle kiya taaki dashboard-init aur animation-manager dono ko bina error ke data mile
+// Global aur Module scopes dono ko simultaneously register karein taaki timing error zero ho jaye
 window.AnimationSelector = AnimationSelector;
+export { AnimationSelector };
+export default AnimationSelector;
