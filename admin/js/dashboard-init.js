@@ -197,6 +197,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
+                    <!-- 🔥 FIXED: Added Target Placeholder Container For Animation Selector Dropdown Injection -->
+                    <div id="animation-selector-container"></div>
+
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
                     
                     <!-- Status Display Indicator -->
