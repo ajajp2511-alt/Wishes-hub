@@ -1,6 +1,28 @@
 // admin/features/wishes/animation-preview.js
-import { getAutoSuggestedAnimations } from './auto-animation-engine.js';
+// Patel Studio - 2026
+
+import { globalKeywordsConfig, ANIMATION_MASTER_LIST } from './keywords-config.js';
 import { triggerAnimation } from '../../js/live-animations.js';
+
+// Automatic keyword suggestion engine logic integrated directly to avoid separate path latency
+async function getAutoSuggestedAnimations(categoryName) {
+    let textToScan = categoryName.toLowerCase();
+    
+    const isNonEnglish = /[^\x00-\x7F]+/.test(textToScan);
+    if (isNonEnglish) {
+        // Fallback placeholder logic for translator engine
+        textToScan = textToScan.toLowerCase();
+    }
+    
+    for (const theme in globalKeywordsConfig) {
+        const matchFound = globalKeywordsConfig[theme].keywords.some(keyword => textToScan.includes(keyword));
+        if (matchFound) {
+            return globalKeywordsConfig[theme].animations;
+        }
+    }
+    
+    return ["anim_confetti_blast", "anim_lofi_rain", "anim_hearts_vortex", "anim_neon_fireworks"];
+}
 
 // Dynamically updates radio grids based on smart engine recommendations
 export async function updateAnimationSuggestions(categoryName) {
@@ -51,8 +73,14 @@ export const AnimationPreviewLinker = {
         
         // Synchronize static dropdown UI selector value if available
         const selectEl = document.getElementById('wish-animation');
-        if (selectEl && selectEl.querySelector(`option[value="${animId}"]`)) {
-            selectEl.value = animId;
+        if (selectEl) {
+            // Check if option exists in dynamic dropdown setup before setting value
+            const targetOption = selectEl.querySelector(`option[value="${animId}"]`);
+            if (targetOption) {
+                selectEl.value = animId;
+            } else {
+                console.warn(`⚠️ [Preview Linker]: Option value "${animId}" not present in active select element.`);
+            }
         }
     },
     clearState: function() {
@@ -63,3 +91,4 @@ export const AnimationPreviewLinker = {
 };
 
 window.AnimationPreviewLinker = AnimationPreviewLinker;
+export default AnimationPreviewLinker;
