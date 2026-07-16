@@ -67,6 +67,35 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
+        // ==========================================================
+        // 🚀 LIVE ENGINE INTEGRATION (ANIMATION PLAYER)
+        // ==========================================================
+        let selectedAnimation = currentWish.animation || currentWish.animationId || null;
+
+        // Fallback: Agar database me direct key store nahi hai, toh automatic text scan lagaayein
+        if (!selectedAnimation || selectedAnimation === "none") {
+            const scanTarget = (mainText + " " + mainCategory).toLowerCase();
+            
+            if (scanTarget.includes("birthday") || scanTarget.includes("janamdin") || scanTarget.includes("cake")) {
+                selectedAnimation = "anim_confetti_blast";
+            } else if (scanTarget.includes("love") || scanTarget.includes("anniversary") || scanTarget.includes("shadi")) {
+                selectedAnimation = "anim_hearts_vortex";
+            } else if (scanTarget.includes("diwali") || scanTarget.includes("new year") || scanTarget.includes("mubarak")) {
+                selectedAnimation = "anim_neon_fireworks";
+            } else {
+                selectedAnimation = "none";
+            }
+        }
+
+        // Global engine handle ko safe trigger karein
+        if (typeof window.triggerAnimation === "function") {
+            console.log(`🎬 [Wish View]: Triggering animation effect -> ${selectedAnimation}`);
+            window.triggerAnimation(selectedAnimation);
+        } else {
+            console.warn("⚠️ [Wish View]: window.triggerAnimation function not loaded yet.");
+        }
+        // ==========================================================
+
         // Action Buttons Setup
         if (copyBtn) {
             copyBtn.onclick = () => {
