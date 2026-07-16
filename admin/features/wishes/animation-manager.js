@@ -17,7 +17,7 @@ async function translateToEnglish(text) {
     }
 }
 
-// Automatic keyword suggestion engine logic
+// Automatic keyword suggestion engine logic - NOW RETURNING DYNAMIC BACKEND IDs
 export async function getAutoSuggestedAnimations(categoryName) {
     let textToScan = categoryName.toLowerCase();
     
@@ -30,11 +30,12 @@ export async function getAutoSuggestedAnimations(categoryName) {
     for (const theme in globalKeywordsConfig) {
         const matchFound = globalKeywordsConfig[theme].keywords.some(keyword => textToScan.includes(keyword));
         if (matchFound) {
-            return globalKeywordsConfig[theme].animations;
+            return globalKeywordsConfig[theme].animations; // Returns direct backend keys (e.g., ["anim_confetti_blast", ...])
         }
     }
     
-    return ["confetti", "snow", "hearts", "fireworks"];
+    // Dynamic structural default fallback array matching the master setup keys
+    return ["anim_confetti_blast", "anim_lofi_rain", "anim_hearts_vortex", "anim_neon_fireworks"];
 }
 
 // Core Manager Object
@@ -67,7 +68,7 @@ const AnimationManager = {
         }
     },
 
-    // 2. Dropdown changes aur Auto-Suggest systems bind karna
+    // 2. Dropdown changes aur Auto-Suggest systems bind karna (FIXED STRIPPED BRIDGES)
     bindEvents: function() {
         const selectEl = document.getElementById('wish-animation');
         const subCatSelect = document.getElementById('sub-category');
@@ -89,14 +90,9 @@ const AnimationManager = {
                 const suggestedAnimations = await getAutoSuggestedAnimations(selectedSubCat);
 
                 if (suggestedAnimations && suggestedAnimations.length > 0) {
-                    let bestMatch = 'none';
-                    const matchText = suggestedAnimations[0].toLowerCase();
+                    // JADU FIX: Hardcoded comparisons aur if/else chains ko hata kar dynamic key pass kar di
+                    const bestMatch = suggestedAnimations[0]; 
                     
-                    if (matchText.includes('confetti')) bestMatch = 'confetti';
-                    else if (matchText.includes('heart')) bestMatch = 'hearts';
-                    else if (matchText.includes('snow')) bestMatch = 'snow';
-                    else if (matchText.includes('firework')) bestMatch = 'fireworks';
-
                     if (selectEl) {
                         selectEl.value = bestMatch;
                         console.log(`✨ [Animation Manager]: Auto-Selected -> ${bestMatch}`);
