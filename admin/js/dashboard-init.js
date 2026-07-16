@@ -3,6 +3,8 @@
 // Patel Studio - 2026
 // ==========================================================
 
+import { AnimationSelector } from './features/wishes/animation-selector.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
     
     // 1. SESSION Access Check
@@ -146,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
+        // JADU FIX: Yahan hardcoded static select dropdown ko dynamic selector component se replace kar diya hai
         const secureComponentHtml = `
             <div class="feature-card">
                 <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Multi-Media Wish</h2>
@@ -197,18 +200,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <!-- Direct Dropdown Render Setup -->
-                    <div class="form-group" style="margin-top: 15px; margin-bottom: 15px; width: 100%; display: block !important;">
-                        <label style="display: block !important; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); text-align: left;">
-                            Select Animation Effect
-                        </label>
-                        <select id="wish-animation" name="animation" style="display: block !important; visibility: visible !important; width: 100% !important; height: 44px !important; padding: 10px 12px !important; border: 1px solid var(--border) !important; border-radius: 6px !important; font-size: 15px !important; background-color: #ffffff !important; color: #000000 !important; opacity: 1 !important; box-sizing: border-box !important; cursor: pointer; -webkit-appearance: revert !important; appearance: revert !important;">
-                            <option value="none">No Animation</option>
-                            <option value="confetti">Confetti 🎉</option>
-                            <option value="hearts">Hearts ❤️</option>
-                            <option value="snow">Snowfall ❄️</option>
-                            <option value="fireworks">Fireworks 🎆</option>
-                        </select>
+                    <!-- Direct Dropdown Render Setup Placeholder -->
+                    <div id="animation-selector-container">
+                        ${AnimationSelector ? AnimationSelector.render() : ''}
                     </div>
 
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;"></div>
@@ -226,6 +220,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
+
+        // Dynamically bind state mapping on the freshly rendered component
+        if (window.AnimationManager && typeof window.AnimationManager.bindEvents === 'function') {
+            window.AnimationManager.bindEvents();
+        }
 
         const inlineSelect = document.getElementById('wish-animation');
         if (inlineSelect) {
