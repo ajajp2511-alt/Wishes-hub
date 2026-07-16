@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULLY COMPATIBLE)
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (PRODUCTION)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
-        // Aapki independent file se global function ko call karenge
+        // Clean global check (No syntax load errors will occur now)
         const animationSelectorHtml = (window.AnimationSelector && typeof window.AnimationSelector.render === 'function')
             ? window.AnimationSelector.render()
-            : `<div class="form-group" style="margin-top: 15px;">
-                   <label style="color: #ff4a4a;">⚠️ Animation selector failed to load dynamically</label>
+            : `<div class="form-group" style="margin-top: 15px; padding: 10px; border: 1px dashed red; border-radius: 6px;">
+                   <label style="color: #ff4a4a; font-weight: bold;">⚠️ Animation selector failed to load dynamically</label>
                </div>`;
 
         const secureComponentHtml = `
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <!-- Pure Placement Point (No wrapper duplication) -->
+                    <!-- Direct dynamic selector injection point -->
                     <div id="animation-selector-placeholder">
                         ${animationSelectorHtml}
                     </div>
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const textVal = document.getElementById('wish-text').value.trim();
         const categoryVal = document.getElementById('main-category').value;
         
-        // Aapki AnimationSelector file se seedhe clean value read karenge
+        // Expose clean value directly from global component
         const animationVal = (window.AnimationSelector && typeof window.AnimationSelector.getValue === 'function')
             ? window.AnimationSelector.getValue()
             : 'none';
@@ -309,13 +309,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statusBox.innerText = "✅ Success! Data seamlessly pushed onto the engine database.";
                 statusBox.style.color = "#00ff88";
                 
-                // Form reset securely using your file's reset function!
+                // Form reset securely using animation selector custom logic
                 document.getElementById('wish-text').value = "";
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').value = "";
                 if (fileInput) fileInput.value = "";
 
-                // Reset using your specific logic
                 if (window.AnimationSelector && typeof window.AnimationSelector.reset === 'function') {
                     window.AnimationSelector.reset();
                 }
