@@ -1,7 +1,6 @@
 // admin/js/live-animations.js
 // Patel Studio - 2026
 
-// JADU FIX: Ek level peeche (../) ja kar features/modules tak accurate mapping!
 import { 
     Confetti, 
     Heart, 
@@ -13,6 +12,28 @@ import {
     BubblePop, 
     AnimePowerUp 
 } from '../features/modules/index.js';
+
+// ==========================================================
+// 🚀 DYNAMIC ANIMATION REGISTRY (Yahan naye animations add honge)
+// ==========================================================
+export const SUPPORTED_ANIMATIONS = [
+    { id: "anim_hearts_vortex", name: "Hearts ❤️" },
+    { id: "anim_infinite_heart_vortex", name: "Infinite Heart Vortex 💖" },
+    { id: "anim_confetti_blast", name: "Confetti 🎉" },
+    { id: "anim_neon_fireworks", name: "Fireworks 🎆" },
+    { id: "anim_magical_firework_fountain", name: "Firework Fountain 🎇" },
+    { id: "anim_golden_glitter_shower", name: "Golden Glitter Shower ✨" },
+    { id: "anim_lofi_rain", name: "Snowfall/Rain ❄️🌧️" },
+    { id: "anim_cyberpunk_glitch", name: "Cyberpunk Glitch 👾" },
+    { id: "anim_starry_constellation", name: "Starry Constellation 🌌" },
+    { id: "anim_anime_power_up", name: "Anime Power Up 🔥" },
+    { id: "anim_thug_life", name: "Thug Life 😎" },
+    { id: "anim_bubble_wrap_pop", name: "Bubble Wrap Pop 🫧" }
+    // 💡 Future mein jab naya animation module ready ho, bas uski ID aur Name yahan ek line me add kar dena!
+];
+
+// Pure global assignment to make it accessible to non-module files like selector
+window.SUPPORTED_ANIMATIONS = SUPPORTED_ANIMATIONS;
 
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
@@ -36,9 +57,8 @@ function animate() {
     
     for (let i = 0; i < particles.length; i++) {
         particles[i].update();
-        particles[i].draw(ctx); // Naye modules ko render karne ke liye ctx provide kiya
+        particles[i].draw(ctx); 
         
-        // Faded ya boundary ke baahar gaye particles ko clean up karo
         if (particles[i].y > canvas.height || (particles[i].alpha !== undefined && particles[i].alpha <= 0)) {
             particles.splice(i, 1);
             i--;
@@ -57,7 +77,7 @@ function resetEngine() {
     }
 }
 
-// MAIN TRIGGER FUNCTION: Pure 9 new modular animations ko handle karega
+// MAIN TRIGGER FUNCTION
 export function triggerAnimation(animId) {
     resetEngine();
     
@@ -114,6 +134,5 @@ export function triggerAnimation(animId) {
     animate();
 }
 
-// Global hook to eliminate engine scope delay issues
 window.triggerAnimation = triggerAnimation;
 window.resetEngine = resetEngine;
