@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULLY FIXED - NO MODULE BROKEN)
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULL PRODUCTION)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -146,8 +146,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
-        // Global fallback checker agar custom import nahi hai
-        const selectorEngine = window.AnimationSelector || (typeof AnimationSelector !== 'undefined' ? AnimationSelector : null);
+        // Dynamic rendering using our separated file structure 
+        const dynamicDropdownHtml = (window.AnimationSelector && typeof window.AnimationSelector.render === 'function')
+            ? window.AnimationSelector.render()
+            : `<select id="wish-animation" name="animation" style="width: 100%; height: 44px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background-color: #fff; color: #000;">
+                   <option value="none">No Animation (Fallback)</option>
+               </select>`;
 
         const secureComponentHtml = `
             <div class="feature-card">
@@ -200,17 +204,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <!-- Direct Dropdown Render Setup Placeholder -->
-                    <div id="animation-selector-container">
-                        ${selectorEngine ? selectorEngine.render() : `
-                        <select id="wish-animation" name="animation" style="width: 100%; height: 44px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background-color: #fff; color: #000;">
-                            <option value="none">No Animation</option>
-                            <option value="confetti">Confetti 🎉</option>
-                            <option value="hearts">Hearts ❤️</option>
-                            <option value="snow">Snowfall ❄️</option>
-                            <option value="fireworks">Fireworks 🎆</option>
-                        </select>
-                        `}
+                    <!-- Animation Module Dropdown Placement -->
+                    <div class="form-group" style="margin-top: 15px; margin-bottom: 15px; width: 100%; display: block !important;">
+                        <label style="display: block !important; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); text-align: left;">
+                            Select Animation Effect
+                        </label>
+                        <div id="animation-selector-container">
+                            ${dynamicDropdownHtml}
+                        </div>
                     </div>
 
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;"></div>
@@ -264,7 +265,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const textVal = document.getElementById('wish-text').value.trim();
         const categoryVal = document.getElementById('main-category').value;
-        const animationVal = document.getElementById('wish-animation') ? document.getElementById('wish-animation').value : 'none';
+        
+        // Dynamic dynamic animation selector read check
+        const animationVal = (window.AnimationSelector && typeof window.AnimationSelector.getValue === 'function')
+            ? window.AnimationSelector.getValue()
+            : (document.getElementById('wish-animation') ? document.getElementById('wish-animation').value : 'none');
 
         if (!textVal || !categoryVal) {
             statusBox.innerText = "❌ Error: Category aur Wish Text fill karna mandatory hai!";
