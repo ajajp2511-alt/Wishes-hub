@@ -1,9 +1,7 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULLY FIXED)
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULLY FIXED - NO MODULE BROKEN)
 // Patel Studio - 2026
 // ==========================================================
-
-import { AnimationSelector } from './features/wishes/animation-selector.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     
@@ -148,7 +146,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
-        // JADU FIX: Yahan hardcoded static select dropdown ko dynamic selector component se replace kar diya hai
+        // Global fallback checker agar custom import nahi hai
+        const selectorEngine = window.AnimationSelector || (typeof AnimationSelector !== 'undefined' ? AnimationSelector : null);
+
         const secureComponentHtml = `
             <div class="feature-card">
                 <h2 style="margin-bottom: 25px; color: var(--text-main); font-weight: 600;">Add New Multi-Media Wish</h2>
@@ -202,7 +202,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     <!-- Direct Dropdown Render Setup Placeholder -->
                     <div id="animation-selector-container">
-                        ${AnimationSelector ? AnimationSelector.render() : ''}
+                        ${selectorEngine ? selectorEngine.render() : `
+                        <select id="wish-animation" name="animation" style="width: 100%; height: 44px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background-color: #fff; color: #000;">
+                            <option value="none">No Animation</option>
+                            <option value="confetti">Confetti 🎉</option>
+                            <option value="hearts">Hearts ❤️</option>
+                            <option value="snow">Snowfall ❄️</option>
+                            <option value="fireworks">Fireworks 🎆</option>
+                        </select>
+                        `}
                     </div>
 
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;"></div>
