@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 6. DYNAMIC MULTI-MEDIA COMPONENT WRITER (INLINED ANIMATION DROPDOWN FOR SECURE RENDERING)
+    // 6. DYNAMIC MULTI-MEDIA COMPONENT WRITER
     async function loadLivePreviewComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <!-- 🔥 IMMUTABLE INTEGRATION: Direct Dropdown Render to instantly kill Vercel async lag -->
+                    <!-- Direct Dropdown Render Setup -->
                     <div class="form-group" style="margin-top: 15px; margin-bottom: 15px; width: 100%; display: block !important;">
                         <label style="display: block !important; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); text-align: left;">
                             Select Animation Effect
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </select>
                     </div>
 
-                    <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+                    <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;"></div>
                     
                     <!-- Status Display Indicator -->
                     <div id="status-box-system" style="margin-top: 15px; padding: 12px; border-radius: 6px; background: #1e293b; color: #ffea00; font-weight: bold; display: none;"></div>
@@ -224,15 +224,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         workspaceArea.innerHTML = secureComponentHtml;
         populateRealCategories();
 
-        // Safe check bindings for existing features
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
 
-        // Safe binding for live changes if AnimationManager exists anywhere on runtime
         const inlineSelect = document.getElementById('wish-animation');
         if (inlineSelect) {
             inlineSelect.addEventListener('change', (e) => {
                 if (window.AnimationPreviewLinker && typeof window.AnimationPreviewLinker.showPreview === 'function') {
+                    const liveBox = document.getElementById('live-preview-box');
+                    if (liveBox) liveBox.style.display = "block";
                     window.AnimationPreviewLinker.showPreview(e.target.value);
                 }
             });
@@ -282,13 +282,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             statusBox.innerText = "📡 Routing package stream to server pipeline...";
 
-            // Complete Integrated Payload Packet
             let payload = {
                 title: textVal,
                 category: categoryVal,
                 sub_category: document.getElementById('sub-category').value || '',
                 image: base64String,
-                animation: animationVal // Direct integrated mapping
+                animation: animationVal
             };
 
             const response = await fetch('/api/add-wish-to-db', {
@@ -310,7 +309,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if(document.getElementById('wish-animation')) document.getElementById('wish-animation').value = "none";
                 if(fileInput) fileInput.value = "";
 
-                // Reset external states safely if alive
+                const liveBox = document.getElementById('live-preview-box');
+                if (liveBox) liveBox.style.display = "none";
+
                 if (window.AnimationManager && typeof window.AnimationManager.reset === 'function') {
                     window.AnimationManager.reset();
                 }
@@ -325,6 +326,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Default trigger
     loadLivePreviewComponent();
 });
