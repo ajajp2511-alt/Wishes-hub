@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // ==========================================================
-        // 🚀 LIVE ENGINE INTEGRATION (ANIMATION PLAYER)
+        // 🚀 LIVE ENGINE INTEGRATION (ANIMATION PLAYER) WITH RETRY
         // ==========================================================
         let selectedAnimation = currentWish.animation || currentWish.animationId || null;
 
@@ -87,13 +87,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        // Global engine handle ko safe trigger karein
-        if (typeof window.triggerAnimation === "function") {
-            console.log(`🎬 [Wish View]: Triggering animation effect -> ${selectedAnimation}`);
-            window.triggerAnimation(selectedAnimation);
-        } else {
-            console.warn("⚠️ [Wish View]: window.triggerAnimation function not loaded yet.");
+        // Safe Trigger Function with Polling Interval to solve async module delay
+        function executionBridge() {
+            if (typeof window.triggerAnimation === "function") {
+                console.log(`🎬 [Wish View]: Triggering animation effect -> ${selectedAnimation}`);
+                window.triggerAnimation(selectedAnimation);
+            } else {
+                console.warn("⏳ [Wish View]: Waiting for dynamic engine to bind window scope...");
+                setTimeout(executionBridge, 100); // Retry after 100ms
+            }
         }
+        
+        executionBridge();
         // ==========================================================
 
         // Action Buttons Setup
