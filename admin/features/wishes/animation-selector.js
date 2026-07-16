@@ -1,10 +1,8 @@
-// ==========================================================
-// 🎨 WISHES HUB - ANIMATION SELECTOR MODULE (PREVENT CACHE)
+// admin/features/wishes/animation-selector.js
 // Patel Studio - 2026
-// ==========================================================
 
 const AnimationSelector = {
-    // 1. Dropdown HTML template with inline layout safety
+    // Dropdown HTML template with strict inline layouts linked with backend IDs
     render: function() {
         console.log("🛠️ [AnimationSelector]: render() function executed!");
         return `
@@ -14,10 +12,10 @@ const AnimationSelector = {
                 </label>
                 <select id="wish-animation" name="animation" style="display: block !important; visibility: visible !important; width: 100% !important; height: 44px !important; padding: 10px 12px !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; font-size: 15px !important; background-color: #ffffff !important; color: #000000 !important; opacity: 1 !important; box-sizing: border-box !important; cursor: pointer; -webkit-appearance: revert !important; appearance: revert !important;">
                     <option value="none" style="color: #000000 !important; background-color: #ffffff !important;">No Animation</option>
-                    <option value="confetti" style="color: #000000 !important; background-color: #ffffff !important;">Confetti 🎉</option>
-                    <option value="hearts" style="color: #000000 !important; background-color: #ffffff !important;">Hearts ❤️</option>
-                    <option value="snow" style="color: #000000 !important; background-color: #ffffff !important;">Snowfall ❄️</option>
-                    <option value="fireworks" style="color: #000000 !important; background-color: #ffffff !important;">Fireworks 🎆</option>
+                    <option value="anim_confetti_blast" style="color: #000000 !important; background-color: #ffffff !important;">Confetti 🎉</option>
+                    <option value="anim_hearts_vortex" style="color: #000000 !important; background-color: #ffffff !important;">Hearts ❤️</option>
+                    <option value="anim_lofi_rain" style="color: #000000 !important; background-color: #ffffff !important;">Snowfall/Rain ❄️</option>
+                    <option value="anim_neon_fireworks" style="color: #000000 !important; background-color: #ffffff !important;">Fireworks 🎆</option>
                 </select>
             </div>
         `;
@@ -36,7 +34,7 @@ const AnimationSelector = {
     }
 };
 
-// Direct assignments to destroy any timing/scoping delays
+// Global assignments to eliminate scope delays
 window.AnimationSelector = AnimationSelector;
 export { AnimationSelector };
 export default AnimationSelector;
