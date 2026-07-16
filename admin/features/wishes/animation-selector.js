@@ -1,5 +1,7 @@
-// admin/features/wishes/animation-selector.js
+// ==========================================================
+// 🎨 WISHES HUB ADMIN - ANIMATION SELECTOR COMPONENT (FIXED GLOBAL)
 // Patel Studio - 2026
+// ==========================================================
 
 const AnimationSelector = {
     // Dropdown HTML template with strict inline layouts linked with backend IDs
@@ -34,7 +36,5 @@ const AnimationSelector = {
     }
 };
 
-// Global assignments to eliminate scope delays
+// Pure global assignment for non-module standard loading
 window.AnimationSelector = AnimationSelector;
-export { AnimationSelector };
-export default AnimationSelector;
