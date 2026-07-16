@@ -39,8 +39,21 @@ export async function getAutoSuggestedAnimations(categoryName) {
 
 // Core Manager Object
 const AnimationManager = {
-    // 1. Form UI ke andar Selector Dropdown mount karna
+    // 1. Form UI ke andar Selector Dropdown mount karna (UPDATED FOR CONTAINER INTEGRATION)
     initSelector: function() {
+        const targetContainer = document.getElementById('animation-selector-container');
+        
+        // Agar dedicated placeholder mil jata hai toh direct mount karein
+        if (targetContainer) {
+            if (!document.getElementById('wish-animation')) {
+                targetContainer.innerHTML = AnimationSelector.render();
+                console.log("🎯 [Animation Manager]: Selector Mounted on container placeholder.");
+                this.bindEvents();
+            }
+            return;
+        }
+
+        // Fallback: Agar custom container kisi wajah se miss ho jaye, toh feature image ke piche fallback karega
         const fileInput = document.getElementById('wish-image-file');
         if (!fileInput) return;
 
@@ -48,7 +61,7 @@ const AnimationManager = {
         if (formGroupElement && !document.getElementById('wish-animation')) {
             const selectorHtml = AnimationSelector.render();
             formGroupElement.insertAdjacentHTML('afterend', selectorHtml);
-            console.log("🎯 [Animation Manager]: Selector Mounted Successfully.");
+            console.log("🎯 [Animation Manager]: Selector Mounted Successfully (Fallback).");
             
             this.bindEvents();
         }
