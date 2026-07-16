@@ -13,12 +13,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const copyBtn = document.getElementById('single-copy-btn');
     const waBtn = document.getElementById('single-wa-btn');
 
+    // 🚨 Safe Canvas Auto-Injection Setup if missing in DOM
+    let canvas = document.getElementById('animation-canvas');
+    if (!canvas) {
+        console.log("ℹ️ [Engine]: Canvas not found in base HTML. Injecting dynamically...");
+        canvas = document.createElement('canvas');
+        canvas.id = 'animation-canvas';
+        canvas.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;');
+        document.body.prepend(canvas);
+    }
+
     if (!wishId) {
         if (textElement) textElement.innerHTML = "<span style='color:#ff4444;'>No ID provided in URL!</span>";
         return;
     }
 
-    // 🚨 FIX: Decode dynamic URL strings to support Firebase dash ids
+    // Decode dynamic URL strings to support Firebase dash ids securely
     wishId = decodeURIComponent(wishId).trim();
 
     try {
@@ -31,8 +41,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentWish = data.wishes.find(w => {
             if (!w) return false;
             const dbId = w.id || w._id || w.key || '';
-            
-            // Clean strings securely without removing valid dash (-) symbols
             return String(dbId).trim() === wishId;
         });
 
@@ -72,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // ==========================================================
         let selectedAnimation = currentWish.animation || currentWish.animationId || null;
 
-        // Fallback: Agar database me direct key store nahi hai, toh automatic text scan lagaayein
+        // Fallback text engine scanner
         if (!selectedAnimation || selectedAnimation === "none") {
             const scanTarget = (mainText + " " + mainCategory).toLowerCase();
             
@@ -94,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 window.triggerAnimation(selectedAnimation);
             } else {
                 console.warn("⏳ [Wish View]: Waiting for dynamic engine to bind window scope...");
-                setTimeout(executionBridge, 100); // Retry after 100ms
+                setTimeout(executionBridge, 150); // Retry loop
             }
         }
         
