@@ -1,4 +1,5 @@
 // admin/js/live-animations.js
+// Patel Studio - 2026
 
 // JADU FIX: Ek level peeche (../) ja kar features/modules tak accurate mapping!
 import { 
@@ -20,13 +21,17 @@ let animationFrameId;
 let animationIntervals = [];
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function animate() {
+    if (!canvas || !ctx) return;
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     for (let i = 0; i < particles.length; i++) {
@@ -47,16 +52,26 @@ function resetEngine() {
     animationIntervals.forEach(clearInterval);
     animationIntervals = [];
     particles = [];
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 // MAIN TRIGGER FUNCTION: Pure 9 new modular animations ko handle karega
 export function triggerAnimation(animId) {
     resetEngine();
     
+    if (!canvas) {
+        console.warn("⚠️ [Live Engine]: Canvas element '#animation-canvas' not found!");
+        return;
+    }
+    
+    console.log(`🚀 [Live Engine]: Triggering dynamic module path for -> ${animId}`);
+
     if (animId === "anim_confetti_blast") {
         for(let i = 0; i < 100; i++) particles.push(new Confetti(canvas));
         
-    } else if (animId === "anim_hearts_vortex") {
+    } else if (animId === "anim_hearts_vortex" || animId === "anim_infinite_heart_vortex") {
         const heartInterval = setInterval(() => {
             if(particles.length < 150) {
                 for(let i = 0; i < 3; i++) particles.push(new Heart(canvas));
@@ -64,7 +79,7 @@ export function triggerAnimation(animId) {
         }, 80);
         animationIntervals.push(heartInterval);
         
-    } else if (animId === "anim_neon_fireworks") {
+    } else if (animId === "anim_neon_fireworks" || animId === "anim_magical_firework_fountain") {
         const fireworkTimer = setInterval(() => {
             const x = Math.random() * canvas.width;
             const y = Math.random() * (canvas.height * 0.6);
@@ -89,9 +104,16 @@ export function triggerAnimation(animId) {
     } else if (animId === "anim_bubble_wrap_pop") {
         for (let i = 0; i < 35; i++) particles.push(new BubblePop(canvas));
 
-    } else if (animId === "anim_anime_power_up") {
+    } else if (animId === "anim_anime_power_up" || animId === "anim_thug_life") {
         for (let i = 0; i < 50; i++) particles.push(new AnimePowerUp(canvas));
+    } else if (animId === "none") {
+        resetEngine();
+        return;
     }
     
     animate();
 }
+
+// Global hook to eliminate engine scope delay issues
+window.triggerAnimation = triggerAnimation;
+window.resetEngine = resetEngine;
