@@ -11,6 +11,9 @@
 </head>
 <body>
 
+    <!-- 🎬 Live Canvas Animation Layer (Ambient Background) -->
+    <canvas id="animation-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;"></canvas>
+
     <header class="main-header">
         <h1>Wishes Hub</h1>
         <div id="header-actions"></div>
@@ -113,5 +116,8 @@
 
     <!-- 💰 Feature 3: AdMob / AdSense Manager Connection -->
     <script src="js/ads-manager.js"></script>
+
+    <!-- 🎬 Live Animation Engine Connection (Loaded Securely as Module) -->
+    <script type="module" src="js/live-animations.js"></script>
 </body>
 </html>
