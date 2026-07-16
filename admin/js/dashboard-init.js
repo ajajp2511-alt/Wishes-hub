@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FIXED)
+// 🎛️ WISHES HUB ADMIN - CORE DASHBOARD CONTROLLER (FULLY FIXED)
 // Patel Studio - 2026
 // ==========================================================
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 6. DYNAMIC MULTI-MEDIA COMPONENT WRITER (FIXED STRUCTURE + INTEGRATED ACTION)
+    // 6. DYNAMIC MULTI-MEDIA COMPONENT WRITER (INLINED ANIMATION DROPDOWN FOR SECURE RENDERING)
     async function loadLivePreviewComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
@@ -197,8 +197,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <!-- 🔥 FIXED: Added Target Placeholder Container For Animation Selector Dropdown Injection -->
-                    <div id="animation-selector-container"></div>
+                    <!-- 🔥 IMMUTABLE INTEGRATION: Direct Dropdown Render to instantly kill Vercel async lag -->
+                    <div class="form-group" style="margin-top: 15px; margin-bottom: 15px; width: 100%; display: block !important;">
+                        <label style="display: block !important; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); text-align: left;">
+                            Select Animation Effect
+                        </label>
+                        <select id="wish-animation" name="animation" style="display: block !important; visibility: visible !important; width: 100% !important; height: 44px !important; padding: 10px 12px !important; border: 1px solid var(--border) !important; border-radius: 6px !important; font-size: 15px !important; background-color: #ffffff !important; color: #000000 !important; opacity: 1 !important; box-sizing: border-box !important; cursor: pointer; -webkit-appearance: revert !important; appearance: revert !important;">
+                            <option value="none">No Animation</option>
+                            <option value="confetti">Confetti 🎉</option>
+                            <option value="hearts">Hearts ❤️</option>
+                            <option value="snow">Snowfall ❄️</option>
+                            <option value="fireworks">Fireworks 🎆</option>
+                        </select>
+                    </div>
 
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
                     
@@ -217,21 +228,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
 
-        // 🎨 HOOK 1 (FIXED): Timing interval check lagaya taaki async modules safely render ho sakein
-        if (window.AnimationManager && typeof window.AnimationManager.initSelector === 'function') {
-            window.AnimationManager.initSelector();
-        } else {
-            const checkInterval = setInterval(() => {
-                if (window.AnimationManager && typeof window.AnimationManager.initSelector === 'function') {
-                    window.AnimationManager.initSelector();
-                    clearInterval(checkInterval);
+        // Safe binding for live changes if AnimationManager exists anywhere on runtime
+        const inlineSelect = document.getElementById('wish-animation');
+        if (inlineSelect) {
+            inlineSelect.addEventListener('change', (e) => {
+                if (window.AnimationPreviewLinker && typeof window.AnimationPreviewLinker.showPreview === 'function') {
+                    window.AnimationPreviewLinker.showPreview(e.target.value);
                 }
-            }, 100);
-            
-            setTimeout(() => clearInterval(checkInterval), 3000);
+            });
         }
 
-        // Safe check bindings for existing features
         const submissionBtn = document.getElementById('submit-wish-btn');
         if (submissionBtn) {
             submissionBtn.addEventListener('click', async () => {
@@ -251,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const textVal = document.getElementById('wish-text').value.trim();
         const categoryVal = document.getElementById('main-category').value;
+        const animationVal = document.getElementById('wish-animation') ? document.getElementById('wish-animation').value : 'none';
 
         if (!textVal || !categoryVal) {
             statusBox.innerText = "❌ Error: Category aur Wish Text fill karna mandatory hai!";
@@ -275,18 +282,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             statusBox.innerText = "📡 Routing package stream to server pipeline...";
 
-            // Initial Basic Payload Packet Setup
+            // Complete Integrated Payload Packet
             let payload = {
                 title: textVal,
                 category: categoryVal,
                 sub_category: document.getElementById('sub-category').value || '',
-                image: base64String
+                image: base64String,
+                animation: animationVal // Direct integrated mapping
             };
-
-            // 🎨 HOOK 2: Form submit hone se pehle payload me animation attach karna
-            if (window.AnimationManager) {
-                payload = window.AnimationManager.preparePayload(payload);
-            }
 
             const response = await fetch('/api/add-wish-to-db', {
                 method: 'POST',
@@ -304,10 +307,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('wish-text').value = "";
                 document.getElementById('main-category').value = "";
                 document.getElementById('sub-category').value = "";
+                if(document.getElementById('wish-animation')) document.getElementById('wish-animation').value = "none";
                 if(fileInput) fileInput.value = "";
 
-                // 🎨 HOOK 3: Successful insertion ke baad animation manager states ko default par reset karna
-                if (window.AnimationManager) {
+                // Reset external states safely if alive
+                if (window.AnimationManager && typeof window.AnimationManager.reset === 'function') {
                     window.AnimationManager.reset();
                 }
             } else {
