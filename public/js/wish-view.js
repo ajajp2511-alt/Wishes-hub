@@ -3,6 +3,8 @@
 // Patel Studio - 2026
 // ==========================================================
 
+import { triggerAnimation } from '/js/live-animations.js';
+
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     let wishId = urlParams.get('id');
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("ℹ️ [Engine]: Canvas not found in base HTML. Injecting dynamically...");
         canvas = document.createElement('canvas');
         canvas.id = 'animation-canvas';
-        canvas.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;');
+        canvas.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1;');
         document.body.prepend(canvas);
     }
 
@@ -95,18 +97,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        // Safe Trigger Function with Polling Interval to solve async module delay
-        function executionBridge() {
-            if (typeof window.triggerAnimation === "function") {
-                console.log(`🎬 [Wish View]: Triggering animation effect -> ${selectedAnimation}`);
-                window.triggerAnimation(selectedAnimation);
-            } else {
-                console.warn("⏳ [Wish View]: Waiting for dynamic engine to bind window scope...");
-                setTimeout(executionBridge, 150); // Retry loop
-            }
+        // Run imported trigger immediately
+        if (typeof triggerAnimation === "function") {
+            console.log(`🎬 [Wish View]: Direct Triggering animation effect -> ${selectedAnimation}`);
+            triggerAnimation(selectedAnimation);
+        } else if (typeof window.triggerAnimation === "function") {
+            console.log(`🎬 [Wish View]: Fallback Triggering animation effect -> ${selectedAnimation}`);
+            window.triggerAnimation(selectedAnimation);
+        } else {
+            console.warn("⚠️ Animation trigger function could not be loaded.");
         }
-        
-        executionBridge();
         // ==========================================================
 
         // Action Buttons Setup
