@@ -1,11 +1,12 @@
 // ==========================================================
-// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (STRICT URL FIX)
+// 🌐 WISHES HUB USER PANEL - HOME FEED ENGINE (UPDATED)
 // Patel Studio - 2026
 // ==========================================================
 
+import initCategories from '../features/categories-manager/categories-assembly.js';
+
 let allWishesData = []; 
 let lastDataHash = ""; 
-let currentSelectedTag = "All"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchLiveWishes();
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            filterWishes(e.target.value.toLowerCase().trim(), currentSelectedTag);
+            filterWishes(e.target.value.toLowerCase().trim(), "All");
         });
     }
 });
@@ -44,19 +45,26 @@ async function fetchLiveWishes(isBackground = false) {
                 id: cleanId ? String(cleanId).trim() : null,
                 title: extractedTitle.toString().trim(),
                 category: item.category || item.mainCategory || 'General',
-                image: finalImage
+                image: finalImage,
+                // Naya field: Filter karne ke liye tag
+                tag: (item.category || 'General').toLowerCase().trim()
             };
         }).filter(item => item && item.id);
 
         if (allWishesData.length > 0) {
-            filterWishes(document.getElementById('search-input')?.value.toLowerCase().trim() || "", currentSelectedTag);
+            // Data aane ke baad Categories Feature initialize karein
+            initCategories(allWishesData, (filteredData) => {
+                renderCardsToGrid(filteredData);
+            });
+            renderCardsToGrid(allWishesData);
         }
     } catch (error) {
         console.error("🚨 Feed Error:", error);
     }
 }
 
-function renderCardsToGrid(wishesArray) {
+// Window global functions
+window.renderCardsToGrid = function(wishesArray) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
@@ -67,41 +75,31 @@ function renderCardsToGrid(wishesArray) {
         const card = document.createElement('div');
         card.className = 'wish-item-card'; 
         card.style.cssText = "background: #1e1e1e; padding: 16px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; text-align: left; cursor: pointer;";
-        
-        // 🚨 FIX: Safe parameter passing using encodeURIComponent to protect dashes (-)
         card.setAttribute('onclick', `navigateToWish(event, '${encodeURIComponent(wish.id)}')`);
 
-        const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category.replace(/\s+/g, '')}</span>` : '';
+        const tagHtml = wish.category ? `<span class="wish-tag" style="font-size: 11px; font-weight: bold; color: #00e5ff; background: rgba(0,229,255,0.1); padding: 4px 10px; border-radius: 20px; width: max-content;">#${wish.category}</span>` : '';
         
-        let imageHtml = '';
-        if (wish.image) {
-            let srcUrl = wish.image;
-            if (srcUrl.includes('api.telegram.org/file/bot')) {
-                srcUrl = `https://images.weserv.nl/?url=${encodeURIComponent(srcUrl)}`;
-            }
-            imageHtml = `<img src="${srcUrl}" alt="Wish Banner" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`;
-        } else {
-            imageHtml = `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
-        }
+        let imageHtml = wish.image 
+            ? `<img src="${wish.image.includes('telegram') ? 'https://images.weserv.nl/?url=' + encodeURIComponent(wish.image) : wish.image}" alt="Wish" style="width: 100%; height: 180px; border-radius: 12px; object-fit: cover; display: block; background: #2a2a2a;">`
+            : `<div style="width: 100%; height: 120px; background: #2a2a2a; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 13px;">✨ Special Wish</div>`;
 
-        const encodedText = encodeURIComponent(`${wish.title}\n\nRead more special wishes on Wishes Hub! ✨`);
+        const encodedText = encodeURIComponent(`${wish.title}\n\nRead more on Wishes Hub! ✨`);
 
         card.innerHTML = `
             ${imageHtml}
             ${tagHtml}
-            <p style="font-size: 16px; color: #ffffff; line-height: 1.5; margin: 5px 0; white-space: pre-wrap; font-weight: bold;">${wish.title}</p>
-            
+            <p style="font-size: 16px; color: #ffffff; line-height: 1.5; margin: 5px 0; font-weight: bold;">${wish.title}</p>
             <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #333;">
-                <span class="view-details-text" style="font-size: 13px; color: #00e5ff; font-weight: bold;">View Details →</span>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button onclick="event.stopPropagation(); copyTextToClipboard('${wish.title.replace(/'/g, "\\'")}')" style="font-size: 12px; background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Copy</button>
-                    <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" onclick="event.stopPropagation();" style="font-size: 12px; background: #25d366; color: #fff; font-weight: bold; padding: 6px 12px; border-radius: 8px; text-decoration: none;">Share</a>
+                <span style="font-size: 13px; color: #00e5ff; font-weight: bold;">View Details →</span>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="event.stopPropagation(); copyTextToClipboard('${wish.title.replace(/'/g, "\\'")}')" style="background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer;">Copy</button>
+                    <a href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank" onclick="event.stopPropagation();" style="background: #25d366; color: #fff; padding: 6px 12px; border-radius: 8px; text-decoration: none;">Share</a>
                 </div>
             </div>
         `;
         gridContainer.appendChild(card);
     });
-}
+};
 
 window.navigateToWish = function(event, encodedWishId) {
     if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('a')) return; 
@@ -110,7 +108,7 @@ window.navigateToWish = function(event, encodedWishId) {
 
 window.copyTextToClipboard = function(text) {
     navigator.clipboard.writeText(text);
-    alert('Wish text successfully copy ho gaya! 🔥');
+    alert('Copied! 🔥');
 };
 
 function filterWishes(searchQuery, tagQuery) {
@@ -118,19 +116,5 @@ function filterWishes(searchQuery, tagQuery) {
     if (searchQuery) {
         filtered = filtered.filter(wish => wish.title.toLowerCase().includes(searchQuery) || wish.category.toLowerCase().includes(searchQuery));
     }
-    if (tagQuery && tagQuery !== 'All') {
-        filtered = filtered.filter(wish => wish.category.toLowerCase() === tagQuery.toLowerCase());
-    }
     renderCardsToGrid(filtered);
 }
-
-window.filterByTag = function(tagName) {
-    currentSelectedTag = tagName;
-    document.querySelectorAll('.chip').forEach(chip => {
-        chip.classList.remove('active');
-        if (chip.innerText.replace('#', '').toLowerCase() === tagName.toLowerCase() || (tagName === 'All' && chip.innerText === 'All')) {
-            chip.classList.add('active');
-        }
-    });
-    filterWishes(document.getElementById('search-input')?.value.toLowerCase().trim() || "", tagName);
-};
