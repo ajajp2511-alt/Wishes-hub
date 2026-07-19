@@ -1,22 +1,6 @@
-/* --- Wishes-hub Master CSS --- */
-
-/* Import all feature styles */
 @import url('theme-engine/assets/style-css.css');
 @import url('localization-manager/assets/style-css.css');
 @import url('categories-manager/assets/style-css.css');
 @import url('wishes-feed/assets/style-css.css');
 @import url('storage-manager/assets/style-css.css');
-
-/* Global Reset & Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color, #ffffff);
-    color: var(--text-color, #000000);
-    transition: background 0.3s, color 0.3s;
-}
+@import url('ui-layout/assets/style-css.css'); /* Naya Import */
