@@ -1,26 +1,25 @@
 const CategoriesCore = {
     async loadCategories() {
         try {
-            // Absolute path: root se start karein
             const response = await fetch('/public/features/categories-manager/data/categories.json');
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
             const categories = await response.json();
+            
+            console.log("Categories Loaded:", categories); // Ye console mein check karein
             
             const container = document.querySelector('.categories-container-wrapper');
             if (container) {
                 container.innerHTML = categories.map(cat => `
-                    <a href="#" class="festival-item-card" style="text-decoration: none; color: inherit; display: inline-block; margin: 10px;">
+                    <a href="#" class="festival-item-card">
                         <div class="festival-icon-circle">${cat.icon}</div>
                         <span class="festival-name">${cat.name}</span>
                     </a>
                 `).join('');
+            } else {
+                console.error("Container .categories-container-wrapper nahi mila!");
             }
         } catch (error) {
-            console.error("Categories load error:", error);
+            console.error("Error loading categories:", error);
         }
     }
 };
-
 export default CategoriesCore;
