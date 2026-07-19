@@ -1,6 +1,6 @@
-@import url('theme-engine/assets/style-css.css');
-@import url('localization-manager/assets/style-css.css');
-@import url('categories-manager/assets/style-css.css');
-@import url('wishes-feed/assets/style-css.css');
-@import url('storage-manager/assets/style-css.css');
-@import url('ui-layout/assets/style-css.css'); /* Naya Import */
+@import url('./theme-engine/assets/style-css.css');
+@import url('./localization-manager/assets/style-css.css');
+@import url('./categories-manager/assets/style-css.css');
+@import url('./wishes-feed/assets/style-css.css');
+@import url('./storage-manager/assets/style-css.css');
+@import url('./ui-layout/assets/style-css.css');
