@@ -1,1 +1,15 @@
-
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 15px;
+}
+.cat-btn {
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.cat-btn:hover { background: #444; }
