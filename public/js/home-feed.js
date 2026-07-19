@@ -1,37 +1,39 @@
-import initCategories from '/features/categories-manager/categories-assembly.js'; 
-
-// Script load check
-console.log("Feed Script Loaded");
+import initCategories from '/features/categories-manager/categories-assembly.js';
 
 let allWishesData = []; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Loaded - Fetching data...");
+    // Jaldi feedback ke liye message change karein
+    const gridContainer = document.getElementById('wishes-grid');
+    if (gridContainer) gridContainer.innerHTML = "<p>Loading wishes...</p>";
+    
     fetchLiveWishes();
 });
 
 async function fetchLiveWishes() {
     const gridContainer = document.getElementById('wishes-grid');
-    
     try {
         const response = await fetch('/api/get-wishes');
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        
         const result = await response.json();
 
         if (result && result.wishes) {
-            console.log("Data mila:", result.wishes);
-            renderCardsToGrid(result.wishes);
-            initCategories(result.wishes, (filtered) => renderCardsToGrid(filtered));
+            allWishesData = result.wishes;
+            renderCardsToGrid(allWishesData);
+            initCategories(allWishesData, (filteredData) => renderCardsToGrid(filteredData));
         } else {
-            console.log("Data format galat hai");
-            gridContainer.innerHTML = "<p>Data format error.</p>";
+            throw new Error("Invalid API response format");
         }
     } catch (error) {
-        console.error("Fetch Error:", error);
-        gridContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+        // Agar error aaye, toh screen par dikhayein
+        if (gridContainer) {
+            gridContainer.innerHTML = `<p style="color:red;">Error: ${error.message}. API check karein.</p>`;
+        }
     }
 }
 
-function renderCardsToGrid(wishesArray) {
+window.renderCardsToGrid = function(wishesArray) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
     
@@ -39,7 +41,7 @@ function renderCardsToGrid(wishesArray) {
     wishesArray.forEach(wish => {
         const card = document.createElement('div');
         card.style.cssText = "background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 10px;";
-        card.innerHTML = `<p style="color:#fff;">${wish.title || 'Untitled'}</p>`;
+        card.innerHTML = `<p style="color:#fff;">${wish.title || wish.wishText || 'No Title'}</p>`;
         gridContainer.appendChild(card);
     });
-}
+};
