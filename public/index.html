@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub | Patel Studio</title>
-    <link rel="stylesheet" href="style-ui.css">
+    <title>Wishes-hub</title>
     
-    <!-- 🔥 Feature CSS Files -->
-    <link rel="stylesheet" href="public/style-css/dark-theme.css">
-    <link rel="stylesheet" href="public/features/categories-manager/assets/categories-css.css">
+    <!-- 🔥 Master CSS Link: Ye file baaki sabhi feature CSS ko import karegi -->
+    <link rel="stylesheet" href="public/features/style-css.css">
 </head>
 <body>
 
     <canvas id="animation-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;"></canvas>
 
     <header class="main-header">
-        <h1>Wishes Hub</h1>
+        <h1>Wishes-hub</h1>
         <div id="header-actions"></div>
     </header>
 
@@ -27,7 +25,6 @@
 
     <div class="main-container">
 
-        <!-- 🔥 Naya Categories Feature Container -->
         <section>
             <div class="section-header">
                 <h2>Browse Categories</h2>
@@ -58,23 +55,22 @@
         </section>
 
         <div id="ad-container-1" class="ad-wrapper-box">
-            <span>Responsive Ad Space (AdMob / AdSense)</span>
+            <span>Responsive Ad Space</span>
         </div>
 
         <section>
             <div class="section-header">
                 <h2>Latest Wishes</h2>
             </div>
-            <!-- 🔥 Wishes Grid -->
             <div id="wishes-grid" class="grid-container wishes-feed-container">
-                <p style="color: #666; text-align: center; padding: 20px;">Initializing Patel Studio Engine...</p>
+                <p style="color: #666; text-align: center; padding: 20px;">Initializing Wishes-hub Engine...</p>
             </div>
         </section>
 
     </div>
 
     <footer class="main-footer">
-        <p>&copy; 2026 Wishes Hub | Developed by Patel Studio</p>
+        <p>&copy; 2026 Wishes-hub | All Rights Reserved</p>
         <div class="footer-links">
              <a href="page/about.html">About Us</a> | 
              <a href="page/privacy.html">Privacy Policy</a> |
@@ -82,15 +78,11 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="js/whatsapp-share.js"></script>
-    <script src="js/dark-mode.js"></script>
-    <script src="js/search-filter.js"></script>
-    <script src="js/ads-manager.js"></script>
-    <script type="module" src="js/live-animations.js"></script>
-    
-    <!-- 🔥 Core Feed Script (Imported as Module) -->
-    <script type="module" src="js/home-feed.js"></script>
+    <!-- 🔥 Master Script: Yeh ek line aapke saare features load karegi -->
+    <script type="module">
+        import Main from './public/features/main.js';
+        Main.init();
+    </script>
 
 </body>
 </html>
