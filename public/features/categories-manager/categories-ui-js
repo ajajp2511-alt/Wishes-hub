@@ -1,1 +1,17 @@
+import CategoriesConfig from './categories-config.js';
 
+const CategoriesUI = {
+    render(container, onCategorySelect) {
+        container.innerHTML = `<div class="cat-grid"></div>`;
+        const grid = container.querySelector('.cat-grid');
+        
+        CategoriesConfig.list.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn';
+            btn.innerText = cat.name;
+            btn.onclick = () => onCategorySelect(cat.tag);
+            grid.appendChild(btn);
+        });
+    }
+};
+export default CategoriesUI;
