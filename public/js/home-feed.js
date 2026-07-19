@@ -1,6 +1,8 @@
-import initCategories from '/features/categories-manager/categories-assembly.js';
+// js/home-feed.js
+import initCategories from '../public/features/categories-manager/categories-assembly.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("DOM loaded, initializing...");
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
 
@@ -11,10 +13,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
 
         if (data && data.wishes) {
-            // Pehle poora data render karein
+            console.log("Data received:", data.wishes);
             renderCardsToGrid(data.wishes);
 
-            // Ab categories ko feed ke saath bind karein
+            // Yahan check karein ki kya ye function call ho raha hai
+            console.log("Calling initCategories...");
             initCategories(data.wishes, (filteredData) => {
                 renderCardsToGrid(filteredData);
             });
@@ -22,7 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             gridContainer.innerHTML = "No wishes found.";
         }
     } catch (err) {
-        gridContainer.innerHTML = "Error loading data: " + err.message;
+        gridContainer.innerHTML = "Error: " + err.message;
+        console.error("Fetch Error:", err);
     }
 });
 
