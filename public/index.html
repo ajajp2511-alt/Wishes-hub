@@ -6,12 +6,12 @@
     <title>Wishes Hub | Patel Studio</title>
     <link rel="stylesheet" href="style-ui.css">
     
-    <!-- 🔥 Feature 1 Ki Nayi CSS File Connect Ki Hai (Purana kuch bina delete kiye) -->
+    <!-- 🔥 Feature CSS Files -->
     <link rel="stylesheet" href="public/style-css/dark-theme.css">
+    <link rel="stylesheet" href="public/features/categories-manager/assets/categories-css.css">
 </head>
 <body>
 
-    <!-- 🎬 Live Canvas Animation Layer (Ambient Background) -->
     <canvas id="animation-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;"></canvas>
 
     <header class="main-header">
@@ -22,17 +22,18 @@
     <section class="hero-search-section">
         <div class="search-wrapper">
             <input type="text" id="search-input" placeholder="Search special wishes...">
-            <div class="chips-container">
-                <span class="chip active" onclick="filterByTag('All')">All</span>
-                <span class="chip" onclick="filterByTag('Good Morning')">#GoodMorning</span>
-                <span class="chip" onclick="filterByTag('Birthday')">#Birthday</span>
-                <span class="chip" onclick="filterByTag('Motivation')">#Motivation</span>
-                <span class="chip" onclick="filterByTag('Festival')">#Festival</span>
-            </div>
         </div>
     </section>
 
     <div class="main-container">
+
+        <!-- 🔥 Naya Categories Feature Container -->
+        <section>
+            <div class="section-header">
+                <h2>Browse Categories</h2>
+            </div>
+            <div class="categories-container-wrapper"></div>
+        </section>
 
         <section id="wish-of-the-day-section">
             <div class="wish-of-the-day-banner">
@@ -49,22 +50,10 @@
                 <h2>Upcoming Festivals</h2>
             </div>
             <div class="festival-slider-container">
-                <a href="#" class="festival-item-card">
-                    <div class="festival-icon-circle">🌸</div>
-                    <span class="festival-name">Diwali</span>
-                </a>
-                <a href="#" class="festival-item-card">
-                    <div class="festival-icon-circle">🪁</div>
-                    <span class="festival-name">Makar S.</span>
-                </a>
-                <a href="#" class="festival-item-card">
-                    <div class="festival-icon-circle">❤️</div>
-                    <span class="festival-name">Rakhi</span>
-                </a>
-                <a href="#" class="festival-item-card">
-                    <div class="festival-icon-circle">🎨</div>
-                    <span class="festival-name">Holi</span>
-                </a>
+                <a href="#" class="festival-item-card"><div class="festival-icon-circle">🌸</div><span class="festival-name">Diwali</span></a>
+                <a href="#" class="festival-item-card"><div class="festival-icon-circle">🪁</div><span class="festival-name">Makar S.</span></a>
+                <a href="#" class="festival-item-card"><div class="festival-icon-circle">❤️</div><span class="festival-name">Rakhi</span></a>
+                <a href="#" class="festival-item-card"><div class="festival-icon-circle">🎨</div><span class="festival-name">Holi</span></a>
             </div>
         </section>
 
@@ -76,18 +65,9 @@
             <div class="section-header">
                 <h2>Latest Wishes</h2>
             </div>
-            <!-- 🔥 Data isi grid container ke andar automatic inject hoga -->
-            <div id="wishes-grid" class="grid-container">
+            <!-- 🔥 Wishes Grid -->
+            <div id="wishes-grid" class="grid-container wishes-feed-container">
                 <p style="color: #666; text-align: center; padding: 20px;">Initializing Patel Studio Engine...</p>
-            </div>
-        </section>
-
-        <section class="trending-box">
-            <h3>Trending Searches</h3>
-            <div class="trending-links">
-                <a href="?q=diwali">Best Diwali Wishes 2026</a> • 
-                <a href="?q=morning">Good Morning Suvichar</a> • 
-                <a href="?q=birthday">Romantic Birthday Status</a>
             </div>
         </section>
 
@@ -102,22 +82,15 @@
         </div>
     </footer>
 
-    <!-- 📲 Nayi WhatsApp Share File Yahan Connect Kar Di Hai -->
+    <!-- Scripts -->
     <script src="js/whatsapp-share.js"></script>
-
-    <!-- Core Feed Script -->
-    <script src="js/home-feed.js"></script>
-
-    <!-- 🌙 Feature 1: Dark Mode Toggle Script Connection -->
     <script src="js/dark-mode.js"></script>
-
-    <!-- 🔍 Feature 2: Search & Tag Filter Logic Connection -->
     <script src="js/search-filter.js"></script>
-
-    <!-- 💰 Feature 3: AdMob / AdSense Manager Connection -->
     <script src="js/ads-manager.js"></script>
-
-    <!-- 🎬 Live Animation Engine Connection (Loaded Securely as Module) -->
     <script type="module" src="js/live-animations.js"></script>
+    
+    <!-- 🔥 Core Feed Script (Imported as Module) -->
+    <script type="module" src="js/home-feed.js"></script>
+
 </body>
 </html>
