@@ -1,32 +1,20 @@
-/**
- * categories-assembly.js
- * Yeh file categories ko initialize aur manage karti hai.
- */
-
 import CategoriesMain from './categories-main.js';
 
 export default function initCategories(allWishesData, onFilterCallback) {
     const selector = '.categories-container-wrapper';
     
-    // Check karein ki wrapper exist karta hai ya nahi
-    const wrapper = document.querySelector(selector);
-    if (!wrapper) {
-        console.error("Categories wrapper element not found:", selector);
-        return;
-    }
+    // Aapki 2 categories fix ho gayi
+    const myCategories = ['Text wishes', 'Image wishes'];
 
-    try {
-        // Categories initialize karein
-        CategoriesMain.init(selector, allWishesData, (selectedTag) => {
-            if (selectedTag === 'all') {
-                onFilterCallback(allWishesData);
-            } else {
-                const filtered = allWishesData.filter(wish => wish.tag === selectedTag);
-                onFilterCallback(filtered);
-            }
-        });
-        console.log("Categories initialized successfully.");
-    } catch (error) {
-        console.error("Error initializing categories:", error);
-    }
+    CategoriesMain.init(selector, allWishesData, (selectedTag) => {
+        if (selectedTag === 'all') {
+            onFilterCallback(allWishesData);
+        } else {
+            // Filter logic: category ya tag field se match karega
+            const filtered = allWishesData.filter(wish => 
+                (wish.category || '').toLowerCase() === selectedTag.toLowerCase()
+            );
+            onFilterCallback(filtered);
+        }
+    }, myCategories);
 }
