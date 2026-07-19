@@ -1,28 +1,25 @@
-import CategoriesUI from './categories-ui.js';
-
 const CategoriesMain = {
-    /**
-     * @param {string} containerSelector - HTML element selector
-     * @param {Array} allWishesData - Data array
-     * @param {Function} onFilter - Callback function to update the main grid
-     */
-    init(containerSelector, allWishesData, onFilter) {
+    init(containerSelector, allWishesData, onFilter, categoriesList) {
         const container = document.querySelector(containerSelector);
-        if (!container) {
-            console.error("Categories container not found:", containerSelector);
-            return;
-        }
-        
-        // UI ko render karein aur filter logic pass karein
-        CategoriesUI.render(container, (selectedTag) => {
-            if (selectedTag === 'all') {
-                onFilter(allWishesData);
-            } else {
-                const filteredWishes = allWishesData.filter(wish => wish.tag === selectedTag);
-                console.log("Filtered Wishes:", filteredWishes);
-                onFilter(filteredWishes);
-            }
+        if (!container) return;
+
+        container.innerHTML = ""; // Purane buttons clear karein
+
+        // 'All' button add karein
+        this.createButton(container, 'All', () => onFilter('all'));
+
+        // Aapki 2 categories ke buttons
+        categoriesList.forEach(cat => {
+            this.createButton(container, cat, () => onFilter(cat));
         });
+    },
+
+    createButton(container, label, onClick) {
+        const btn = document.createElement('button');
+        btn.innerText = label;
+        btn.style.margin = "5px";
+        btn.onclick = onClick;
+        container.appendChild(btn);
     }
 };
 
