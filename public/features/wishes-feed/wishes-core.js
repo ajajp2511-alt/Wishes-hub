@@ -1,11 +1,16 @@
 const WishesCore = {
     async loadWishes() {
+        console.log("WishesCore: Attempting to fetch JSON...");
         try {
-            // Absolute path use karein taaki kahin se bhi load ho
+            // Absolute path: `/` root directory se shuru hota hai
             const response = await fetch('/public/features/wishes-feed/data/wishes.json');
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error! Status: ${response.status}`);
+            }
             
             const wishes = await response.json();
+            console.log("WishesCore: Data received:", wishes);
             
             const grid = document.getElementById('wishes-grid');
             if (grid) {
@@ -17,9 +22,11 @@ const WishesCore = {
                 `).join('');
             }
         } catch (error) {
-            console.error("Wishes load nahi ho paya:", error);
+            console.error("WishesCore Error:", error);
             const grid = document.getElementById('wishes-grid');
-            if (grid) grid.innerHTML = "<p>Error loading wishes.</p>";
+            if (grid) {
+                grid.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
         }
     }
 };
