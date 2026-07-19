@@ -8,14 +8,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchLiveWishes() {
+    const gridContainer = document.getElementById('wishes-grid');
+    
     try {
         const response = await fetch(`/api/get-wishes?t=${new Date().getTime()}`);
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
         const result = await response.json();
-        if (!result.success || !result.wishes) return;
+
+        if (!result.success || !result.wishes || result.wishes.length === 0) {
+            gridContainer.innerHTML = "<p style='color:#666;'>No wishes available at the moment.</p>";
+            return;
+        }
 
         allWishesData = result.wishes.map(item => ({
             id: item.id || item._id,
-            title: item.title || item.wishText || '',
+            title: item.title || item.wishText || 'Untitled Wish',
             category: item.category || 'General',
             image: item.image || item.fileUrl || '',
             tag: (item.category || 'General').toLowerCase().trim()
@@ -23,19 +34,21 @@ async function fetchLiveWishes() {
 
         renderCardsToGrid(allWishesData);
         
-        // Yahan categories initialize ho rahi hain
+        // Categories Initialize
         initCategories(allWishesData, (filteredData) => {
             renderCardsToGrid(filteredData);
         });
 
     } catch (error) {
         console.error("Feed Error:", error);
+        gridContainer.innerHTML = `<p style="color:red; text-align:center;">Failed to load wishes. Please try again later.</p>`;
     }
 }
 
 window.renderCardsToGrid = function(wishesArray) {
     const gridContainer = document.getElementById('wishes-grid');
     if (!gridContainer) return;
+    
     gridContainer.innerHTML = ""; 
     
     wishesArray.forEach(wish => {
