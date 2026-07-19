@@ -1,9 +1,8 @@
 const WishesCore = {
     async loadWishes() {
         try {
-            // Path: Root se start karte hue absolute path use karein
+            // Absolute path use karein taaki kahin se bhi load ho
             const response = await fetch('/public/features/wishes-feed/data/wishes.json');
-            
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             const wishes = await response.json();
