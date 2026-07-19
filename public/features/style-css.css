@@ -1,6 +1,7 @@
-@import url('./theme-engine/assets/style-css.css');
-@import url('./localization-manager/assets/style-css.css');
-@import url('./categories-manager/assets/style-css.css');
-@import url('./wishes-feed/assets/style-css.css');
-@import url('./storage-manager/assets/style-css.css');
-@import url('./ui-layout/assets/style-css.css');
+/* Path ko fix karein - root se start karein */
+@import url('/public/features/theme-engine/assets/style-css.css');
+@import url('/public/features/localization-manager/assets/style-css.css');
+@import url('/public/features/categories-manager/assets/style-css.css');
+@import url('/public/features/wishes-feed/assets/style-css.css');
+@import url('/public/features/storage-manager/assets/style-css.css');
+@import url('/public/features/ui-layout/assets/style-css.css');
