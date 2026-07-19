@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
-    <!-- CSS Path fixed to root -->
-    <link rel="stylesheet" href="/public/features/style-css.css">
+    
+    <!-- Master CSS -->
+    <link rel="stylesheet" href="public/features/style-css.css">
 </head>
 <body>
 
@@ -16,7 +17,7 @@
         <!-- Categories Section -->
         <section>
             <div class="section-header"><h2>Browse Categories</h2></div>
-            <div class="categories-container-wrapper">Loading...</div>
+            <div class="categories-container-wrapper"></div>
         </section>
 
         <!-- Wish of the Day -->
@@ -37,13 +38,11 @@
 
     </div>
 
-    <!-- Script Path fixed to root -->
+    <!-- Master Script -->
     <script type="module">
-        import Assembly from '/public/features/assembly.js';
+        import Assembly from './public/features/assembly.js';
         
-        // Debug check
-        console.log("Index: Attempting to load Assembly...");
-        
+        console.log("Index: Loading Assembly...");
         Assembly.initAll();
     </script>
 
