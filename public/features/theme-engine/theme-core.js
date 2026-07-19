@@ -1,8 +1,9 @@
-// Wishes-hub: Theme Core Logic
+import StorageCore from '../storage-manager/storage-core.js';
 import { ThemeConfig } from './theme-config.js';
 
 const ThemeCore = {
-    currentTheme: localStorage.getItem('wishes-hub-theme') || ThemeConfig.defaultTheme,
+    // Ab ye StorageCore ka use karega
+    currentTheme: StorageCore.get('theme') || ThemeConfig.defaultTheme,
 
     init() {
         document.documentElement.setAttribute('data-theme', this.currentTheme);
@@ -10,7 +11,7 @@ const ThemeCore = {
 
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-        localStorage.setItem('wishes-hub-theme', this.currentTheme);
+        StorageCore.set('theme', this.currentTheme); // Data save ho gaya
         document.documentElement.setAttribute('data-theme', this.currentTheme);
     }
 };
