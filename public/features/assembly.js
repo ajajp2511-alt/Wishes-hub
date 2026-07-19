@@ -1,38 +1,41 @@
-// Wishes-hub: Central Assembly Engine
-import initDebugger from './debugger-manager/debug-assembly.js';
-import initStorageManager from './storage-manager/storage-assembly.js';
-import initThemeEngine from './theme-engine/theme-assembly.js';
-import initLocalization from './localization-manager/lang-assembly.js';
-import initCategories from './categories-manager/categories-assembly.js';
-import initWishesFeed from './wishes-feed/wishes-assembly.js';
-import initUiLayout from './ui-layout/ui-assembly.js';
+import initDebugger from '/public/features/debugger-manager/debug-assembly.js';
+import initStorageManager from '/public/features/storage-manager/storage-assembly.js';
+import initThemeEngine from '/public/features/theme-engine/theme-assembly.js';
+import initLocalization from '/public/features/localization-manager/lang-assembly.js';
+import initCategories from '/public/features/categories-manager/categories-assembly.js';
+import initWishesFeed from '/public/features/wishes-feed/wishes-assembly.js';
+import initUiLayout from '/public/features/ui-layout/ui-assembly.js';
 
 const Assembly = {
-    /**
-     * Saare features ko initialize karta hai
-     */
     initAll() {
-        // Sabse pehle debugger start karein taaki errors dikh sakein
+        // 1. Sabse pehle Debugger taaki errors screen par dikhein
         initDebugger();
         
-        console.log("Assembly: Initializing Engine...");
+        console.log("Assembly: Starting Engine...");
 
         try {
-            // 1. Core Services
+            // 2. Core Services
             initStorageManager();
             initLocalization();
             initThemeEngine();
             
-            // 2. UI Layout
+            // 3. Layout aur Content
             initUiLayout();
-            
-            // 3. Page Content
             initCategories();
             initWishesFeed();
             
-            console.log("Assembly: All features loaded successfully.");
+            // 4. Success confirmation
+            const grid = document.getElementById('wishes-grid');
+            if (grid) {
+                grid.innerHTML = "Engine Loaded Successfully!";
+            }
+            console.log("Assembly: All features initialized.");
         } catch (error) {
-            console.error("Assembly: Critical error during initialization:", error);
+            console.error("Assembly: Critical error:", error);
+            const grid = document.getElementById('wishes-grid');
+            if (grid) {
+                grid.innerHTML = "Engine Failed to Load. Check Console.";
+            }
         }
     }
 };
