@@ -1,10 +1,11 @@
-// Wishes-hub Feature Aggregator
+// Updated Wishes-hub: assembly.js
 import initLocalization from './localization-manager/lang-assembly.js';
+import initThemeEngine from './theme-engine/theme-assembly.js';
 
 const Assembly = {
     initAll() {
         initLocalization();
-        // Aage yahan Wishes-hub ke aur features add karenge
+        initThemeEngine(); // Naya feature added
     }
 };
 
