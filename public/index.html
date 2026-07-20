@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
     
-    <!-- Eruda Console for Debugging (Mobile ke liye) -->
+    <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
@@ -25,15 +25,22 @@
         </section>
     </div>
 
+    <!-- Script Block -->
     <script type="module">
+        console.log("Status: Script tag execute ho raha hai...");
+
         import Assembly from './main-assembly.js';
         
-        console.log("Initialization sequence starting...");
+        console.log("Status: Assembly module import ho gaya:", Assembly);
         
         // Engine ko start karein
-        Assembly.initAll().catch(err => {
-            console.error("Critical System Failure:", err);
-        });
+        if (Assembly && typeof Assembly.initAll === 'function') {
+            Assembly.initAll()
+                .then(() => console.log("Status: All systems operational."))
+                .catch(err => console.error("Critical System Failure:", err));
+        } else {
+            console.error("Error: Assembly object ya initAll function nahi mila!");
+        }
     </script>
 </body>
 </html>
