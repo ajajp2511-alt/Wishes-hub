@@ -1,8 +1,3 @@
-/**
- * Wishes-Hub: Main Assembly Engine
- */
-
-// Imports
 import initStorageManager from './features/storage-manager/storage-assembly.js';
 import initDebugger from './features/debugger-manager/debug-assembly.js';
 import initUiLayout from './features/ui-layout/ui-assembly.js';
@@ -16,22 +11,19 @@ import initUserProfile from './features/user-profile/profile-assembly.js';
 import initOfflineManager from './features/offline-manager/offline-assembly.js';
 import initWishOfTheDay from './features/wish-of-the-day/wish-assembly.js';
 
-// Helper to keep the system running even if one module fails
 async function runSafe(func, moduleName) {
     try {
+        console.log(`[System]: Loading ${moduleName}...`);
         await func();
-        console.log(`[System]: ${moduleName} loaded successfully.`);
+        console.log(`[System]: ${moduleName} loaded.`);
     } catch (error) {
         console.error(`[System]: Failed to load ${moduleName}`, error);
     }
 }
 
-// Assembly Engine Object
 const Assembly = {
     initAll: async function() {
-        console.group("Wishes-Hub System Start");
-
-        // Initialization Sequence
+        console.log("Wishes-Hub: Starting sequence...");
         await runSafe(initDebugger, "Debugger");
         await runSafe(initStorageManager, "StorageManager");
         await runSafe(initOfflineManager, "OfflineManager");
@@ -44,11 +36,8 @@ const Assembly = {
         await runSafe(initAnalytics, "Analytics");
         await runSafe(initUserProfile, "UserProfile");
         await runSafe(initNotification, "Notification");
-
-        console.groupEnd();
         console.log("Wishes-Hub: All systems operational.");
     }
 };
 
-// Zaroori: Export karna
 export default Assembly;
