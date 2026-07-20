@@ -3,53 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub</title>
+    <title>Wishes-hub Test</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <!-- Search Input -->
-        <section>
-            <input type="text" id="search-input" placeholder="Wishes search karein..." style="width:100%; padding:10px; margin-bottom:10px;">
-        </section>
-
-        <!-- Categories -->
-        <section>
-            <h2>Browse Categories</h2>
-            <div class="categories-container-wrapper"></div>
-        </section>
-
-        <!-- Wish of the Day & Latest -->
-        <section id="latest-wishes-section">
-            <h2>Wish of the Day</h2>
-            <div id="daily-wish-text">Loading...</div>
-            
-            <h2>Latest Wishes</h2>
-            <div id="wishes-grid"></div>
-        </section>
+        <h1>System Testing...</h1>
+        <div id="status">Checking console for logs...</div>
     </div>
 
-    <!-- Main Logic Script -->
     <script type="module">
-        console.log("TEST: HTML file load ho gayi. Script execute ho rahi hai...");
+        console.log("TEST: HTML load ho gaya, ab Assembly import kar rahe hain...");
         
         try {
-            // Kyunki index.html aur main-assembly.js dono 'public' folder ke andar hain, 
-            // isliye ./ ka istemal sahi hai.
+            // Assembly import
             const module = await import('./main-assembly.js');
-            console.log("TEST: Module successfully imported:", module);
             
-            // Execute Assembly
             if (module.default && typeof module.default.initAll === 'function') {
                 await module.default.initAll();
-                console.log("TEST: initAll() complete ho gaya.");
+                document.getElementById('status').innerText = "System loaded successfully!";
             } else {
-                console.error("TEST: Assembly object ya initAll function nahi mila!");
+                document.getElementById('status').innerText = "Error: initAll not found.";
             }
         } catch (err) {
-            console.error("TEST: Import ya Execution me error aaya:", err);
+            console.error("TEST: Error loading assembly:", err);
+            document.getElementById('status').innerText = "Error: Check Console.";
         }
     </script>
 </body>
