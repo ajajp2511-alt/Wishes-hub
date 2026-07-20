@@ -4,30 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
+    
+    <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
+        <!-- Search Input -->
         <section>
-            <input type="text" id="search-input" placeholder="Wishes search karein..." style="width:100%; padding:10px;">
+            <input type="text" id="search-input" placeholder="Wishes search karein..." style="width:100%; padding:10px; margin-bottom:10px;">
         </section>
+
+        <!-- Categories -->
+        <section>
+            <h2>Browse Categories</h2>
+            <div class="categories-container-wrapper"></div>
+        </section>
+
+        <!-- Wish of the Day & Latest -->
         <section id="latest-wishes-section">
             <h2>Wish of the Day</h2>
             <div id="daily-wish-text">Loading...</div>
+            
             <h2>Latest Wishes</h2>
             <div id="wishes-grid"></div>
         </section>
     </div>
 
+    <!-- Main Logic Script -->
     <script type="module">
-        console.log("DEBUG: HTML script tag load hua");
-        import Assembly from './main-assembly.js';
-        console.log("DEBUG: Module import ho gaya");
+        console.log("TEST: HTML file load ho gayi. Script execute ho rahi hai...");
         
-        Assembly.initAll()
-            .then(() => console.log("DEBUG: All systems operational"))
-            .catch(err => console.error("DEBUG: Crash hua:", err));
+        try {
+            // Import logic
+            const module = await import('./main-assembly.js');
+            console.log("TEST: Module successfully imported:", module);
+            
+            // Execute Assembly
+            if (module.default && typeof module.default.initAll === 'function') {
+                await module.default.initAll();
+                console.log("TEST: initAll() complete ho gaya.");
+            } else {
+                console.error("TEST: Assembly object ya initAll function nahi mila!");
+            }
+        } catch (err) {
+            console.error("TEST: Import ya Execution me error aaya:", err);
+        }
     </script>
 </body>
 </html>
