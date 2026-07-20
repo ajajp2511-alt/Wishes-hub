@@ -14,24 +14,24 @@
         <div id="status">Loading systems...</div>
     </div>
 
-    <!-- Main Logic Script -->
+    <!-- Main Logic Script: Yahan ./main.js ka use karein -->
     <script type="module">
-        console.log("TEST: HTML load ho gaya, ab main.js import kar rahe hain...");
+        console.log("TEST: HTML load ho gaya, ab main.js load kar rahe hain...");
         
-        try {
-            // Ab file ka naam main.js hai aur root public hai, isliye ./ use karein
-            const module = await import('./main.js');
-            
-            if (module.default && typeof module.default.initAll === 'function') {
-                await module.default.initAll();
-                document.getElementById('status').innerText = "System loaded successfully!";
+        // Import karte samay path ko verify karein
+        import('./main.js').then((module) => {
+            const Assembly = module.default;
+            if (Assembly && typeof Assembly.initAll === 'function') {
+                Assembly.initAll().then(() => {
+                    document.getElementById('status').innerText = "System loaded successfully!";
+                });
             } else {
                 document.getElementById('status').innerText = "Error: initAll function nahi mila.";
             }
-        } catch (err) {
+        }).catch((err) => {
             console.error("TEST: Error loading main.js:", err);
             document.getElementById('status').innerText = "Error: Check Console.";
-        }
+        });
     </script>
 </body>
 </html>
