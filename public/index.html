@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub Test</title>
+    <title>Wishes-hub</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>System Testing...</h1>
-        <div id="status">Checking console for logs...</div>
+        <h1>Wishes-hub System</h1>
+        <div id="status">Loading systems...</div>
     </div>
 
+    <!-- Main Logic Script -->
     <script type="module">
-        console.log("TEST: HTML load ho gaya, ab Assembly import kar rahe hain...");
+        console.log("TEST: HTML load ho gaya, ab main.js import kar rahe hain...");
         
         try {
-            // Assembly import
-            const module = await import('./main-assembly.js');
+            // Ab file ka naam main.js hai aur root public hai, isliye ./ use karein
+            const module = await import('./main.js');
             
             if (module.default && typeof module.default.initAll === 'function') {
                 await module.default.initAll();
                 document.getElementById('status').innerText = "System loaded successfully!";
             } else {
-                document.getElementById('status').innerText = "Error: initAll not found.";
+                document.getElementById('status').innerText = "Error: initAll function nahi mila.";
             }
         } catch (err) {
-            console.error("TEST: Error loading assembly:", err);
+            console.error("TEST: Error loading main.js:", err);
             document.getElementById('status').innerText = "Error: Check Console.";
         }
     </script>
