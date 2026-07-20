@@ -8,28 +8,16 @@
 <body>
     <div class="main-container">
         <section>
-            <div class="section-header"><h2>Browse Categories</h2></div>
+            <h2>Browse Categories</h2>
             <div class="categories-container-wrapper"></div>
-        </section>
-
-        <section id="wish-of-the-day-section">
-            <div class="wish-of-the-day-banner">
-                <span class="banner-badge">Wish of the Day</span>
-                <p class="banner-text" id="daily-wish-text">Loading...</p>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-header"><h2>Latest Wishes</h2></div>
-            <div id="wishes-grid" class="grid-container wishes-feed-container">
-                <p>Initializing Engine...</p>
-            </div>
         </section>
     </div>
 
     <script type="module">
-        import Assembly from '/public/features/assembly.js';
-        Assembly.initAll().catch(e => console.error("Load Error:", e));
+        import initCategories from '/public/features/categories-manager/categories-assembly.js';
+        
+        // Direct call, no complex engine logic
+        initCategories();
     </script>
 </body>
-        </html>
+</html>
