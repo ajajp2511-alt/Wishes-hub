@@ -1,25 +1,22 @@
 const CategoriesCore = {
-    async loadCategories() {
-        try {
-            const response = await fetch('/public/features/categories-manager/data/categories.json');
-            const categories = await response.json();
-            
-            console.log("Categories Loaded:", categories); // Ye console mein check karein
-            
-            const container = document.querySelector('.categories-container-wrapper');
-            if (container) {
-                container.innerHTML = categories.map(cat => `
-                    <a href="#" class="festival-item-card">
-                        <div class="festival-icon-circle">${cat.icon}</div>
-                        <span class="festival-name">${cat.name}</span>
-                    </a>
-                `).join('');
-            } else {
-                console.error("Container .categories-container-wrapper nahi mila!");
-            }
-        } catch (error) {
-            console.error("Error loading categories:", error);
-        }
+    render() {
+        const container = document.querySelector('.categories-container-wrapper');
+        if (!container) return;
+
+        const data = [
+            { "name": "Diwali", "icon": "🌸" },
+            { "name": "Makar S.", "icon": "🪁" },
+            { "name": "Rakhi", "icon": "❤️" },
+            { "name": "Holi", "icon": "🎨" }
+        ];
+
+        container.innerHTML = data.map(cat => `
+            <div class="category-item" style="display:inline-block; margin:10px; padding:15px; border:1px solid #000; border-radius:10px;">
+                <div style="font-size: 24px;">${cat.icon}</div>
+                <div>${cat.name}</div>
+            </div>
+        `).join('');
     }
 };
+
 export default CategoriesCore;
