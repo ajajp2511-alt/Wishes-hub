@@ -37,8 +37,8 @@
         console.log("TEST: HTML file load ho gayi. Script execute ho rahi hai...");
         
         try {
-            // Import logic
-            const module = await import('./main-assembly.js');
+            // Updated path to point to /public/main-assembly.js
+            const module = await import('./public/main-assembly.js');
             console.log("TEST: Module successfully imported:", module);
             
             // Execute Assembly
