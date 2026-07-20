@@ -22,9 +22,11 @@
     </div>
 
     <script type="module">
-        // Root se public folder ka sahi path
-        import Assembly from './public/features/assembly.js';
-        Assembly.initAll();
+        // SAHI PATH: Kyunki aap 'public' folder ke andar hi hain, 
+        // seedha 'features' folder ko access karein.
+        import Assembly from './features/assembly.js';
+        
+        Assembly.initAll().catch(err => console.error("Assembly Init Failed:", err));
     </script>
 </body>
 </html>
