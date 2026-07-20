@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
-    
-    <!-- Master CSS -->
-    <link rel="stylesheet" href="public/features/style-css.css">
 </head>
 <body>
-
-    <canvas id="animation-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1;"></canvas>
 
     <div class="main-container">
 
         <!-- Categories Section -->
         <section>
             <div class="section-header"><h2>Browse Categories</h2></div>
+            <!-- Yahan categories load hongi -->
             <div class="categories-container-wrapper"></div>
         </section>
 
@@ -38,12 +34,19 @@
 
     </div>
 
-    <!-- Master Script -->
+    <!-- Master Script: Path root se start ho raha hai -->
     <script type="module">
-        import Assembly from './public/features/assembly.js';
+        import Assembly from '/public/features/assembly.js';
         
-        console.log("Index: Loading Assembly...");
-        Assembly.initAll();
+        console.log("Index: Starting System Assembly...");
+        
+        // Engine ko initialize karein
+        Assembly.initAll().then(() => {
+            console.log("Index: System successfully loaded.");
+        }).catch(err => {
+            console.error("Index: Critical failure", err);
+            document.getElementById('wishes-grid').innerHTML = "Error loading engine. Check console.";
+        });
     </script>
 
 </body>
