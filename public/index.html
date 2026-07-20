@@ -4,29 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
+
+    <!-- Eruda Console (Isse error pata chalega) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <section>
-            <h2>Browse Categories</h2>
-            <div class="categories-container-wrapper"></div>
-        </section>
-        <section>
-            <h2>Wish of the Day</h2>
-            <div id="daily-wish-text">Loading...</div>
-        </section>
-        <section>
-            <h2>Latest Wishes</h2>
-            <div id="wishes-grid"></div>
-        </section>
+        <!-- ... aapka baki body content ... -->
     </div>
 
     <script type="module">
-        // SAHI PATH: Kyunki aap 'public' folder ke andar hi hain, 
-        // seedha 'features' folder ko access karein.
         import Assembly from './features/assembly.js';
-        
-        Assembly.initAll().catch(err => console.error("Assembly Init Failed:", err));
+        Assembly.initAll();
     </script>
 </body>
 </html>
