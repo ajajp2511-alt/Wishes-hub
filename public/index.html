@@ -6,17 +6,12 @@
     <title>Wishes-hub</title>
 </head>
 <body>
-
     <div class="main-container">
-
-        <!-- Categories Section -->
         <section>
             <div class="section-header"><h2>Browse Categories</h2></div>
-            <!-- Yahan categories load hongi -->
             <div class="categories-container-wrapper"></div>
         </section>
 
-        <!-- Wish of the Day -->
         <section id="wish-of-the-day-section">
             <div class="wish-of-the-day-banner">
                 <span class="banner-badge">Wish of the Day</span>
@@ -24,30 +19,17 @@
             </div>
         </section>
 
-        <!-- Dynamic Wishes Grid -->
         <section>
             <div class="section-header"><h2>Latest Wishes</h2></div>
             <div id="wishes-grid" class="grid-container wishes-feed-container">
-                <p>Initializing Wishes-hub Engine...</p>
+                <p>Initializing Engine...</p>
             </div>
         </section>
-
     </div>
 
-    <!-- Master Script: Path root se start ho raha hai -->
     <script type="module">
         import Assembly from '/public/features/assembly.js';
-        
-        console.log("Index: Starting System Assembly...");
-        
-        // Engine ko initialize karein
-        Assembly.initAll().then(() => {
-            console.log("Index: System successfully loaded.");
-        }).catch(err => {
-            console.error("Index: Critical failure", err);
-            document.getElementById('wishes-grid').innerHTML = "Error loading engine. Check console.";
-        });
+        Assembly.initAll().catch(e => console.error("Load Error:", e));
     </script>
-
 </body>
-</html>
+        </html>
