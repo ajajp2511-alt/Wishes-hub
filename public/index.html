@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Search Input jo script dhund rahi hai -->
+        <!-- Search Input -->
         <section>
             <input type="text" id="search-input" placeholder="Wishes search karein..." style="width:100%; padding:10px; margin-bottom:10px;">
         </section>
@@ -30,7 +30,15 @@
         </section>
     </div>
 
-    <!-- Yahan type="module" lagana zaroori hai -->
-    <script type="module" src="main-assembly.js"></script>
+    <!-- Script Block (Type Module zaroori hai) -->
+    <script type="module">
+        import Assembly from './main-assembly.js';
+        
+        console.log("Wishes-Hub: Loading modules...");
+        
+        Assembly.initAll()
+            .then(() => console.log("Wishes-Hub: Startup complete."))
+            .catch(err => console.error("Wishes-Hub: Startup failed.", err));
+    </script>
 </body>
 </html>
