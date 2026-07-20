@@ -26,33 +26,29 @@ async function runSafe(func, moduleName) {
     }
 }
 
-// Master Initialization Sequence
-async function initAll() {
-    console.group("Wishes-Hub System Start");
+// Assembly Engine Object
+const Assembly = {
+    initAll: async function() {
+        console.group("Wishes-Hub System Start");
 
-    // 1. Core Services (Dependencies first)
-    await runSafe(initDebugger, "Debugger");
-    await runSafe(initStorageManager, "StorageManager");
-    await runSafe(initOfflineManager, "OfflineManager");
+        // Initialization Sequence
+        await runSafe(initDebugger, "Debugger");
+        await runSafe(initStorageManager, "StorageManager");
+        await runSafe(initOfflineManager, "OfflineManager");
+        await runSafe(initUiLayout, "UiLayout");
+        await runSafe(initPageManager, "PageManager");
+        await runSafe(initWishOfTheDay, "WishOfTheDay");
+        await runSafe(initFeeders, "Feeders");
+        await runSafe(initInteraction, "Interaction");
+        await runSafe(initShareManager, "ShareManager");
+        await runSafe(initAnalytics, "Analytics");
+        await runSafe(initUserProfile, "UserProfile");
+        await runSafe(initNotification, "Notification");
 
-    // 2. UI & Foundation
-    await runSafe(initUiLayout, "UiLayout");
-    await runSafe(initPageManager, "PageManager");
+        console.groupEnd();
+        console.log("Wishes-Hub: All systems operational.");
+    }
+};
 
-    // 3. Features & Content
-    await runSafe(initWishOfTheDay, "WishOfTheDay");
-    await runSafe(initFeeders, "Feeders");
-    await runSafe(initInteraction, "Interaction");
-    await runSafe(initShareManager, "ShareManager");
-
-    // 4. Intelligence & Personalization
-    await runSafe(initAnalytics, "Analytics");
-    await runSafe(initUserProfile, "UserProfile");
-    await runSafe(initNotification, "Notification");
-
-    console.groupEnd();
-    console.log("Wishes-Hub: All systems operational.");
-}
-
-// Start the engine
-initAll();
+// Zaroori: Export karna
+export default Assembly;
