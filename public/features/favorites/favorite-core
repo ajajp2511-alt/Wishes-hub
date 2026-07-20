@@ -1,0 +1,19 @@
+const FavoritesCore = {
+    init() {
+        console.log("Favorites: Engine initialized.");
+    },
+    
+    toggleFavorite(wishId) {
+        // Yahan logic hoga: wishId ko LocalStorage mein save ya remove karna
+        let favs = JSON.parse(localStorage.getItem('myFavorites') || '[]');
+        if (favs.includes(wishId)) {
+            favs = favs.filter(id => id !== wishId);
+        } else {
+            favs.push(wishId);
+        }
+        localStorage.setItem('myFavorites', JSON.stringify(favs));
+        console.log("Favorites: Updated", favs);
+    }
+};
+
+export default FavoritesCore;
