@@ -4,19 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
-
-    <!-- Eruda Console (Isse error pata chalega) -->
+    
+    <!-- Eruda Console for debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <!-- ... aapka baki body content ... -->
+        <section>
+            <h2>Browse Categories</h2>
+            <div class="categories-container-wrapper"></div>
+        </section>
+        <section>
+            <h2>Wish of the Day</h2>
+            <div id="daily-wish-text">Loading...</div>
+        </section>
+        <section>
+            <h2>Latest Wishes</h2>
+            <div id="wishes-grid"></div>
+        </section>
     </div>
 
     <script type="module">
-        import Assembly from './features/assembly.js';
-        Assembly.initAll();
+        // Kyunki index.html aur main-assembly.js ek hi folder mein hain
+        import Assembly from './main-assembly.js';
+        
+        console.log("Main Assembly loading initiated...");
+        
+        // Assembly init call
+        Assembly.initAll().catch(err => {
+            console.error("Assembly Init Failed:", err);
+        });
     </script>
 </body>
 </html>
