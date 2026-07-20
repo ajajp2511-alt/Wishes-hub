@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub</title>
     
-    <!-- Eruda Console for debugging -->
+    <!-- Eruda Console for Debugging (Mobile ke liye) -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
@@ -26,14 +26,13 @@
     </div>
 
     <script type="module">
-        // Kyunki index.html aur main-assembly.js ek hi folder mein hain
         import Assembly from './main-assembly.js';
         
-        console.log("Main Assembly loading initiated...");
+        console.log("Initialization sequence starting...");
         
-        // Assembly init call
+        // Engine ko start karein
         Assembly.initAll().catch(err => {
-            console.error("Assembly Init Failed:", err);
+            console.error("Critical System Failure:", err);
         });
     </script>
 </body>
