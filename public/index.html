@@ -7,19 +7,16 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Categories -->
         <section>
             <h2>Browse Categories</h2>
             <div class="categories-container-wrapper"></div>
         </section>
 
-        <!-- Wish of the Day -->
         <section>
             <h2>Wish of the Day</h2>
             <div id="daily-wish-text">Loading...</div>
         </section>
 
-        <!-- Latest Wishes -->
         <section>
             <h2>Latest Wishes</h2>
             <div id="wishes-grid"></div>
@@ -27,13 +24,8 @@
     </div>
 
     <script type="module">
-        import initCategories from '/public/features/categories-manager/categories-assembly.js';
-        import initWishOfTheDay from '/public/features/wish-of-the-day/wish-assembly.js';
-        import initWishesFeed from '/public/features/wishes-feed/wishes-assembly.js';
-        
-        initCategories();
-        initWishOfTheDay();
-        initWishesFeed();
+        import Assembly from '/public/features/assembly.js';
+        Assembly.initAll(); // Sirf ye ek call
     </script>
 </body>
 </html>
