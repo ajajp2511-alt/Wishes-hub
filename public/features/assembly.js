@@ -8,27 +8,28 @@ import initUiLayout from '/public/features/ui-layout/ui-assembly.js';
 
 const Assembly = {
     async initAll() {
-        initDebugger();
         console.log("Assembly: Starting Engine...");
 
-        try {
-            initStorageManager();
-            initLocalization();
-            initThemeEngine();
-            initUiLayout();
-            initCategories();
-            
-            // Sabse zaroori: Wishes load hone tak wait karein
-            await initWishesFeed();
-            
-            console.log("Assembly: All features initialized successfully.");
-        } catch (error) {
-            console.error("Assembly: Critical error during initialization:", error);
-            const grid = document.getElementById('wishes-grid');
-            if (grid) {
-                grid.innerHTML = "Engine Failed to Load. Check Console.";
+        // Har module ko ek safe helper function mein run karenge
+        const runSafe = async (fn, name) => {
+            try {
+                if (typeof fn === 'function') await fn();
+                console.log(`Assembly: ${name} loaded.`);
+            } catch (e) {
+                console.error(`Assembly: Failed to load ${name}`, e);
             }
-        }
+        };
+
+        // Execution Sequence
+        await runSafe(initDebugger, "Debugger");
+        await runSafe(initStorageManager, "StorageManager");
+        await runSafe(initLocalization, "Localization");
+        await runSafe(initThemeEngine, "ThemeEngine");
+        await runSafe(initUiLayout, "UiLayout");
+        await runSafe(initCategories, "Categories");
+        await runSafe(initWishesFeed, "WishesFeed");
+
+        console.log("Assembly: Engine Boot Sequence Complete.");
     }
 };
 
