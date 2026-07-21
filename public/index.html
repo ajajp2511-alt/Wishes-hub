@@ -17,8 +17,8 @@
     <script type="module">
         console.log("LOG: Script execution started.");
         try {
-            console.log("LOG: Attempting to import storage-assembly.js...");
-            const module = await import('./features/storage/storage-assembly.js');
+            console.log("LOG: Attempting to import storage-assembly.js with public path...");
+            const module = await import('./public/features/storage/storage-assembly.js');
             console.log("LOG: Import successful!", module);
             document.getElementById('status').innerText = "Loaded successfully!";
         } catch (error) {
