@@ -4,28 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub - Direct Test</title>
-    <!-- Eruda Console for Debugging -->
+    <!-- Eruda Console -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
         <h1>Storage Test System</h1>
-        <div id="status">Checking storage assembly...</div>
+        <div id="status">Loading...</div>
     </div>
 
-    <!-- Direct Storage Assembly Import -->
     <script type="module">
-        import initStorageManager from './features/storage/storage-assembly.js';
-
+        console.log("LOG: Script execution started.");
         try {
-            console.log("TEST: Loading storage assembly directly...");
-            const result = initStorageManager();
-            document.getElementById('status').innerText = "Success! Storage loaded.";
-            console.log("TEST: Storage result:", result);
-        } catch (err) {
-            console.error("TEST: Failed to load storage:", err);
-            document.getElementById('status').innerText = "Error: Check Console.";
+            console.log("LOG: Attempting to import storage-assembly.js...");
+            const module = await import('./features/storage/storage-assembly.js');
+            console.log("LOG: Import successful!", module);
+            document.getElementById('status').innerText = "Loaded successfully!";
+        } catch (error) {
+            console.error("LOG: Import failed with error:", error);
+            document.getElementById('status').innerText = "Error: " + error.message;
         }
     </script>
 </body>
