@@ -1,10 +1,14 @@
 const StorageCore = {
     data: {},
-    // Admin panel ka endpoint yahan define hoga
-    API_URL: "https://your-admin-panel-url.com/api/v1/data", 
+    API_URL: "", // Filhal blank rakhein ya apna sahi URL dein
 
     async init() {
         try {
+            if (!this.API_URL || this.API_URL.includes("your-admin-panel-url")) {
+                console.log("StorageManager: No Admin URL provided, skipping remote fetch.");
+                return;
+            }
+            
             console.log("StorageManager: Fetching from Admin Panel...");
             const response = await fetch(this.API_URL);
             
@@ -13,15 +17,8 @@ const StorageCore = {
             this.data = await response.json();
             console.log("StorageManager: Data loaded from Admin.");
         } catch (e) {
-            console.error("StorageManager: Fallback to local data", e);
-            // Agar Admin Panel down ho toh local JSON use karenge
-            await this.loadLocalBackup();
+            console.error("StorageManager: Error fetching data", e);
         }
-    },
-
-    async loadLocalBackup() {
-        const response = await fetch('/public/data/global-config.json');
-        this.data = await response.json();
     },
 
     getData(key) {
