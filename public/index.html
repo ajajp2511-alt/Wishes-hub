@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub - Step by Step Test</title>
+    <title>Wishes-hub - JS Folder Test</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>Step-by-Step Path Test</h1>
-        <div id="status">Checking Assembly File...</div>
+        <h1>JS Folder Connection Test</h1>
+        <div id="status">Connecting to js/test.js...</div>
     </div>
 
-    <!-- Complete Test Script -->
+    <!-- Test Script Loader -->
     <script type="module">
-        console.log("LOG: Test script started.");
+        console.log("LOG: Checking js folder connection...");
         try {
-            console.log("LOG: Importing storage-assembly.js...");
+            // js folder se test.js ko import kiya ja raha hai
+            const testModule = await import('./js/test.js');
+            console.log("LOG: Import successful!", testModule);
             
-            const storageModule = await import('./features/storage/storage-assembly.js');
-            console.log("LOG: Module imported:", storageModule);
+            const message = testModule.showTestMessage();
+            document.getElementById('status').innerText = "Success: " + message;
             
-            const result = storageModule.default();
-            console.log("LOG: Function executed:", result);
-            
-            document.getElementById('status').innerText = "Success: " + result.status;
-
         } catch (error) {
-            console.error("LOG: Error caught:", error);
+            console.error("LOG: Connection Failed:", error);
             document.getElementById('status').innerText = "Error: " + error.message;
         }
     </script>
