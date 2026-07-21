@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.status === 200) {
                 const sidebarHtml = await response.text();
                 adminWrapper.insertAdjacentHTML('afterbegin', sidebarHtml);
+                
+                // Sidebar load hone ke BAAD hi functions ko trigger karein
                 initSidebarToggleEngine();
                 bindSidebarDynamicNavigation(); 
             }
@@ -30,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 3. Sidebar Responsive Toggle View Engine
     function initSidebarToggleEngine() {
         const toggleBtn = document.getElementById('toggle-sidebar-btn');
         const sidebar = document.querySelector('.sidebar');
@@ -54,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 4. Trapping Clicks On Dynamic Sidebar Links
     function bindSidebarDynamicNavigation() {
         document.body.addEventListener('click', function(e) {
             const link = e.target.closest('.nav-link') || e.target.closest('[data-feature]');
@@ -73,7 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!workspaceArea) return;
 
-            if (targetFeature === 'wishes') {
+            console.log(`📡 Router routing screen focus to: ${targetFeature}`);
+
+            if (targetFeature === 'wishes' || targetFeature === 'add-wish') {
                 loadLivePreviewComponent();
             } 
             else if (targetFeature === 'manage-wishes' || targetFeature === 'wishes-list') {
@@ -83,11 +89,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (typeof window.renderSettingsModule === 'function') {
                     window.renderSettingsModule(workspaceArea);
                 } else {
-                    workspaceArea.innerHTML = `<div style="padding: 20px; color:#fff;"><h2 style="color:#ff4a4a;">⚠️ Component Error</h2></div>`;
+                    workspaceArea.innerHTML = `
+                        <div style="padding: 20px; color:#fff;">
+                            <h2 style="color:#ff4a4a;">⚠️ Component Error</h2>
+                            <p style="color:#94a3b8; margin-top:10px;">settings.js context is strictly missing or failed to initialize.</p>
+                        </div>`;
                 }
             } 
             else {
-                workspaceArea.innerHTML = `<div style="padding: 20px; color:#fff;"><h2>📋 ${feature.toUpperCase()} Panel</h2><p style="color:#94a3b8;">Under active development.</p></div>`;
+                workspaceArea.innerHTML = `
+                    <div style="padding: 20px; color:#fff;">
+                        <h2>📋 ${feature.toUpperCase()} Panel</h2>
+                        <p style="color:#94a3b8; margin-top:10px;">This section is under active development.</p>
+                    </div>`;
             }
 
             const sidebar = document.querySelector('.sidebar');
@@ -97,11 +111,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // 5. Dropdowns Populater Engine (Strict Global Protection)
     function populateRealCategories() {
         const mainCatDropdown = document.getElementById('main-category');
         const subCatDropdown = document.getElementById('sub-category');
         
-        if (typeof categoriesConfig === 'undefined' || !mainCatDropdown || !subCatDropdown) return;
+        if (typeof categoriesConfig === 'undefined' || !mainCatDropdown || !subCatDropdown) {
+            console.log("Waiting for category config script to initialize...");
+            return;
+        }
 
         mainCatDropdown.innerHTML = '<option value="">Select Main Category</option>';
 
@@ -126,30 +144,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // 6. DYNAMIC MULTI-MEDIA COMPONENT WRITER (ADD NEW WISH)
     async function loadLivePreviewComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
         const animationSelectorHtml = (window.AnimationSelector && typeof window.AnimationSelector.render === 'function')
             ? window.AnimationSelector.render()
-            : `<div class="form-group" style="margin-top: 15px; padding: 10px; border: 1px dashed red; border-radius: 6px;"><label style="color: #ff4a4a;">⚠️ Animation selector failed to load</label></div>`;
+            : `<div class="form-group" style="margin-top: 15px; padding: 10px; border: 1px dashed red; border-radius: 6px;">
+                   <label style="color: #ff4a4a; font-weight: bold;">⚠️ Animation selector failed to load dynamically</label>
+               </div>`;
 
         const secureComponentHtml = `
             <div class="feature-card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
                     <h2 style="color: var(--text-main); font-weight: 600; margin:0;">Add New Multi-Media Wish</h2>
-                    <button type="button" id="btn-view-all-wishes" style="background:#10b981; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:600;">📋 View / Manage All Wishes</button>
+                    <button type="button" id="btn-view-all-wishes" style="background:#10b981; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:600;">📋 View / Manage All Wishes</button>
                 </div>
                 
                 <form id="wishFormSandbox">
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Main Category</label>
-                        <select id="main-category" required><option value="">Select Main Category</option></select>
+                        <select id="main-category" required>
+                            <option value="">Select Main Category</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">Sub Category</label>
-                        <select id="sub-category"><option value="">Select Sub Category</option></select>
+                        <select id="sub-category">
+                            <option value="">Select Sub Category</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -184,7 +209,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="file" id="wish-image-file" accept="image/*" style="background: #f1f5f9; padding: 10px; border: 1px dashed var(--border); width: 100%; box-sizing: border-box;">
                     </div>
 
-                    <div id="animation-selector-placeholder">${animationSelectorHtml}</div>
+                    <div id="animation-selector-placeholder">
+                        ${animationSelectorHtml}
+                    </div>
 
                     <div id="live-preview-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;"></div>
                     <div id="status-box-system" style="margin-top: 15px; padding: 12px; border-radius: 6px; background: #1e293b; color: #ffea00; font-weight: bold; display: none;"></div>
@@ -197,7 +224,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         workspaceArea.innerHTML = secureComponentHtml;
         populateRealCategories();
 
-        document.getElementById('btn-view-all-wishes').addEventListener('click', loadWishesManagerComponent);
+        // 🔥 View / Manage All Wishes button click listener
+        const manageBtn = document.getElementById('btn-view-all-wishes');
+        if (manageBtn) {
+            manageBtn.addEventListener('click', () => {
+                loadWishesManagerComponent();
+            });
+        }
 
         if (typeof initMediaUploaderFeature === 'function') initMediaUploaderFeature();
         if (typeof initVoiceRecorderFeature === 'function') initVoiceRecorderFeature();
@@ -225,6 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 7. CORE RUNTIME UPLOAD TRANSMITTER
     async function triggerSystemUploadEngine() {
         const statusBox = document.getElementById('status-box-system');
         if (!statusBox) return;
@@ -305,20 +339,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 🔥 =========================================================
-    // 🗑️ & ✏️ WISHES LIST & EDIT / DELETE ENGINE (NEW ADDITION)
-    // =========================================================
+    // 🔥 8. ALL WISHES LIST VIEW & MANAGE (EDIT / DELETE) COMPONENT
     async function loadWishesManagerComponent() {
         const workspaceArea = document.querySelector('.content-workspace');
         if (!workspaceArea) return;
 
         workspaceArea.innerHTML = `
-            <div class="feature-card">
+            <div class="feature-card" style="padding:20px; background:#0f172a; border-radius:12px; color:#fff;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                    <h2 style="color: var(--text-main); font-weight: 600; margin:0;">📋 Manage All Wishes</h2>
-                    <button id="btn-add-new-wish-view" style="background:#2563eb; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:600;">➕ Add New Wish</button>
+                    <h2 style="color: #f8fafc; font-weight: 600; margin:0;">📋 All Database Wishes</h2>
+                    <button id="btn-back-to-add" style="background:#2563eb; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600;">➕ Add New Wish</button>
                 </div>
-                <div id="wishes-table-status" style="color:#94a3b8; font-weight:bold; padding:10px 0;">⏳ Loading wishes from database...</div>
+                
+                <div id="wishes-table-status" style="color:#fbbf24; font-weight:bold; padding:15px 0;">⏳ Loading database wishes...</div>
+                
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; margin-top:10px; color:#fff; text-align:left;">
                         <thead>
@@ -335,7 +369,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
 
-        document.getElementById('btn-add-new-wish-view').addEventListener('click', loadLivePreviewComponent);
+        document.getElementById('btn-back-to-add').addEventListener('click', () => {
+            loadLivePreviewComponent();
+        });
 
         try {
             const res = await fetch('/api/get-wishes');
@@ -344,74 +380,84 @@ document.addEventListener('DOMContentLoaded', async () => {
             const statusText = document.getElementById('wishes-table-status');
             const tbody = document.getElementById('wishes-table-body');
 
-            if (data.success && data.wishes.length > 0) {
+            if (data.success && data.wishes && data.wishes.length > 0) {
                 statusText.style.display = "none";
+                
                 tbody.innerHTML = data.wishes.map(wish => `
                     <tr style="border-bottom:1px solid #334155;">
                         <td style="padding:10px;">
-                            ${wish.image ? `<img src="${wish.image}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">` : 'No Image'}
+                            ${wish.image ? `<img src="${wish.image}" style="width:45px; height:45px; object-fit:cover; border-radius:6px;">` : '<span style="color:#64748b;">No Img</span>'}
                         </td>
-                        <td style="padding:10px; max-width:250px; word-wrap:break-word;">
+                        <td style="padding:10px; max-width:260px; word-wrap:break-word; color:#e2e8f0;">
                             ${wish.title || wish.wishText || 'N/A'}
                         </td>
                         <td style="padding:10px;">
-                            <span style="background:#334155; padding:4px 8px; border-radius:4px; font-size:12px;">${wish.category || 'General'}</span>
+                            <span style="background:#334155; color:#38bdf8; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">${wish.category || 'General'}</span>
                         </td>
                         <td style="padding:10px; text-align:center;">
-                            <button class="btn-edit-wish" data-id="${wish.id}" data-text="${encodeURIComponent(wish.title || '')}" data-cat="${encodeURIComponent(wish.category || '')}" style="background:#f59e0b; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; margin-right:5px; font-weight:bold;">✏️ Edit</button>
-                            <button class="btn-delete-wish" data-id="${wish.id}" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">🗑️ Delete</button>
+                            <button class="btn-edit-action" data-id="${wish.id}" data-text="${encodeURIComponent(wish.title || '')}" data-cat="${encodeURIComponent(wish.category || '')}" style="background:#f59e0b; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; margin-right:6px; font-weight:bold;">✏️ Edit</button>
+                            <button class="btn-delete-action" data-id="${wish.id}" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold;">🗑️ Delete</button>
                         </td>
                     </tr>
                 `).join('');
 
-                // 🗑️ Bind Delete Buttons
-                document.querySelectorAll('.btn-delete-wish').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const wishId = e.target.getAttribute('data-id');
-                        if (confirm("Kya aap is wish ko delete karna chahte hain?")) {
-                            const delRes = await fetch(`/api/manage-wish?id=${wishId}`, { method: 'DELETE' });
-                            const delData = await delRes.json();
-                            if (delData.success) {
-                                alert("✅ Wish deleted successfully!");
-                                loadWishesManagerComponent();
-                            } else {
-                                alert("❌ Error: " + delData.message);
+                // 🗑️ Delete Button Engine
+                document.querySelectorAll('.btn-delete-action').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const wishId = e.currentTarget.getAttribute('data-id');
+                        if (confirm("Kya aap sach me is wish ko delete karna chahte hain?")) {
+                            try {
+                                const delRes = await fetch(`/api/manage-wish?id=${wishId}`, { method: 'DELETE' });
+                                const delData = await delRes.json();
+                                if (delData.success) {
+                                    alert("✅ Wish deleted successfully!");
+                                    loadWishesManagerComponent();
+                                } else {
+                                    alert("❌ Error: " + delData.message);
+                                }
+                            } catch (err) {
+                                alert("Delete failed: " + err.message);
                             }
                         }
-                    });
+                    };
                 });
 
-                // ✏️ Bind Edit Buttons
-                document.querySelectorAll('.btn-edit-wish').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const wishId = e.target.getAttribute('data-id');
-                        const currentText = decodeURIComponent(e.target.getAttribute('data-text'));
-                        const currentCat = decodeURIComponent(e.target.getAttribute('data-cat'));
+                // ✏️ Edit Button Engine
+                document.querySelectorAll('.btn-edit-action').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const wishId = e.currentTarget.getAttribute('data-id');
+                        const oldText = decodeURIComponent(e.currentTarget.getAttribute('data-text'));
+                        const oldCat = decodeURIComponent(e.currentTarget.getAttribute('data-cat'));
 
-                        const newText = prompt("Edit Wish Text:", currentText);
-                        if (newText === null) return;
+                        const updatedText = prompt("Wish Text Edit Karein:", oldText);
+                        if (updatedText === null) return;
 
-                        const newCat = prompt("Edit Category:", currentCat);
-                        if (newCat === null) return;
+                        const updatedCat = prompt("Category Edit Karein:", oldCat);
+                        if (updatedCat === null) return;
 
-                        const updateRes = await fetch(`/api/manage-wish?id=${wishId}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ title: newText, category: newCat })
-                        });
-                        const updateData = await updateRes.json();
+                        try {
+                            const updateRes = await fetch(`/api/manage-wish?id=${wishId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ title: updatedText, category: updatedCat })
+                            });
+                            const updateData = await updateRes.json();
 
-                        if (updateData.success) {
-                            alert("✅ Wish updated successfully!");
-                            loadWishesManagerComponent();
-                        } else {
-                            alert("❌ Error: " + updateData.message);
+                            if (updateData.success) {
+                                alert("✅ Wish update ho gayi!");
+                                loadWishesManagerComponent();
+                            } else {
+                                alert("❌ Update Failed: " + updateData.message);
+                            }
+                        } catch (err) {
+                            alert("Update failed: " + err.message);
                         }
-                    });
+                    };
                 });
 
             } else {
-                statusText.innerText = "No wishes found in the database.";
+                statusText.innerText = "❌ Database me koi wish nahi mili.";
+                statusText.style.color = "#ef4444";
             }
 
         } catch (err) {
