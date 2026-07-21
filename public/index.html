@@ -4,20 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub</title>
-    
-    <!-- Master CSS Assembly / Global Styles Link -->
-    <!-- Option A: Agar aapne sabhi CSS ko master-style.css mein import kiya hai -->
+    <!-- Master CSS Assembly -->
     <link rel="stylesheet" href="./js/master-style.css">
-    
-    <!-- Option B: Ya fir agar aap direct ek-ek karke link karna chahein toh yahan kar sakte hain -->
 </head>
 <body>
     
-    <div id="app">
-        <!-- App content will render here -->
+    <!-- Main App Container -->
+    <div id="app"></div>
+
+    <!-- Wishes Direct Container for Renderer Engine -->
+    <div style="max-width: 800px; margin: 20px auto; padding: 0 20px;">
+        <h2 style="color: #fff; border-bottom: 2px solid #00f2ff; padding-bottom: 10px;">Latest Wishes</h2>
+        
+        <!-- Search Input connected to Search Filter / Wishes -->
+        <input type="text" id="search-input" placeholder="Search wishes..." style="width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #444; background: #1e1e1e; color: #fff; font-size: 14px;">
+
+        <!-- Yeh wahi grid container hai jahan wishes render hongi -->
+        <div id="wishes-grid"></div>
     </div>
 
-    <!-- Master Features Assembly (JavaScript Entry Point) -->
+    <!-- Master Features Assembly Entry Point -->
     <script type="module" src="./js/features-assembly.js"></script>
 </body>
 </html>
