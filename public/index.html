@@ -3,32 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub - Nested Folder Test</title>
-    <!-- Eruda Console for Debugging -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+    <title>Wishes Hub</title>
+    
+    <!-- Master CSS Assembly / Global Styles Link -->
+    <!-- Option A: Agar aapne sabhi CSS ko master-style.css mein import kiya hai -->
+    <link rel="stylesheet" href="./js/master-style.css">
+    
+    <!-- Option B: Ya fir agar aap direct ek-ek karke link karna chahein toh yahan kar sakte hain -->
 </head>
 <body>
-    <div class="main-container">
-        <h1>Nested Folder Connection Test</h1>
-        <div id="status">Connecting to js/storage/sub-test.js...</div>
+    
+    <div id="app">
+        <!-- App content will render here -->
     </div>
 
-    <!-- Nested Test Script Loader -->
-    <script type="module">
-        console.log("LOG: Checking nested folder connection...");
-        try {
-            // js ke andar storage folder se sub-test.js ko import kiya ja raha hai
-            const subModule = await import('./js/storage/sub-test.js');
-            console.log("LOG: Nested Import successful!", subModule);
-            
-            const message = subModule.getSubMessage();
-            document.getElementById('status').innerText = "Success: " + message;
-            
-        } catch (error) {
-            console.error("LOG: Nested Connection Failed:", error);
-            document.getElementById('status').innerText = "Error: " + error.message;
-        }
-    </script>
+    <!-- Master Features Assembly (JavaScript Entry Point) -->
+    <script type="module" src="./js/features-assembly.js"></script>
 </body>
 </html>
