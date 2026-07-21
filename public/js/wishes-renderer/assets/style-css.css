@@ -1,0 +1,19 @@
+/* Wishes Renderer Feature Styles */
+.wish-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.wish-card:hover {
+    border-color: #00f2ff;
+    transform: translateY(-2px);
+}
+
+.copy-btn:hover {
+    background: #00f2ff !important;
+    color: #000 !important;
+}
