@@ -1,4 +1,4 @@
-// Wishes Hub: Edit & Delete Engine
+// Wishes Hub: Edit & Delete API Engine
 // Patel Studio - 2026
 
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
@@ -37,17 +37,14 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const db = getDatabaseInstance();
   if (!db) {
     return res.status(500).json({ success: false, message: "Database connection failed" });
   }
 
-  const { id } = req.query; // Wish ID pass hogi URL me (e.g., /api/manage-wish?id=XYZ)
-
+  const { id } = req.query;
   if (!id) {
     return res.status(400).json({ success: false, message: 'Wish ID is required' });
   }
@@ -56,31 +53,26 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'PUT') {
-      // ✏️ EDIT / UPDATE WISH
-      const { title, wishText, image } = req.body;
-      
+      const { title, category, sub_category, animation } = req.body;
       const updateData = {};
+
       if (title !== undefined) updateData.title = title;
-      if (wishText !== undefined) updateData.wishText = wishText;
-      if (image !== undefined) updateData.image = image;
+      if (category !== undefined) updateData.category = category;
+      if (sub_category !== undefined) updateData.sub_category = sub_category;
+      if (animation !== undefined) updateData.animation = animation;
       updateData.updatedAt = new Date().toISOString();
 
       await wishRef.update(updateData);
       return res.status(200).json({ success: true, message: 'Wish updated successfully' });
     } 
-    
     else if (req.method === 'DELETE') {
-      // 🗑️ DELETE WISH
       await wishRef.remove();
       return res.status(200).json({ success: true, message: 'Wish deleted successfully' });
     } 
-    
     else {
       return res.status(405).json({ success: false, message: 'Method Not Allowed' });
     }
-
   } catch (error) {
-    console.error("🚨 CRITICAL ERROR:", error.message);
     return res.status(500).json({ success: false, message: error.message });
   }
 }
