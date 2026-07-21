@@ -3,38 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub - Direct Test</title>
+    <title>Wishes-hub - Storage Manager</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>Storage Test System</h1>
-        <div id="status">Loading...</div>
+        <h1>Wishes Hub System</h1>
+        <div id="status">Initializing Storage...</div>
         
-        <!-- Wishes Grid kahan render hoga uske liye element -->
+        <!-- Wishes Grid -->
         <div id="wishes-grid"></div>
     </div>
 
-    <!-- Master Assembly Script ko correct path ke sath load kiya gaya hai -->
+    <!-- Storage Assembly Import Script -->
     <script type="module">
-        console.log("LOG: Script execution started.");
+        console.log("LOG: Initializing Storage Assembly...");
         try {
-            console.log("LOG: Attempting to import assembly.js...");
+            // Storage assembly file ko import kiya ja raha hai
+            const initStorageManager = await import('./features/storage/storage-assembly.js');
             
-            // Yahan public/js/assembly.js ko sahi tarike se import kiya ja raha hai
-            const assemblyModule = await import('./js/assembly.js');
+            // Function ko call karke StorageCore instance liya
+            const StorageCore = initStorageManager.default();
             
-            console.log("LOG: Import successful!", assemblyModule);
-            document.getElementById('status').innerText = "Loaded successfully!";
+            // StorageCore ki init method chalayi
+            await StorageCore.init();
             
-            // Agar assembly file mein startApp function hai toh usko call kar sakte hain
-            if (typeof startApp === 'function') {
-                startApp();
-            }
+            console.log("LOG: Storage Assembly Loaded Successfully!");
+            document.getElementById('status').innerText = "Storage System Online!";
+            
         } catch (error) {
-            console.error("LOG: Import failed with error:", error);
+            console.error("LOG: Storage Load Failed:", error);
             document.getElementById('status').innerText = "Error: " + error.message;
         }
     </script>
