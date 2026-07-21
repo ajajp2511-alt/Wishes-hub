@@ -7,7 +7,7 @@
 // 🌐 GLOBAL FUNCTIONS FOR DIRECT HTML BINDING
 // ----------------------------------------------------------
 
-// 1. ALL WISHES LIST VIEW & MANAGE (EDIT / DELETE) ENGINE
+// 1. ALL WISHES LIST VIEW & MANAGE ENGINE (CARD FORMAT WITH EDIT/DELETE)
 window.loadWishesManagerComponent = async function() {
     const workspaceArea = document.querySelector('.content-workspace');
     if (!workspaceArea) return;
@@ -19,21 +19,11 @@ window.loadWishesManagerComponent = async function() {
                 <button type="button" onclick="window.loadLivePreviewComponent()" style="background:#2563eb; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600;">➕ Add New Wish</button>
             </div>
             
+            <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">💡 Note: Har wish ke aage Edit ✏️ aur Delete 🗑️ ka option diya gaya hai.</p>
+
             <div id="wishes-table-status" style="color:#fbbf24; font-weight:bold; padding:15px 0;">⏳ Loading database wishes...</div>
             
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; margin-top:10px; color:#fff; text-align:left;">
-                    <thead>
-                        <tr style="border-bottom:2px solid #334155; background:#1e293b;">
-                            <th style="padding:12px;">Image</th>
-                            <th style="padding:12px;">Wish Text</th>
-                            <th style="padding:12px;">Category</th>
-                            <th style="padding:12px; text-align:center;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="wishes-table-body"></tbody>
-                </table>
-            </div>
+            <div id="wishes-cards-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;"></div>
         </div>
     `;
 
@@ -42,30 +32,28 @@ window.loadWishesManagerComponent = async function() {
         const data = await res.json();
 
         const statusText = document.getElementById('wishes-table-status');
-        const tbody = document.getElementById('wishes-table-body');
+        const container = document.getElementById('wishes-cards-container');
 
         if (data.success && data.wishes && data.wishes.length > 0) {
             statusText.style.display = "none";
             
-            tbody.innerHTML = data.wishes.map(wish => {
+            container.innerHTML = data.wishes.map(wish => {
                 const safeText = encodeURIComponent(wish.title || wish.wishText || '');
                 const safeCat = encodeURIComponent(wish.category || '');
                 return `
-                    <tr style="border-bottom:1px solid #334155;">
-                        <td style="padding:10px;">
-                            ${wish.image ? `<img src="${wish.image}" style="width:45px; height:45px; object-fit:cover; border-radius:6px;">` : '<span style="color:#64748b;">No Img</span>'}
-                        </td>
-                        <td style="padding:10px; max-width:260px; word-wrap:break-word; color:#e2e8f0;">
-                            ${wish.title || wish.wishText || 'N/A'}
-                        </td>
-                        <td style="padding:10px;">
-                            <span style="background:#334155; color:#38bdf8; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">${wish.category || 'General'}</span>
-                        </td>
-                        <td style="padding:10px; text-align:center;">
-                            <button type="button" onclick="window.editWishAction('${wish.id}', '${safeText}', '${safeCat}')" style="background:#f59e0b; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; margin-right:6px; font-weight:bold;">✏️ Edit</button>
-                            <button type="button" onclick="window.deleteWishAction('${wish.id}')" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold;">🗑️ Delete</button>
-                        </td>
-                    </tr>
+                    <div style="background:#1e293b; padding:15px; border-radius:10px; border:1px solid #334155; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div style="display:flex; align-items:center; gap:12px; width:70%;">
+                            ${wish.image ? `<img src="${wish.image}" style="width:50px; height:50px; object-fit:cover; border-radius:8px;">` : '<div style="width:50px; height:50px; background:#334155; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">No Img</div>'}
+                            <div>
+                                <h4 style="margin:0; color:#f8fafc; font-size:15px; line-height:1.3;">${wish.title || wish.wishText || 'N/A'}</h4>
+                                <span style="display:inline-block; margin-top:5px; background:#334155; color:#38bdf8; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:bold;">${wish.category || 'General'}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button type="button" onclick="window.editWishAction('${wish.id}', '${safeText}', '${safeCat}')" style="background:#f59e0b; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">✏️ Edit</button>
+                            <button type="button" onclick="window.deleteWishAction('${wish.id}')" style="background:#ef4444; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">🗑️ Delete</button>
+                        </div>
+                    </div>
                 `;
             }).join('');
         } else {
@@ -128,7 +116,7 @@ window.editWishAction = async function(id, text, cat) {
     }
 };
 
-// 4. ADD NEW WISH COMPONENT WRITER
+// 4. ADD NEW WISH COMPONENT
 window.loadLivePreviewComponent = async function() {
     const workspaceArea = document.querySelector('.content-workspace');
     if (!workspaceArea) return;
@@ -214,17 +202,6 @@ window.loadLivePreviewComponent = async function() {
     if (window.AnimationManager && typeof window.AnimationManager.bindEvents === 'function') {
         window.AnimationManager.bindEvents();
     }
-
-    const inlineSelect = document.getElementById('wish-animation');
-    if (inlineSelect) {
-        inlineSelect.addEventListener('change', (e) => {
-            if (window.AnimationPreviewLinker && typeof window.AnimationPreviewLinker.showPreview === 'function') {
-                const liveBox = document.getElementById('live-preview-box');
-                if (liveBox) liveBox.style.display = "block";
-                window.AnimationPreviewLinker.showPreview(e.target.value);
-            }
-        });
-    }
 };
 
 // 5. UPLOAD TRANSMITTER ENGINE
@@ -234,7 +211,7 @@ window.triggerSystemUploadEngine = async function() {
 
     statusBox.style.display = "block";
     statusBox.style.color = "#ffea00";
-    statusBox.innerText = "⏳ Processing fields and verifying network stack...";
+    statusBox.innerText = "⏳ Processing fields...";
 
     const textVal = document.getElementById('wish-text').value.trim();
     const categoryVal = document.getElementById('main-category').value;
@@ -254,7 +231,7 @@ window.triggerSystemUploadEngine = async function() {
         let base64String = null;
 
         if (fileInput && fileInput.files.length > 0) {
-            statusBox.innerText = "⚡ Converting media data chunk to Base64 stream...";
+            statusBox.innerText = "⚡ Converting image...";
             const file = fileInput.files[0];
             base64String = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -264,7 +241,7 @@ window.triggerSystemUploadEngine = async function() {
             });
         }
 
-        statusBox.innerText = "📡 Routing package stream to server pipeline...";
+        statusBox.innerText = "📡 Sending to server...";
 
         let payload = {
             title: textVal,
@@ -283,28 +260,20 @@ window.triggerSystemUploadEngine = async function() {
         const result = await response.json();
 
         if (result.success) {
-            statusBox.innerText = "✅ Success! Data seamlessly pushed onto the engine database.";
+            statusBox.innerText = "✅ Success! Wish saved to database.";
             statusBox.style.color = "#00ff88";
             
             document.getElementById('wish-text').value = "";
             document.getElementById('main-category').value = "";
             document.getElementById('sub-category').value = "";
             if (fileInput) fileInput.value = "";
-
-            if (window.AnimationSelector && typeof window.AnimationSelector.reset === 'function') {
-                window.AnimationSelector.reset();
-            }
-
-            const liveBox = document.getElementById('live-preview-box');
-            if (liveBox) liveBox.style.display = "none";
         } else {
-            throw new Error(result.message || "Pipeline rejected packet entry.");
+            throw new Error(result.message || "Upload failed.");
         }
 
     } catch (err) {
-        statusBox.innerText = "🚨 Runtime Error: " + err.message;
+        statusBox.innerText = "🚨 Error: " + err.message;
         statusBox.style.color = "#ff4a4a";
-        alert("Upload Process Suspended: " + err.message);
     }
 };
 
@@ -347,15 +316,13 @@ function populateRealCategories() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // 1. SESSION Access Check
+    // 1. Session check
     if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
         window.location.href = "/admin/pages/login.html";
         return;
     }
 
-    console.log("Welcome to Secure Admin Panel Core Setup!");
-
-    // 2. Load Sidebar Securely
+    // 2. Load Sidebar dynamically
     const adminWrapper = document.querySelector('.admin-wrapper');
     if (adminWrapper) {
         try {
@@ -368,7 +335,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 bindSidebarDynamicNavigation(); 
             }
         } catch (error) {
-            console.error("Sidebar loading error:", error);
+            console.error("Sidebar error:", error);
         }
     }
 
@@ -396,42 +363,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // 🔥 DYNAMIC ROUTING ACCORDING TO DATA-FEATURE IN SIDEBAR
     function bindSidebarDynamicNavigation() {
         document.body.addEventListener('click', function(e) {
             const link = e.target.closest('.nav-link') || e.target.closest('[data-feature]');
             if (!link) return;
 
             e.preventDefault();
-            
-            const allLinks = document.querySelectorAll('.nav-link, [data-feature]');
-            if (allLinks.length > 0) {
-                allLinks.forEach(l => l.classList.remove('active'));
-            }
+
+            // Active Class Highlight Update
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
             const feature = link.getAttribute('data-feature') || '';
-            const targetFeature = feature.toLowerCase().trim();
-            const workspaceArea = document.querySelector('.content-workspace');
 
-            if (!workspaceArea) return;
-
-            if (targetFeature === 'wishes' || targetFeature === 'add-wish') {
-                window.loadLivePreviewComponent();
-            } 
-            else if (targetFeature === 'manage-wishes' || targetFeature === 'wishes-list') {
+            // EXACT ROUTING MAP
+            if (feature === 'manager') {
                 window.loadWishesManagerComponent();
-            }
-            else if (targetFeature === 'settings') {
-                if (typeof window.renderSettingsModule === 'function') {
-                    window.renderSettingsModule(workspaceArea);
-                } else {
-                    workspaceArea.innerHTML = `<div style="padding: 20px; color:#fff;"><h2 style="color:#ff4a4a;">⚠️ Component Error</h2></div>`;
-                }
             } 
-            else {
-                workspaceArea.innerHTML = `<div style="padding: 20px; color:#fff;"><h2>📋 ${feature.toUpperCase()} Panel</h2><p style="color:#94a3b8;">Under active development.</p></div>`;
+            else if (feature === 'wishes') {
+                window.loadLivePreviewComponent();
+            }
+            else if (feature === 'settings') {
+                if (typeof window.renderSettingsModule === 'function') {
+                    window.renderSettingsModule(document.querySelector('.content-workspace'));
+                }
+            } else {
+                const workspaceArea = document.querySelector('.content-workspace');
+                if (workspaceArea) {
+                    workspaceArea.innerHTML = `<div style="padding:20px; color:#fff;"><h2>📋 ${feature.toUpperCase()}</h2><p style="color:#94a3b8;">Feature coming soon...</p></div>`;
+                }
             }
 
+            // Close Mobile Sidebar after click
             const sidebar = document.querySelector('.sidebar');
             if (sidebar && window.innerWidth <= 768) {
                 sidebar.classList.remove('show-sidebar');
@@ -439,6 +403,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Default screen load
+    // Default view load
     window.loadLivePreviewComponent();
 });
