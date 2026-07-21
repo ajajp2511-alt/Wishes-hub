@@ -3,35 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub</title>
+    <title>Wishes-hub - Direct Test</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>Wishes-hub System</h1>
-        <div id="status">Loading systems...</div>
+        <h1>Storage Test System</h1>
+        <div id="status">Checking storage assembly...</div>
     </div>
 
-    <!-- Main Logic Script: Yahan ./main.js ka use karein -->
+    <!-- Direct Storage Assembly Import -->
     <script type="module">
-        console.log("TEST: HTML load ho gaya, ab main.js load kar rahe hain...");
-        
-        // Import karte samay path ko verify karein
-        import('./main.js').then((module) => {
-            const Assembly = module.default;
-            if (Assembly && typeof Assembly.initAll === 'function') {
-                Assembly.initAll().then(() => {
-                    document.getElementById('status').innerText = "System loaded successfully!";
-                });
-            } else {
-                document.getElementById('status').innerText = "Error: initAll function nahi mila.";
-            }
-        }).catch((err) => {
-            console.error("TEST: Error loading main.js:", err);
+        import initStorageManager from './features/storage/storage-assembly.js';
+
+        try {
+            console.log("TEST: Loading storage assembly directly...");
+            const result = initStorageManager();
+            document.getElementById('status').innerText = "Success! Storage loaded.";
+            console.log("TEST: Storage result:", result);
+        } catch (err) {
+            console.error("TEST: Failed to load storage:", err);
             document.getElementById('status').innerText = "Error: Check Console.";
-        });
+        }
     </script>
 </body>
 </html>
