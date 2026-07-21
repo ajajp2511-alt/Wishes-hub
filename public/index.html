@@ -3,38 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub - Storage Manager</title>
+    <title>Wishes-hub - Step by Step Test</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>Wishes Hub System</h1>
-        <div id="status">Initializing Storage...</div>
-        
-        <!-- Wishes Grid -->
-        <div id="wishes-grid"></div>
+        <h1>Step-by-Step Path Test</h1>
+        <div id="status">Checking Assembly File...</div>
     </div>
 
-    <!-- Storage Assembly Import Script -->
+    <!-- Complete Test Script -->
     <script type="module">
-        console.log("LOG: Initializing Storage Assembly...");
+        console.log("LOG: Test script started.");
         try {
-            // Storage assembly file ko import kiya ja raha hai
-            const initStorageManager = await import('./features/storage/storage-assembly.js');
+            console.log("LOG: Importing storage-assembly.js...");
             
-            // Function ko call karke StorageCore instance liya
-            const StorageCore = initStorageManager.default();
+            const storageModule = await import('./features/storage/storage-assembly.js');
+            console.log("LOG: Module imported:", storageModule);
             
-            // StorageCore ki init method chalayi
-            await StorageCore.init();
+            const result = storageModule.default();
+            console.log("LOG: Function executed:", result);
             
-            console.log("LOG: Storage Assembly Loaded Successfully!");
-            document.getElementById('status').innerText = "Storage System Online!";
-            
+            document.getElementById('status').innerText = "Success: " + result.status;
+
         } catch (error) {
-            console.error("LOG: Storage Load Failed:", error);
+            console.error("LOG: Error caught:", error);
             document.getElementById('status').innerText = "Error: " + error.message;
         }
     </script>
