@@ -1,5 +1,5 @@
-// Sirf ek import rakhein test karne ke liye
-import initStorageManager from './features/storage-manager/storage-assembly.js';
+// Sirf storage assembly ko import karein
+import initStorageManager from './features/storage/storage-assembly.js';
 
 async function runSafe(func, moduleName) {
     try {
@@ -10,13 +10,15 @@ async function runSafe(func, moduleName) {
     }
 }
 
-// Sirf ek module ko run karein
 const Assembly = {
     initAll: async function() {
-        console.log("[System]: Initializing single module...");
+        console.log("[System]: Initializing single feature...");
+        
+        // Sirf StorageManager ko run karein
         await runSafe(initStorageManager, "StorageManager");
+        
         console.log("Wishes-Hub: Test operational.");
     }
 };
 
-Assembly.initAll();
+export default Assembly;
