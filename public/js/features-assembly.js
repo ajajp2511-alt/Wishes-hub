@@ -1,4 +1,4 @@
-/* Features Assembly - Combines all user panel features with Safe Run */
+/* Features Assembly - Direct Connection for Wishes Renderer */
 import { initUserPanelUI } from './user-panel/panel-assembly.js';
 import { initAdsManager } from './ads-manager/ads-assembly.js';
 import { initDarkMode } from './dark-mode/dark-assembly.js';
@@ -8,7 +8,6 @@ import { initSearchFilter } from './search-filter/search-assembly.js';
 export function initUserPanel() {
     console.log('Initializing User Panel & Modules...');
     
-    // Safe run helper function
     const safeExecute = (moduleName, initFn) => {
         try {
             initFn();
@@ -17,19 +16,18 @@ export function initUserPanel() {
         }
     };
 
-    // 1. Render User Panel Professional Layout
+    // 1. Render UI Components
     safeExecute('UserPanelUI', initUserPanelUI);
 
-    // 2. Initialize Core Features Safely
+    // 2. Initialize Core Features & Directly Connect Wishes Renderer
     safeExecute('AdsManager', initAdsManager);
     safeExecute('DarkMode', initDarkMode);
-    safeExecute('WishesRenderer', initWishesRenderer);
+    safeExecute('WishesRenderer', initWishesRenderer); // Direct connection to fetch and render wishes
     safeExecute('SearchFilter', initSearchFilter);
     
     console.log('User Panel Fully Loaded Successfully.');
 }
 
-// Auto-initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
     initUserPanel();
 });
