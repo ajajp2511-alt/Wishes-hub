@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes-hub - JS Folder Test</title>
+    <title>Wishes-hub - Nested Folder Test</title>
     <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
 <body>
     <div class="main-container">
-        <h1>JS Folder Connection Test</h1>
-        <div id="status">Connecting to js/test.js...</div>
+        <h1>Nested Folder Connection Test</h1>
+        <div id="status">Connecting to js/storage/sub-test.js...</div>
     </div>
 
-    <!-- Test Script Loader -->
+    <!-- Nested Test Script Loader -->
     <script type="module">
-        console.log("LOG: Checking js folder connection...");
+        console.log("LOG: Checking nested folder connection...");
         try {
-            // js folder se test.js ko import kiya ja raha hai
-            const testModule = await import('./js/test.js');
-            console.log("LOG: Import successful!", testModule);
+            // js ke andar storage folder se sub-test.js ko import kiya ja raha hai
+            const subModule = await import('./js/storage/sub-test.js');
+            console.log("LOG: Nested Import successful!", subModule);
             
-            const message = testModule.showTestMessage();
+            const message = subModule.getSubMessage();
             document.getElementById('status').innerText = "Success: " + message;
             
         } catch (error) {
-            console.error("LOG: Connection Failed:", error);
+            console.error("LOG: Nested Connection Failed:", error);
             document.getElementById('status').innerText = "Error: " + error.message;
         }
     </script>
