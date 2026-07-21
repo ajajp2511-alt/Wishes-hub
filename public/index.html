@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes-hub - Direct Test</title>
-    <!-- Eruda Console -->
+    <!-- Eruda Console for Debugging -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 </head>
@@ -12,18 +12,27 @@
     <div class="main-container">
         <h1>Storage Test System</h1>
         <div id="status">Loading...</div>
+        
+        <!-- Wishes Grid kahan render hoga uske liye element -->
+        <div id="wishes-grid"></div>
     </div>
 
+    <!-- Master Assembly Script ko correct path ke sath load kiya gaya hai -->
     <script type="module">
         console.log("LOG: Script execution started.");
         try {
-            console.log("LOG: Attempting to import storage-assembly.js...");
+            console.log("LOG: Attempting to import assembly.js...");
             
-            // Yahan 'public/' bilkul nahi likhna hai
-            const module = await import('./features/storage/storage-assembly.js');
+            // Yahan public/js/assembly.js ko sahi tarike se import kiya ja raha hai
+            const assemblyModule = await import('./js/assembly.js');
             
-            console.log("LOG: Import successful!", module);
+            console.log("LOG: Import successful!", assemblyModule);
             document.getElementById('status').innerText = "Loaded successfully!";
+            
+            // Agar assembly file mein startApp function hai toh usko call kar sakte hain
+            if (typeof startApp === 'function') {
+                startApp();
+            }
         } catch (error) {
             console.error("LOG: Import failed with error:", error);
             document.getElementById('status').innerText = "Error: " + error.message;
