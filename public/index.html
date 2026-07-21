@@ -17,10 +17,10 @@
     <script type="module">
         console.log("LOG: Script execution started.");
         try {
-            console.log("LOG: Attempting to import storage-assembly.js with public path...");
+            console.log("LOG: Attempting to import storage-assembly.js...");
             
-            // Yahan path mein 'public/' add kar diya gaya hai taaki GitHub ke folder structure se match ho sake
-            const module = await import('./public/features/storage/storage-assembly.js');
+            // Yahan 'public/' bilkul nahi likhna hai
+            const module = await import('./features/storage/storage-assembly.js');
             
             console.log("LOG: Import successful!", module);
             document.getElementById('status').innerText = "Loaded successfully!";
