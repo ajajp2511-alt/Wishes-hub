@@ -3,27 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub</title>
-    <!-- Master CSS Assembly -->
-    <link rel="stylesheet" href="./js/master-style.css">
+    <title>Wishes Hub - Professional User Panel</title>
+    
+    <!-- Embedded Professional CSS -->
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666666;
+            --border-color: #e1e4e8;
+            --primary-color: #00f2ff;
+            --primary-dark: #00bcd4;
+            --header-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-theme {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --header-bg: #1a1a1a;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        /* Professional Header Style */
+        header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+        }
+
+        .logo-title span {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Search Box Styles */
+        .search-box-wrapper {
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+            box-shadow: var(--shadow);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Advertisement Banner Slot */
+        .ad-container {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .ad-banner {
+            background: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Section Heading */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        /* Wishes Grid & Cards */
+        #wishes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .wish-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .wish-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .wish-category-badge {
+            background: var(--primary-color);
+            color: #000;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .media-box {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            margin: 12px 0;
+            text-align: center;
+        }
+
+        .media-box img, .media-box video {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            display: inline-block;
+            border-radius: 10px;
+        }
+
+        .wish-text {
+            color: var(--text-color);
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .view-details {
+            color: var(--primary-color);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        .loading-text, .error-box {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .error-box {
+            color: #ff4444;
+            border: 1px solid #ff4444;
+            border-radius: 10px;
+            background: var(--card-bg);
+        }
+    </style>
 </head>
 <body>
-    
-    <!-- Main App Container -->
-    <div id="app"></div>
 
-    <!-- Wishes Direct Container for Renderer Engine -->
-    <div style="max-width: 800px; margin: 20px auto; padding: 0 20px;">
-        <h2 style="color: #fff; border-bottom: 2px solid #00f2ff; padding-bottom: 10px;">Latest Wishes</h2>
+    <!-- Professional Navigation Header -->
+    <header>
+        <div class="logo-area">
+            <h1 class="logo-title">Wishes <span>Hub</span></h1>
+        </div>
+        <button id="themeToggleBtn" class="theme-toggle-btn">🌙 Dark Mode</button>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="container">
         
-        <!-- Search Input connected to Search Filter / Wishes -->
-        <input type="text" id="search-input" placeholder="Search wishes..." style="width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #444; background: #1e1e1e; color: #fff; font-size: 14px;">
+        <!-- Ad Banner Slot -->
+        <div class="ad-container">
+            <div class="ad-banner">
+                <span>[ Advertisement Banner Space ]</span>
+            </div>
+        </div>
 
-        <!-- Yeh wahi grid container hai jahan wishes render hongi -->
-        <div id="wishes-grid"></div>
+        <!-- Professional Search Box -->
+        <div class="search-box-wrapper">
+            <input type="text" id="search-input" class="search-input" placeholder="🔍 Search wishes by text or keyword...">
+        </div>
+
+        <!-- Latest Wishes Section -->
+        <h2 class="section-title">Latest Wishes</h2>
+        
+        <!-- Wishes Render Grid -->
+        <div id="wishes-grid">
+            <div class="loading-text">Connecting to Patel Studio Engine & Loading Wishes...</div>
+        </div>
+
     </div>
 
-    <!-- Master Features Assembly Entry Point -->
-    <script type="module" src="./js/features-assembly.js"></script>
+    <!-- Embedded JavaScript Engine -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Dark Mode System Logic
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const storageKey = 'wishes_hub_theme';
+            
+            const savedTheme = localStorage.getItem(storageKey) || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggleBtn.textContent = '☀️ Light Mode';
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                localStorage.setItem(storageKey, isDark ? 'dark' : 'light');
+                themeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            });
+
+            // 2. Patel Studio Engine & Server Integration
+            const gridElement = document.getElementById('wishes-grid');
+            const searchInput = document.getElementById('search-input');
+
+            async function fetchWishesFromServer() {
+                try {
+                    const response = await fetch('/api/get-wishes');
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error(data.message || "Server error occurred while fetching wishes.");
+                    }
+
+                    if (!data.wishes || data.wishes.length === 0) {
+                        gridElement.innerHTML = `<div class="loading-text">Abhi tak admin panel se koi wishes available nahi hain.</div>`;
+                        return;
+                    }
+
+                    gridElement.innerHTML = ""; 
+
+                    data.wishes.forEach(wish => {
+                        const card = document.createElement('div');
+                        card.className = 'wish-card'; 
+                        card.setAttribute('data-category', wish.category || 'General');
+                        card.setAttribute('data-text', (wish.title || '').toLowerCase());
+
+                        // Media Resolution Logic (Image/Video/Telegram File)
+                        let mediaHtml = '';
+                        let finalMediaUrl = wish.imageUrl || null;
+
+                        if (!finalMediaUrl && wish.telegramFileId) {
+                            finalMediaUrl = `/api/get-media?fileId=${wish.telegramFileId}&type=${wish.fileType || 'photo'}`;
+                        }
+
+                        if (finalMediaUrl) {
+                            const isGifVideo = wish.fileType === 'video' || wish.fileType === 'animation' || finalMediaUrl.includes('.mp4') || finalMediaUrl.includes('.gif');
+                            
+                            if (isGifVideo) {
+                                mediaHtml = `
+                                    <div class="media-box">
+                                        <video src="${finalMediaUrl}" loop muted autoplay playsinline></video>
+                                    </div>`;
+                            } else {
+                                let proxyCleanUrl = finalMediaUrl;
+                                if(finalMediaUrl.includes('api.telegram.org/file/bot')) {
+                                     const rawTokenPath = finalMediaUrl.split('bot')[1];
+                                     proxyCleanUrl = `https://imtqy.com/bot${rawTokenPath}`;
+                                }
+
+                                mediaHtml = `
+                                    <div class="media-box">
+                                        <img src="${proxyCleanUrl}" alt="Wish Media" loading="lazy" onerror="this.parentElement.style.display='none';">
+                                    </div>`;
+                            }
+                        }
+
+                        const safeCopyText = (wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+
+                        // Card Internal Structure
+                        card.innerHTML = `
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="wish-category-badge">#${wish.category || 'General'}</span>
+                            </div>
+                            
+                            ${mediaHtml}
+
+                            <p class="wish-text">${wish.title || 'No Text Content Provided'}</p>
+                            
+                            <div class="card-footer">
+                                <span class="view-details">View Full Wish →</span>
+                                <button class="copy-btn" onclick="event.stopPropagation(); navigator.clipboard.writeText(\`${safeCopyText}\`); alert('Wish text copied to clipboard!');">
+                                    Copy Text
+                                </button>
+                            </div>
+                        `;
+
+                        // Card Click Event for Detail Page
+                        card.addEventListener('click', () => {
+                            window.location.href = `page/wish.html?id=${wish._id}`;
+                        });
+
+                        gridElement.appendChild(card);
+                    });
+
+                    // Enable Real-time Search Integration
+                    setupSearchLogic();
+
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    gridElement.innerHTML = `
+                        <div class="error-box">
+                            <h3>Connection Error</h3>
+                            <p>${error.message}</p>
+                        </div>`;
+                }
+            }
+
+            // 3. Search & Filter Functionality
+            function setupSearchLogic() {
+                if (!searchInput) return;
+
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase().trim();
+                    const cards = document.querySelectorAll('.wish-card');
+
+                    cards.forEach(card => {
+                        const cardBody = card.querySelector('.wish-text');
+                        const cardText = cardBody ? cardBody.innerText.toLowerCase() : '';
+                        
+                        if (cardText.includes(query)) {
+                            card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                });
+            }
+
+            // Initialize App
+            fetchWishesFromServer();
+        });
+    </script>
 </body>
-</html>
+    </html>
