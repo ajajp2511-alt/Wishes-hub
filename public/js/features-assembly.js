@@ -2,6 +2,7 @@ import { DarkModeAssembly } from './dark-mode/dark-assembly.js';
 import { SearchAssembly } from './search-filter/search-assembly.js';
 import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
 import { SeoAssembly } from './seo-helper/seo-assembly.js';
+import { ActionAssembly } from './action-handlers/action-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
@@ -9,6 +10,7 @@ class FeaturesAssembly {
     this.whatsappShare = new WhatsAppAssembly();
     this.seoHelper = new SeoAssembly();
     this.searchFilter = new SearchAssembly();
+    this.actionHandlers = new ActionAssembly();
   }
 
   init() {
@@ -18,8 +20,10 @@ class FeaturesAssembly {
     this.seoHelper.init();
     this.searchFilter.init();
     this.whatsappShare.init();
+    this.actionHandlers.init();
 
-    console.log('✅ All Core Modules Loaded Successfully!');
+    console.log('✅ Action Handlers module active!');
+    console.log('🎉 All Core Modules Loaded Successfully!');
   }
 }
 
