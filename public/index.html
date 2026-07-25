@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishes Hub</title>
 
-  <!-- Eruda Mobile Console Debugger -->
+  <!-- Eruda Mobile Debugger (Top Priority) -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 
-  <!-- Root CSS -->
-  <link rel="stylesheet" href="./style-css.css">
+  <!-- Master CSS Link (Located inside public/js/) -->
+  <link rel="stylesheet" href="./js/style-css.css">
 
   <!-- Master JS Orchestrator -->
   <script type="module" src="./js/features-assembly.js"></script>
 </head>
 <body>
 
-  <!-- Header Section -->
+  <!-- App Header -->
   <header class="app-header">
     <h1>Wishes Hub</h1>
     <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
@@ -36,18 +36,18 @@
       <button id="clear-search-btn" class="clear-btn">✕</button>
     </div>
 
-    <!-- Category Filters -->
+    <!-- Category Filter Buttons -->
     <div class="filter-tags">
       <button class="filter-btn active" data-category="all">All</button>
       <button class="filter-btn" data-category="birthday">Birthday</button>
       <button class="filter-btn" data-category="anniversary">Anniversary</button>
     </div>
 
-    <!-- Wishes Card Container (JS Dynamic Output) -->
+    <!-- Wishes Card Container (JS Output Render Area) -->
     <div id="wishes-list" class="wishes-container"></div>
   </main>
 
-  <!-- Bottom Audio Player -->
+  <!-- Audio Player Controls Footer -->
   <footer class="audio-player-footer">
     <div class="player-controls">
       <button id="play-pause-btn" class="play-btn">▶️</button>
@@ -57,4 +57,4 @@
   </footer>
 
 </body>
-</html>
+  </html>
