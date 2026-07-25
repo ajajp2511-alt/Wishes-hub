@@ -11,19 +11,23 @@ export class WhatsAppAssembly {
   }
 
   bindEvents() {
-    const shareBtns = document.querySelectorAll(WHATSAPP_CONFIG.SELECTORS.SHARE_BTN);
+    // Event delegation for dynamically rendered share buttons
+    document.addEventListener('click', (e) => {
+      const shareBtn = e.target.closest(WHATSAPP_CONFIG.SELECTORS.SHARE_BTN);
+      if (!shareBtn) return;
 
-    shareBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const nameInput = document.querySelector(WHATSAPP_CONFIG.SELECTORS.NAME_INPUT);
-        const customName = nameInput ? nameInput.value : '';
-        
-        const wishMessage = e.currentTarget.dataset.message || WHATSAPP_CONFIG.DEFAULT_TEXT;
-        const wishUrl = e.currentTarget.dataset.url || window.location.href;
+      e.preventDefault();
 
-        const shareUrl = this.core.generateShareUrl(customName, wishMessage, wishUrl);
-        window.open(shareUrl, '_blank');
-      });
+      const nameInput = document.querySelector(WHATSAPP_CONFIG.SELECTORS.NAME_INPUT);
+      const customName = nameInput ? nameInput.value.trim() : '';
+
+      const wishMessage = shareBtn.getAttribute('data-wish-message') || WHATSAPP_CONFIG.DEFAULT_TEXT;
+      const wishUrl = window.location.href;
+
+      const shareUrl = this.core.generateShareUrl(customName, wishMessage, wishUrl);
+
+      // Open WhatsApp link in new tab
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
     });
   }
 }
