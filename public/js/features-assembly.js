@@ -3,6 +3,7 @@ import { SearchAssembly } from './search-filter/search-assembly.js';
 import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
 import { SeoAssembly } from './seo-helper/seo-assembly.js';
 import { ActionAssembly } from './action-handlers/action-assembly.js';
+import { WishesAssembly } from './wishes-renderer/wishes-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
@@ -11,6 +12,7 @@ class FeaturesAssembly {
     this.seoHelper = new SeoAssembly();
     this.searchFilter = new SearchAssembly();
     this.actionHandlers = new ActionAssembly();
+    this.wishesRenderer = new WishesAssembly();
   }
 
   init() {
@@ -21,8 +23,8 @@ class FeaturesAssembly {
     this.searchFilter.init();
     this.whatsappShare.init();
     this.actionHandlers.init();
+    this.wishesRenderer.init();
 
-    console.log('✅ Action Handlers module active!');
     console.log('🎉 All Core Modules Loaded Successfully!');
   }
 }
@@ -41,4 +43,4 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
-}
+  }
