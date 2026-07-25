@@ -1,33 +1,69 @@
-/* Features Assembly - Direct Connection for Wishes Renderer */
-import { initUserPanelUI } from './user-panel/panel-assembly.js';
-import { initAdsManager } from './ads-manager/ads-assembly.js';
-import { initDarkMode } from './dark-mode/dark-assembly.js';
-import { initWishesRenderer } from './wishes-renderer/wishes-assembly.js';
-import { initSearchFilter } from './search-filter/search-assembly.js';
+// Import All Feature Modules
+import { DarkModeAssembly } from './dark-mode/dark-assembly.js';
+import { MusicAssembly } from './music-player/music-assembly.js';
+import { SearchAssembly } from './search-filter/search-assembly.js';
+import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
+import { AdsAssembly } from './ads-manager/ads-assembly.js';
+import { SeoAssembly } from './seo-helper/seo-assembly.js';
 
-export function initUserPanel() {
-    console.log('Initializing User Panel & Modules...');
+class FeaturesAssembly {
+  constructor() {
+    this.darkMode = new DarkModeAssembly();
+    this.musicPlayer = new MusicAssembly();
+    this.whatsAppShare = new WhatsAppAssembly();
+    this.adsManager = new AdsAssembly();
+    this.seoHelper = new SeoAssembly();
     
-    const safeExecute = (moduleName, initFn) => {
-        try {
-            initFn();
-        } catch (error) {
-            console.error(`Error loading module [${moduleName}]:`, error);
-        }
+    // Function to render search results dynamically
+    this.renderSearchResults = (filteredItems) => {
+      const container = document.querySelector('#wishes-list');
+      if (!container) return;
+      
+      container.innerHTML = filteredItems.map(item => `
+        <div class="wish-card" data-category="${item.category}">
+          <h3>${item.title}</h3>
+          <p>${item.message}</p>
+          <button class="whatsapp-share-btn" data-message="${item.message}">Share on WhatsApp</button>
+        </div>
+      `).join('');
+
+      // Re-bind share button listeners for newly rendered cards
+      this.whatsAppShare.init();
     };
 
-    // 1. Render UI Components
-    safeExecute('UserPanelUI', initUserPanelUI);
+    this.searchFilter = new SearchAssembly(this.renderSearchResults);
+  }
 
-    // 2. Initialize Core Features & Directly Connect Wishes Renderer
-    safeExecute('AdsManager', initAdsManager);
-    safeExecute('DarkMode', initDarkMode);
-    safeExecute('WishesRenderer', initWishesRenderer); // Direct connection to fetch and render wishes
-    safeExecute('SearchFilter', initSearchFilter);
-    
-    console.log('User Panel Fully Loaded Successfully.');
+  init() {
+    console.log('🚀 Initializing Wishes Hub via features-assembly.js...');
+
+    // 1. Initialize SEO Metadata
+    this.seoHelper.init({
+      title: 'Wishes Hub - Special Event Greetings',
+      description: 'Explore and share personalized wishes with music and themes!'
+    });
+
+    // 2. Initialize Core UI Features
+    this.darkMode.init();
+    this.musicPlayer.init('/assets/audio/default-bgm.mp3');
+    this.whatsAppShare.init();
+
+    // 3. Initialize Search Data
+    const initialWishesData = [
+      { id: 1, title: 'Happy Birthday', category: 'birthday', message: 'Wishing you a fantastic day ahead!' },
+      { id: 2, title: 'Happy Anniversary', category: 'anniversary', message: 'May your love grow stronger every day!' }
+    ];
+    this.searchFilter.init(initialWishesData);
+
+    // 4. Initialize Ads Engine
+    this.adsManager.init();
+
+    console.log('✅ All feature modules assembled successfully!');
+  }
 }
 
+// Global Execution on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
-    initUserPanel();
+  const app = new FeaturesAssembly();
+  app.init();
 });
