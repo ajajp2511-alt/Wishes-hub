@@ -12,10 +12,34 @@
   <!-- Master Modular CSS -->
   <link rel="stylesheet" href="/js/style-css.css">
 
-  <!-- JS Orchestrator -->
+  <!-- JS Modules Orchestrator -->
   <script type="module" src="/js/features-assembly.js"></script>
 </head>
 <body>
-  <!-- Dynamic Base Layout will load here -->
+
+  <header class="app-header">
+    <h1>Wishes Hub</h1>
+    <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
+  </header>
+
+  <main class="main-container">
+    <div class="input-group">
+      <input type="text" id="user-name-input" placeholder="Apna Naam Likhein...">
+    </div>
+
+    <div class="search-group">
+      <input type="text" id="search-input" placeholder="Wishes khojein...">
+      <button id="clear-search-btn" class="clear-btn">✕</button>
+    </div>
+
+    <div class="filter-tags">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Birthday</button>
+      <button class="filter-btn">Anniversary</button>
+    </div>
+
+    <div id="wishes-list" class="wishes-container"></div>
+  </main>
+
 </body>
 </html>
