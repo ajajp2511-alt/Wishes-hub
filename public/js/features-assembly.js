@@ -11,7 +11,7 @@ import { initAdsManager } from '/js/ads-manager/index.js';
 
 /**
  * FeaturesAssembly Class
- * Orchestrates all modular app features and system initialization
+ * Orchestrates all modular app features
  */
 export class FeaturesAssembly {
   constructor() {
@@ -24,10 +24,7 @@ export class FeaturesAssembly {
     try {
       console.log("Wishes Hub: System Booting...");
 
-      // 1. Render Base Layout synchronous DOM setup
       this.modules.baseLayout = initBaseLayout();
-
-      // 2. Initialize remaining modules right after DOM is ready
       this.modules.darkMode = initDarkMode();
       this.modules.searchFilter = initSearchFilter();
       this.modules.whatsappShare = initWhatsappShare();
