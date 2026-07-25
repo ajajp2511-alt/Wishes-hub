@@ -1,62 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishes Hub</title>
 
-  <!-- Single Master Style Sheet (Lightweight & Fast Load) -->
-  <link rel="stylesheet" href="./js/style-css.css">
+  <!-- Eruda Mobile Console Debugger -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+
+  <!-- Root CSS -->
+  <link rel="stylesheet" href="./style-css.css">
+
+  <!-- Master JS Orchestrator -->
+  <script type="module" src="./js/features-assembly.js"></script>
 </head>
 <body>
 
   <!-- Header Section -->
-  <header>
+  <header class="app-header">
     <h1>Wishes Hub</h1>
-    <button id="dark-mode-toggle" class="theme-toggle-btn">🌙 Theme</button>
+    <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
   </header>
 
-  <main>
-    <!-- Top Ad Banner -->
-    <div class="ads-container" data-ad-slot="1234567890"></div>
-
-    <!-- Personalization Input -->
-    <div class="personalization-box">
-      <input type="text" id="sender-name-input" placeholder="Apna Naam Likhein...">
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- User Input -->
+    <div class="input-group">
+      <input type="text" id="user-name-input" placeholder="Apna Naam Likhein...">
     </div>
 
-    <!-- Search & Filter Controls -->
-    <div class="search-box-container">
-      <input type="text" id="search-input" class="search-input" placeholder="Wishes khojein...">
-      <button id="search-clear-btn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">✕</button>
+    <!-- Search Section -->
+    <div class="search-group">
+      <input type="text" id="search-input" placeholder="Wishes khojein...">
+      <button id="clear-search-btn" class="clear-btn">✕</button>
     </div>
 
-    <div class="category-filter-bar" style="justify-content: center; margin: 15px 0;">
-      <button class="category-btn active" data-category="all">All</button>
-      <button class="category-btn" data-category="birthday">Birthday</button>
-      <button class="category-btn" data-category="anniversary">Anniversary</button>
+    <!-- Category Filters -->
+    <div class="filter-tags">
+      <button class="filter-btn active" data-category="all">All</button>
+      <button class="filter-btn" data-category="birthday">Birthday</button>
+      <button class="filter-btn" data-category="anniversary">Anniversary</button>
     </div>
 
-    <!-- Dynamic Wishes List Container -->
-    <section id="wishes-list" style="margin-top: 25px; display: grid; gap: 15px;"></section>
-
-    <!-- Bottom Ad Banner -->
-    <div class="ads-container" data-ad-slot="0987654321"></div>
+    <!-- Wishes Card Container (JS Dynamic Output) -->
+    <div id="wishes-list" class="wishes-container"></div>
   </main>
 
-  <!-- Sticky Bottom Music Player -->
-  <div class="sticky-player-wrapper">
-    <div class="music-player-container">
-      <button id="music-play-pause" class="music-btn">▶️</button>
-      <div id="music-progress" class="progress-bar-container" style="width: 100px;">
-        <div class="progress-fill"></div>
-      </div>
-      <input type="range" id="music-volume" min="0" max="100" value="50" style="width: 60px;">
+  <!-- Bottom Audio Player -->
+  <footer class="audio-player-footer">
+    <div class="player-controls">
+      <button id="play-pause-btn" class="play-btn">▶️</button>
+      <input type="range" id="audio-progress" value="0">
+      <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.8">
     </div>
-  </div>
-
-  <!-- Root Feature Assembly Script -->
-  <script type="module" src="./js/features-assembly.js"></script>
+  </footer>
 
 </body>
-  </html>
+</html>
