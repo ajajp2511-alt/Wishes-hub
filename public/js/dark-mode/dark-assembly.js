@@ -12,10 +12,13 @@ export class DarkModeAssembly {
   }
 
   applyTheme(theme) {
+    const btn = document.querySelector(DARK_MODE_CONFIG.SELECTORS.TOGGLE_BTN);
     if (theme === DARK_MODE_CONFIG.THEMES.DARK) {
       document.body.classList.add(DARK_MODE_CONFIG.SELECTORS.BODY_CLASS);
+      if (btn) btn.textContent = '☀️ Light Mode';
     } else {
       document.body.classList.remove(DARK_MODE_CONFIG.SELECTORS.BODY_CLASS);
+      if (btn) btn.textContent = '🌙 Dark Mode';
     }
   }
 
