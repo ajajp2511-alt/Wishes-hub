@@ -5,11 +5,11 @@ export class SeoAssembly {
     this.core = new SeoCore();
   }
 
-  init(customSeoData = {}) {
-    this.core.updateSeoData(customSeoData);
+  init(initialMetaData = {}) {
+    this.core.updateSeoData(initialMetaData);
   }
 
-  updatePageSeo(seoData) {
-    this.core.updateSeoData(seoData);
+  setDynamicSeo(title, description, image, url) {
+    this.core.updateSeoData({ title, description, image, url });
   }
 }
