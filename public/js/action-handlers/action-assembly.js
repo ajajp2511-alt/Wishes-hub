@@ -1,8 +1,11 @@
-/* Action Handlers Assembly */
 import { ActionCore } from './action-core.js';
 
-export function initActionHandlers() {
-    const actionModule = new ActionCore();
-    console.log('Action Handlers Module Loaded Successfully.');
-    return actionModule;
+export class ActionAssembly {
+  constructor() {
+    this.core = null;
+  }
+
+  init() {
+    this.core = new ActionCore();
+  }
 }
