@@ -1,11 +1,13 @@
 import { DarkModeAssembly } from './dark-mode/dark-assembly.js';
 import { SearchAssembly } from './search-filter/search-assembly.js';
 import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
+import { SeoAssembly } from './seo-helper/seo-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
     this.darkMode = new DarkModeAssembly();
     this.whatsappShare = new WhatsAppAssembly();
+    this.seoHelper = new SeoAssembly();
 
     this.renderSearchResults = (filteredItems) => {
       const container = document.querySelector('#wishes-list');
@@ -37,7 +39,11 @@ class FeaturesAssembly {
     this.darkMode.init();
     console.log('✅ Dark Mode module active!');
 
-    // 2. Search & Filter
+    // 2. SEO Helper
+    this.seoHelper.init();
+    console.log('✅ SEO Helper module active!');
+
+    // 3. Search & Filter
     const dummyData = [
       { id: 1, title: 'Happy Birthday!', category: 'birthday', message: 'Wishing you a fantastic day ahead!' },
       { id: 2, title: 'Happy Anniversary!', category: 'anniversary', message: 'May your love grow stronger every day!' },
@@ -47,7 +53,7 @@ class FeaturesAssembly {
     this.searchFilter.init(dummyData);
     console.log('✅ Search & Filter module active!');
 
-    // 3. WhatsApp Share
+    // 4. WhatsApp Share
     this.whatsappShare.init();
     console.log('✅ WhatsApp Share module active!');
   }
