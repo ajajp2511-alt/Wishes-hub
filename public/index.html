@@ -5,41 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishes Hub</title>
 
-  <!-- Debugger First (Catches any JS errors live) -->
+  <!-- Eruda Debugger -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 
-  <!-- Main Modular CSS -->
+  <!-- Master Modular CSS -->
   <link rel="stylesheet" href="/js/style-css.css">
 
-  <!-- JS Modules Orchestrator -->
+  <!-- JS Orchestrator -->
   <script type="module" src="/js/features-assembly.js"></script>
 </head>
 <body>
-
-  <header class="app-header">
-    <h1>Wishes Hub</h1>
-    <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
-  </header>
-
-  <main class="main-container">
-    <div class="input-group">
-      <input type="text" id="user-name-input" placeholder="Apna Naam Likhein...">
-    </div>
-
-    <div class="search-group">
-      <input type="text" id="search-input" placeholder="Wishes khojein...">
-      <button id="clear-search-btn" class="clear-btn">✕</button>
-    </div>
-
-    <div class="filter-tags">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">Birthday</button>
-      <button class="filter-btn">Anniversary</button>
-    </div>
-
-    <div id="wishes-list" class="wishes-container"></div>
-  </main>
-
+  <!-- Dynamic Base Layout will load here -->
 </body>
 </html>
