@@ -1,0 +1,36 @@
+.search-box-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.category-filter-bar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.category-btn {
+  padding: 6px 14px;
+  border-radius: 15px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.category-btn.active {
+  background: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
