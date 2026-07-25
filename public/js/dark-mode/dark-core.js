@@ -10,10 +10,10 @@ export class DarkModeCore {
   }
 
   toggleTheme() {
-    this.currentTheme = this.currentTheme === DARK_MODE_CONFIG.THEMES.DARK 
-      ? DARK_MODE_CONFIG.THEMES.LIGHT 
+    this.currentTheme = this.currentTheme === DARK_MODE_CONFIG.THEMES.DARK
+      ? DARK_MODE_CONFIG.THEMES.LIGHT
       : DARK_MODE_CONFIG.THEMES.DARK;
-      
+
     localStorage.setItem(DARK_MODE_CONFIG.STORAGE_KEY, this.currentTheme);
     return this.currentTheme;
   }
