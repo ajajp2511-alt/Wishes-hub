@@ -1,9 +1,11 @@
 import { DarkModeAssembly } from './dark-mode/dark-assembly.js';
 import { SearchAssembly } from './search-filter/search-assembly.js';
+import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
     this.darkMode = new DarkModeAssembly();
+    this.whatsappShare = new WhatsAppAssembly();
 
     this.renderSearchResults = (filteredItems) => {
       const container = document.querySelector('#wishes-list');
@@ -17,7 +19,10 @@ class FeaturesAssembly {
       container.innerHTML = filteredItems.map(item => `
         <div class="wish-card" style="border: 1px solid #444; padding: 12px; margin: 10px 0; border-radius: 8px;">
           <h3 style="margin: 0 0 5px 0;">${item.title}</h3>
-          <p style="margin: 0;">${item.message}</p>
+          <p style="margin: 0 0 10px 0;">${item.message}</p>
+          <button class="whatsapp-share-btn" data-wish-message="${item.message}" style="background-color: #25D366; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+            📲 Share on WhatsApp
+          </button>
         </div>
       `).join('');
     };
@@ -41,6 +46,10 @@ class FeaturesAssembly {
 
     this.searchFilter.init(dummyData);
     console.log('✅ Search & Filter module active!');
+
+    // 3. WhatsApp Share
+    this.whatsappShare.init();
+    console.log('✅ WhatsApp Share module active!');
   }
 }
 
