@@ -4,47 +4,57 @@ import { SearchCore } from './search-core.js';
 export class SearchAssembly {
   constructor(renderCallback) {
     this.core = new SearchCore();
-    this.renderCallback = renderCallback; // Function to render filtered list
+    this.renderCallback = renderCallback;
   }
 
-  init(dataList) {
-    this.core.setItems(dataList);
+  init(initialItems = []) {
+    this.core.setItems(initialItems);
     this.bindEvents();
+    this.triggerRender();
+  }
+
+  triggerRender() {
+    const filteredResults = this.core.filterData();
+    if (typeof this.renderCallback === 'function') {
+      this.renderCallback(filteredResults);
+    }
   }
 
   bindEvents() {
     const searchInput = document.querySelector(SEARCH_CONFIG.SELECTORS.SEARCH_INPUT);
-    const categoryBtns = document.querySelectorAll(SEARCH_CONFIG.SELECTORS.CATEGORY_FILTER);
     const clearBtn = document.querySelector(SEARCH_CONFIG.SELECTORS.CLEAR_BTN);
 
+    // Debounced Search Input Event
     if (searchInput) {
-      const handleInput = this.core.debounce((e) => {
-        const filtered = this.core.filterData(e.target.value);
-        if (this.renderCallback) this.renderCallback(filtered);
+      const debouncedSearch = this.core.debounce((e) => {
+        this.core.currentQuery = e.target.value;
+        this.triggerRender();
       });
-
-      searchInput.addEventListener('input', handleInput);
+      searchInput.addEventListener('input', debouncedSearch);
     }
 
-    if (categoryBtns.length > 0) {
-      categoryBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          categoryBtns.forEach(b => b.classList.remove(SEARCH_CONFIG.ACTIVE_CATEGORY_CLASS));
-          e.currentTarget.classList.add(SEARCH_CONFIG.ACTIVE_CATEGORY_CLASS);
-
-          const category = e.currentTarget.dataset.category || 'all';
-          const filtered = this.core.filterData(undefined, category);
-          if (this.renderCallback) this.renderCallback(filtered);
-        });
-      });
-    }
-
-    if (clearBtn && searchInput) {
+    // Clear Button Event
+    if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        const filtered = this.core.filterData('');
-        if (this.renderCallback) this.renderCallback(filtered);
+        if (searchInput) searchInput.value = '';
+        this.core.currentQuery = '';
+        this.triggerRender();
       });
     }
+
+    // Event Delegation for Category Filter Buttons
+    document.addEventListener('click', (e) => {
+      const filterBtn = e.target.closest(SEARCH_CONFIG.SELECTORS.CATEGORY_FILTER);
+      if (filterBtn) {
+        document.querySelectorAll(SEARCH_CONFIG.SELECTORS.CATEGORY_FILTER).forEach(btn => {
+          btn.classList.remove(SEARCH_CONFIG.ACTIVE_CATEGORY_CLASS);
+        });
+        filterBtn.classList.add(SEARCH_CONFIG.ACTIVE_CATEGORY_CLASS);
+
+        const category = filterBtn.getAttribute('data-category') || filterBtn.textContent.trim().toLowerCase();
+        this.core.currentCategory = category;
+        this.triggerRender();
+      }
+    });
   }
-        }
+}
