@@ -1,0 +1,15 @@
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-theme {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.theme-toggle-btn {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+}
