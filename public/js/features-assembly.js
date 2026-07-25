@@ -5,6 +5,7 @@ import { SeoAssembly } from './seo-helper/seo-assembly.js';
 import { ActionAssembly } from './action-handlers/action-assembly.js';
 import { WishesAssembly } from './wishes-renderer/wishes-assembly.js';
 import { StorageAssembly } from './storage/storage-assembly.js';
+import { AdsAssembly } from './ads-manager/ads-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
@@ -15,6 +16,7 @@ class FeaturesAssembly {
     this.actionHandlers = new ActionAssembly();
     this.wishesRenderer = new WishesAssembly();
     this.storage = new StorageAssembly();
+    this.adsManager = new AdsAssembly();
   }
 
   init() {
@@ -27,6 +29,7 @@ class FeaturesAssembly {
     this.actionHandlers.init();
     this.wishesRenderer.init();
     this.storage.init();
+    this.adsManager.init();
 
     console.log('🎉 All Core Modules Loaded Successfully!');
   }
