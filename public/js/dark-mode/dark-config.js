@@ -5,7 +5,7 @@ export const DARK_MODE_CONFIG = {
     LIGHT: 'light'
   },
   SELECTORS: {
-    TOGGLE_BTN: '#dark-mode-toggle',
+    TOGGLE_BTN: '#theme-toggle-btn',
     BODY_CLASS: 'dark-theme'
   }
 };
