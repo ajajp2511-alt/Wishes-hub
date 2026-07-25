@@ -1,4 +1,4 @@
-// Import All Feature Modules
+// Import All Feature Modules (Relative to /public/js/)
 import { DarkModeAssembly } from './dark-mode/dark-assembly.js';
 import { MusicAssembly } from './music-player/music-assembly.js';
 import { SearchAssembly } from './search-filter/search-assembly.js';
@@ -14,7 +14,7 @@ class FeaturesAssembly {
     this.adsManager = new AdsAssembly();
     this.seoHelper = new SeoAssembly();
 
-    // Function to render search results dynamically safely
+    // Function to render search results dynamic UI safely
     this.renderSearchResults = (filteredItems) => {
       const container = document.querySelector('#wishes-list');
       if (!container) return;
@@ -32,7 +32,6 @@ class FeaturesAssembly {
         </div>
       `).join('');
 
-      // Re-bind share button listeners for newly rendered cards
       if (this.whatsAppShare && typeof this.whatsAppShare.init === 'function') {
         this.whatsAppShare.init();
       }
@@ -79,9 +78,8 @@ const initApp = () => {
   }
 };
 
-// Check DOM Status for Module Load Safety
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
-       }
+}
