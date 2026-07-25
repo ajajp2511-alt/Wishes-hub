@@ -13,12 +13,17 @@ class FeaturesAssembly {
     this.whatsAppShare = new WhatsAppAssembly();
     this.adsManager = new AdsAssembly();
     this.seoHelper = new SeoAssembly();
-    
-    // Function to render search results dynamically
+
+    // Function to render search results dynamically safely
     this.renderSearchResults = (filteredItems) => {
       const container = document.querySelector('#wishes-list');
       if (!container) return;
-      
+
+      if (!filteredItems || filteredItems.length === 0) {
+        container.innerHTML = `<p class="no-results">Koi wishes nahi mili!</p>`;
+        return;
+      }
+
       container.innerHTML = filteredItems.map(item => `
         <div class="wish-card" data-category="${item.category}">
           <h3>${item.title}</h3>
@@ -28,7 +33,9 @@ class FeaturesAssembly {
       `).join('');
 
       // Re-bind share button listeners for newly rendered cards
-      this.whatsAppShare.init();
+      if (this.whatsAppShare && typeof this.whatsAppShare.init === 'function') {
+        this.whatsAppShare.init();
+      }
     };
 
     this.searchFilter = new SearchAssembly(this.renderSearchResults);
@@ -45,7 +52,7 @@ class FeaturesAssembly {
 
     // 2. Initialize Core UI Features
     this.darkMode.init();
-    this.musicPlayer.init('/assets/audio/default-bgm.mp3');
+    this.musicPlayer.init('./assets/audio/default-bgm.mp3');
     this.whatsAppShare.init();
 
     // 3. Initialize Search Data
@@ -62,8 +69,19 @@ class FeaturesAssembly {
   }
 }
 
-// Global Execution on DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
-  const app = new FeaturesAssembly();
-  app.init();
-});
+// Direct Safe Execution for ES Modules
+const initApp = () => {
+  try {
+    const app = new FeaturesAssembly();
+    app.init();
+  } catch (error) {
+    console.error('❌ App Init Error:', error);
+  }
+};
+
+// Check DOM Status
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
