@@ -1,10 +1,10 @@
-/* Module Styles Import (Relative Paths) */
-@import url('./dark-mode/assets/style-css.css');
-@import url('./music-player/assets/style-css.css');
-@import url('./search-filter/assets/style-css.css');
-@import url('./whatsapp-share/assets/style-css.css');
-@import url('./ads-manager/assets/style-css.css');
-@import url('./seo-helper/assets/style-css.css');
+/* Module Styles Import (Absolute Paths) */
+@import url('/js/dark-mode/assets/style-css.css');
+@import url('/js/music-player/assets/style-css.css');
+@import url('/js/search-filter/assets/style-css.css');
+@import url('/js/whatsapp-share/assets/style-css.css');
+@import url('/js/ads-manager/assets/style-css.css');
+@import url('/js/seo-helper/assets/style-css.css');
 
 /* Global Reset & Base Layout */
 * {
