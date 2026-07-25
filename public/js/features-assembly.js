@@ -4,6 +4,7 @@ import { WhatsAppAssembly } from './whatsapp-share/whatsapp-assembly.js';
 import { SeoAssembly } from './seo-helper/seo-assembly.js';
 import { ActionAssembly } from './action-handlers/action-assembly.js';
 import { WishesAssembly } from './wishes-renderer/wishes-assembly.js';
+import { StorageAssembly } from './storage/storage-assembly.js';
 
 class FeaturesAssembly {
   constructor() {
@@ -13,6 +14,7 @@ class FeaturesAssembly {
     this.searchFilter = new SearchAssembly();
     this.actionHandlers = new ActionAssembly();
     this.wishesRenderer = new WishesAssembly();
+    this.storage = new StorageAssembly();
   }
 
   init() {
@@ -24,6 +26,7 @@ class FeaturesAssembly {
     this.whatsappShare.init();
     this.actionHandlers.init();
     this.wishesRenderer.init();
+    this.storage.init();
 
     console.log('🎉 All Core Modules Loaded Successfully!');
   }
@@ -43,4 +46,4 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
-  }
+}
