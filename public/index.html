@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishes Hub</title>
 
-  <!-- Eruda Mobile Debugger (Top Priority) -->
+  <!-- Eruda Debugger (Top Level) -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 
-  <!-- Master CSS Link (Located inside public/js/) -->
+  <!-- Root Relative CSS Path (Serves from /public/js/style-css.css in Vercel) -->
   <link rel="stylesheet" href="./js/style-css.css">
 
   <!-- Master JS Orchestrator -->
@@ -43,7 +43,7 @@
       <button class="filter-btn" data-category="anniversary">Anniversary</button>
     </div>
 
-    <!-- Wishes Card Container (JS Output Render Area) -->
+    <!-- Wishes Card Container -->
     <div id="wishes-list" class="wishes-container"></div>
   </main>
 
@@ -57,4 +57,4 @@
   </footer>
 
 </body>
-  </html>
+</html>
