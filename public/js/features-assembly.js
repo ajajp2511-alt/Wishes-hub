@@ -20,14 +20,14 @@ export class FeaturesAssembly {
     this.bootSystem();
   }
 
-  async bootSystem() {
+  bootSystem() {
     try {
       console.log("Wishes Hub: System Booting...");
 
-      // 1. Render Base Layout FIRST so DOM elements exist for other modules
-      this.modules.baseLayout = await initBaseLayout();
+      // 1. Render Base Layout synchronous DOM setup
+      this.modules.baseLayout = initBaseLayout();
 
-      // 2. Initialize remaining modules after HTML is ready
+      // 2. Initialize remaining modules right after DOM is ready
       this.modules.darkMode = initDarkMode();
       this.modules.searchFilter = initSearchFilter();
       this.modules.whatsappShare = initWhatsappShare();
