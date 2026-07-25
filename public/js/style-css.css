@@ -1,1 +1,56 @@
+/* Module Styles Import (Relative Paths) */
+@import url('./dark-mode/assets/style-css.css');
+@import url('./music-player/assets/style-css.css');
+@import url('./search-filter/assets/style-css.css');
+@import url('./whatsapp-share/assets/style-css.css');
+@import url('./ads-manager/assets/style-css.css');
+@import url('./seo-helper/assets/style-css.css');
 
+/* Global Reset & Base Layout */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+}
+
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.personalization-box {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.personalization-box input {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  width: 80%;
+  max-width: 350px;
+  outline: none;
+}
+
+.sticky-player-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
