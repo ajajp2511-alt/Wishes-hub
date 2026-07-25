@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishes Hub</title>
 
-  <!-- Eruda Debugger (Top Level) -->
+  <!-- Eruda Mobile Debugger -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 
-  <!-- Root Relative CSS Path (Serves from /public/js/style-css.css in Vercel) -->
-  <link rel="stylesheet" href="./js/style-css.css">
+  <!-- Absolute Path for CSS inside public/js/ -->
+  <link rel="stylesheet" href="/js/style-css.css">
 
-  <!-- Master JS Orchestrator -->
-  <script type="module" src="./js/features-assembly.js"></script>
+  <!-- Absolute Path for Master JS Orchestrator -->
+  <script type="module" src="/js/features-assembly.js"></script>
 </head>
 <body>
 
