@@ -79,9 +79,9 @@ const initApp = () => {
   }
 };
 
-// Check DOM Status
+// Check DOM Status for Module Load Safety
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
-}
+       }
