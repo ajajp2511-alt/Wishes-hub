@@ -1,3 +1,5 @@
+console.log("📌 features-assembly.js file download/load ho chuki hai!");
+
 // Core Feature Module Imports
 import { initBaseLayout } from '/js/base-layout/index.js';
 import { initDarkMode } from '/js/dark-mode/index.js';
@@ -23,7 +25,6 @@ export class FeaturesAssembly {
   async bootSystem() {
     console.log("Wishes Hub: System Booting...");
 
-    // Safe Execution Wrapper to prevent one broken module from crashing the app
     const safeRun = async (name, fn) => {
       try {
         if (typeof fn === 'function') {
@@ -56,11 +57,11 @@ export class FeaturesAssembly {
   }
 }
 
-// Global Auto-initialization (Handles both fast & DOMContentLoaded events)
+// Global Auto-initialization
 if (document.readyState === "loading") {
   document.addEventListener('DOMContentLoaded', () => {
     window.appFeatures = new FeaturesAssembly();
   });
 } else {
   window.appFeatures = new FeaturesAssembly();
-        }
+}
