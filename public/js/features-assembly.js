@@ -11,7 +11,7 @@ import { initAdsManager } from '/js/ads-manager/index.js';
 
 /**
  * FeaturesAssembly Class
- * Orchestrates all modular app features
+ * Orchestrates all modular app features safely
  */
 export class FeaturesAssembly {
   constructor() {
@@ -20,29 +20,47 @@ export class FeaturesAssembly {
     this.bootSystem();
   }
 
-  bootSystem() {
-    try {
-      console.log("Wishes Hub: System Booting...");
+  async bootSystem() {
+    console.log("Wishes Hub: System Booting...");
 
-      this.modules.baseLayout = initBaseLayout();
-      this.modules.darkMode = initDarkMode();
-      this.modules.searchFilter = initSearchFilter();
-      this.modules.whatsappShare = initWhatsappShare();
-      this.modules.seoHelper = initSeoHelper();
-      this.modules.actions = initActions();
-      this.modules.wishesRenderer = initWishesRenderer();
-      this.modules.storage = initStorage();
-      this.modules.adsManager = initAdsManager();
+    // Safe Execution Wrapper to prevent one broken module from crashing the app
+    const safeRun = async (name, fn) => {
+      try {
+        if (typeof fn === 'function') {
+          const result = await fn();
+          console.log(`✅ Module Loaded: ${name}`);
+          return result;
+        }
+      } catch (err) {
+        console.warn(`⚠️ Module Failed: [${name}]`, err.message);
+        return null;
+      }
+    };
+
+    try {
+      this.modules.baseLayout = await safeRun('baseLayout', initBaseLayout);
+      this.modules.darkMode = await safeRun('darkMode', initDarkMode);
+      this.modules.searchFilter = await safeRun('searchFilter', initSearchFilter);
+      this.modules.whatsappShare = await safeRun('whatsappShare', initWhatsappShare);
+      this.modules.seoHelper = await safeRun('seoHelper', initSeoHelper);
+      this.modules.actions = await safeRun('actions', initActions);
+      this.modules.wishesRenderer = await safeRun('wishesRenderer', initWishesRenderer);
+      this.modules.storage = await safeRun('storage', initStorage);
+      this.modules.adsManager = await safeRun('adsManager', initAdsManager);
 
       console.log("Wishes Hub: All Systems Online!");
-      console.log("🎉 All Core Modules Loaded Successfully!");
+      console.log("🎉 All Core Modules Execution Attempt Completed!");
     } catch (error) {
       console.error("❌ Critical Error during system assembly:", error);
     }
   }
 }
 
-// Global Auto-initialization
-document.addEventListener('DOMContentLoaded', () => {
+// Global Auto-initialization (Handles both fast & DOMContentLoaded events)
+if (document.readyState === "loading") {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.appFeatures = new FeaturesAssembly();
+  });
+} else {
   window.appFeatures = new FeaturesAssembly();
-});
+        }
