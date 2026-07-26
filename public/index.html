@@ -7,13 +7,21 @@
 
   <!-- Eruda Debugger -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-  <script>eruda.init();</script>
+  <script>
+    eruda.init();
+    console.log("🛠️ Eruda initialized successfully!");
+  </script>
 
   <!-- Master Modular CSS -->
-  <link rel="stylesheet" href="/js/style-css.css">
+  <link rel="stylesheet" href="./js/style-css.css">
+
+  <!-- Direct Test Script to verify execution -->
+  <script type="module">
+    console.log("🔥 Direct Inline Module Test Running...");
+  </script>
 
   <!-- JS Modules Orchestrator -->
-  <script type="module" src="/js/features-assembly.js"></script>
+  <script type="module" src="./js/features-assembly.js"></script>
 </head>
 <body>
 
@@ -33,9 +41,9 @@
     </div>
 
     <div class="filter-tags">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">Birthday</button>
-      <button class="filter-btn">Anniversary</button>
+      <button class="filter-btn active" data-category="All">All</button>
+      <button class="filter-btn" data-category="Birthday">Birthday</button>
+      <button class="filter-btn" data-category="Anniversary">Anniversary</button>
     </div>
 
     <div id="wishes-list" class="wishes-container"></div>
