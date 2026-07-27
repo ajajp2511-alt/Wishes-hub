@@ -13,3 +13,10 @@ export class SeoAssembly {
     this.core.updateSeoData({ title, description, image, url });
   }
 }
+
+// 🔽 Yeh wrapper function file ke end me add kar dijiye
+export function initSeoHelper(initialMetaData = {}) {
+  const assembly = new SeoAssembly();
+  assembly.init(initialMetaData);
+  return assembly;
+}
