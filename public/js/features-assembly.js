@@ -6,10 +6,10 @@ import { initDarkMode } from '/js/dark-mode/dark-assembly.js';
 import { initSearchFilter } from '/js/search-filter/search-assembly.js';
 import { initWhatsappShare } from '/js/whatsapp-share/whatsapp-assembly.js';
 import { initSeoHelper } from '/js/seo-helper/seo-assembly.js';
-import { initActions } from '/js/action-handlers/action-handlers.js';
+import { initActions } from '/js/action-handlers/action-assembly.js';
 import { initWishesRenderer } from '/js/wishes-renderer/wishes-assembly.js';
 import { initStorage } from '/js/storage/storage-assembly.js';
-import { initAdsManager } from '/js/ads-manager/ads-manager.js';
+import { initAdsManager } from '/js/ads-manager/ads-assembly.js';
 
 export class FeaturesAssembly {
   constructor() {
