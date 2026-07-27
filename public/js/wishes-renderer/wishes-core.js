@@ -3,18 +3,20 @@ import { WishesConfig } from './wishes-config.js';
 
 export class WishesCore {
     constructor() {
-        // Constructor ko clean rakha hai, startApp assembly init() se run hoga
+        // Assembly init() se startApp handle hoga
     }
 
     async startApp() {
         console.log("Wishes Hub: System Booting...");
         
-        const oldGrid = document.getElementById(WishesConfig.fallbackContainerId);
-        const newSection = document.getElementById(WishesConfig.defaultContainerId);
-        const targetElement = oldGrid || newSection;
+        // Dynamic Container Selection: index.html ke 'wishes-list' ya Config ke IDs ko target karega
+        const targetElement = document.getElementById(WishesConfig.defaultContainerId) || 
+                              document.getElementById(WishesConfig.fallbackContainerId) ||
+                              document.getElementById('wishes-list') ||
+                              document.querySelector('.wishes-container');
         
-        if (targetElement && oldGrid) {
-            targetElement.innerHTML = "<p style='color:#00f2ff; padding:20px;'>Initializing Patel Studio Engine...</p>";
+        if (targetElement) {
+            targetElement.innerHTML = "<p style='color:#00adb5; padding:20px; text-align:center;'>Initializing Patel Studio Engine...</p>";
         }
 
         try {
@@ -39,7 +41,7 @@ export class WishesCore {
             console.error("Boot Error:", error);
             if (targetElement) {
                 targetElement.innerHTML = `
-                    <div style="color:#ff4444; padding:20px; border:1px solid #ff4444; border-radius:10px; background:#121212;">
+                    <div style="color:#ff4444; padding:20px; border:1px solid #ff4444; border-radius:10px; background:#121212; text-align:center;">
                         <h3>Launch Error</h3>
                         <p>${error.message}</p>
                     </div>`;
@@ -57,7 +59,7 @@ export class WishesCore {
             }
 
             if (!data.wishes || data.wishes.length === 0) {
-                gridElement.innerHTML = "<p style='color:#fff; padding:20px;'>Abhi tak koi wishes available nahi hain.</p>";
+                gridElement.innerHTML = "<p style='color:#666; padding:20px; text-align:center;'>Abhi tak koi wishes available nahi hain.</p>";
                 return;
             }
 
@@ -70,7 +72,7 @@ export class WishesCore {
                 card.setAttribute('data-text', (wish.title || '').toLowerCase());
                 card.style.cursor = "pointer";
 
-                // Media Logic
+                // Media Handling
                 let mediaHtml = '';
                 let finalMediaUrl = wish.imageUrl || null;
 
@@ -94,31 +96,32 @@ export class WishesCore {
                         }
 
                         mediaHtml = `
-                            <div style="width:100%; border-radius:8px; overflow:hidden; background:#1e1e1e; text-align:center; margin-bottom: 10px;">
-                                <img src="${proxyCleanUrl}" alt="Wish Media" loading="lazy" onerror="this.parentElement.style.display='none';" style="max-width:100%; max-height:250px; object-fit:contain; display:inline-block; border-radius:8px;">
+                            <div style="width:100%; border-radius:8px; overflow:hidden; margin-bottom: 10px;">
+                                <img src="${proxyCleanUrl}" alt="Wish Media" loading="lazy" onerror="this.parentElement.style.display='none';" style="width:100%; max-height:250px; object-fit:contain; display:block; border-radius:8px;">
                             </div>`;
                     }
                 }
 
                 const safeCopyText = (wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
+                // High Contrast UI Design (Light & Dark Friendly)
                 card.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                        <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 8px; border-radius:20px; font-weight:bold;">
+                        <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 10px; border-radius:20px; font-weight:bold;">
                             #${wish.category || 'General'}
                         </span>
                     </div>
                     
                     ${mediaHtml}
 
-                    <p class="wish-text" style="color:#fff; font-size:16px; line-height:1.5; margin:5px 0; white-space: pre-wrap;">
+                    <p class="wish-text" style="color:#111111; font-size:15px; line-height:1.6; margin:10px 0; white-space: pre-wrap; word-break: break-word; font-weight:500;">
                         ${wish.title || 'No Text'}
                     </p>
                     
                     <div style="text-align:right; margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="color:#00f2ff; font-size:12px; font-weight:bold;">View Details →</span>
+                        <span style="color:#00adb5; font-size:13px; font-weight:bold;">View Details →</span>
                         <button class="copy-btn" 
-                                style="background:#222; color:#00f2ff; border:1px solid #00f2ff; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;"
+                                style="background:#0a192f; color:#00f2ff; border:1px solid #00f2ff; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;"
                                 onclick="event.stopPropagation(); navigator.clipboard.writeText(\`${safeCopyText}\`); alert('Wish text copied!');">
                             Copy
                         </button>
@@ -134,7 +137,7 @@ export class WishesCore {
 
         } catch (error) {
             console.error("Fetch Error:", error);
-            gridElement.innerHTML = `<p style='color:#ff4444; padding:20px;'>Wishes load nahi ho payi: ${error.message}</p>`;
+            gridElement.innerHTML = `<p style='color:#ff4444; padding:20px; text-align:center;'>Wishes load nahi ho payi: ${error.message}</p>`;
         }
     }
 
@@ -162,4 +165,4 @@ export class WishesCore {
             });
         });
     }
-                                }
+}
