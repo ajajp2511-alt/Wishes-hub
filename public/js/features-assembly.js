@@ -1,30 +1,23 @@
-console.log("📌 features-assembly.js file download/load ho chuki hai!");
+console.log("📌 Features Assembly script loaded!");
 
-// Core Feature Module Imports
+// Har module ki dedicated assembly file ko connect kar rahe hain
 import { initBaseLayout } from '/js/base-layout/index.js';
-import { initDarkMode } from '/js/dark-mode/index.js';
-import { initSearchFilter } from '/js/search-filter/index.js';
-import { initWhatsappShare } from '/js/whatsapp-share/index.js';
-import { initSeoHelper } from '/js/seo-helper/index.js';
-import { initActions } from '/js/actions/index.js';
-import { initWishesRenderer } from '/js/wishes-renderer/index.js';
-import { initStorage } from '/js/storage/index.js';
-import { initAdsManager } from '/js/ads-manager/index.js';
+import { initDarkMode } from '/js/dark-mode/dark-assembly.js';
+import { initSearchFilter } from '/js/search-filter/search-assembly.js';
+import { initWhatsappShare } from '/js/whatsapp-share/whatsapp-assembly.js';
+import { initSeoHelper } from '/js/seo-helper/seo-assembly.js';
+import { initActions } from '/js/action-handlers/action-handlers.js';
+import { initWishesRenderer } from '/js/wishes-renderer/wishes-assembly.js';
+import { initStorage } from '/js/storage/storage-assembly.js';
+import { initAdsManager } from '/js/ads-manager/ads-manager.js';
 
-/**
- * FeaturesAssembly Class
- * Orchestrates all modular app features safely
- */
 export class FeaturesAssembly {
   constructor() {
-    console.log("🚀 Initializing Wishes Hub Core Modules...");
-    this.modules = {};
+    console.log("🚀 Booting Wishes Hub System...");
     this.bootSystem();
   }
 
   async bootSystem() {
-    console.log("Wishes Hub: System Booting...");
-
     const safeRun = async (name, fn) => {
       try {
         if (typeof fn === 'function') {
@@ -38,30 +31,23 @@ export class FeaturesAssembly {
       }
     };
 
-    try {
-      this.modules.baseLayout = await safeRun('baseLayout', initBaseLayout);
-      this.modules.darkMode = await safeRun('darkMode', initDarkMode);
-      this.modules.searchFilter = await safeRun('searchFilter', initSearchFilter);
-      this.modules.whatsappShare = await safeRun('whatsappShare', initWhatsappShare);
-      this.modules.seoHelper = await safeRun('seoHelper', initSeoHelper);
-      this.modules.actions = await safeRun('actions', initActions);
-      this.modules.wishesRenderer = await safeRun('wishesRenderer', initWishesRenderer);
-      this.modules.storage = await safeRun('storage', initStorage);
-      this.modules.adsManager = await safeRun('adsManager', initAdsManager);
+    // Sequential Execution
+    await safeRun('baseLayout', initBaseLayout);
+    await safeRun('darkMode', initDarkMode);
+    await safeRun('searchFilter', initSearchFilter);
+    await safeRun('whatsappShare', initWhatsappShare);
+    await safeRun('seoHelper', initSeoHelper);
+    await safeRun('actions', initActions);
+    await safeRun('wishesRenderer', initWishesRenderer);
+    await safeRun('storage', initStorage);
+    await safeRun('adsManager', initAdsManager);
 
-      console.log("Wishes Hub: All Systems Online!");
-      console.log("🎉 All Core Modules Execution Attempt Completed!");
-    } catch (error) {
-      console.error("❌ Critical Error during system assembly:", error);
-    }
+    console.log("🎉 All Module Assemblies Connected!");
   }
 }
 
-// Global Auto-initialization
 if (document.readyState === "loading") {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.appFeatures = new FeaturesAssembly();
-  });
+  document.addEventListener('DOMContentLoaded', () => new FeaturesAssembly());
 } else {
-  window.appFeatures = new FeaturesAssembly();
+  new FeaturesAssembly();
 }
