@@ -32,3 +32,10 @@ export class DarkModeAssembly {
     }
   }
 }
+
+// 🔽 Yeh lines niche add kar dijiye
+export function initDarkMode() {
+  const assembly = new DarkModeAssembly();
+  assembly.init();
+  return assembly;
+}
