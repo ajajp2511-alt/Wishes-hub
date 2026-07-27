@@ -5,13 +5,13 @@ export class WishesAssembly {
     this.core = null;
   }
 
-  init() {
+  async init() {
     this.core = new WishesCore();
+    await this.core.startApp();
     console.log('✨ Wishes Renderer Module Loaded Successfully!');
   }
 }
 
-// 🔽 Yeh wrapper function end me add kar dijiye
 export function initWishesRenderer() {
   const assembly = new WishesAssembly();
   assembly.init();
