@@ -10,3 +10,10 @@ export class WishesAssembly {
     console.log('✨ Wishes Renderer Module Loaded Successfully!');
   }
 }
+
+// 🔽 Yeh wrapper function end me add kar dijiye
+export function initWishesRenderer() {
+  const assembly = new WishesAssembly();
+  assembly.init();
+  return assembly;
+}
