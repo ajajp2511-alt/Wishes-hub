@@ -31,3 +31,10 @@ export class WhatsAppAssembly {
     });
   }
 }
+
+// 🔽 Yeh wrapper function end me add kar dijiye
+export function initWhatsappShare() {
+  const assembly = new WhatsAppAssembly();
+  assembly.init();
+  return assembly;
+        }
