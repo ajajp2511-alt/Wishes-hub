@@ -3,7 +3,7 @@ import { WishesConfig } from './wishes-config.js';
 
 export class WishesCore {
     constructor() {
-        this.startApp();
+        // Constructor ko clean rakha hai, startApp assembly init() se run hoga
     }
 
     async startApp() {
@@ -162,4 +162,4 @@ export class WishesCore {
             });
         });
     }
-}
+                                }
