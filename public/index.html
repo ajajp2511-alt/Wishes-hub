@@ -20,7 +20,7 @@
     console.log("🔥 Direct Inline Module Test Running...");
   </script>
 
-  <!-- JS Modules Orchestrator (Yahan se Menu system bhi auto-load ho jayega) -->
+  <!-- JS Modules Orchestrator -->
   <script type="module" src="./js/features-assembly.js"></script>
 </head>
 <body>
@@ -28,13 +28,28 @@
   <!-- Side Drawer Navigation Container Target -->
   <div id="menu-navigation-container"></div>
 
-  <header class="app-header">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <!-- Hamburger Menu Toggle Button -->
-      <button id="menu-toggle-btn" class="menu-btn" style="background:none; border:none; color:#00f2ff; font-size:24px; cursor:pointer;">☰</button>
+  <header class="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;">
+    
+    <!-- Left: Brand Title / Logo -->
+    <div class="logo-container">
       <h1 style="margin: 0;">Wishes Hub</h1>
     </div>
-    <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
+
+    <!-- Right Controls: Dark Mode Button + Hamburger (3 Lines) Below It -->
+    <div class="header-right-controls" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+      
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
+
+      <!-- ☰ Hamburger Toggle Button (Positioned Below Theme Button) -->
+      <button id="menu-toggle-btn" class="menu-btn" aria-label="Toggle Navigation" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 4px;">
+        <span style="width: 24px; height: 3px; background-color: #00f2ff; border-radius: 2px; display: block;"></span>
+        <span style="width: 24px; height: 3px; background-color: #00f2ff; border-radius: 2px; display: block;"></span>
+        <span style="width: 24px; height: 3px; background-color: #00f2ff; border-radius: 2px; display: block;"></span>
+      </button>
+
+    </div>
+
   </header>
 
   <main class="main-container">
