@@ -1,0 +1,31 @@
+/* Side Drawer Container - Fixed Right Slide-in */
+#menu-navigation-container {
+  position: fixed !important;
+  top: 0 !important;
+  right: -100% !important; /* Default Screen se bahar rahega */
+  width: 280px !important;
+  height: 100vh !important;
+  background-color: #0f172a !important; /* Cyber Neon Dark Background */
+  color: #ffffff !important;
+  z-index: 9999 !important; /* Header ke bhi upar render hoga */
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow-y: auto;
+}
+
+/* Tapped / Active State */
+#menu-navigation-container.active {
+  right: 0 !important; /* Slide-in to view */
+}
+
+/* Hover & Active Effects for Links */
+.menu-item-link:hover {
+  background-color: rgba(0, 242, 255, 0.1) !important;
+  color: #00f2ff !important;
+  transform: translateX(4px);
+}
+
+/* Close Button Hover */
+#close-menu-btn:hover {
+  color: #ff4757 !important;
+}
