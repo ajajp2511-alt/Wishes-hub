@@ -58,3 +58,10 @@ export class SearchAssembly {
     });
   }
 }
+
+// 🔽 Yeh wrapper export niche add kar dijiye
+export function initSearchFilter(renderCallback, initialItems = []) {
+  const assembly = new SearchAssembly(renderCallback);
+  assembly.init(initialItems);
+  return assembly;
+            }
