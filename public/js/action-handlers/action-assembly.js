@@ -9,3 +9,10 @@ export class ActionAssembly {
     this.core = new ActionCore();
   }
 }
+
+// 🔽 Yeh lines niche add kar dijiye
+export function initActions() {
+  const assembly = new ActionAssembly();
+  assembly.init();
+  return assembly;
+}
