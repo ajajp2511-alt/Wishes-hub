@@ -20,13 +20,20 @@
     console.log("🔥 Direct Inline Module Test Running...");
   </script>
 
-  <!-- JS Modules Orchestrator -->
+  <!-- JS Modules Orchestrator (Yahan se Menu system bhi auto-load ho jayega) -->
   <script type="module" src="./js/features-assembly.js"></script>
 </head>
 <body>
 
+  <!-- Side Drawer Navigation Container Target -->
+  <div id="menu-navigation-container"></div>
+
   <header class="app-header">
-    <h1>Wishes Hub</h1>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <!-- Hamburger Menu Toggle Button -->
+      <button id="menu-toggle-btn" class="menu-btn" style="background:none; border:none; color:#00f2ff; font-size:24px; cursor:pointer;">☰</button>
+      <h1 style="margin: 0;">Wishes Hub</h1>
+    </div>
     <button id="theme-toggle-btn" class="theme-btn">🌙 Theme</button>
   </header>
 
