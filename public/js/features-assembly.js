@@ -11,6 +11,9 @@ import { initWishesRenderer } from '/js/wishes-renderer/wishes-assembly.js';
 import { initStorage } from '/js/storage/storage-assembly.js';
 import { initAdsManager } from '/js/ads-manager/ads-assembly.js';
 
+// 🆕 Menu Navigation Module Import
+import { initMenuNavigation } from '/js/menu-navigation/menu-assembly.js';
+
 export class FeaturesAssembly {
   constructor() {
     console.log("🚀 Booting Wishes Hub System...");
@@ -33,6 +36,7 @@ export class FeaturesAssembly {
 
     // Sequential Execution
     await safeRun('baseLayout', initBaseLayout);
+    await safeRun('menuNavigation', initMenuNavigation); // 👈 Base layout ke turant baad Menu render hoga
     await safeRun('darkMode', initDarkMode);
     await safeRun('searchFilter', initSearchFilter);
     await safeRun('whatsappShare', initWhatsappShare);
