@@ -48,6 +48,58 @@ body {
   transform: scale(0.95);
 }
 
+/* 🆕 Header Right Controls (Dark Mode + Hamburger Menu Below It) */
+.header-right-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* 🆕 3-Line Hamburger Menu Button Styling */
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.menu-btn:active {
+  transform: scale(0.9);
+}
+
+.menu-btn span {
+  width: 24px;
+  height: 3px;
+  background-color: #00f2ff; /* Cyber Neon Accent */
+  border-radius: 2px;
+  display: block;
+}
+
+/* 🆕 Side Drawer Navigation Styles */
+#menu-navigation-container {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Hidden offscreen by default */
+  width: 280px;
+  height: 100vh;
+  background-color: #0f172a; /* Dark Cyber Theme */
+  color: #ffffff;
+  z-index: 999;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+/* Triggered when Hamburger Button is tapped */
+#menu-navigation-container.active {
+  right: 0;
+}
+
 /* Main Container */
 .main-container {
   max-width: 600px;
