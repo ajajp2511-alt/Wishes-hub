@@ -2,6 +2,6 @@
 export const WishesConfig = {
     apiEndpoint: '/api/get-wishes',
     mediaProxyBase: 'https://imtqy.com/bot',
-    defaultContainerId: 'latest-wishes-section',
-    fallbackContainerId: 'wishes-grid'
+    defaultContainerId: 'wishes-list', // 👈 'latest-wishes-section' ki jagah 'wishes-list' kar diya
+    fallbackContainerId: 'wishes-container'
 };
