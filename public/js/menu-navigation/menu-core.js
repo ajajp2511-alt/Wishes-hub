@@ -4,6 +4,18 @@ import { MenuConfig } from './menu-config.js';
 export class MenuCore {
     constructor() {
         this.container = document.getElementById(MenuConfig.containerId);
+        this.injectDedicatedCSS(); // 👈 Dedicated menu-style.css auto load hoga
+    }
+
+    // Dynamic CSS Injector
+    injectDedicatedCSS() {
+        if (!document.getElementById('menu-style-link')) {
+            const link = document.createElement('link');
+            link.id = 'menu-style-link';
+            link.rel = 'stylesheet';
+            link.href = './js/menu-navigation/menu-style.css'; // Path to dedicated CSS
+            document.head.appendChild(link);
+        }
     }
 
     renderMenu() {
@@ -13,9 +25,14 @@ export class MenuCore {
         }
 
         let navHtml = `
-            <div class="side-drawer-menu" style="display:flex; flex-direction:column; gap:8px; padding:15px; background:#0a192f; border-right:1px solid #00f2ff; min-height:100vh;">
-                <div style="font-size:12px; color:#00f2ff; font-weight:bold; letter-spacing:1px; margin-bottom:5px; text-transform:uppercase;">
-                    Navigation
+            <div class="side-drawer-menu" style="display:flex; flex-direction:column; gap:8px; padding:20px 15px; background:#0a192f; border-left:1px solid #00f2ff; min-height:100vh;">
+                
+                <!-- Drawer Header with Close Button -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="font-size:12px; color:#00f2ff; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">
+                        Navigation
+                    </div>
+                    <button id="close-drawer-btn" style="background:none; border:none; color:#a0aec0; font-size:20px; cursor:pointer;">✕</button>
                 </div>
         `;
 
@@ -31,5 +48,17 @@ export class MenuCore {
 
         navHtml += `</div>`;
         this.container.innerHTML = navHtml;
+
+        this.bindInternalEvents();
     }
-}
+
+    bindInternalEvents() {
+        // Drawer ke andar Close Button click event
+        const closeBtn = document.getElementById('close-drawer-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.container.classList.remove('active');
+            });
+        }
+    }
+                    }
