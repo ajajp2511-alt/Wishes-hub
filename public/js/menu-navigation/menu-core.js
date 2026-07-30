@@ -1,11 +1,10 @@
 /* Menu Navigation Core Logic (Side Drawer) */
 import { MenuConfig } from './menu-config.js';
-import { renderOnlyFavorites } from '../favorites/favorites-assembly.js';
 
 export class MenuCore {
     constructor() {
         this.container = document.getElementById(MenuConfig.containerId);
-        this.injectDedicatedCSS(); // 👈 Dedicated menu-style.css auto load hoga
+        this.injectDedicatedCSS(); // Dedicated menu-style.css load
     }
 
     // Dynamic CSS Injector
@@ -14,7 +13,7 @@ export class MenuCore {
             const link = document.createElement('link');
             link.id = 'menu-style-link';
             link.rel = 'stylesheet';
-            link.href = './js/menu-navigation/menu-style.css'; // Path to dedicated CSS
+            link.href = './js/menu-navigation/menu-style.css';
             document.head.appendChild(link);
         }
     }
@@ -54,28 +53,44 @@ export class MenuCore {
     }
 
     bindInternalEvents() {
-        // 1. Drawer Close Button
-        const closeBtn = document.getElementById('close-drawer-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                this.container.classList.remove('active');
-            });
-        }
-
-        // 2. 💥 Precise Navigation Handler (#nav-favorite Target)
-        const favBtn = document.getElementById('nav-favorite');
-        if (favBtn) {
-            favBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                // Step A: Navigation drawer close karein
-                this.container.classList.remove('active');
-
-                // Step B: Pure main view par sirf Favorite Wishes render karein
-                if (typeof renderOnlyFavorites === 'function') {
-                    renderOnlyFavorites();
+        // Global Click Listener for Menu Interactivity
+        document.addEventListener('click', async (e) => {
+            
+            // 1. Close Button Trigger
+            if (e.target.closest('#close-drawer-btn')) {
+                if (this.container) {
+                    this.container.classList.remove('active', 'open');
                 }
-            });
-        }
+                return;
+            }
+
+            // 2. Favorite Item Click Trigger (ID ya Class/Text se detect karega)
+            const favTarget = e.target.closest('#nav-favorite, [href="#favorite"]');
+            
+            if (favTarget) {
+                e.preventDefault();
+                console.log("❤️ Favorite menu clicked!");
+
+                // Side drawer close karo
+                if (this.container) {
+                    this.container.classList.remove('active', 'open');
+                }
+
+                // Global function check karke Favorites view trigger karo
+                if (typeof window.renderOnlyFavorites === 'function') {
+                    await window.renderOnlyFavorites();
+                } else {
+                    // Dynamic import fallback agar global window object me na ho
+                    try {
+                        const module = await import('../favorites/favorites-assembly.js');
+                        if (module && module.renderOnlyFavorites) {
+                            await module.renderOnlyFavorites();
+                        }
+                    } catch (err) {
+                        console.error("Failed to load favorites view module:", err);
+                    }
+                }
+            }
+        });
     }
 }
