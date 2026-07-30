@@ -3,6 +3,8 @@ import { WishesConfig } from './wishes-config.js';
 import { fetchWishesData } from './wishes-api.js';
 import { generateMediaHtml } from './wishes-media.js';
 import { initSearchLogic } from './wishes-search.js';
+import { renderFavoriteButton } from './wishes-favorite.js';
+import { syncFavoritesUI } from '../favorites/favorites-assembly.js';
 
 export class WishesCore {
     constructor() {}
@@ -50,6 +52,7 @@ export class WishesCore {
             gridElement.innerHTML = "";
 
             wishes.forEach(wish => {
+                const wishId = wish._id || wish.id;
                 const card = document.createElement('div');
                 card.className = 'wish-card';
                 card.setAttribute('data-category', wish.category || 'General');
@@ -64,6 +67,11 @@ export class WishesCore {
                         <span style="background:#00f2ff; color:#000; font-size:12px; padding:3px 10px; border-radius:20px; font-weight:bold;">
                             #${wish.category || 'General'}
                         </span>
+
+                        <!-- 💥 FAVORITE HEART BUTTON COMPONENT -->
+                        <div onclick="event.stopPropagation();">
+                            ${renderFavoriteButton(wishId)}
+                        </div>
                     </div>
 
                     ${mediaHtml}
@@ -83,15 +91,18 @@ export class WishesCore {
                 `;
 
                 card.addEventListener('click', () => {
-                    window.location.href = `page/wish.html?id=${wish._id}`;
+                    window.location.href = `page/wish.html?id=${wishId}`;
                 });
 
                 gridElement.appendChild(card);
             });
+
+            // 💥 SYNC FAVORITES UI ON CARDS AFTER RENDER
+            await syncFavoritesUI();
 
         } catch (error) {
             console.error("Render Error:", error);
             gridElement.innerHTML = `<p style='color:#ff4444; padding:20px; text-align:center;'>Wishes load nahi ho payi: ${error.message}</p>`;
         }
     }
-                }
+                                  }
