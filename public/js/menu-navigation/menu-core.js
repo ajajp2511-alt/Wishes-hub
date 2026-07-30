@@ -1,5 +1,6 @@
 /* Menu Navigation Core Logic (Side Drawer) */
 import { MenuConfig } from './menu-config.js';
+import { renderOnlyFavorites } from '../favorites/favorites-assembly.js';
 
 export class MenuCore {
     constructor() {
@@ -53,12 +54,28 @@ export class MenuCore {
     }
 
     bindInternalEvents() {
-        // Drawer ke andar Close Button click event
+        // 1. Drawer Close Button
         const closeBtn = document.getElementById('close-drawer-btn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 this.container.classList.remove('active');
             });
         }
+
+        // 2. 💥 Precise Navigation Handler (#nav-favorite Target)
+        const favBtn = document.getElementById('nav-favorite');
+        if (favBtn) {
+            favBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Step A: Navigation drawer close karein
+                this.container.classList.remove('active');
+
+                // Step B: Pure main view par sirf Favorite Wishes render karein
+                if (typeof renderOnlyFavorites === 'function') {
+                    renderOnlyFavorites();
+                }
+            });
+        }
     }
-                    }
+}
