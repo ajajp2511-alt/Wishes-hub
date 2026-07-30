@@ -11,6 +11,8 @@ import { initWishesRenderer } from '/js/wishes-renderer/wishes-assembly.js';
 import { initStorage } from '/js/storage/storage-assembly.js';
 import { initAdsManager } from '/js/ads-manager/ads-assembly.js';
 import { initMenuNavigation } from '/js/menu-navigation/menu-assembly.js';
+// 💥 NAYA: Favorites Assembly Import
+import { initFavorites } from '/js/favorites/favorites-assembly.js';
 
 export class FeaturesAssembly {
   constructor() {
@@ -48,7 +50,9 @@ export class FeaturesAssembly {
       this.safeRun('actions', initActions),
       this.safeRun('wishesRenderer', initWishesRenderer),
       this.safeRun('storage', initStorage),
-      this.safeRun('adsManager', initAdsManager)
+      this.safeRun('adsManager', initAdsManager),
+      // 💥 NAYA: Favorites Bootstrapping
+      this.safeRun('favorites', initFavorites)
     ]);
 
     console.log("🎉 All Module Assemblies Successfully Initialized!");
