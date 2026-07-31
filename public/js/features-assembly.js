@@ -11,8 +11,15 @@ import { initWishesRenderer } from '/js/wishes-renderer/wishes-assembly.js';
 import { initStorage } from '/js/storage/storage-assembly.js';
 import { initAdsManager } from '/js/ads-manager/ads-assembly.js';
 import { initMenuNavigation } from '/js/menu-navigation/menu-assembly.js';
-// 💥 NAYA: Favorites Assembly Import
-import { initFavorites } from '/js/favorites/favorites-assembly.js';
+
+// 💥 Favorites Assembly Import (Exports: assembleFavorites, syncFavoritesUI)
+import { assembleFavorites, syncFavoritesUI } from '/js/favorites/favorites-assembly.js';
+
+// Wrapper for Favorites Initialization
+const initFavorites = async () => {
+  if (typeof assembleFavorites === 'function') assembleFavorites();
+  if (typeof syncFavoritesUI === 'function') await syncFavoritesUI();
+};
 
 export class FeaturesAssembly {
   constructor() {
@@ -41,7 +48,6 @@ export class FeaturesAssembly {
     await this.safeRun('menuNavigation', initMenuNavigation);
 
     // Phase 2: Independent Features (Parallel Execution for fast performance)
-    // Agar inme se koi ek crash hua, toh baki instantly load ho jayenge
     await Promise.allSettled([
       this.safeRun('darkMode', initDarkMode),
       this.safeRun('searchFilter', initSearchFilter),
@@ -51,7 +57,7 @@ export class FeaturesAssembly {
       this.safeRun('wishesRenderer', initWishesRenderer),
       this.safeRun('storage', initStorage),
       this.safeRun('adsManager', initAdsManager),
-      // 💥 NAYA: Favorites Bootstrapping
+      // 💥 Favorites Bootstrapping
       this.safeRun('favorites', initFavorites)
     ]);
 
