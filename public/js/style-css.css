@@ -6,6 +6,9 @@
 @import url('/js/ads-manager/assets/style-css.css');
 @import url('/js/seo-helper/assets/style-css.css');
 
+/* 💥 Favorites Module CSS Import */
+@import url('/js/favorites/assets/style-css.css');
+
 /* Global Reset & Base Layout */
 * {
   box-sizing: border-box;
@@ -159,4 +162,4 @@ body {
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  }
+}
