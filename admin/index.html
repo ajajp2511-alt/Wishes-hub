@@ -5,40 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
     <link rel="stylesheet" href="/admin/style.css">
-    <link rel="stylesheet" href="/admin/css/admin-logo-upload.css">
 </head>
 <body>
 
-    <div class="mobile-header" style="background: var(--sidebar-bg); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom: 1px solid var(--sidebar-hover);">
-        <span style="font-weight: 600; font-size: 18px; font-family: 'Segoe UI', sans-serif;">Wishes Hub Admin</span>
-        <button id="toggle-sidebar-btn" style="color: white; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px 10px; line-height: 1;">☰</button>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <span>Wishes Hub Admin</span>
+        <button id="toggle-sidebar-btn">☰</button>
     </div>
 
+    <!-- Main Workspace -->
     <div class="admin-wrapper">
         <main class="content-workspace">
-            <!-- 🔥 Root workspace area for JS rendering -->
-            <div id="dynamic-content-root"></div>
+            <!-- Dynamic Content Area -->
+            <div id="dynamic-content-root">
+                <!-- Modules will be injected here -->
+            </div>
         </main>
     </div>
 
-    <!-- 🔥 Core Configuration Systems -->
-    <script src="/admin/features/wishes/category-data.js?v=2.1"></script>
-    <script src="/admin/features/media/media-uploader.js?v=2.1"></script>
-    <script src="/admin/features/settings/settings.js?v=2.1"></script> 
-
-    <!-- 🎨 ANIMATION SELECTOR ENGINE (Dashboard-init se pehle load hona zaroori hai) -->
-    <script src="/admin/features/wishes/animation-selector.js?v=2.1"></script>
-
-    <!-- 🎛️ CORE DASHBOARD CONTROLLER (dashboard-init) -->
-    <script src="/admin/js/dashboard-init.js?v=2.1"></script>
-    <script type="module" src="/admin/js/admin-logo-uploader.js?v=2.1"></script>
-    
-    <!-- 🎵 Audio & Links Engines -->
-    <script src="/admin/features/song/youtube-song-search.js?v=2.1"></script>
-    <script src="/admin/features/song/youtube-url-linker.js?v=2.1"></script> 
-    <script src="/admin/features/media/voice-recorder.js?v=2.1"></script>
-
-    <!-- 🚀 CENTRAL COORDINATOR ANIMATION MODULE LINK -->
-    <script type="module" src="/admin/features/wishes/animation-manager.js?v=2.1"></script>
+    <!-- Base Scripts -->
+    <script src="/admin/responsive-admin.js"></script>
+    <script src="/admin/script.js"></script>
 </body>
-    </html>
+</html>
