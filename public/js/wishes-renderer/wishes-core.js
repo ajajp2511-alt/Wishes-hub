@@ -68,8 +68,8 @@ export class WishesCore {
                             #${wish.category || 'General'}
                         </span>
 
-                        <!-- 💥 FAVORITE HEART BUTTON COMPONENT -->
-                        <div onclick="event.stopPropagation();">
+                        <!-- 💥 FAVORITE HEART BUTTON COMPONENT WITH EXPLICIT STYLING -->
+                        <div onclick="event.stopPropagation();" style="display:flex; align-items:center; justify-content:center;">
                             ${renderFavoriteButton(wishId)}
                         </div>
                     </div>
@@ -97,12 +97,14 @@ export class WishesCore {
                 gridElement.appendChild(card);
             });
 
-            // 💥 SYNC FAVORITES UI ON CARDS AFTER RENDER
-            await syncFavoritesUI();
+            // 💥 SAFE SYNC FAVORITES UI
+            if (typeof syncFavoritesUI === 'function') {
+                await syncFavoritesUI();
+            }
 
         } catch (error) {
             console.error("Render Error:", error);
             gridElement.innerHTML = `<p style='color:#ff4444; padding:20px; text-align:center;'>Wishes load nahi ho payi: ${error.message}</p>`;
         }
     }
-                                  }
+}
