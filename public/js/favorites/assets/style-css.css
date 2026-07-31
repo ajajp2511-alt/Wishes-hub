@@ -1,1 +1,42 @@
+/* ==========================================
+   Wishes Hub - Favorite Heart Button Styles
+   ========================================== */
 
+/* Button Container */
+.fav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hover Effect */
+.fav-btn:hover {
+  background-color: rgba(255, 42, 95, 0.1);
+}
+
+/* SVG Heart Icon Base Style */
+.fav-btn .heart-icon {
+  fill: #b0b0b0; /* Default Unselected Grey Color */
+  transition: fill 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Active State (Selected Favorite) */
+.fav-btn.active .heart-icon {
+  fill: #ff2a5f; /* Active Neon Red Color */
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 6px rgba(255, 42, 95, 0.6));
+}
+
+/* Click Animation Effect */
+.fav-btn:active {
+  transform: scale(0.9);
+}
