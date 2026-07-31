@@ -4,7 +4,6 @@ import { fetchWishesData } from './wishes-api.js';
 import { generateMediaHtml } from './wishes-media.js';
 import { initSearchLogic } from './wishes-search.js';
 import { renderFavoriteButton } from './wishes-favorite.js';
-import { syncFavoritesUI } from '../favorites/favorites-assembly.js';
 
 export class WishesCore {
     constructor() {}
@@ -29,7 +28,10 @@ export class WishesCore {
                 await this.renderWishes(targetElement);
             }
 
-            initSearchLogic();
+            if (typeof initSearchLogic === 'function') {
+                initSearchLogic();
+            }
+            
             console.log("Wishes Hub: All Systems Online");
 
         } catch (error) {
@@ -59,7 +61,7 @@ export class WishesCore {
                 card.setAttribute('data-text', (wish.title || '').toLowerCase());
                 card.style.cursor = "pointer";
 
-                const mediaHtml = generateMediaHtml(wish);
+                const mediaHtml = generateMediaHtml ? generateMediaHtml(wish) : '';
                 const safeCopyText = (wish.title || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
                 card.innerHTML = `
@@ -68,9 +70,9 @@ export class WishesCore {
                             #${wish.category || 'General'}
                         </span>
 
-                        <!-- 💥 FAVORITE HEART BUTTON COMPONENT WITH EXPLICIT STYLING -->
+                        <!-- FAVORITE HEART BUTTON COMPONENT -->
                         <div onclick="event.stopPropagation();" style="display:flex; align-items:center; justify-content:center;">
-                            ${renderFavoriteButton(wishId)}
+                            ${typeof renderFavoriteButton === 'function' ? renderFavoriteButton(wishId) : ''}
                         </div>
                     </div>
 
@@ -97,9 +99,14 @@ export class WishesCore {
                 gridElement.appendChild(card);
             });
 
-            // 💥 SAFE SYNC FAVORITES UI
-            if (typeof syncFavoritesUI === 'function') {
-                await syncFavoritesUI();
+            // 🛡️ SAFE DYNAMIC SYNC FAVORITES UI (No Static Import Lock)
+            try {
+                const { syncFavoritesUI } = await import('../favorites/favorites-assembly.js');
+                if (typeof syncFavoritesUI === 'function') {
+                    await syncFavoritesUI();
+                }
+            } catch (favErr) {
+                console.warn("Favorites UI Sync skipped/failed:", favErr.message);
             }
 
         } catch (error) {
@@ -107,4 +114,4 @@ export class WishesCore {
             gridElement.innerHTML = `<p style='color:#ff4444; padding:20px; text-align:center;'>Wishes load nahi ho payi: ${error.message}</p>`;
         }
     }
-}
+                           }
