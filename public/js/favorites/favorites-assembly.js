@@ -1,5 +1,3 @@
-import { toggleFavoriteCore, getFavorites } from './favorites-core.js';
-
 let isFavoritesInitialized = false;
 
 export function assembleFavorites() {
@@ -20,13 +18,18 @@ export function assembleFavorites() {
     favBtn.classList.toggle('active');
 
     try {
-      const isFav = await toggleFavoriteCore(wishId);
+      // SAFE FIX: Dynamic import so top-level load never fails
+      const { toggleFavoriteCore } = await import('./favorites-core.js');
       
-      // Ensure UI stays in sync with actual result
-      if (isFav) {
-        favBtn.classList.add('active');
-      } else {
-        favBtn.classList.remove('active');
+      if (typeof toggleFavoriteCore === 'function') {
+        const isFav = await toggleFavoriteCore(wishId);
+        
+        // Ensure UI stays in sync with actual result
+        if (isFav) {
+          favBtn.classList.add('active');
+        } else {
+          favBtn.classList.remove('active');
+        }
       }
     } catch (err) {
       console.error("Favorite toggle failed, reverting UI:", err);
@@ -38,17 +41,27 @@ export function assembleFavorites() {
 
 // Sync UI Heart States on Page Load or Card Render
 export async function syncFavoritesUI() {
-  const activeFavs = await getFavorites();
-  const allFavBtns = document.querySelectorAll('.fav-btn');
+  try {
+    // SAFE FIX: Dynamic import for core logic
+    const { getFavorites } = await import('./favorites-core.js');
+    
+    if (typeof getFavorites !== 'function') return;
 
-  if (!allFavBtns.length) return;
+    const activeFavs = await getFavorites();
+    const allFavBtns = document.querySelectorAll('.fav-btn');
 
-  allFavBtns.forEach(btn => {
-    const wishId = btn.dataset.wishId;
-    if (activeFavs.includes(wishId)) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-                    }
+    if (!allFavBtns.length) return;
+
+    allFavBtns.forEach(btn => {
+      const wishId = btn.dataset.wishId;
+      // SAFE FIX: Optional chaining Array.isArray check (null pointer safety)
+      if (Array.isArray(activeFavs) && activeFavs.includes(wishId)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  } catch (err) {
+    console.warn("Could not sync favorites UI:", err.message);
+  }
+}
