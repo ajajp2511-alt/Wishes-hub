@@ -1,0 +1,27 @@
+/* Outlet Workspace & Loader Styles */
+#dynamic-content-root {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.outlet-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666666;
+  font-weight: 500;
+}
+
+.outlet-error {
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  margin: 20px 0;
+  font-size: 14px;
+    }
