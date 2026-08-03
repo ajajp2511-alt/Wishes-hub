@@ -5,35 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
 
-    <!-- 🛠️ Eruda Mobile Debugger (Always Active) -->
+    <!-- 🛠️ Eruda Mobile Console (Direct Injected for Admin) -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
         eruda.init();
-        console.log("🛠️ Eruda Console Force Activated!");
+        console.log("🛠️ Eruda active on /admin!");
     </script>
 
-    <!-- Main CSS Assembly File -->
-    <link rel="stylesheet" href="./style-css.css">
+    <!-- Sub-folder relative paths for Admin module -->
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./features/style-css.css">
 </head>
 <body>
 
-    <!-- Mobile Header -->
     <div class="mobile-header">
         <span>Wishes Hub Admin</span>
         <button id="toggle-sidebar-btn">☰</button>
     </div>
 
-    <!-- Main Workspace -->
     <div class="admin-wrapper">
         <main class="content-workspace">
-            <div id="dynamic-content-root">
-                <!-- Modules yahan inject honge -->
-            </div>
+            <div id="dynamic-content-root"></div>
         </main>
     </div>
 
-    <!-- Main JS Assembly File -->
+    <!-- Corrected Folder Paths for Sub-directory -->
     <script type="module" src="./responsive-admin.js"></script>
-    <script type="module" src="./features-assembly.js"></script>
+    <script type="module" src="./features/features-assembly.js"></script>
 </body>
 </html>
