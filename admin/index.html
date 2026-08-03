@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
-    
+
+    <!-- 🛠️ Eruda Mobile Debugger (URL: ?debug=true hone par load hoga) -->
+    <script>
+        (function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            // Agar URL me ?debug=true pass karenge ya localStorage me active hoga
+            if (urlParams.get('debug') === 'true' || localStorage.getItem('active-eruda') === 'true') {
+                const script = document.createElement('script');
+                script.src = "//cdn.jsdelivr.net/npm/eruda";
+                document.head.appendChild(script);
+                script.onload = function () {
+                    eruda.init();
+                    console.log("🛠️ Eruda Mobile Console Active!");
+                };
+            }
+        })();
+    </script>
+
     <!-- Main CSS Assembly File -->
     <link rel="stylesheet" href="./style-css.css">
 </head>
@@ -21,7 +38,7 @@
         <main class="content-workspace">
             <!-- Dynamic Content Area -->
             <div id="dynamic-content-root">
-                <!-- Modules yahan load honge -->
+                <!-- Modules yahan inject honge -->
             </div>
         </main>
     </div>
