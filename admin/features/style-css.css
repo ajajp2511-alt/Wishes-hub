@@ -1,1 +1,63 @@
+/* ==========================================
+   📌 MAIN CSS ASSEMBLY ORCHESTRATOR
+   ========================================== */
 
+/* 1. Core / Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: bold;
+}
+
+#toggle-sidebar-btn {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-wrapper {
+  display: flex;
+  min-height: calc(100vh - 50px);
+}
+
+.content-workspace {
+  flex: 1;
+  padding: 20px;
+}
+
+.error-card {
+  padding: 20px;
+  color: #721c24;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+/* ==========================================
+   🔗 MODULE CSS IMPORTS (Assembly)
+   ========================================== */
+@import url('./outlet/outlet.css');
+@import url('./analytics/analytics.css');
+@import url('./settings/settings.css');
+@import url('./media/media.css');
+@import url('./wishes/wishes.css');
+@import url('./auth/auth.css');
