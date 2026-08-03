@@ -1,43 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub Admin - Dashboard</title>
+export class FeaturesAssembly {
+    constructor() {
+        console.log("🚀 Booting Wishes Hub Admin System with Bulletproof Shielding...");
+        this.bootSystem();
+    }
 
-    <!-- 🛠️ Eruda Mobile Debugger (Console Inspection) -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-        eruda.init();
-        console.log("Eruda initialized in /admin");
-    </script>
+    /**
+     * 🛡️ SAFE ISOLATION LAUNCHER
+     * Dynamic import() use karke har module ko isolated sandbox me load karta hai.
+     */
+    async safeRun(name, importPath, initFns) {
+        try {
+            // 1. Dynamic Import
+            const module = await import(importPath);
+            if (!module) return null;
 
-    <!-- Base Admin Stylesheet -->
-    <link rel="stylesheet" href="./style.css">
+            // 2. Class Instance ya Direct Export Check
+            if (Array.isArray(initFns)) {
+                for (const fnName of initFns) {
+                    if (typeof module[fnName] === 'function') {
+                        await module[fnName]();
+                    } else if (module.default && typeof module.default[fnName] === 'function') {
+                        await module.default[fnName]();
+                    }
+                }
+            } else if (typeof module[initFns] === 'function') {
+                await module[initFns]();
+            } else if (module.default && typeof module.default[initFns] === 'function') {
+                await module.default[initFns]();
+            }
 
-    <!-- Integrated Features Assembly CSS -->
-    <link rel="stylesheet" href="./features/style-css.css">
-</head>
-<body>
+            console.log(`✅ Admin Module Loaded Successfully: [${name}]`);
+            return module;
+        } catch (err) {
+            console.warn(`🛡️ [Shield Intercepted Error in Admin Module: ${name}]: Dashboard is safe. Details:`, err.message);
+            return null;
+        }
+    }
 
-    <!-- Mobile Navigation Header -->
-    <div class="mobile-header">
-        <span>Wishes Hub Admin</span>
-        <button id="toggle-sidebar-btn">☰</button>
-    </div>
+    async bootSystem() {
+        // Phase 1: Core Layout & Navigation Outlet (Parent Folder Path "../")
+        await this.safeRun('outlet', '../outlet/outlet-assembly.js', 'initOutlet');
 
-    <!-- Main Workspace Container -->
-    <div class="admin-wrapper">
-        <main class="content-workspace">
-            <!-- Dynamic Content Injection Root -->
-            <div id="dynamic-content-root"></div>
-        </main>
-    </div>
+        // Phase 2: Independent Admin Modules (Parallel Fault-Tolerant Execution)
+        await Promise.allSettled([
+            this.safeRun('analytics', '../analytics/analytics-assembly.js', 'initAnalytics'),
+            this.safeRun('settings', '../settings/settings-assembly.js', 'initSettings'),
+            this.safeRun('media', '../media/media-assembly.js', 'initMedia'),
+            this.safeRun('wishes', '../wishes/wishes-assembly.js', 'initWishes'),
+            this.safeRun('auth', '../auth/auth-assembly.js', 'initAuth')
+        ]);
 
-    <!-- Base UI Script -->
-    <script type="module" src="./responsive-admin.js"></script>
+        console.log("🎉 All Admin Assemblies Initialized with Fault Tolerance!");
+    }
+}
 
-    <!-- Integrated Features Assembly Orchestrator -->
-    <script type="module" src="./features/features-assembly.js"></script>
-</body>
-</html>
+// Auto Bootstrapping
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new FeaturesAssembly());
+} else {
+    new FeaturesAssembly();
+}
