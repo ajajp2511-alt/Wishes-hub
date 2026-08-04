@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
 
-    <!-- Eruda Mobile Console -->
+    <!-- Eruda Debugger -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
         eruda.init();
-        console.log("Eruda initialized successfully");
+        console.log("🛠️ Eruda initialized successfully");
     </script>
 
-    <!-- Base & Feature Styles -->
-    <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./features/style-css.css">
+    <!-- Absolute CSS Paths -->
+    <link rel="stylesheet" href="/admin/style.css">
+    <link rel="stylesheet" href="/admin/features/style-css.css">
 </head>
 <body>
 
@@ -25,14 +25,14 @@
 
     <div class="admin-wrapper">
         <main class="content-workspace">
-            <div id="dynamic-content-root"></div>
+            <div id="dynamic-content-root">
+                <p style="padding: 20px; color: #666;">Loading Admin Modules...</p>
+            </div>
         </main>
     </div>
 
-    <!-- Admin Base Script -->
-    <script type="module" src="./responsive-admin.js"></script>
-
-    <!-- Features Master Orchestrator -->
-    <script type="module" src="./features/features-assembly.js"></script>
+    <!-- Absolute JS Paths -->
+    <script type="module" src="/admin/responsive-admin.js"></script>
+    <script type="module" src="/admin/features/features-assembly.js"></script>
 </body>
 </html>
