@@ -32,7 +32,17 @@ export class FeaturesAssembly {
     }
 
     async bootSystem() {
-        // Module Dynamic Paths
+        const root = document.getElementById('dynamic-content-root');
+        if (root) {
+            root.innerHTML = `
+                <div style="padding: 20px;">
+                    <h2>Welcome to Wishes Hub Admin</h2>
+                    <p>Modules loading...</p>
+                </div>
+            `;
+        }
+
+        // Sub-modules load
         await this.safeRun('outlet', '../outlet/outlet-assembly.js', 'initOutlet');
 
         await Promise.allSettled([
@@ -47,8 +57,5 @@ export class FeaturesAssembly {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new FeaturesAssembly());
-} else {
-    new FeaturesAssembly();
-}
+// Directly initialize the class
+new FeaturesAssembly();
