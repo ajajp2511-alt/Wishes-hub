@@ -1,3 +1,5 @@
+console.log("⚡ features-assembly.js file triggered!");
+
 export class FeaturesAssembly {
     constructor() {
         console.log("🚀 Booting Wishes Hub Admin System...");
@@ -36,26 +38,26 @@ export class FeaturesAssembly {
         if (root) {
             root.innerHTML = `
                 <div style="padding: 20px;">
-                    <h2>Welcome to Wishes Hub Admin</h2>
-                    <p>Modules loading...</p>
+                    <h2 style="margin-bottom: 10px;">Welcome to Wishes Hub Admin</h2>
+                    <p>Dashboard is live and ready!</p>
                 </div>
             `;
         }
 
-        // Sub-modules load
-        await this.safeRun('outlet', '../outlet/outlet-assembly.js', 'initOutlet');
+        // Absolute paths for Vercel dynamic imports
+        await this.safeRun('outlet', '/admin/outlet/outlet-assembly.js', 'initOutlet');
 
         await Promise.allSettled([
-            this.safeRun('analytics', '../analytics/analytics-assembly.js', 'initAnalytics'),
-            this.safeRun('settings', '../settings/settings-assembly.js', 'initSettings'),
-            this.safeRun('media', '../media/media-assembly.js', 'initMedia'),
-            this.safeRun('wishes', '../wishes/wishes-assembly.js', 'initWishes'),
-            this.safeRun('auth', '../auth/auth-assembly.js', 'initAuth')
+            this.safeRun('analytics', '/admin/analytics/analytics-assembly.js', 'initAnalytics'),
+            this.safeRun('settings', '/admin/settings/settings-assembly.js', 'initSettings'),
+            this.safeRun('media', '/admin/media/media-assembly.js', 'initMedia'),
+            this.safeRun('wishes', '/admin/wishes/wishes-assembly.js', 'initWishes'),
+            this.safeRun('auth', '/admin/auth/auth-assembly.js', 'initAuth')
         ]);
 
         console.log("🎉 All Admin Assemblies Loaded Successfully!");
     }
 }
 
-// Directly initialize the class
+// Instant Execution
 new FeaturesAssembly();
