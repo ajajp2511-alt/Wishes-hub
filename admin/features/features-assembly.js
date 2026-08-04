@@ -4,10 +4,6 @@ export class FeaturesAssembly {
         this.bootSystem();
     }
 
-    /**
-     * 🛡️ SAFE ISOLATION LAUNCHER
-     * Single module fail hone par bhi baaki dashboard crash nahi hone deta.
-     */
     async safeRun(name, importPath, initFns) {
         try {
             const module = await import(importPath);
@@ -36,7 +32,7 @@ export class FeaturesAssembly {
     }
 
     async bootSystem() {
-        // Parent folder (/admin/) ke modules access karne ke liye "../" paths
+        // Module Dynamic Paths
         await this.safeRun('outlet', '../outlet/outlet-assembly.js', 'initOutlet');
 
         await Promise.allSettled([
@@ -51,7 +47,6 @@ export class FeaturesAssembly {
     }
 }
 
-// Auto Bootstrapping
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => new FeaturesAssembly());
 } else {
