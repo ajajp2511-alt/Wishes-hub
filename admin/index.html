@@ -5,38 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
 
-    <!-- 🛠️ Eruda Mobile Debugger (Console Engine) -->
+    <!-- 🛠️ Eruda Mobile Debugger -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
         eruda.init();
-        console.log("🛠️ Eruda Console Ready");
+        console.log("🛠️ Eruda initialized successfully");
     </script>
 
-    <!-- Base Layout CSS -->
-    <link rel="stylesheet" href="./style.css">
-
-    <!-- CSS Orchestrator (Style Assembly) -->
-    <link rel="stylesheet" href="./features/style-css.css">
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="/admin/style.css">
+    <link rel="stylesheet" href="/admin/features/style-css.css">
 </head>
 <body>
 
-    <!-- Top Mobile Navigation -->
     <div class="mobile-header">
         <span>Wishes Hub Admin</span>
         <button id="toggle-sidebar-btn">☰</button>
     </div>
 
-    <!-- Main Workspace Container -->
     <div class="admin-wrapper">
         <main class="content-workspace">
             <div id="dynamic-content-root"></div>
         </main>
     </div>
 
-    <!-- Layout & Responsiveness JS -->
-    <script type="module" src="./responsive-admin.js"></script>
-
-    <!-- JS Feature Assembly Orchestrator -->
-    <script type="module" src="./features/features-assembly.js"></script>
+    <!-- Admin Modules Orchestration -->
+    <script type="module" src="/admin/responsive-admin.js"></script>
+    <script type="module" src="/admin/features/features-assembly.js"></script>
 </body>
 </html>
