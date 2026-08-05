@@ -1,9 +1,26 @@
 console.log("⚡ features-assembly.js file triggered!");
 
+// 1. ResponsiveAssembly ko import karein
+import { ResponsiveAssembly } from '../responsive-admin.js';
+
 export class FeaturesAssembly {
     constructor() {
         console.log("🚀 Booting Wishes Hub Admin System...");
+        
+        // 2. Responsive UI initialize karein
+        this.initResponsiveLayout();
+
+        // 3. System boot logic run karein
         this.bootSystem();
+    }
+
+    initResponsiveLayout() {
+        try {
+            new ResponsiveAssembly('dynamic-content-root');
+            console.log("📱 Responsive Assembly connected successfully!");
+        } catch (err) {
+            console.warn("⚠️ Error initializing ResponsiveAssembly:", err.message);
+        }
     }
 
     async safeRun(name, importPath, initFns) {
@@ -44,15 +61,15 @@ export class FeaturesAssembly {
             `;
         }
 
-        // Absolute paths for Vercel dynamic imports
-        await this.safeRun('outlet', '/admin/outlet/outlet-assembly.js', 'initOutlet');
+        // Relative paths update
+        await this.safeRun('outlet', '../outlet/outlet-assembly.js', 'initOutlet');
 
         await Promise.allSettled([
-            this.safeRun('analytics', '/admin/analytics/analytics-assembly.js', 'initAnalytics'),
-            this.safeRun('settings', '/admin/settings/settings-assembly.js', 'initSettings'),
-            this.safeRun('media', '/admin/media/media-assembly.js', 'initMedia'),
-            this.safeRun('wishes', '/admin/wishes/wishes-assembly.js', 'initWishes'),
-            this.safeRun('auth', '/admin/auth/auth-assembly.js', 'initAuth')
+            this.safeRun('analytics', '../analytics/analytics-assembly.js', 'initAnalytics'),
+            this.safeRun('settings', '../settings/settings-assembly.js', 'initSettings'),
+            this.safeRun('media', '../media/media-assembly.js', 'initMedia'),
+            this.safeRun('wishes', '../wishes/wishes-assembly.js', 'initWishes'),
+            this.safeRun('auth', '../auth/auth-assembly.js', 'initAuth')
         ]);
 
         console.log("🎉 All Admin Assemblies Loaded Successfully!");
