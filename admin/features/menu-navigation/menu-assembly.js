@@ -9,20 +9,23 @@ export class MenuAssembly {
     }
   }
 
-  static injectStyles() {
-    const cssId = 'menu-styles';
-    if (!document.getElementById(cssId)) {
-      const link = document.createElement('link');
-      link.id = cssId;
-      link.rel = 'stylesheet';
-      link.href = '/admin/features/menu-nevigation/assets/style-css.css';
-      document.head.appendChild(link);
-    }
-  }
-
   init() {
     this.render();
     this.bindEvents();
+    this.bindTopNavToggle();
+  }
+
+  // Top Right Hamburger Button Toggle Handler
+  bindTopNavToggle() {
+    const hamburgerBtn = document.querySelector('.navbar-toggler, .menu-toggle, header button');
+    
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.container.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+      });
+    }
   }
 
   render(filteredItems = null) {
@@ -82,8 +85,10 @@ export class MenuAssembly {
         this.bindEvents();
         
         const newSearchInput = this.container.querySelector('#menu-search-input');
-        newSearchInput.focus();
-        newSearchInput.value = query;
+        if (newSearchInput) {
+          newSearchInput.focus();
+          newSearchInput.value = query;
+        }
       });
     }
 
@@ -113,6 +118,5 @@ export class MenuAssembly {
 
 // FeaturesAssembly boot process ke liye exported runner function
 export const initMenu = () => {
-  MenuAssembly.injectStyles();
   return new MenuAssembly();
 };
