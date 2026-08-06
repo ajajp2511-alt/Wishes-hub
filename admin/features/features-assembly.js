@@ -45,8 +45,11 @@ export class FeaturesAssembly {
             `;
         }
 
-        // Exact verified path
+        // Outlet module
         await this.safeRun('outlet', '/admin/features/outlet/outlet-assembly.js', 'initOutlet');
+
+        // Menu Navigation module (Exact folder path from screenshot)
+        await this.safeRun('menu', '/admin/features/menu-nevigation/menu-assembly.js', 'initMenu');
     }
 }
 
