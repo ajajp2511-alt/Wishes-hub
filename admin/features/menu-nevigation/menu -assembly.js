@@ -1,11 +1,22 @@
 import { MenuCore } from './menu-core.js';
 
 export class MenuAssembly {
-  constructor(containerId) {
+  constructor(containerId = 'menu-navigation-root') {
     this.container = document.getElementById(containerId);
     this.core = new MenuCore();
     if (this.container) {
       this.init();
+    }
+  }
+
+  static injectStyles() {
+    const cssId = 'menu-styles';
+    if (!document.getElementById(cssId)) {
+      const link = document.createElement('link');
+      link.id = cssId;
+      link.rel = 'stylesheet';
+      link.href = '/admin/features/menu-nevigation/assets/style-css.css';
+      document.head.appendChild(link);
     }
   }
 
@@ -63,7 +74,6 @@ export class MenuAssembly {
         const query = e.target.value;
         const filtered = this.core.filterMenuItems(query);
         
-        // Auto-expand all matching parent menus during search
         if (query.trim()) {
           filtered.forEach(item => this.core.expandedMenus.add(item.id));
         }
@@ -71,7 +81,6 @@ export class MenuAssembly {
         this.render(filtered);
         this.bindEvents();
         
-        // Keep focus on search input
         const newSearchInput = this.container.querySelector('#menu-search-input');
         newSearchInput.focus();
         newSearchInput.value = query;
@@ -101,3 +110,9 @@ export class MenuAssembly {
     });
   }
 }
+
+// FeaturesAssembly boot process ke liye exported runner function
+export const initMenu = () => {
+  MenuAssembly.injectStyles();
+  return new MenuAssembly();
+};
