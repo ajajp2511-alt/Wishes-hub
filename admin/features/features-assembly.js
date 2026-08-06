@@ -49,7 +49,7 @@ export class FeaturesAssembly {
         await this.safeRun('outlet', '/admin/features/outlet/outlet-assembly.js', 'initOutlet');
 
         // Menu Navigation module (Exact folder path from screenshot)
-        await this.safeRun('menu', '/admin/features/menu-nevigation/menu-assembly.js', 'initMenu');
+        await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
     }
 }
 
