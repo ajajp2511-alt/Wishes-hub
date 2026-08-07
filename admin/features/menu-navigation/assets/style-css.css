@@ -1,107 +1,74 @@
+/* ==========================================
+   📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
+   ========================================== */
+
+/* Main Sidebar Box */
+#menu-navigation-root, 
 .admin-sidebar {
-  width: 280px;
-  background-color: #1a1d24;
-  color: #ffffff;
-  height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  max-width: 300px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
   padding: 16px;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-}
-
+/* Header & Search Bar */
 .sidebar-search input {
   width: 100%;
   padding: 8px 12px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
-  border: 1px solid #333;
-  background-color: #262932;
-  color: #fff;
-  box-sizing: border-box;
+  margin-top: 10px;
   margin-bottom: 16px;
+  outline: none;
 }
 
-.main-menu-list, .sub-menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.main-menu-header {
+/* Category Headers (Create Wish, Asset & Inventory Hub, etc.) */
+.main-menu-header, 
+.main-menu-item > div:first-child,
+.main-menu-item > a {
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  color: #1e293b !important;
+  padding: 10px 8px;
+  margin-top: 8px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  background-color: #f8fafc;
 }
 
-.main-menu-header:hover {
-  background-color: #2a2e39;
+/* Sub-items (Text & Quote Wish, Animation List, etc.) */
+.sub-menu-list, 
+.main-menu-item > ul {
+  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
+  padding-left: 16px;
+  margin: 4px 0 12px 0;
+  list-style: none;
 }
 
-.accordion-arrow {
-  margin-left: auto;
-  font-size: 0.8rem;
-  transition: transform 0.2s;
-}
-
-.main-menu-item.open .accordion-arrow {
-  transform: rotate(90deg);
-}
-
-.sub-menu-list {
-  display: none;
-  padding-left: 28px;
-}
-
-.main-menu-item.open .sub-menu-list {
-  display: block;
-}
-
-.sub-menu-item {
-  padding: 8px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #a0a5b5;
-}
-
-.sub-menu-item:hover {
-  color: #ffffff;
-  background-color: #242834;
-}
-
-.sub-menu-item.active {
-  color: #ffffff;
-  background-color: #3b82f6;
-  font-weight: 600;
-}
-
-/* ==========================================
-   📌 MOBILE TOGGLE & ACTIVE CONTROLS
-   ========================================== */
-#menu-navigation-root {
-  display: none;
-}
-
-#menu-navigation-root.active {
+/* Jab category open ho tabhi sub-menu dikhe */
+.main-menu-item.open .sub-menu-list, 
+.main-menu-item.open > ul {
   display: block !important;
-  position: fixed;
-  top: 50px;
-  left: 0;
-  width: 280px;
-  height: calc(100vh - 50px);
-  z-index: 9999;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Sub-item Text Styling */
+.sub-menu-item, 
+.sub-menu-list li, 
+.main-menu-item ul li {
+  padding: 6px 10px;
+  font-size: 0.88rem;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.sub-menu-item:hover, 
+.sub-menu-list li:hover {
+  background-color: #f1f5f9;
+  color: #2563eb;
 }
