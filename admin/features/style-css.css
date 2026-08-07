@@ -2,5 +2,17 @@
    📌 MASTER CSS IMPORTS
    ========================================== */
 
-/* 1. Responsive Layout CSS Import */
+/* 1. Reset Bullet Points & Default Margin */
+ul, ol {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+a {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+/* 2. Imported Sub-Stylesheets */
 @import url('./responsive-layout/assets/responsive-css.css');
