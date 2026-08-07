@@ -1,63 +1,133 @@
 /* ==========================================
-   🔗 MODULE CSS IMPORTS (Absolute Path)
-   ========================================== */
-@import url('/admin/features/menu-navigation/assets/style-css.css');
-
-/* ==========================================
-   📌 MAIN CSS ASSEMBLY ORCHESTRATOR
+   📌 MENU NAVIGATION STYLES
    ========================================== */
 
-/* 1. Core / Global Styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
+/* Force clean font inside sidebar */
+.admin-sidebar, 
+.admin-sidebar * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  background-color: #f4f6f9;
-  color: #333;
+  font-style: normal !important;
 }
 
-.mobile-header {
+.admin-sidebar {
+  width: 280px;
+  background-color: #1a1d24;
+  color: #ffffff;
+  height: 100vh;
+  overflow-y: auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  font-weight: bold;
+  flex-direction: column;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-#toggle-sidebar-btn {
-  background: none;
-  border: 1px solid #ccc;
-  padding: 4px 10px;
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #333d4d;
+  background-color: #262932;
+  color: #ffffff;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.sidebar-search input:focus {
+  border-color: #3b82f6;
+}
+
+.main-menu-list, 
+.sub-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.main-menu-header:hover {
+  background-color: #2a2e39;
+  color: #ffffff;
+}
+
+.accordion-arrow {
+  margin-left: auto;
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.main-menu-item.open .accordion-arrow {
+  transform: rotate(90deg);
+}
+
+/* Sub-menu hidden by default */
+.sub-menu-list {
+  display: none;
+  padding-left: 20px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+/* Show sub-menu on click/open */
+.main-menu-item.open .sub-menu-list {
+  display: block;
+}
+
+.sub-menu-item {
+  padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.875rem;
+  color: #a0a5b5;
+  transition: all 0.2s ease;
 }
 
-.admin-wrapper {
-  display: flex;
-  min-height: calc(100vh - 50px);
+.sub-menu-item:hover {
+  color: #ffffff;
+  background-color: #242834;
 }
 
-.content-workspace {
-  flex: 1;
-  padding: 20px;
+.sub-menu-item.active {
+  color: #ffffff;
+  background-color: #3b82f6;
+  font-weight: 600;
 }
 
-.error-card {
-  padding: 20px;
-  color: #721c24;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 8px;
-  margin: 10px 0;
+/* Mobile Toggle Controls */
+#menu-navigation-root {
+  display: none;
 }
 
-/* Global Font Force Fix */
-*, button, input, select, textarea, a, span, p, div {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+#menu-navigation-root.active {
+  display: block !important;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 50px);
+  z-index: 9999;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.35);
 }
