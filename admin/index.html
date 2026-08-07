@@ -12,6 +12,14 @@
         console.log("🛠️ Eruda initialized successfully");
     </script>
 
+    <!-- Force Clean Font Globally (Overriding any external script fonts) -->
+    <style>
+      *, html, body, div, span, p, a, input, button, header, nav, aside {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        font-style: normal !important;
+      }
+    </style>
+
     <!-- Absolute CSS Paths -->
     <link rel="stylesheet" href="/admin/style.css">
 </head>
@@ -33,6 +41,20 @@
             </div>
         </main>
     </div>
+
+    <!-- Mobile Sidebar Toggle Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggle-sidebar-btn');
+        const menuRoot = document.getElementById('menu-navigation-root');
+
+        if (toggleBtn && menuRoot) {
+          toggleBtn.addEventListener('click', () => {
+            menuRoot.classList.toggle('active');
+          });
+        }
+      });
+    </script>
 
     <!-- Main Entry Module Only -->
     <script type="module" src="/admin/features/features-assembly.js"></script>
