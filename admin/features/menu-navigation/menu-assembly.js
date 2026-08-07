@@ -15,15 +15,19 @@ export class MenuAssembly {
     this.bindTopNavToggle();
   }
 
-  // Top Right Hamburger Button Toggle Handler
+  // 3-Line (Hamburger) Toggle Handler for index.html button
   bindTopNavToggle() {
-    const hamburgerBtn = document.querySelector('.navbar-toggler, .menu-toggle, header button');
+    const hamburgerBtn = document.getElementById('toggle-sidebar-btn');
     
     if (hamburgerBtn) {
       hamburgerBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.container.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
+        
+        if (this.container) {
+          this.container.classList.toggle('active');
+          document.body.classList.toggle('menu-open');
+          console.log('Sidebar toggled!');
+        }
       });
     }
   }
@@ -70,7 +74,7 @@ export class MenuAssembly {
   }
 
   bindEvents() {
-    // Search Handler
+    // Search Input Handler
     const searchInput = this.container.querySelector('#menu-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -92,7 +96,7 @@ export class MenuAssembly {
       });
     }
 
-    // Main Menu Click (Accordion Toggle)
+    // Main Menu Accordion Click
     this.container.querySelectorAll('.main-menu-header').forEach(header => {
       header.addEventListener('click', (e) => {
         const mainItem = e.target.closest('.main-menu-item');
@@ -103,7 +107,7 @@ export class MenuAssembly {
       });
     });
 
-    // Sub Menu Click (Active Selection)
+    // Sub Menu Click Selection
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
       subItem.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -116,7 +120,7 @@ export class MenuAssembly {
   }
 }
 
-// FeaturesAssembly boot process ke liye exported runner function
+// FeaturesAssembly boot process export
 export const initMenu = () => {
   return new MenuAssembly();
 };
