@@ -1,7 +1,7 @@
 /* ==========================================
-   🔗 MODULE CSS IMPORTS
+   🔗 MODULE CSS IMPORTS (Absolute Path)
    ========================================== */
-@import url('./menu-navigation/assets/style-css.css');
+@import url('/admin/features/menu-navigation/assets/style-css.css');
 
 /* ==========================================
    📌 MAIN CSS ASSEMBLY ORCHESTRATOR
