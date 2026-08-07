@@ -1,4 +1,67 @@
 /* ==========================================
+   📌 GENERAL & LAYOUT RESETS
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+}
+
+/* Mobile Top Bar Header */
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  padding: 0 16px;
+  background-color: #1a1d24;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.mobile-header button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Base Wrapper Layout */
+.admin-wrapper {
+  display: flex;
+  min-height: calc(100vh - 50px);
+}
+
+.content-workspace {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Desktop View Layout Adjustment */
+@media (min-width: 768px) {
+  #menu-navigation-root {
+    display: block !important;
+    position: static;
+    height: 100vh;
+  }
+  
+  .mobile-header {
+    display: none;
+  }
+
+  .admin-wrapper {
+    min-height: 100vh;
+  }
+}
+
+/* ==========================================
    📌 MENU NAVIGATION STYLES
    ========================================== */
 
