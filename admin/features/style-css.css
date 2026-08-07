@@ -1,8 +1,21 @@
 /* ==========================================
-   📌 MASTER CSS IMPORTS
+   📌 MASTER CSS IMPORTS (Hamesha top par)
    ========================================== */
 
-/* 1. Reset Bullet Points & Default Margin */
+/* 1. Responsive Layout CSS Import */
+@import url('./responsive-layout/assets/responsive-css.css');
+
+/* 2. Menu Navigation CSS Import (agar alag file hai) */
+/* @import url('./menu-navigation.css'); */
+
+
+/* ==========================================
+   📌 GENERAL & RESET STYLES
+   ========================================== */
+* {
+  box-sizing: border-box;
+}
+
 ul, ol {
   list-style: none !important;
   padding: 0 !important;
@@ -13,6 +26,3 @@ a {
   text-decoration: none !important;
   color: inherit;
 }
-
-/* 2. Imported Sub-Stylesheets */
-@import url('./responsive-layout/assets/responsive-css.css');
