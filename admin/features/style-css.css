@@ -1,13 +1,7 @@
 /* ==========================================
-   🔗 MODULE CSS IMPORTS (Must be at the top)
+   🔗 MODULE CSS IMPORTS
    ========================================== */
 @import url('./menu-navigation/assets/style-css.css');
-@import url('./outlet/outlet.css');
-@import url('./analytics/analytics.css');
-@import url('./settings/settings.css');
-@import url('./media/media.css');
-@import url('./wishes/wishes.css');
-@import url('./auth/auth.css');
 
 /* ==========================================
    📌 MAIN CSS ASSEMBLY ORCHESTRATOR
