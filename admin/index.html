@@ -1,40 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishes Hub Admin - Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishes Hub Admin - Dashboard</title>
 
-    <!-- Eruda Debugger -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-        eruda.init();
-        console.log("🛠️ Eruda initialized successfully");
-    </script>
+    <!-- Eruda Debugger -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        eruda.init();
+        console.log("🛠️ Eruda initialized successfully");
+    </script>
 
-    <!-- Absolute CSS Paths -->
-    <link rel="stylesheet" href="/admin/style.css">
+    <!-- Fixed CSS Path (Matching your GitHub folder structure) -->
+    <link rel="stylesheet" href="/admin/features/style-css.css">
 </head>
 <body>
 
-    <div class="mobile-header">
-        <span>Wishes Hub Admin</span>
-        <!-- 3 Line Toggle Button -->
-        <button id="toggle-sidebar-btn">☰</button>
-    </div>
+    <div class="mobile-header">
+        <span>Wishes Hub Admin</span>
+        <!-- 3 Line Toggle Button -->
+        <button id="toggle-sidebar-btn">☰</button>
+    </div>
 
-    <!-- Dynamic Side Menu Mounting Root -->
-    <div id="menu-navigation-root"></div>
+    <!-- Dynamic Side Menu Mounting Root -->
+    <div id="menu-navigation-root"></div>
 
-    <div class="admin-wrapper">
-        <main class="content-workspace">
-            <div id="dynamic-content-root">
-                <p style="padding: 20px; color: #666;">Loading Admin Modules...</p>
-            </div>
-        </main>
-    </div>
+    <div class="admin-wrapper">
+        <main class="content-workspace">
+            <div id="dynamic-content-root">
+                <p style="padding: 20px; color: #666;">Loading Admin Modules...</p>
+            </div>
+        </main>
+    </div>
 
-    <!-- Main Entry Module Only -->
-    <script type="module" src="/admin/features/features-assembly.js"></script>
+    <!-- Mobile Sidebar Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('toggle-sidebar-btn');
+            const menuRoot = document.getElementById('menu-navigation-root');
+
+            if (toggleBtn && menuRoot) {
+                toggleBtn.addEventListener('click', () => {
+                    menuRoot.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+
+    <!-- Main Entry Module Only -->
+    <script type="module" src="/admin/features/features-assembly.js"></script>
 </body>
 </html>
