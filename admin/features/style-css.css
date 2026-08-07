@@ -1,16 +1,12 @@
 /* ==========================================
-   📌 MASTER CSS IMPORTS (Hamesha top par)
+   📌 MASTER CSS IMPORTS
    ========================================== */
 
 /* 1. Responsive Layout CSS Import */
-@import url('./responsive-layout/assets/responsive-css.css');
-
-/* 2. Menu Navigation CSS Import (agar alag file hai) */
-/* @import url('./menu-navigation.css'); */
-
+@import url('./responsive-layut/assets/responsive-css.css');
 
 /* ==========================================
-   📌 GENERAL & RESET STYLES
+   📌 GENERAL RESETS & STYLES
    ========================================== */
 * {
   box-sizing: border-box;
