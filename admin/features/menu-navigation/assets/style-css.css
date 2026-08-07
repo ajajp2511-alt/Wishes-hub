@@ -87,3 +87,21 @@
   background-color: #3b82f6;
   font-weight: 600;
 }
+
+/* ==========================================
+   📌 MOBILE TOGGLE & ACTIVE CONTROLS
+   ========================================== */
+#menu-navigation-root {
+  display: none;
+}
+
+#menu-navigation-root.active {
+  display: block !important;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 50px);
+  z-index: 9999;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.35);
+}
