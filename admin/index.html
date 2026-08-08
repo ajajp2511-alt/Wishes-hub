@@ -10,21 +10,35 @@
     <script>
         eruda.init();
         console.log("🛠️ Eruda initialized successfully");
+
+        // CSS Load Failure Detector
+        document.addEventListener('error', function(event) {
+            if (event.target.tagName === 'LINK' && event.target.rel === 'stylesheet') {
+                console.error("🚨 CSS Load Error:", event.target.href);
+            }
+        }, true);
     </script>
 
-    <!-- Fixed CSS Path (Matching your GitHub folder structure) -->
+    <!-- Master CSS Link -->
     <link rel="stylesheet" href="/admin/features/style-css.css">
 </head>
 <body>
 
-    <div class="mobile-header">
+    <!-- Mobile Top Bar -->
+    <header class="responsive-header">
+        <button id="toggle-sidebar-btn" class="hamburger-btn" aria-label="Toggle Navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
         <span>Wishes Hub Admin</span>
-        <!-- 3 Line Toggle Button -->
-        <button id="toggle-sidebar-btn">☰</button>
-    </div>
+    </header>
+
+    <!-- Backdrop Overlay for Mobile -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
     <!-- Dynamic Side Menu Mounting Root -->
-    <div id="menu-navigation-root"></div>
+    <aside id="menu-navigation-root" class="admin-sidebar"></aside>
 
     <div class="admin-wrapper">
         <main class="content-workspace">
@@ -34,21 +48,29 @@
         </main>
     </div>
 
-    <!-- Mobile Sidebar Toggle Script -->
+    <!-- Mobile Sidebar Toggle JS Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const toggleBtn = document.getElementById('toggle-sidebar-btn');
-            const menuRoot = document.getElementById('menu-navigation-root');
+            const backdrop = document.getElementById('sidebar-backdrop');
 
-            if (toggleBtn && menuRoot) {
-                toggleBtn.addEventListener('click', () => {
-                    menuRoot.classList.toggle('active');
-                });
+            function toggleMenu() {
+                document.body.classList.toggle('sidebar-mobile-open');
+                if (backdrop) {
+                    backdrop.classList.toggle('backdrop-active');
+                }
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleMenu);
+            }
+            if (backdrop) {
+                backdrop.addEventListener('click', toggleMenu);
             }
         });
     </script>
 
-    <!-- Main Entry Module Only -->
+    <!-- Main Entry JS Module -->
     <script type="module" src="/admin/features/features-assembly.js"></script>
 </body>
 </html>
