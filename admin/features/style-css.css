@@ -2,11 +2,14 @@
    📌 MASTER CSS IMPORTS
    ========================================== */
 
-/* 1. Responsive Layout CSS Import */
+/* 1. Responsive Layout CSS */
 @import url('./responsive-layut/assets/responsive-css.css');
 
+/* 2. Menu Navigation CSS */
+@import url('./menu-navigation/assets/style-css.css');
+
 /* ==========================================
-   📌 GENERAL RESETS
+   📌 GENERAL RESETS & STYLES
    ========================================== */
 * {
   box-sizing: border-box;
