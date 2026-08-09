@@ -1,100 +1,90 @@
 /* ==========================================
-   📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
+   📌 RESPONSIVE SIDEBAR & HEADER STYLES
    ========================================== */
 
-/* Main Sidebar Box with Scroll Fix */
-#menu-navigation-root, 
-.admin-sidebar {
-  position: fixed !important;          /* Position lock - top jumping rokne ke liye */
+/* Top Mobile Bar */
+.responsive-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 16px;
+  background-color: #1a1d24;
+  color: #ffffff;
+  border-bottom: 1px solid #2a2e39;
+}
+
+/* 3-Line Hamburger Button */
+.hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-btn .bar {
+  width: 100%;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Backdrop Overlay */
+.sidebar-backdrop {
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  max-width: 300px;
-  height: 100vh;                       
-  max-height: 100vh;
-  overflow-y: auto !important;         
-  overflow-x: hidden;
-  overscroll-behavior: contain;        /* Parent page scrolling jump hone se rokta hai */
-  -webkit-overflow-scrolling: touch;   
-  background-color: #ffffff;
-  border-right: 1px solid #e2e8f0;
-  padding: 16px;
-  padding-bottom: 100px;               
-  box-sizing: border-box;
-  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 98;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-/* Custom Clean Scrollbar */
-#menu-navigation-root::-webkit-scrollbar,
-.admin-sidebar::-webkit-scrollbar {
-  width: 5px;
+.sidebar-backdrop.backdrop-active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-#menu-navigation-root::-webkit-scrollbar-thumb,
-.admin-sidebar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
+/* Mobile Screen Default: Sidebar screen ke bahar (-320px) hidden rahega */
+@media (max-width: 768px) {
+  #menu-navigation-root,
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: -320px !important;            /* Hide off-screen initially */
+    width: 280px;
+    height: 100vh;
+    z-index: 99 !important;
+    transition: transform 0.3s ease-in-out, left 0.3s ease-in-out !important;
+  }
+
+  /* Jab 3-line button tap hoga tab Body me ye class add ho ke sidebar slide hoga */
+  body.sidebar-mobile-open #menu-navigation-root,
+  body.sidebar-mobile-open .admin-sidebar {
+    left: 0 !important;                  /* Slide into view */
+  }
 }
 
-/* Header & Search Bar */
-.sidebar-search input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  margin-top: 10px;
-  margin-bottom: 16px;
-  outline: none;
-}
+/* Desktop View: Normal inline display */
+@media (min-width: 769px) {
+  .hamburger-btn,
+  .responsive-header {
+    display: none;
+  }
 
-/* Category Headers (Create Wish, Asset & Inventory Hub, etc.) */
-.main-menu-header, 
-.main-menu-item > div:first-child,
-.main-menu-item > a {
-  font-weight: 700 !important;
-  font-size: 1rem !important;
-  color: #1e293b !important;
-  padding: 10px 8px;
-  margin-top: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: #f8fafc;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Sub-items (Text & Quote Wish, Animation List, etc.) */
-.sub-menu-list, 
-.main-menu-item > ul {
-  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
-  padding-left: 16px;
-  margin: 4px 0 12px 0;
-  list-style: none;
-}
-
-/* Jab category open ho tabhi sub-menu dikhe */
-.main-menu-item.open .sub-menu-list, 
-.main-menu-item.open > ul {
-  display: block !important;
-}
-
-/* Sub-item Text Styling */
-.sub-menu-item, 
-.sub-menu-list li, 
-.main-menu-item ul li {
-  padding: 6px 10px;
-  font-size: 0.88rem;
-  color: #475569;
-  cursor: pointer;
-  border-radius: 4px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.sub-menu-item:hover, 
-.sub-menu-list li:hover {
-  background-color: #f1f5f9;
-  color: #2563eb;
+  #menu-navigation-root,
+  .admin-sidebar {
+    position: relative !important;
+    left: 0 !important;
+  }
 }
