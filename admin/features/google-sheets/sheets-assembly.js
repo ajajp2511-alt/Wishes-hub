@@ -1,18 +1,22 @@
-import { getMasterSheetValues, getSubSheetValues } from './sheets-core.js';
+// admin/features/google-sheets/sheets-assembly.js
+import { getMasterSheetValues, appendSheetIdToMaster } from './sheets-core.js';
 
-// Data formatting and UI payload assembly
+// Master Sheet ki sabhi Google Sheet IDs get karna
 export async function loadGoogleSheetsAdminData() {
   const rawRows = await getMasterSheetValues();
 
   return rawRows.map((row, index) => ({
     id: index + 1,
-    category: row[0] || 'Untitled',
-    sheetId: row[1] || '',
-    status: row[2] || 'Inactive'
+    sheetName: row[0] || 'Untitled Sheet',
+    sheetId: row[1] || ''
   }));
 }
 
-export async function loadCategoryData(sheetId) {
-  if (!sheetId) return [];
-  return await getSubSheetValues(sheetId);
+// Admin Panel se nayi Google Sheet ki ID save karne wala action
+export async function addNewSheetId(sheetName, sheetId, accessToken) {
+  if (!sheetName || !sheetId) {
+    throw new Error('Sheet Name aur Sheet ID dono zaruri hain.');
+  }
+
+  return await appendSheetIdToMaster(sheetName, sheetId, accessToken);
 }
