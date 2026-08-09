@@ -2,15 +2,33 @@
    📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
    ========================================== */
 
-/* Main Sidebar Box */
+/* Main Sidebar Box with Scroll Fix */
 #menu-navigation-root, 
 .admin-sidebar {
   width: 100%;
   max-width: 300px;
+  height: 100vh;                       /* Fixed screen height */
+  max-height: 100vh;
+  overflow-y: auto !important;         /* Enables vertical scrolling */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;   /* Smooth scrolling for mobile */
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   padding: 16px;
+  padding-bottom: 80px;                /* Prevents bottom items from getting cut off */
   box-sizing: border-box;
+}
+
+/* Custom Clean Scrollbar */
+#menu-navigation-root::-webkit-scrollbar,
+.admin-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+#menu-navigation-root::-webkit-scrollbar-thumb,
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
 }
 
 /* Header & Search Bar */
