@@ -1,0 +1,16 @@
+/* Google Sheets Feature Component Styles */
+.sheets-container {
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.sheets-status-active {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.sheets-status-inactive {
+  color: #ef4444;
+  font-weight: 600;
+}
