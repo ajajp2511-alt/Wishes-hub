@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Google Sheets Manager</title>
+  <link rel="stylesheet" href="./assets/sheets-style.css">
+</head>
+<body>
+
+  <div class="sheets-container">
+    <h2>Master Google Sheets Manager</h2>
+
+    <!-- Form -->
+    <form id="add-sheet-form" class="sheets-form">
+      <input type="text" id="sheet-name" placeholder="Sheet Name (e.g. Birthday)" required />
+      <input type="text" id="sheet-id" placeholder="Google Sheet ID" required />
+      <button type="submit" id="submit-btn">Add Sheet ID</button>
+    </form>
+
+    <!-- Table -->
+    <table class="sheets-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sheet Name</th>
+          <th>Spreadsheet ID</th>
+        </tr>
+      </thead>
+      <tbody id="sheets-list-body">
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { loadGoogleSheetsAdminData, addNewSheetId } from './sheets-assembly.js';
+
+    const form = document.getElementById('add-sheet-form');
+    const nameInput = document.getElementById('sheet-name');
+    const idInput = document.getElementById('sheet-id');
+    const submitBtn = document.getElementById('submit-btn');
+    const tableBody = document.getElementById('sheets-list-body');
+
+    // UI Render Function
+    async function renderList() {
+      const data = await loadGoogleSheetsAdminData();
+      if (data.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="3">Koi data nahi mila.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = data.map(item => `
+        <tr>
+          <td>${item.id}</td>
+          <td>${item.sheetName}</td>
+          <td><code>${item.sheetId}</code></td>
+        </tr>
+      `).join('');
+    }
+
+    // Submit Handler
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const id = idInput.value.trim();
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Adding...';
+
+      try {
+        // Access token agar login OAuth se hai toh paas hoga
+        const accessToken = window.USER_ACCESS_TOKEN || ''; 
+        await addNewSheetId(name, id, accessToken);
+        alert('Sheet ID Successfully Added!');
+        nameInput.value = '';
+        idInput.value = '';
+        renderList();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Add Sheet ID';
+      }
+    });
+
+    // Initial Load
+    renderList();
+  </script>
+</body>
+</html>
