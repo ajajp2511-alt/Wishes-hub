@@ -63,8 +63,8 @@
 .sub-menu-list, 
 .main-menu-item > ul {
   display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
-  padding-left: 16px;
-  margin: 4px 0 12px 0;
+  padding-left: 0px;
+  margin: 6px 0 12px 0;
   list-style: none;
 }
 
@@ -74,19 +74,24 @@
   display: block !important;
 }
 
-/* Sub-item Text Styling */
+/* Sub-item Text Styling (Block Cards with Bigger Text) */
 .sub-menu-item, 
 .sub-menu-list li, 
 .main-menu-item ul li {
-  padding: 6px 10px;
-  font-size: 0.88rem;
-  color: #475569;
+  display: block;
+  padding: 10px 12px;
+  margin: 6px 0;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #334155;
+  background-color: #f1f5f9;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .sub-menu-item:hover, 
 .sub-menu-list li:hover {
-  background-color: #f1f5f9;
-  color: #2563eb;
+  background-color: #e2e8f0;
+  color: #1e40af;
 }
