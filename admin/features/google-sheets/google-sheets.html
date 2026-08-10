@@ -3,89 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Master Google Sheets Manager</title>
+  <title>Master Google Sheet Manager</title>
   <link rel="stylesheet" href="./assets/sheets-style.css">
 </head>
 <body>
 
-  <div class="sheets-container">
-    <h2>Master Google Sheets Manager</h2>
+  <div class="sheets-wrapper">
+    <!-- Toolbar -->
+    <div class="top-bar">
+      <h2>Master Sheet Dashboard</h2>
+      <div class="action-tools">
+        <select id="sheet-dropdown" class="dropdown-select" style="display: none;"></select>
+        <input type="text" id="search-input" class="search-input" placeholder="Search data..." style="display: none;" />
+        <button id="refresh-btn" class="btn-refresh">Sync Data 🔄</button>
+      </div>
+    </div>
 
-    <!-- Form -->
-    <form id="add-sheet-form" class="sheets-form">
-      <input type="text" id="sheet-name" placeholder="Sheet Name (e.g. Birthday)" required />
-      <input type="text" id="sheet-id" placeholder="Google Sheet ID" required />
-      <button type="submit" id="submit-btn">Add Sheet ID</button>
-    </form>
+    <!-- Master Cards Directory -->
+    <div id="directory-container">
+      <h3>All Google Sheets</h3>
+      <div id="directory-grid" class="directory-grid"></div>
+    </div>
 
-    <!-- Table -->
-    <table class="sheets-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Sheet Name</th>
-          <th>Spreadsheet ID</th>
-        </tr>
-      </thead>
-      <tbody id="sheets-list-body">
-        <tr><td colspan="3">Loading...</td></tr>
-      </tbody>
-    </table>
+    <!-- Data Table View -->
+    <div id="sheet-view-container" style="display: none; margin-top: 20px;">
+      <h3 id="active-sheet-title">Sheet View</h3>
+      <div id="table-wrapper"></div>
+    </div>
   </div>
 
   <script type="module">
-    import { loadGoogleSheetsAdminData, addNewSheetId } from './sheets-assembly.js';
+    import { 
+      loadMasterDirectoryData, 
+      loadSingleSheetContent, 
+      mountDirectoryComponent, 
+      mountTableComponent, 
+      mountToolbarComponent 
+    } from './sheets-assembly.js';
 
-    const form = document.getElementById('add-sheet-form');
-    const nameInput = document.getElementById('sheet-name');
-    const idInput = document.getElementById('sheet-id');
-    const submitBtn = document.getElementById('submit-btn');
-    const tableBody = document.getElementById('sheets-list-body');
+    const directoryGrid = document.getElementById('directory-grid');
+    const sheetDropdown = document.getElementById('sheet-dropdown');
+    const searchInput = document.getElementById('search-input');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const sheetViewContainer = document.getElementById('sheet-view-container');
+    const activeSheetTitle = document.getElementById('active-sheet-title');
+    const tableWrapper = document.getElementById('table-wrapper');
 
-    // UI Render Function
-    async function renderList() {
-      const data = await loadGoogleSheetsAdminData();
-      if (data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="3">Koi data nahi mila.</td></tr>';
-        return;
-      }
+    // App Initializer
+    async function initApp() {
+      directoryGrid.innerHTML = '<p>Master Sheet Sync ho rahi hai...</p>';
+      
+      // Data Load through Assembly
+      await loadMasterDirectoryData();
 
-      tableBody.innerHTML = data.map(item => `
-        <tr>
-          <td>${item.id}</td>
-          <td>${item.sheetName}</td>
-          <td><code>${item.sheetId}</code></td>
-        </tr>
-      `).join('');
+      // Mount UI Components through Assembly
+      mountDirectoryComponent(directoryGrid, handleSheetSelect);
+      mountToolbarComponent(sheetDropdown, searchInput, handleSheetSelect);
     }
 
-    // Submit Handler
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = nameInput.value.trim();
-      const id = idInput.value.trim();
+    // Sheet Click Event
+    async function handleSheetSelect(sheetId, sheetName) {
+      if (!sheetId) return;
 
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Adding...';
+      sheetDropdown.value = sheetId;
+      searchInput.style.display = 'inline-block';
+      searchInput.value = '';
+      sheetViewContainer.style.display = 'block';
+      activeSheetTitle.innerText = `Loading: ${sheetName}...`;
+      tableWrapper.innerHTML = '<p>Data fetch ho raha hai...</p>';
 
-      try {
-        // Access token agar login OAuth se hai toh paas hoga
-        const accessToken = window.USER_ACCESS_TOKEN || ''; 
-        await addNewSheetId(name, id, accessToken);
-        alert('Sheet ID Successfully Added!');
-        nameInput.value = '';
-        idInput.value = '';
-        renderList();
-      } catch (err) {
-        alert('Error: ' + err.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Add Sheet ID';
-      }
-    });
+      const { headers, rows } = await loadSingleSheetContent(sheetId);
 
-    // Initial Load
-    renderList();
+      activeSheetTitle.innerText = `Data View: ${sheetName}`;
+      mountTableComponent(tableWrapper, headers, rows);
+    }
+
+    // Refresh Sync Event
+    refreshBtn.addEventListener('click', initApp);
+
+    // Run
+    initApp();
   </script>
 </body>
 </html>
