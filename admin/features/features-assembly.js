@@ -48,8 +48,11 @@ export class FeaturesAssembly {
         // Outlet module
         await this.safeRun('outlet', '/admin/features/outlet/outlet-assembly.js', 'initOutlet');
 
-        // Menu Navigation module (Exact folder path from screenshot)
+        // Menu Navigation module
         await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
+
+        // Google Sheets module
+        await this.safeRun('google-sheets', '/admin/features/google-sheets/sheets-assembly.js', 'initGoogleSheets');
     }
 }
 
