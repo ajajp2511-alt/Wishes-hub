@@ -1,5 +1,10 @@
 // admin/features/google-sheets/sheets-assembly.js
-import { getMasterSheetValues, getSubSheetValues, appendSheetIdToMaster } from './sheets-core.js';
+import { 
+  getMasterSheetValues, 
+  getSubSheetValues, 
+  appendSheetIdToMaster, 
+  deleteSheetIdFromMaster 
+} from './sheets-core.js';
 import { renderDirectoryCards } from './components/sheet-directory.js';
 import { renderDataTable } from './components/sheet-table.js';
 import { setupToolbarControls } from './components/sheet-toolbar.js';
@@ -49,7 +54,7 @@ export async function loadSingleSheetContent(sheetId) {
   };
 }
 
-// 3. Admin Panel se Nayi Google Sheet Add karna
+// 3. Admin Panel Actions (Add & Delete)
 export async function addNewSheetId(sheetName, sheetId, accessToken) {
   if (!sheetName || !sheetId) {
     throw new Error('Sheet Name aur Sheet ID dono zaruri hain.');
@@ -58,9 +63,17 @@ export async function addNewSheetId(sheetName, sheetId, accessToken) {
   return await appendSheetIdToMaster(sheetName, sheetId, accessToken);
 }
 
+export async function removeSheetId(rowIndex, accessToken) {
+  if (!rowIndex) {
+    throw new Error('Row Index zaruri hai.');
+  }
+
+  return await deleteSheetIdFromMaster(rowIndex, accessToken);
+}
+
 // 4. UI Component Mounting Bridges
-export function mountDirectoryComponent(container, onSelectCallback) {
-  renderDirectoryCards(container, activeMasterList, onSelectCallback);
+export function mountDirectoryComponent(container, onSelectCallback, onDeleteCallback) {
+  renderDirectoryCards(container, activeMasterList, onSelectCallback, onDeleteCallback);
 }
 
 export function mountTableComponent(container, headers = activeSheetHeaders, rows = activeSheetRows) {
@@ -80,4 +93,4 @@ export function mountToolbarComponent(dropdownEl, searchEl, onSelectCallback) {
       renderDataTable(document.getElementById('table-wrapper'), activeSheetHeaders, filteredRows);
     }
   });
-    }
+}
