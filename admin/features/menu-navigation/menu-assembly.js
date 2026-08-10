@@ -1,4 +1,5 @@
 import { MenuCore } from './menu-core.js';
+import { initGoogleSheets } from '../google-sheets/sheets-assembly.js';
 
 export class MenuAssembly {
   constructor(containerId = 'menu-navigation-root') {
@@ -107,14 +108,19 @@ export class MenuAssembly {
       });
     });
 
-    // Sub Menu Click Selection
+    // Sub Menu Click Selection & Dynamic Module Trigger
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
-      subItem.addEventListener('click', (e) => {
+      subItem.addEventListener('click', async (e) => {
         e.stopPropagation();
         const subId = e.currentTarget.dataset.subId;
         this.core.setActiveSubItem(subId);
         this.render();
         this.bindEvents();
+
+        // Target Module Router Call
+        if (subId === 'google-sheets-dashboard') {
+          await initGoogleSheets();
+        }
       });
     });
   }
