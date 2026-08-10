@@ -13,6 +13,7 @@
     <div class="top-bar">
       <h2>Master Sheet Dashboard</h2>
       <div class="action-tools">
+        <button id="add-sheet-btn" class="btn-refresh" style="background-color: #10b981;">+ Add Sheet</button>
         <select id="sheet-dropdown" class="dropdown-select" style="display: none;"></select>
         <input type="text" id="search-input" class="search-input" placeholder="Search data..." style="display: none;" />
         <button id="refresh-btn" class="btn-refresh">Sync Data 🔄</button>
@@ -32,22 +33,32 @@
     </div>
   </div>
 
+  <!-- Modal Wrapper Container -->
+  <div id="modal-container"></div>
+
   <script type="module">
     import { 
       loadMasterDirectoryData, 
       loadSingleSheetContent, 
+      addNewSheetId,
+      removeSheetId,
       mountDirectoryComponent, 
       mountTableComponent, 
       mountToolbarComponent 
     } from './sheets-assembly.js';
+    import { renderAddSheetModal } from './components/sheet-modal.js';
 
     const directoryGrid = document.getElementById('directory-grid');
     const sheetDropdown = document.getElementById('sheet-dropdown');
     const searchInput = document.getElementById('search-input');
     const refreshBtn = document.getElementById('refresh-btn');
+    const addSheetBtn = document.getElementById('add-sheet-btn');
+    const modalContainer = document.getElementById('modal-container');
     const sheetViewContainer = document.getElementById('sheet-view-container');
     const activeSheetTitle = document.getElementById('active-sheet-title');
     const tableWrapper = document.getElementById('table-wrapper');
+
+    const userAccessToken = window.ENV_ACCESS_TOKEN || '';
 
     // App Initializer
     async function initApp() {
@@ -56,12 +67,12 @@
       // Data Load through Assembly
       await loadMasterDirectoryData();
 
-      // Mount UI Components through Assembly
-      mountDirectoryComponent(directoryGrid, handleSheetSelect);
+      // Mount UI Components through Assembly (With Delete Callback)
+      mountDirectoryComponent(directoryGrid, handleSheetSelect, handleSheetDelete);
       mountToolbarComponent(sheetDropdown, searchInput, handleSheetSelect);
     }
 
-    // Sheet Click Event
+    // 1. Select Sheet Callback
     async function handleSheetSelect(sheetId, sheetName) {
       if (!sheetId) return;
 
@@ -78,10 +89,37 @@
       mountTableComponent(tableWrapper, headers, rows);
     }
 
+    // 2. Delete Sheet Callback
+    async function handleSheetDelete(rowIndex) {
+      try {
+        await removeSheetId(rowIndex, userAccessToken);
+        alert('Sheet Master List se remove kar di gayi hai!');
+        initApp();
+      } catch (error) {
+        alert('Delete karne me issue aaya: ' + error.message);
+      }
+    }
+
+    // 3. Open Add Sheet Modal
+    addSheetBtn.addEventListener('click', () => {
+      renderAddSheetModal(modalContainer, async (name, id) => {
+        try {
+          await addNewSheetId(name, id, userAccessToken);
+          alert('Nayi Sheet successfully add ho gayi!');
+          modalContainer.innerHTML = '';
+          initApp();
+        } catch (error) {
+          alert('Sheet add nahi ho payi: ' + error.message);
+        }
+      }, () => {
+        modalContainer.innerHTML = '';
+      });
+    });
+
     // Refresh Sync Event
     refreshBtn.addEventListener('click', initApp);
 
-    // Run
+    // Run App
     initApp();
   </script>
 </body>
