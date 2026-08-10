@@ -1,4 +1,3 @@
-// admin/features/menu-navigation/menu-assembly.js
 import { MenuCore } from './menu-core.js';
 
 export class MenuAssembly {
@@ -113,10 +112,10 @@ export class MenuAssembly {
         this.render();
         this.bindEvents();
 
-        // Safe Dynamic Import on click (No crash on load)
+        // Dynamic Import with Absolute Path
         if (subId === 'google-sheets-dashboard') {
           try {
-            const sheetsModule = await import('../google-sheets/sheets-assembly.js');
+            const sheetsModule = await import('/admin/features/google-sheets/sheets-assembly.js');
             if (sheetsModule && typeof sheetsModule.initGoogleSheets === 'function') {
               await sheetsModule.initGoogleSheets();
             }
