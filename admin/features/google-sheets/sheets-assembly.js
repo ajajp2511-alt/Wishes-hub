@@ -1,18 +1,55 @@
 // admin/features/google-sheets/sheets-assembly.js
-import { getMasterSheetValues, appendSheetIdToMaster } from './sheets-core.js';
+import { getMasterSheetValues, getSubSheetValues, appendSheetIdToMaster } from './sheets-core.js';
+import { renderDirectoryCards } from './components/sheet-directory.js';
+import { renderDataTable } from './components/sheet-table.js';
+import { setupToolbarControls } from './components/sheet-toolbar.js';
 
-// Master Sheet ki sabhi Google Sheet IDs get karna
-export async function loadGoogleSheetsAdminData() {
+let activeMasterList = [];
+let activeSheetHeaders = [];
+let activeSheetRows = [];
+
+// 1. Master Directory Data Fetch & Processing
+export async function loadMasterDirectoryData() {
   const rawRows = await getMasterSheetValues();
 
-  return rawRows.map((row, index) => ({
-    id: index + 1,
-    sheetName: row[0] || 'Untitled Sheet',
-    sheetId: row[1] || ''
-  }));
+  const directoryPromises = rawRows.map(async (row, index) => {
+    const sheetName = row[0] || 'Untitled Sheet';
+    const sheetId = row[1] || '';
+    
+    let totalRows = 0;
+    if (sheetId) {
+      const subData = await getSubSheetValues(sheetId);
+      totalRows = subData.length > 0 ? subData.length - 1 : 0;
+    }
+
+    return {
+      id: index + 1,
+      sheetName,
+      sheetId,
+      totalRows
+    };
+  });
+
+  activeMasterList = await Promise.all(directoryPromises);
+  return activeMasterList;
 }
 
-// Admin Panel se nayi Google Sheet ki ID save karne wala action
+// 2. Single Sheet Content Fetch
+export async function loadSingleSheetContent(sheetId) {
+  if (!sheetId) return { headers: [], rows: [] };
+  const rawData = await getSubSheetValues(sheetId);
+  if (rawData.length === 0) return { headers: [], rows: [] };
+
+  activeSheetHeaders = rawData[0] || [];
+  activeSheetRows = rawData.slice(1) || [];
+
+  return {
+    headers: activeSheetHeaders,
+    rows: activeSheetRows
+  };
+}
+
+// 3. Admin Panel se Nayi Google Sheet Add karna
 export async function addNewSheetId(sheetName, sheetId, accessToken) {
   if (!sheetName || !sheetId) {
     throw new Error('Sheet Name aur Sheet ID dono zaruri hain.');
@@ -20,3 +57,27 @@ export async function addNewSheetId(sheetName, sheetId, accessToken) {
 
   return await appendSheetIdToMaster(sheetName, sheetId, accessToken);
 }
+
+// 4. UI Component Mounting Bridges
+export function mountDirectoryComponent(container, onSelectCallback) {
+  renderDirectoryCards(container, activeMasterList, onSelectCallback);
+}
+
+export function mountTableComponent(container, headers = activeSheetHeaders, rows = activeSheetRows) {
+  renderDataTable(container, headers, rows);
+}
+
+export function mountToolbarComponent(dropdownEl, searchEl, onSelectCallback) {
+  setupToolbarControls({
+    dropdown: dropdownEl,
+    searchInput: searchEl,
+    masterDataList: activeMasterList,
+    onSheetSelect: onSelectCallback,
+    onSearch: (query) => {
+      const filteredRows = activeSheetRows.filter(row => 
+        row.some(cell => String(cell).toLowerCase().includes(query))
+      );
+      renderDataTable(document.getElementById('table-wrapper'), activeSheetHeaders, filteredRows);
+    }
+  });
+    }
