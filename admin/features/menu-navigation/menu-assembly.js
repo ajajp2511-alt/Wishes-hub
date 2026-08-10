@@ -1,5 +1,5 @@
+// admin/features/menu-navigation/menu-assembly.js
 import { MenuCore } from './menu-core.js';
-import { initGoogleSheets } from '../google-sheets/sheets-assembly.js';
 
 export class MenuAssembly {
   constructor(containerId = 'menu-navigation-root') {
@@ -16,7 +16,6 @@ export class MenuAssembly {
     this.bindTopNavToggle();
   }
 
-  // 3-Line (Hamburger) Toggle Handler for index.html button
   bindTopNavToggle() {
     const hamburgerBtn = document.getElementById('toggle-sidebar-btn');
     
@@ -75,7 +74,6 @@ export class MenuAssembly {
   }
 
   bindEvents() {
-    // Search Input Handler
     const searchInput = this.container.querySelector('#menu-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -97,7 +95,6 @@ export class MenuAssembly {
       });
     }
 
-    // Main Menu Accordion Click
     this.container.querySelectorAll('.main-menu-header').forEach(header => {
       header.addEventListener('click', (e) => {
         const mainItem = e.target.closest('.main-menu-item');
@@ -108,7 +105,6 @@ export class MenuAssembly {
       });
     });
 
-    // Sub Menu Click Selection & Dynamic Module Trigger
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
       subItem.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -117,16 +113,22 @@ export class MenuAssembly {
         this.render();
         this.bindEvents();
 
-        // Target Module Router Call
+        // Safe Dynamic Import on click (No crash on load)
         if (subId === 'google-sheets-dashboard') {
-          await initGoogleSheets();
+          try {
+            const sheetsModule = await import('../google-sheets/sheets-assembly.js');
+            if (sheetsModule && typeof sheetsModule.initGoogleSheets === 'function') {
+              await sheetsModule.initGoogleSheets();
+            }
+          } catch (err) {
+            console.error('Failed to load Google Sheets module:', err);
+          }
         }
       });
     });
   }
 }
 
-// FeaturesAssembly boot process export
 export const initMenu = () => {
   return new MenuAssembly();
 };
