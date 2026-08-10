@@ -1,3 +1,5 @@
+// admin/features/menu-navigation/menu-config.js
+
 export const MENU_CONFIG = {
   BRAND: {
     NAME: 'Wishes Hub',
@@ -51,11 +53,9 @@ export const MENU_CONFIG = {
         { id: 'users-all', label: 'All Registered Users' },
         { id: 'users-activity', label: 'User Activity' },
         { id: 'users-saved', label: 'Saved Wishes' },
-        // 🔹 ADDED SUBMENU: User Data Collection & Privacy Management
         { id: 'users-data-collected', label: 'User Data & Privacy Vault' }
       ]
     },
-    // 🔹 ADDED MAIN MENU: Security & Threat Shield Module
     {
       id: 'security-shield',
       label: 'Security & Threat Shield',
@@ -303,6 +303,7 @@ export const MENU_CONFIG = {
       label: 'Google Sheets Views',
       icon: '📄',
       subItems: [
+        { id: 'google-sheets-dashboard', label: 'Master Sheet Dashboard' },
         { id: 'sheets-sync', label: 'Sync Status' },
         { id: 'sheets-responses', label: 'Form Responses' },
         { id: 'sheets-mapping', label: 'API Mapping' }
