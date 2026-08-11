@@ -1,32 +1,29 @@
 // admin/features/google-sheets/sheets-core.js
 import { SHEETS_CONFIG } from '/admin/features/google-sheets/sheets-config.js';
 
-// Helper function to extract exact Google API Error message
+// Helper function for API errors
 async function parseApiError(response) {
   try {
     const errorJson = await response.json();
-    return errorJson?.error?.message || response.statusText;
+    return errorJson?.error || errorJson?.message || response.statusText;
   } catch (e) {
     return response.statusText;
   }
 }
 
-// 1. Master Sheet se IDs aur Names read karne ka logic
+// 1. Master Sheet Read Logic (via /api/sheets Proxy)
 export async function getMasterSheetValues() {
-  const { apiKey, masterSheetId, defaultRange, endpoints } = SHEETS_CONFIG;
-  
-  if (!apiKey || !masterSheetId) {
-    console.error('Master Sheet Config Missing:', { apiKey, masterSheetId });
+  const { endpoint } = SHEETS_CONFIG;
+
+  if (!endpoint) {
+    console.error('Master Sheet Config Missing: Endpoint undefined');
     return [];
   }
 
-  const url = `${endpoints.base}/${masterSheetId}/values/${defaultRange}?key=${apiKey}`;
-
   try {
-    const response = await fetch(url);
+    const response = await fetch(`${endpoint}?type=master`);
     if (!response.ok) {
       const errorDetails = await parseApiError(response);
-      console.error(`Google API Error (${response.status}):`, errorDetails);
       throw new Error(`HTTP Error: ${response.status} - ${errorDetails}`);
     }
     const data = await response.json();
@@ -37,15 +34,15 @@ export async function getMasterSheetValues() {
   }
 }
 
-// 2. Target Sub-Sheet ka data read karne ka logic
+// 2. Sub-Sheet Read Logic (via /api/sheets Proxy)
 export async function getSubSheetValues(sheetId, range = 'Sheet1!A1:Z100') {
-  const { apiKey, endpoints } = SHEETS_CONFIG;
-  if (!apiKey || !sheetId) return [];
-  
-  const url = `${endpoints.base}/${sheetId}/values/${range}?key=${apiKey}`;
+  const { endpoint } = SHEETS_CONFIG;
+  if (!sheetId || !endpoint) return [];
 
   try {
+    const url = `${endpoint}?sheetId=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`;
     const response = await fetch(url);
+    
     if (!response.ok) {
       const errorDetails = await parseApiError(response);
       throw new Error(`HTTP Error: ${response.status} - ${errorDetails}`);
@@ -58,25 +55,18 @@ export async function getSubSheetValues(sheetId, range = 'Sheet1!A1:Z100') {
   }
 }
 
-// 3. Master Sheet mein Nayi Google Sheet Ki ID add karne ka logic
+// 3. Append Sheet Entry (via /api/sheets Proxy)
 export async function appendSheetIdToMaster(sheetName, sheetId, accessToken) {
-  const { masterSheetId, endpoints } = SHEETS_CONFIG;
-  const url = `${endpoints.base}/${masterSheetId}/values/Sheet1!A:B:append?valueInputOption=USER_ENTERED`;
-
-  const bodyData = {
-    values: [
-      [sheetName, sheetId]
-    ]
-  };
+  const { endpoint } = SHEETS_CONFIG;
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       },
-      body: JSON.stringify(bodyData)
+      body: JSON.stringify({ action: 'append', sheetName, sheetId })
     });
 
     if (!response.ok) {
@@ -91,19 +81,18 @@ export async function appendSheetIdToMaster(sheetName, sheetId, accessToken) {
   }
 }
 
-// 4. Master Sheet se Specific Sheet ID Delete/Clear karne ka logic
+// 4. Clear/Delete Sheet Entry (via /api/sheets Proxy)
 export async function deleteSheetIdFromMaster(rowIndex, accessToken) {
-  const { masterSheetId, endpoints } = SHEETS_CONFIG;
-  const range = `Sheet1!A${rowIndex}:B${rowIndex}`;
-  const url = `${endpoints.base}/${masterSheetId}/values/${range}:clear`;
+  const { endpoint } = SHEETS_CONFIG;
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
-      }
+      },
+      body: JSON.stringify({ action: 'delete', rowIndex })
     });
 
     if (!response.ok) {
