@@ -1,16 +1,14 @@
 // api/sheets.js
 export default async function handler(req, res) {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const masterSheetId = process.env.MASTER_SHEET_ID;
+  // Direct matching Vercel variable names
+  const apiKey = process.env.GOOGLE_API_KEY || process.env.VITE_SHEETS_API_KEY;
+  const masterSheetId = process.env.MASTER_SHEET_ID || process.env.VITE_MASTER_SHEET_ID;
 
   if (!apiKey || !masterSheetId) {
     return res.status(500).json({ error: 'Server environment configuration missing' });
   }
 
-  // Frontend se query parameters read karein
   const { sheetId, type, range = 'Sheet1!A1:Z100' } = req.query;
-
-  // Agar 'type=master' hai toh Master Sheet ID, nahi toh requested sub-sheet ID
   const targetSheetId = (type === 'master' || !sheetId) ? masterSheetId : sheetId;
 
   try {
@@ -19,7 +17,6 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
-
     if (!response.ok) {
       return res.status(response.status).json({ error: data.error?.message || 'Google API Error' });
     }
