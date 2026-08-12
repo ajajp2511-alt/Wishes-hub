@@ -3,7 +3,13 @@
  * Path: admin/features/security-shield/security-core.js
  */
 
-import { WAF_SIGNATURES, SECURITY_SEVERITY, SECURITY_CONFIG } from './security-config.js';
+import { 
+  WAF_SIGNATURES, 
+  SECURITY_SEVERITY, 
+  SECURITY_CONFIG, 
+  DOMAIN_LOCK_CONFIG,
+  HONEYPOT_TRAPS 
+} from './security-config.js';
 
 export class SecurityCore {
   constructor() {
@@ -11,6 +17,36 @@ export class SecurityCore {
     this.blacklistedIPs = new Set();
     this.whitelistedIPs = new Set();
     this.hackerProfiles = new Map();
+    
+    // Auto-verify host environment on initialization
+    this.verifyDomainLock();
+  }
+
+  /**
+   * Domain Lock & Host Protection Shield
+   * Restricts code execution strictly to authorized domains.
+   */
+  verifyDomainLock() {
+    if (!DOMAIN_LOCK_CONFIG?.enabled || typeof window === 'undefined') return true;
+
+    const currentHost = window.location.hostname.toLowerCase();
+    const isAuthorized = DOMAIN_LOCK_CONFIG.authorizedDomains.some(domain => 
+      currentHost === domain.toLowerCase() || currentHost.endsWith(`.${domain.toLowerCase()}`)
+    );
+
+    if (!isAuthorized) {
+      console.error(`[SecurityCore Critical] Unauthorized host detected: ${currentHost}`);
+      // Self-destruct / Freeze execution on unauthorized domains
+      document.body.innerHTML = `
+        <div style="background:#0d1117; color:#ff7b72; height:100vh; display:flex; align-items:center; justify-content:center; font-family:sans-serif; flex-direction:column; text-align:center;">
+          <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Security Lockout Active</h1>
+          <p style="color:#8b949e; max-width: 500px;">This domain (${currentHost}) is not authorized to host or execute the Wishes Hub core engine.</p>
+        </div>
+      `;
+      throw new Error(`[Security Core] Domain locking policy violation: ${currentHost}`);
+    }
+
+    return true;
   }
 
   /**
@@ -32,13 +68,19 @@ export class SecurityCore {
   }
 
   /**
-   * Analyze payload against WAF Rules
+   * Analyze payload against WAF Rules & Honeypot Traps
    */
   inspectPayload(ip, payloadStr, path) {
     let severity = SECURITY_SEVERITY.LOW;
     let attackType = null;
 
-    if (WAF_SIGNATURES.SQLI.test(payloadStr)) {
+    // Check Honeypot Traps First
+    if (HONEYPOT_TRAPS?.enabled && HONEYPOT_TRAPS.fakeEndpoints.includes(path)) {
+      severity = SECURITY_SEVERITY.CRITICAL;
+      attackType = 'Honeypot Trap Triggered';
+    } 
+    // WAF Rules Inspection
+    else if (WAF_SIGNATURES.SQLI.test(payloadStr)) {
       severity = SECURITY_SEVERITY.CRITICAL;
       attackType = 'SQL Injection Attempt';
     } else if (WAF_SIGNATURES.XSS.test(payloadStr)) {
@@ -47,6 +89,9 @@ export class SecurityCore {
     } else if (WAF_SIGNATURES.PATH_TRAVERSAL.test(payloadStr)) {
       severity = SECURITY_SEVERITY.MEDIUM;
       attackType = 'Path Traversal';
+    } else if (WAF_SIGNATURES.COMMAND_INJECTION?.test(payloadStr)) {
+      severity = SECURITY_SEVERITY.CRITICAL;
+      attackType = 'Command Injection';
     }
 
     if (attackType) {
