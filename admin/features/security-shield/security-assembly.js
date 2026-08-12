@@ -75,6 +75,8 @@ export class SecurityAssembly {
       this.renderThreatLogs(mainView);
     } else if (this.activeTab === 'firewall-rules') {
       this.renderFirewallRules(mainView);
+    } else if (this.activeTab === 'bot-defense') {
+      this.renderBotDefense(mainView);
     } else if (this.activeTab === 'hacker-profiles') {
       this.renderHackerIntelligence(mainView);
     } else {
@@ -120,6 +122,76 @@ export class SecurityAssembly {
           `).join('')}
         </tbody>
       </table>
+    `;
+  }
+
+  /**
+   * Render IP Blacklist & Firewall Manager View
+   */
+  renderFirewallRules(targetElement) {
+    const blacklistedIPs = Array.from(securityCoreInstance.blacklistedIPs);
+
+    targetElement.innerHTML = `
+      <div class="firewall-manager">
+        <div class="add-ip-bar">
+          <input type="text" id="manual-ip-input" placeholder="Enter IP Address (e.g. 192.168.1.1)" />
+          <button id="btn-manual-block" class="btn-primary">Ban IP Manually</button>
+        </div>
+
+        <h4>Active Blacklisted IPs (${blacklistedIPs.length})</h4>
+        ${blacklistedIPs.length === 0 
+          ? `<div class="security-empty">No IPs currently blacklisted by WAF or Admin.</div>`
+          : `<ul class="ip-blacklist">
+              ${blacklistedIPs.map(ip => `
+                <li class="ip-item">
+                  <code>${ip}</code>
+                  <button class="btn-sm btn-ban-ip" data-ip="${ip}">Unblock IP</button>
+                </li>
+              `).join('')}
+             </ul>`
+        }
+      </div>
+    `;
+
+    const blockBtn = targetElement.querySelector('#btn-manual-block');
+    if (blockBtn) {
+      blockBtn.addEventListener('click', async () => {
+        const input = targetElement.querySelector('#manual-ip-input');
+        const ip = input?.value.trim();
+        if (ip) {
+          await securityCoreInstance.toggleIPBlock(ip, true);
+          this.renderActiveTabContent();
+        }
+      });
+    }
+  }
+
+  /**
+   * Render Bot Defense & Rate Limiting Controls View
+   */
+  renderBotDefense(targetElement) {
+    targetElement.innerHTML = `
+      <div class="bot-defense-panel">
+        <h3>Rate Limiting & Anti-Bot Protection</h3>
+        <div class="status-grid">
+          <div class="status-card">
+            <span>Rate Limit Window</span>
+            <strong>100 Req / Min</strong>
+          </div>
+          <div class="status-card">
+            <span>CAPTCHA Challenge Threshold</span>
+            <strong>60 Req / Min</strong>
+          </div>
+          <div class="status-card">
+            <span>Auto-Ban Duration</span>
+            <strong>72 Hours</strong>
+          </div>
+          <div class="status-card">
+            <span>Honeypot Endpoints Active</span>
+            <strong>4 Traps</strong>
+          </div>
+        </div>
+      </div>
     `;
   }
 
