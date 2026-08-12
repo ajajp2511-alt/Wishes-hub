@@ -1,0 +1,231 @@
+/**
+ * Users & CRM Module - Stylesheet
+ * Path: admin/features/users-crm/users.css
+ */
+
+:root {
+  --crm-primary: #6366f1;
+  --crm-primary-dark: #4f46e5;
+  --crm-bg: #f8fafc;
+  --crm-card-bg: #ffffff;
+  --crm-border: #e2e8f0;
+  --crm-text: #0f172a;
+  --crm-muted: #64748b;
+  --badge-active-bg: #dcfce7;
+  --badge-active-text: #15803d;
+  --badge-suspended-bg: #fef3c7;
+  --badge-suspended-text: #b45309;
+  --badge-banned-bg: #fee2e2;
+  --badge-banned-text: #b91c1c;
+}
+
+.crm-container {
+  padding: 24px;
+  background-color: var(--crm-bg);
+  min-height: 85vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--crm-text);
+}
+
+/* Header & Tabs */
+.crm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--crm-card-bg);
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--crm-border);
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.crm-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--crm-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #f1f5f9;
+  color: var(--crm-text);
+}
+
+.tab-btn.active {
+  background: #e0e7ff;
+  color: var(--crm-primary);
+  font-weight: 600;
+}
+
+.crm-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.crm-actions input,
+.crm-actions select {
+  padding: 8px 12px;
+  border: 1px solid var(--crm-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.crm-actions input:focus,
+.crm-actions select:focus {
+  border-color: var(--crm-primary);
+}
+
+/* Data Table */
+.crm-main-view {
+  background: var(--crm-card-bg);
+  border: 1px solid var(--crm-border);
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.crm-table th,
+.crm-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--crm-border);
+  font-size: 0.9rem;
+}
+
+.crm-table th {
+  background: #f8fafc;
+  color: var(--crm-muted);
+  font-weight: 600;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--crm-text);
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: var(--crm-muted);
+}
+
+/* Status Badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.badge-active {
+  background: var(--badge-active-bg);
+  color: var(--badge-active-text);
+}
+
+.badge-suspended {
+  background: var(--badge-suspended-bg);
+  color: var(--badge-suspended-text);
+}
+
+.badge-banned {
+  background: var(--badge-banned-bg);
+  color: var(--badge-banned-text);
+}
+
+/* Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--crm-border);
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-sm:hover {
+  background: #f1f5f9;
+}
+
+.btn-status-toggle {
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.btn-status-toggle:hover {
+  background: #fee2e2;
+}
+
+/* User Drawer */
+.user-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100vh;
+  background: var(--crm-card-bg);
+  border-left: 1px solid var(--crm-border);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 20px;
+  transition: transform 0.3s ease;
+}
+
+.user-drawer.hidden {
+  transform: translateX(100%);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--crm-border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--crm-muted);
+}
+
+.crm-loading,
+.crm-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--crm-muted);
+}
