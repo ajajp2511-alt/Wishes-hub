@@ -1,0 +1,115 @@
+/**
+ * Manage Wish Feature - Stylesheet
+ * Path: admin/features/manage-wish/manage-wish.css
+ */
+
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #64748b;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --success-color: #10b981;
+  --radius-md: 8px;
+}
+
+.manage-wish-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 80vh;
+}
+
+/* Toolbar & Filters */
+.toolbar-section {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: var(--card-bg);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.toolbar-section input,
+.toolbar-section select {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* Buttons */
+.btn-danger { background: var(--danger-color); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer; }
+.btn-outline { background: transparent; border: 1px solid var(--border-color); padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer; }
+.btn-sm { padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; border: none; cursor: pointer; }
+.btn-secondary { background: var(--secondary-color); color: #fff; border: none; padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer; }
+
+/* Datatable */
+.table-wrapper {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.manage-wish-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.manage-wish-table th, 
+.manage-wish-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.manage-wish-table th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+.row-spam-warning { background-color: #fef2f2; }
+
+/* Status & Health Badges */
+.wish-health-bar {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+.wish-health-bar.status-healthy { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.wish-health-bar.status-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.wish-health-bar.status-critical { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.badge.status-Active { background: #d1fae5; color: #065f46; }
+.badge.status-Expired { background: #fee2e2; color: #991b1b; }
+.badge.status-Spam { background: #fef3c7; color: #92400e; }
+
+/* Pagination */
+.pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  }
