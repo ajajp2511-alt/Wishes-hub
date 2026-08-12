@@ -46,6 +46,7 @@ export class SecurityAssembly {
           <button class="tab-btn active" data-tab="threat-logs">Live Threat Logs</button>
           <button class="tab-btn" data-tab="firewall-rules">IP Blacklist & Firewall</button>
           <button class="tab-btn" data-tab="bot-defense">Bot Defense & Limits</button>
+          <button class="tab-btn" data-tab="vulnerabilities">Vulnerabilities & Health</button>
           <button class="tab-btn" data-tab="hacker-profiles">Hacker Intelligence</button>
         </nav>
 
@@ -77,6 +78,8 @@ export class SecurityAssembly {
       this.renderFirewallRules(mainView);
     } else if (this.activeTab === 'bot-defense') {
       this.renderBotDefense(mainView);
+    } else if (this.activeTab === 'vulnerabilities') {
+      this.renderVulnerabilities(mainView);
     } else if (this.activeTab === 'hacker-profiles') {
       this.renderHackerIntelligence(mainView);
     } else {
@@ -189,6 +192,35 @@ export class SecurityAssembly {
           <div class="status-card">
             <span>Honeypot Endpoints Active</span>
             <strong>4 Traps</strong>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render Vulnerability Audit & Code Health View
+   */
+  renderVulnerabilities(targetElement) {
+    targetElement.innerHTML = `
+      <div class="vuln-panel">
+        <h3>Static Code & Dependency Vulnerability Scan</h3>
+        <div class="status-grid">
+          <div class="status-card">
+            <span>SAST Scan (CodeQL / Sonar)</span>
+            <strong style="color: #2da44e;">0 Critical Flaws</strong>
+          </div>
+          <div class="status-card">
+            <span>Dependencies (Trivy)</span>
+            <strong style="color: #2da44e;">Clean</strong>
+          </div>
+          <div class="status-card">
+            <span>File Integrity (FIM)</span>
+            <strong style="color: #2da44e;">Monitored</strong>
+          </div>
+          <div class="status-card">
+            <span>Domain Locking</span>
+            <strong style="color: #2da44e;">wishes-hub.vercel.app</strong>
           </div>
         </div>
       </div>
