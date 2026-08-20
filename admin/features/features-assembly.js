@@ -53,6 +53,9 @@ export class FeaturesAssembly {
 
         // Google Sheets module
         await this.safeRun('google-sheets', '/admin/features/google-sheets/sheets-assembly.js', 'initGoogleSheets');
+
+        // Create Wish module
+        await this.safeRun('create-wish', '/admin/features/create-wish/create-wish-assembly.js', 'init');
     }
 }
 
