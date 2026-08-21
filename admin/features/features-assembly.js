@@ -56,6 +56,15 @@ export class FeaturesAssembly {
 
         // Create Wish module
         await this.safeRun('create-wish', '/admin/features/create-wish/create-wish-assembly.js', 'init');
+
+        // A/B Testing module
+        await this.safeRun('ab-testing', '/admin/features/ab-testing/ab-assembly.js', 'init');
+
+        // AI Automation module
+        await this.safeRun('ai-automation', '/admin/features/ai-automation/ai-assembly.js', 'init');
+
+        // Analytics module
+        await this.safeRun('analytics', '/admin/features/analytics/analytics-assembly.js', 'init');
     }
 }
 
