@@ -1,4 +1,4 @@
-export class AdsenseAdsManagerModule {
+export class AdsManagerModule {
   static render(container, core) {
     const ads = core.getAdsenseSettings();
     container.innerHTML = `
