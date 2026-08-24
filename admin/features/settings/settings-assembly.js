@@ -5,7 +5,7 @@
 
 import { settingsCoreInstance } from './settings-core.js';
 import { SeoMetaConfigModule } from './modules/seo-meta-config.js';
-import { AdsenseAdsManagerModule } from './modules/adsense-ads-manager.js';
+import { AdsManagerModule } from './modules/ads-manager.js';
 import { ThemeCustomCssModule } from './modules/theme-custom-css.js';
 import { LocalizationRegionModule } from './modules/localization-region.js';
 import { EmailSmtpConfigModule } from './modules/email-smtp-config.js';
