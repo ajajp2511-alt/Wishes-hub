@@ -1,4 +1,4 @@
-console.log("⚡ features-assembly.js initialized with Dynamic Router & Auto-Fallback!");
+console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
 export class FeaturesAssembly {
   constructor() {
@@ -45,7 +45,7 @@ export class FeaturesAssembly {
     'sec-bot-protection': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
     'sec-2fa-sessions': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
 
-    // PWA
+    // PWA Manager
     'pwa-manifest': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
     'pwa-tokens': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
     'pwa-deeplinks': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
@@ -106,7 +106,7 @@ export class FeaturesAssembly {
     'reports-scheduled': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
     'reports-exports': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
 
-    // Trending
+    // Trending Engine
     'trending-featured': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
     'trending-festive': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
     'trending-scoreboard': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
@@ -201,31 +201,46 @@ export class FeaturesAssembly {
         this.loadedModules.set(name, module);
       }
 
-      let executed = false;
-      if (module) {
-        // Direct function check
-        if (typeof module[initFn] === 'function') {
-          await module[initFn]();
-          executed = true;
-        } else if (module.default && typeof module.default[initFn] === 'function') {
-          await module.default[initFn]();
-          executed = true;
-        } else if (typeof module.init === 'function') {
-          await module.init();
-          executed = true;
-        } else if (typeof module.default === 'function') {
-          await module.default();
-          executed = true;
-        } else if (typeof module.default === 'object' && typeof module.default.init === 'function') {
-          await module.default.init();
-          executed = true;
+      if (!module) return false;
+
+      // 1. Direct function export (e.g., export async function init())
+      if (typeof module[initFn] === 'function') {
+        await module[initFn]('dynamic-content-root');
+        return true;
+      }
+
+      // 2. Exported Class Instance (e.g., export const usersAssemblyInstance = new UsersAssembly())
+      for (const key of Object.keys(module)) {
+        if (module[key] && typeof module[key][initFn] === 'function') {
+          await module[key][initFn]('dynamic-content-root');
+          return true;
         }
       }
 
-      console.log(`✅ Executed Feature: [${name}]`);
-      return executed;
+      // 3. Default Class / Function Export
+      if (module.default) {
+        if (typeof module.default[initFn] === 'function') {
+          await module.default[initFn]('dynamic-content-root');
+          return true;
+        }
+        if (typeof module.default === 'function') {
+          try {
+            const instance = new module.default();
+            if (typeof instance[initFn] === 'function') {
+              await instance[initFn]('dynamic-content-root');
+              return true;
+            }
+          } catch (e) {
+            await module.default('dynamic-content-root');
+            return true;
+          }
+        }
+      }
+
+      console.warn(`⚠️ Warning: No executable '${initFn}' method found in [${importPath}]`);
+      return false;
     } catch (err) {
-      console.warn(`⚠️ Error loading feature [${name}]:`, err.message);
+      console.error(`❌ Module dynamic import error [${name}]:`, err);
       return false;
     }
   }
@@ -240,13 +255,13 @@ export class FeaturesAssembly {
       `;
     }
 
-    // Step 1: Init Menu
+    // ⚡ Init Menu System
     await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
 
-    // Step 2: Init AI Engine in Background
+    // ⚡ Start Background AI Engine
     this.startBackgroundAIEngine();
 
-    // Step 3: Listen to dynamic menu clicks
+    // ⚡ Tap Navigation Listener
     document.addEventListener('menu-navigate', (e) => {
       const subId = e.detail?.subId;
       if (subId) {
@@ -260,10 +275,10 @@ export class FeaturesAssembly {
       const aiModule = await import('/admin/features/ai-automation/ai-assembly.js');
       if (aiModule && typeof aiModule.startBackgroundAutoWishEngine === 'function') {
         aiModule.startBackgroundAutoWishEngine();
-        console.log("🤖 Silent AI background engine active.");
+        console.log("🤖 Silent AI engine running.");
       }
     } catch (err) {
-      console.log("ℹ️ AI Engine background runner ready.");
+      console.log("ℹ️ AI Engine ready.");
     }
   }
 
@@ -271,7 +286,7 @@ export class FeaturesAssembly {
     const config = this.featureRegistry[subId];
 
     if (!config) {
-      this.renderFallback(subId, "Feature key not configured in router registry.");
+      this.renderFallback(subId, "Feature key not found in router registry.");
       return;
     }
 
@@ -281,9 +296,8 @@ export class FeaturesAssembly {
 
     const isSuccess = await this.safeRun(subId, config.path, config.initFn);
 
-    // If file load fails or function mismatch occurs, render clean UI fallback
     if (!isSuccess) {
-      this.renderFallback(subId, "Module UI render initiated or ready for setup.");
+      this.renderFallback(subId, "Module assembly loaded, but UI initialization requires configuration.");
     }
   }
 
