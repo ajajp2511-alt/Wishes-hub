@@ -105,24 +105,17 @@ export class MenuAssembly {
     });
 
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
-      subItem.addEventListener('click', async (e) => {
+      subItem.addEventListener('click', (e) => {
         e.stopPropagation();
         const subId = e.currentTarget.dataset.subId;
         this.core.setActiveSubItem(subId);
         this.render();
         this.bindEvents();
 
-        // Dynamic Import with Absolute Path
-        if (subId === 'google-sheets-dashboard') {
-          try {
-            const sheetsModule = await import('/admin/features/google-sheets/sheets-assembly.js');
-            if (sheetsModule && typeof sheetsModule.initGoogleSheets === 'function') {
-              await sheetsModule.initGoogleSheets();
-            }
-          } catch (err) {
-            console.error('Failed to load Google Sheets module:', err);
-          }
-        }
+        // ⚡ DECOUPLED EVENT DISPATCH: Router ko event emit kar rahe hain
+        document.dispatchEvent(new CustomEvent('menu-navigate', {
+          detail: { subId: subId }
+        }));
       });
     });
   }
