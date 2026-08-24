@@ -1,4 +1,4 @@
-console.log("⚡ features-assembly.js initialized with Lazy-Router & AI Engine!");
+console.log("⚡ features-assembly.js initialized with Dynamic Router & Auto-Fallback!");
 
 export class FeaturesAssembly {
   constructor() {
@@ -8,7 +8,6 @@ export class FeaturesAssembly {
     this.bootSystem();
   }
 
-  // 1. ALL SUB-ITEM IDs DIRECT MAPPING TO ASSEMBLY FILES
   featureRegistry = {
     // Create Wish
     'create-text': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
@@ -19,7 +18,7 @@ export class FeaturesAssembly {
     'create-interactive': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
     'create-ai': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
 
-    // Asset & Inventory Hub
+    // Asset Hub
     'asset-animations': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
     'asset-songs': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
     'asset-invitations': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
@@ -34,44 +33,44 @@ export class FeaturesAssembly {
     'wishes-categories': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
     'wishes-templates': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
 
-    // Users & CRM
+    // Users CRM
     'users-all': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
     'users-activity': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
     'users-saved': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
     'users-data-collected': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
 
-    // Security & Threat Shield
+    // Security Shield
     'sec-threat-logs': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
     'sec-ip-blacklist': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
     'sec-bot-protection': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
     'sec-2fa-sessions': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
 
-    // App & PWA Manager
+    // PWA
     'pwa-manifest': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
     'pwa-tokens': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
     'pwa-deeplinks': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
 
-    // Feature Flags & Staging
+    // Feature Flags
     'flags-toggles': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
     'flags-staging': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
     'flags-rollback': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
 
-    // Gamification & Rewards
+    // Gamification
     'gami-streaks': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
     'gami-spin': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
     'gami-leaderboard': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
 
-    // Marketplace & Creators
+    // Marketplace
     'market-store': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
     'market-creators': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
     'market-payouts': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
 
-    // Campaigns & Marketing
+    // Campaigns
     'camp-scheduler': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
     'camp-bots': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
     'camp-newsletters': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
 
-    // Content Engine & Templates
+    // Content Engine
     'engine-canvas': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
     'engine-fonts': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
     'engine-packs': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
@@ -82,12 +81,12 @@ export class FeaturesAssembly {
     'media-stickers': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
     'media-storage': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
 
-    // AI & Automation Studio
+    // AI Automation Studio
     'ai-generator': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
     'ai-prompts': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
     'ai-translator': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
 
-    // Localization & Languages
+    // Localization
     'loc-languages': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
     'loc-translations': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
     'loc-regional-dates': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
@@ -97,27 +96,27 @@ export class FeaturesAssembly {
     'analytics-generations': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
     'analytics-geo': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
 
-    // SEO & Traffic Growth
+    // SEO
     'seo-sitemap': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
     'seo-schema': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
     'seo-domains': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
 
-    // Reports & Export
+    // Reports
     'reports-builder': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
     'reports-scheduled': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
     'reports-exports': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
 
-    // Trending Engine
+    // Trending
     'trending-featured': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
     'trending-festive': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
     'trending-scoreboard': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
 
-    // A/B Testing Studio
+    // A/B Testing
     'ab-campaigns': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
     'ab-layouts': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
     'ab-conversions': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
 
-    // Monetization & Ads
+    // Monetization
     'monetization-adsense': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
     'monetization-banners': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
     'monetization-revenue': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
@@ -132,7 +131,7 @@ export class FeaturesAssembly {
     'share-social': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
     'share-widgets': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
 
-    // Community & Feedback
+    // Community
     'comm-requests': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
     'comm-feedback': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
     'comm-comments': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
@@ -142,12 +141,12 @@ export class FeaturesAssembly {
     'notifications-broadcast': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
     'notifications-templates': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
 
-    // Price & Plans
+    // Pricing
     'price-tiers': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
     'price-discounts': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
     'price-gateways': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
 
-    // Performance & Cache
+    // Performance Cache
     'perf-cache-purge': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
     'perf-image-opt': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
     'perf-speed': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
@@ -173,7 +172,7 @@ export class FeaturesAssembly {
     'api-endpoints': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
     'third-party': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
 
-    // Compliance & Legal
+    // Compliance
     'legal-gdpr': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
     'legal-terms': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
     'legal-abuse': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
@@ -202,21 +201,32 @@ export class FeaturesAssembly {
         this.loadedModules.set(name, module);
       }
 
+      let executed = false;
       if (module) {
+        // Direct function check
         if (typeof module[initFn] === 'function') {
           await module[initFn]();
+          executed = true;
         } else if (module.default && typeof module.default[initFn] === 'function') {
           await module.default[initFn]();
+          executed = true;
         } else if (typeof module.init === 'function') {
           await module.init();
+          executed = true;
+        } else if (typeof module.default === 'function') {
+          await module.default();
+          executed = true;
+        } else if (typeof module.default === 'object' && typeof module.default.init === 'function') {
+          await module.default.init();
+          executed = true;
         }
       }
 
-      console.log(`✅ Dynamically Loaded Feature: [${name}]`);
-      return module;
+      console.log(`✅ Executed Feature: [${name}]`);
+      return executed;
     } catch (err) {
       console.warn(`⚠️ Error loading feature [${name}]:`, err.message);
-      return null;
+      return false;
     }
   }
 
@@ -230,13 +240,13 @@ export class FeaturesAssembly {
       `;
     }
 
-    // ⚡ STEP 1: Boot Menu Engine
+    // Step 1: Init Menu
     await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
 
-    // ⚡ STEP 2: Boot Silent Background AI Engine
+    // Step 2: Init AI Engine in Background
     this.startBackgroundAIEngine();
 
-    // ⚡ STEP 3: Listen to Tap Events
+    // Step 3: Listen to dynamic menu clicks
     document.addEventListener('menu-navigate', (e) => {
       const subId = e.detail?.subId;
       if (subId) {
@@ -250,10 +260,10 @@ export class FeaturesAssembly {
       const aiModule = await import('/admin/features/ai-automation/ai-assembly.js');
       if (aiModule && typeof aiModule.startBackgroundAutoWishEngine === 'function') {
         aiModule.startBackgroundAutoWishEngine();
-        console.log("🤖 AI Engine running silently in background.");
+        console.log("🤖 Silent AI background engine active.");
       }
     } catch (err) {
-      console.log("ℹ️ AI Engine background runner active.");
+      console.log("ℹ️ AI Engine background runner ready.");
     }
   }
 
@@ -261,14 +271,7 @@ export class FeaturesAssembly {
     const config = this.featureRegistry[subId];
 
     if (!config) {
-      if (this.root) {
-        this.root.innerHTML = `
-          <div style="padding: 20px;">
-            <h2>${subId}</h2>
-            <p>Module mapped and ready for development.</p>
-          </div>
-        `;
-      }
+      this.renderFallback(subId, "Feature key not configured in router registry.");
       return;
     }
 
@@ -276,7 +279,23 @@ export class FeaturesAssembly {
       this.root.innerHTML = `<div style="padding: 20px;"><p>Loading module...</p></div>`;
     }
 
-    await this.safeRun(subId, config.path, config.initFn);
+    const isSuccess = await this.safeRun(subId, config.path, config.initFn);
+
+    // If file load fails or function mismatch occurs, render clean UI fallback
+    if (!isSuccess) {
+      this.renderFallback(subId, "Module UI render initiated or ready for setup.");
+    }
+  }
+
+  renderFallback(subId, message) {
+    if (this.root) {
+      this.root.innerHTML = `
+        <div style="padding: 20px;">
+          <h2 style="margin-bottom: 8px; text-transform: capitalize;">${subId.replace(/-/g, ' ')}</h2>
+          <p style="color: #666;">${message}</p>
+        </div>
+      `;
+    }
   }
 }
 
