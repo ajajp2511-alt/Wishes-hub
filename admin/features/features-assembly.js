@@ -1,161 +1,140 @@
-console.log("⚡ features-assembly.js file triggered!");
+console.log("⚡ features-assembly.js initialized with Lazy-Router & AI Engine!");
 
 export class FeaturesAssembly {
-    constructor() {
-        console.log("🚀 Booting Wishes Hub Admin System...");
-        this.bootSystem();
-    }
+  constructor() {
+    console.log("🚀 Booting Dynamic System Architecture...");
+    this.root = document.getElementById('dynamic-content-root');
+    this.loadedModules = new Map();
+    this.bootSystem();
+  }
 
-    async safeRun(name, importPath, initFns) {
-        try {
-            const module = await import(importPath);
-            if (!module) return null;
+  // 1. Feature Dynamic Path Registry Map (On-Demand Loading)
+  featureRegistry = {
+    'create-wish': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
+    'google-sheets-dashboard': { path: '/admin/features/google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
+    'ab-testing': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
+    'ai-automation': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
+    'analytics': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
+    'app-pwa-manager': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
+    'assets': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
+    'auth-security': { path: '/admin/features/auth-security/auth-assembly.js', initFn: 'init' },
+    'community-feedback': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
+    'campaigns-marketing': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
+    'compliance': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
+    'content-templates': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
+    'feature-flags-staging': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
+    'gamification-rewards': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
+    'health-monitor': { path: '/admin/features/health-monitor/health-assembly.js', initFn: 'init' },
+    'integrations': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
+    'link-manager': { path: '/admin/features/link-manager/link-assembly.js', initFn: 'init' },
+    'localization': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
+    'manage-wish': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
+    'marketplace-creators': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
+    'media-manager': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
+    'monetization': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
+    'notifications': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
+    'performance-cache': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
+    'price-plans': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
+    'reports': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
+    'responsive-layout': { path: '/admin/features/responsive-layout/responsive-assembly.js', initFn: 'init' },
+    'security-shield': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
+    'seo': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
+    'settings': { path: '/admin/features/settings/settings-assembly.js', initFn: 'init' },
+    'share-manager': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
+    'system-logs': { path: '/admin/features/system-logs/logs-assembly.js', initFn: 'init' },
+    'trending': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
+    'users-crm': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
+    'worker-analytics': { path: '/admin/features/worker-analytics/worker-assembly.js', initFn: 'init' }
+  };
 
-            if (Array.isArray(initFns)) {
-                for (const fnName of initFns) {
-                    if (typeof module[fnName] === 'function') {
-                        await module[fnName]();
-                    } else if (module.default && typeof module.default[fnName] === 'function') {
-                        await module.default[fnName]();
-                    }
-                }
-            } else if (typeof module[initFns] === 'function') {
-                await module[initFns]();
-            } else if (module.default && typeof module.default[initFns] === 'function') {
-                await module.default[initFns]();
-            }
+  async safeRun(name, importPath, initFn) {
+    try {
+      let module = this.loadedModules.get(name);
+      if (!module) {
+        module = await import(importPath);
+        this.loadedModules.set(name, module);
+      }
 
-            console.log(`✅ Loaded feature: [${name}]`);
-            return module;
-        } catch (err) {
-            console.warn(`⚠️ Error executing feature [${name}]:`, err.message);
-            return null;
+      if (module) {
+        if (typeof module[initFn] === 'function') {
+          await module[initFn]();
+        } else if (module.default && typeof module.default[initFn] === 'function') {
+          await module.default[initFn]();
+        } else if (typeof module.init === 'function') {
+          await module.init();
         }
+      }
+
+      console.log(`✅ Dynamically Executed Feature: [${name}]`);
+      return module;
+    } catch (err) {
+      console.warn(`⚠️ Error executing feature [${name}]:`, err.message);
+      return null;
+    }
+  }
+
+  async bootSystem() {
+    // Basic Welcome Screen Set up
+    if (this.root) {
+      this.root.innerHTML = `
+        <div style="padding: 20px;">
+          <h2 style="margin-bottom: 10px;">Welcome to Wishes Hub Admin</h2>
+          <p>Dashboard is live and listening for feature clicks...</p>
+        </div>
+      `;
     }
 
-    async bootSystem() {
-        const root = document.getElementById('dynamic-content-root');
+    // ⚡ ALWAYS RUN 1: Navigation Menu Core Boot (User interaction ke liye)
+    await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
 
-        if (root) {
-            root.innerHTML = `
-                <div style="padding: 20px;">
-                    <h2 style="margin-bottom: 10px;">Welcome to Wishes Hub Admin</h2>
-                    <p>Dashboard is live and ready!</p>
-                </div>
-            `;
-        }
+    // ⚡ ALWAYS RUN 2: Background AI Event & Wish Engine (Background me silently active)
+    this.startBackgroundAIEngine();
 
-        // Outlet module
-        await this.safeRun('outlet', '/admin/features/outlet/outlet-assembly.js', 'initOutlet');
+    // ⚡ TAP LISTENER: Menu item tap handle karna
+    document.addEventListener('menu-navigate', (e) => {
+      const subId = e.detail?.subId;
+      if (subId) {
+        this.loadFeatureOnTap(subId);
+      }
+    });
+  }
 
-        // Menu Navigation module
-        await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
-
-        // Google Sheets module
-        await this.safeRun('google-sheets', '/admin/features/google-sheets/sheets-assembly.js', 'initGoogleSheets');
-
-        // Create Wish module
-        await this.safeRun('create-wish', '/admin/features/create-wish/create-wish-assembly.js', 'init');
-
-        // A/B Testing module
-        await this.safeRun('ab-testing', '/admin/features/ab-testing/ab-assembly.js', 'init');
-
-        // AI Automation module
-        await this.safeRun('ai-automation', '/admin/features/ai-automation/ai-assembly.js', 'init');
-
-        // Analytics module
-        await this.safeRun('analytics', '/admin/features/analytics/analytics-assembly.js', 'init');
-
-        // App & PWA Manager module
-        await this.safeRun('app-pwa-manager', '/admin/features/app-pwa-manager/pwa-assembly.js', 'init');
-
-        // Assets module
-        await this.safeRun('assets', '/admin/features/assets/assets-assembly.js', 'init');
-
-        // Auth & Security module
-        await this.safeRun('auth-security', '/admin/features/auth-security/auth-assembly.js', 'init');
-
-        // Community Feedback module
-        await this.safeRun('community-feedback', '/admin/features/community-feedback/community-assembly.js', 'init');
-
-        // Campaigns & Marketing module
-        await this.safeRun('campaigns-marketing', '/admin/features/campaigns-marketing/marketing-assembly.js', 'init');
-
-        // Compliance module
-        await this.safeRun('compliance', '/admin/features/compliance/compliance-assembly.js', 'init');
-
-        // Content Templates module
-        await this.safeRun('content-templates', '/admin/features/content-templates/content-assembly.js', 'init');
-
-        // Feature Flags Staging module
-        await this.safeRun('feature-flags-staging', '/admin/features/feature-flags-staging/feature-flags-assembly.js', 'init');
-
-        // Gamification Rewards module
-        await this.safeRun('gamification-rewards', '/admin/features/gamification-rewards/gamification-assembly.js', 'init');
-
-        // Health Monitor module
-        await this.safeRun('health-monitor', '/admin/features/health-monitor/health-assembly.js', 'init');
-
-        // Integrations module
-        await this.safeRun('integrations', '/admin/features/integrations/integration-assembly.js', 'init');
-
-        // Link Manager module
-        await this.safeRun('link-manager', '/admin/features/link-manager/link-assembly.js', 'init');
-
-        // Localization module
-        await this.safeRun('localization', '/admin/features/localization/loc-assembly.js', 'init');
-
-        // Manage Wish module
-        await this.safeRun('manage-wish', '/admin/features/manage-wish/manage-wish-assembly.js', 'init');
-
-        // Marketplace Creators module
-        await this.safeRun('marketplace-creators', '/admin/features/marketplace-creators/marketplace-assembly.js', 'init');
-
-        // Media Manager module
-        await this.safeRun('media-manager', '/admin/features/media-manager/media-assembly.js', 'init');
-
-        // Monetization module
-        await this.safeRun('monetization', '/admin/features/monetization/monetization-assembly.js', 'init');
-
-        // Notifications module
-        await this.safeRun('notifications', '/admin/features/notifications/notifications-assembly.js', 'init');
-
-        // Performance Cache module
-        await this.safeRun('performance-cache', '/admin/features/performance-cache/performance-assembly.js', 'init');
-
-        // Price Plans module
-        await this.safeRun('price-plans', '/admin/features/price-plans/pricing-assembly.js', 'init');
-
-        // Reports module
-        await this.safeRun('reports', '/admin/features/reports/reports-assembly.js', 'init');
-
-        // Responsive Layout module
-        await this.safeRun('responsive-layout', '/admin/features/responsive-layout/responsive-assembly.js', 'init');
-
-        // Security Shield module
-        await this.safeRun('security-shield', '/admin/features/security-shield/security-assembly.js', 'init');
-
-        // SEO module
-        await this.safeRun('seo', '/admin/features/seo/seo-assembly.js', 'init');
-
-        // Settings module
-        await this.safeRun('settings', '/admin/features/settings/settings-assembly.js', 'init');
-
-        // Share Manager module
-        await this.safeRun('share-manager', '/admin/features/share-manager/share-assembly.js', 'init');
-
-        // System Logs module
-        await this.safeRun('system-logs', '/admin/features/system-logs/logs-assembly.js', 'init');
-
-        // Trending module
-        await this.safeRun('trending', '/admin/features/trending/trending-assembly.js', 'init');
-
-        // Users CRM module
-        await this.safeRun('users-crm', '/admin/features/users-crm/users-assembly.js', 'init');
-
-        // Worker Analytics module
-        await this.safeRun('worker-analytics', '/admin/features/worker-analytics/worker-assembly.js', 'init');
+  // Background AI System Workflow
+  async startBackgroundAIEngine() {
+    try {
+      const aiModule = await import('/admin/features/ai-automation/ai-assembly.js');
+      if (aiModule && typeof aiModule.startBackgroundAutoWishEngine === 'function') {
+        aiModule.startBackgroundAutoWishEngine();
+        console.log("🤖 AI Auto-Event & Wish Generator running silently in background!");
+      }
+    } catch (err) {
+      console.log("ℹ️ AI Engine background runner setup ready for configuration.");
     }
+  }
+
+  // User Click Handler (Single Feature Loading)
+  async loadFeatureOnTap(subId) {
+    const config = this.featureRegistry[subId];
+
+    if (!config) {
+      if (this.root) {
+        this.root.innerHTML = `
+          <div style="padding: 20px;">
+            <h2>${subId}</h2>
+            <p>Module mapped and ready for development.</p>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    if (this.root) {
+      this.root.innerHTML = `<div style="padding: 20px;"><p>Loading module...</p></div>`;
+    }
+
+    // Clear dynamic UI container and load ONLY clicked module
+    await this.safeRun(subId, config.path, config.initFn);
+  }
 }
 
 new FeaturesAssembly();
