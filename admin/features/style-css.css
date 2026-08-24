@@ -3,7 +3,7 @@
    ========================================== */
 
 /* 1. Responsive Layout CSS */
-@import url('./responsive-layut/assets/responsive-css.css');
+@import url('./responsive-layout/assets/responsive-css.css');
 
 /* 2. Menu Navigation CSS */
 @import url('./menu-navigation/assets/style-css.css');
