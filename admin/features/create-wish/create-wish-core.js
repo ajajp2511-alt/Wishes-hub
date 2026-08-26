@@ -12,39 +12,24 @@ export class CreateWishCore {
     this.isSubmitting = false;
   }
 
-  /**
-   * Category change listener & Reset Form Schema
-   */
   setCategory(category) {
-    if (!Object.values(WISH_CATEGORIES).includes(category)) {
-      throw new Error(`Invalid Wish Category: ${category}`);
-    }
     this.currentCategory = category;
     this.formData = { category: category };
     console.log(`[CreateWishCore] Category switched to: ${category}`);
-    return CATEGORY_SCHEMAS[category];
+    return CATEGORY_SCHEMAS ? CATEGORY_SCHEMAS[category] : {};
   }
 
-  /**
-   * Handle Dynamic Field Inputs
-   */
   updateFormField(fieldName, value) {
     this.formData[fieldName] = value;
   }
 
-  /**
-   * Form Validation Engine
-   */
   validateForm() {
-    const requiredSchema = CATEGORY_SCHEMAS[this.currentCategory];
     const missingFields = [];
 
-    // Basic required check for Title
     if (!this.formData.Title || this.formData.Title.trim() === '') {
       missingFields.push('Title');
     }
 
-    // Category-specific validations
     if (this.currentCategory === WISH_CATEGORIES.TEXT && !this.formData.Content) {
       missingFields.push('Content');
     } else if (this.currentCategory === WISH_CATEGORIES.IMAGE && !this.formData.Image_CDN_URL) {
@@ -59,9 +44,6 @@ export class CreateWishCore {
     };
   }
 
-  /**
-   * Generate Payload & Submit Wish to Backend Sheet Proxy
-   */
   async submitWish(customSheetId = null) {
     const validation = this.validateForm();
     if (!validation.isValid) {
@@ -72,9 +54,7 @@ export class CreateWishCore {
     }
 
     this.isSubmitting = true;
-
-    // Determine target sheet ID
-    const targetSheetId = customSheetId || SHEET_CONFIG.categorySheets[this.currentCategory];
+    const targetSheetId = customSheetId || (SHEET_CONFIG?.categorySheets ? SHEET_CONFIG.categorySheets[this.currentCategory] : null);
 
     const wishId = `WISH_${Date.now()}`;
     const payload = {
@@ -90,7 +70,6 @@ export class CreateWishCore {
     };
 
     try {
-      // Backend Serverless Function API Call
       const response = await fetch('/api/sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
