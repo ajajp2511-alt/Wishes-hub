@@ -8,9 +8,6 @@ export class CreateWishCDN {
     this.uploadEndpoint = '/api/cdn-upload';
   }
 
-  /**
-   * Compress Image File before Uploading
-   */
   async compressImage(file, maxWidth = 1200, quality = 0.8) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -45,14 +42,10 @@ export class CreateWishCDN {
     });
   }
 
-  /**
-   * Upload Media File to CDN Serverless API
-   */
   async uploadMedia(file, folder = 'wishes_media') {
     try {
       let fileToUpload = file;
 
-      // Auto-compress if image
       if (file.type.startsWith('image/')) {
         fileToUpload = await this.compressImage(file);
       }
