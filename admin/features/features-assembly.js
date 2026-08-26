@@ -203,16 +203,16 @@ export class FeaturesAssembly {
 
       if (!module) return false;
 
-      // 1. Direct function export (e.g., export async function init())
+      // 1. Direct function export (e.g., export async function init(containerId, subId))
       if (typeof module[initFn] === 'function') {
-        await module[initFn]('dynamic-content-root');
+        await module[initFn]('dynamic-content-root', name);
         return true;
       }
 
-      // 2. Exported Class Instance (e.g., export const usersAssemblyInstance = new UsersAssembly())
+      // 2. Exported Class Instance (e.g., createWishAssemblyInstance.init(containerId, subId))
       for (const key of Object.keys(module)) {
         if (module[key] && typeof module[key][initFn] === 'function') {
-          await module[key][initFn]('dynamic-content-root');
+          await module[key][initFn]('dynamic-content-root', name);
           return true;
         }
       }
@@ -220,18 +220,18 @@ export class FeaturesAssembly {
       // 3. Default Class / Function Export
       if (module.default) {
         if (typeof module.default[initFn] === 'function') {
-          await module.default[initFn]('dynamic-content-root');
+          await module.default[initFn]('dynamic-content-root', name);
           return true;
         }
         if (typeof module.default === 'function') {
           try {
             const instance = new module.default();
             if (typeof instance[initFn] === 'function') {
-              await instance[initFn]('dynamic-content-root');
+              await instance[initFn]('dynamic-content-root', name);
               return true;
             }
           } catch (e) {
-            await module.default('dynamic-content-root');
+            await module.default('dynamic-content-root', name);
             return true;
           }
         }
