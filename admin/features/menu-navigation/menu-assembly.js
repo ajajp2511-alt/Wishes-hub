@@ -108,14 +108,20 @@ export class MenuAssembly {
       subItem.addEventListener('click', (e) => {
         e.stopPropagation();
         const subId = e.currentTarget.dataset.subId;
+        
+        // 1. Core State update karein
         this.core.setActiveSubItem(subId);
+
+        // 2. PEHLE Event Dispatch karein router ke liye
+        console.log("🌐 Emitting menu-navigate for:", subId);
+        document.dispatchEvent(new CustomEvent('menu-navigate', {
+          detail: { subId: subId },
+          bubbles: true
+        }));
+
+        // 3. UI update karein
         this.render();
         this.bindEvents();
-
-        // ⚡ DECOUPLED EVENT DISPATCH: Router ko event emit kar rahe hain
-        document.dispatchEvent(new CustomEvent('menu-navigate', {
-          detail: { subId: subId }
-        }));
       });
     });
   }
