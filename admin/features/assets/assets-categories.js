@@ -53,7 +53,8 @@ export class AssetsCategories {
           tags: ['#effect', '#particles']
         };
 
-      case ASSET_CATEGORIES.TYPOGRAPHY:
+      case ASSET_CATEGORIES.FONTS:
+      case 'typography':
         return {
           id: '',
           fontName: '',
@@ -118,10 +119,11 @@ export class AssetsCategories {
           url: item.audioUrl
         };
 
-      case ASSET_CATEGORIES.TYPOGRAPHY:
+      case ASSET_CATEGORIES.FONTS:
+      case 'typography':
         return {
           title: item.fontName || item.id,
-          subText: `Font Family: ${item.fontFamily}`,
+          subText: `Font Family: ${item.fontFamily || 'Sans-Serif'}`,
           previewType: 'text',
           sample: item.sampleText || 'Sample Text'
         };
@@ -139,8 +141,8 @@ export class AssetsCategories {
           title: item.title || item.cardName || item.frameName || item.stickerName || item.id,
           subText: item.tags ? item.tags.join(', ') : '',
           previewType: 'image',
-          url: item.imageUrl || item.previewImageUrl || item.frameImageUrl
+          url: item.imageUrl || item.previewImageUrl || item.frameImageUrl || item.url
         };
     }
   }
-            }
+  }
