@@ -3,7 +3,13 @@
  * Path: admin/features/create-wish/modules/assembly-ui-template.js
  */
 
+import { categoriesConfig } from '../category-data.js';
+
 export function renderAssemblyLayout(container) {
+  const categoryKeys = Object.keys(categoriesConfig);
+  const firstCategory = categoryKeys[0];
+  const firstSubCategories = categoriesConfig[firstCategory] || [];
+
   container.innerHTML = `
     <div class="create-wish-layout">
       <div class="form-section">
@@ -15,12 +21,26 @@ export function renderAssemblyLayout(container) {
         </div>
 
         <div class="form-group">
-          <label>Category</label>
-          <select id="wish-category-select">
+          <label>Wish Format / Type</label>
+          <select id="wish-format-type-select">
             <option value="create-text">Text Wish</option>
             <option value="create-image">Image Wish</option>
             <option value="create-audio">Audio Wish</option>
             <option value="create-interactive">Interactive Wish</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Occasion / Category</label>
+          <select id="wish-main-category-select">
+            ${categoryKeys.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Sub-Category / Target Audience</label>
+          <select id="wish-sub-category-select">
+            ${firstSubCategories.map(sub => `<option value="${sub}">${sub}</option>`).join('')}
           </select>
         </div>
 
