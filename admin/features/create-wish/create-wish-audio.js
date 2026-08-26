@@ -10,9 +10,6 @@ export class CreateWishAudio {
     this.recordedAudioBlob = null;
   }
 
-  /**
-   * Start Voiceover Recording
-   */
   async startRecording() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -33,9 +30,6 @@ export class CreateWishAudio {
     }
   }
 
-  /**
-   * Stop Voiceover Recording
-   */
   stopRecording() {
     return new Promise((resolve) => {
       if (!this.mediaRecorder) {
@@ -57,9 +51,6 @@ export class CreateWishAudio {
     });
   }
 
-  /**
-   * Attach BGM Track
-   */
   attachBGM(bgmTrackUrl, volume = 0.5) {
     return {
       bgmUrl: bgmTrackUrl,
