@@ -5,11 +5,33 @@
 
 import { createWishCoreInstance } from '../create-wish-core.js';
 import { createWishAIInstance } from '../create-wish-ai.js';
+import { categoriesConfig } from '../category-data.js';
 
 export function bindAssemblyEvents({ onCategoryChange, onPreviewUpdate }) {
-  // Category Dropdown Selection
-  document.getElementById('wish-category-select')?.addEventListener('change', (e) => {
+  // Format Type Switcher (Text, Image, Audio, Interactive)
+  document.getElementById('wish-format-type-select')?.addEventListener('change', (e) => {
     onCategoryChange(e.target.value);
+  });
+
+  // Main Category Dynamic Selector
+  document.getElementById('wish-main-category-select')?.addEventListener('change', (e) => {
+    const selectedMainCat = e.target.value;
+    createWishCoreInstance.updateFormField('MainCategory', selectedMainCat);
+    
+    // Update Sub-category Dropdown Options
+    const subCatSelect = document.getElementById('wish-sub-category-select');
+    if (subCatSelect) {
+      const subCategories = categoriesConfig[selectedMainCat] || [];
+      subCatSelect.innerHTML = subCategories.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+      if (subCategories.length > 0) {
+        createWishCoreInstance.updateFormField('SubCategory', subCategories[0]);
+      }
+    }
+  });
+
+  // Sub-Category Selector
+  document.getElementById('wish-sub-category-select')?.addEventListener('change', (e) => {
+    createWishCoreInstance.updateFormField('SubCategory', e.target.value);
   });
 
   // Title Live Sync
@@ -33,7 +55,10 @@ export function bindAssemblyEvents({ onCategoryChange, onPreviewUpdate }) {
 
   // AI Content Generator Action
   document.getElementById('btn-ai-generate')?.addEventListener('click', async () => {
-    const result = await createWishAIInstance.generateContent('Birthday', 'Emotional');
+    const mainCat = document.getElementById('wish-main-category-select')?.value || 'Birthday';
+    const subCat = document.getElementById('wish-sub-category-select')?.value || 'Friend';
+    
+    const result = await createWishAIInstance.generateContent(mainCat, subCat);
     if (result.success) {
       const titleInput = document.getElementById('input-title');
       const contentInput = document.getElementById('input-content');
