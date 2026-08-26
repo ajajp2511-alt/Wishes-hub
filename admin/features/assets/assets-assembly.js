@@ -6,29 +6,45 @@
 import { CATEGORY_PRESETS, ASSET_CATEGORIES } from './assets-config.js';
 import { assetsCoreInstance } from './assets-core.js';
 import { AssetsCategories } from './assets-categories.js';
-import { AssetsUploader } from './assets-uploader.js';
 
 export class AssetsAssembly {
   constructor() {
     this.container = null;
+    
+    // Mapping subId keys from features-assembly.js to internal ASSET_CATEGORIES
+    this.subIdMap = {
+      'asset-animations': ASSET_CATEGORIES.ANIMATIONS || 'animations',
+      'asset-songs': ASSET_CATEGORIES.SONGS || 'songs',
+      'asset-invitations': ASSET_CATEGORIES.INVITATIONS || 'invitations',
+      'asset-particles': ASSET_CATEGORIES.PARTICLES || 'particles',
+      'asset-fonts': ASSET_CATEGORIES.FONTS || 'fonts',
+      'asset-frames': ASSET_CATEGORIES.FRAMES || 'frames',
+      'asset-stickers': ASSET_CATEGORIES.STICKERS || 'stickers',
+      'asset-palettes': ASSET_CATEGORIES.PALETTES || 'palettes'
+    };
   }
 
   /**
    * Mount Feature Interface to Root Element
+   * @param {string} rootId - Dynamic root container element ID
+   * @param {string} subId - Feature router route key (e.g. 'asset-songs')
    */
-  async init(rootId) {
+  async init(rootId = 'dynamic-content-root', subId = 'asset-animations') {
     this.container = document.getElementById(rootId);
     if (!this.container) return;
 
-    this.renderSkeleton();
+    // Determine starting category based on active sidebar route subId
+    const targetCategory = this.subIdMap[subId] || ASSET_CATEGORIES.ANIMATIONS || 'animations';
+
+    this.renderSkeleton(targetCategory);
     this.attachEventListeners();
-    await this.switchCategory(ASSET_CATEGORIES.ANIMATIONS);
+    await this.switchCategory(targetCategory);
   }
 
   /**
    * Render Base UI Skeleton
    */
-  renderSkeleton() {
+  renderSkeleton(initialCategory) {
     this.container.innerHTML = `
       <div class="assets-hub-layout">
         <!-- Sidebar Navigation -->
@@ -36,8 +52,8 @@ export class AssetsAssembly {
           <h3 class="sidebar-title">Asset & Inventory</h3>
           <ul class="category-nav-list">
             ${CATEGORY_PRESETS.map(cat => `
-              <li class="nav-item-btn ${cat.id === ASSET_CATEGORIES.ANIMATIONS ? 'active' : ''}" data-category="${cat.id}">
-                <span class="icon">${cat.icon}</span>
+              <li class="nav-item-btn ${cat.id === initialCategory ? 'active' : ''}" data-category="${cat.id}">
+                <span class="icon">${cat.icon || '📦'}</span>
                 <span class="label">${cat.label}</span>
               </li>
             `).join('')}
@@ -86,14 +102,19 @@ export class AssetsAssembly {
    * Switch Active Category
    */
   async switchCategory(categoryId) {
-    document.querySelectorAll('.nav-item-btn').forEach(btn => {
+    this.container.querySelectorAll('.nav-item-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.category === categoryId);
     });
 
-    const gridView = document.getElementById('asset-grid-view');
-    gridView.innerHTML = `<div class="loading-spinner">Fetching ${categoryId}...</div>`;
+    const gridView = this.container.querySelector('#asset-grid-view');
+    if (gridView) {
+      gridView.innerHTML = `<div class="loading-spinner">Fetching ${categoryId}...</div>`;
+    }
 
-    await assetsCoreInstance.fetchAssets(categoryId);
+    if (assetsCoreInstance && typeof assetsCoreInstance.fetchAssets === 'function') {
+      await assetsCoreInstance.fetchAssets(categoryId);
+    }
+    
     this.renderGrid();
   }
 
@@ -101,10 +122,14 @@ export class AssetsAssembly {
    * Render Items Grid View
    */
   renderGrid() {
-    const gridView = document.getElementById('asset-grid-view');
-    const paginated = assetsCoreInstance.getPaginatedAssets();
+    const gridView = this.container.querySelector('#asset-grid-view');
+    if (!gridView) return;
 
-    if (paginated.items.length === 0) {
+    const paginated = assetsCoreInstance && typeof assetsCoreInstance.getPaginatedAssets === 'function'
+      ? assetsCoreInstance.getPaginatedAssets()
+      : { items: [] };
+
+    if (!paginated.items || paginated.items.length === 0) {
       gridView.innerHTML = `<div class="empty-state">No assets found in this category.</div>`;
       return;
     }
@@ -144,11 +169,11 @@ export class AssetsAssembly {
     if (formatted.previewType === 'colors') {
       return `
         <div class="palette-swatch-box">
-          ${formatted.colors.map(c => `<span style="background-color: ${c}"></span>`).join('')}
+          ${(formatted.colors || []).map(c => `<span style="background-color: ${c}"></span>`).join('')}
         </div>
       `;
     }
-    return `<div class="generic-preview">📦 ${formatted.previewType.toUpperCase()}</div>`;
+    return `<div class="generic-preview">📦 ${(formatted.previewType || 'ASSET').toUpperCase()}</div>`;
   }
 
   /**
@@ -167,8 +192,12 @@ export class AssetsAssembly {
     const searchInput = this.container.querySelector('#asset-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
-        assetsCoreInstance.searchQuery = e.target.value;
-        assetsCoreInstance.applyFilters();
+        if (assetsCoreInstance) {
+          assetsCoreInstance.searchQuery = e.target.value;
+          if (typeof assetsCoreInstance.applyFilters === 'function') {
+            assetsCoreInstance.applyFilters();
+          }
+        }
         this.renderGrid();
       });
     }
@@ -178,9 +207,15 @@ export class AssetsAssembly {
     const closeModalBtn = this.container.querySelector('#btn-close-modal');
     const modal = this.container.querySelector('#upload-modal');
 
-    if (openModalBtn) openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-    if (closeModalBtn) closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    if (openModalBtn && modal) openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    if (closeModalBtn && modal) closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
   }
 }
 
+// Global exported instance
 export const assetsAssemblyInstance = new AssetsAssembly();
+
+// Universal export function for features-assembly router compatibility
+export async function init(rootId, subId) {
+  await assetsAssemblyInstance.init(rootId, subId);
+  }
