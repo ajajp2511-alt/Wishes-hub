@@ -8,6 +8,9 @@
 /* 2. Menu Navigation CSS */
 @import url('./menu-navigation/assets/style-css.css');
 
+/* 3. Create Wish Feature CSS */
+@import url('./features/create-wish/assets/create-wish.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
