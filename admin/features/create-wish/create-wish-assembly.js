@@ -11,6 +11,17 @@ import { createWishInteractiveInstance } from './create-wish-interactive.js';
 import { createWishAudioInstance } from './create-wish-audio.js';
 import { createWishCDNInstance } from './create-wish-cdn.js';
 
+// SubId to Wish Category Mapping Matrix
+const SUBID_TO_CATEGORY_MAP = {
+  'create-text': WISH_CATEGORIES.TEXT || 'text',
+  'create-image': WISH_CATEGORIES.IMAGE || 'image',
+  'create-audio': WISH_CATEGORIES.AUDIO || 'audio',
+  'create-video': WISH_CATEGORIES.VIDEO || 'video',
+  'create-story': WISH_CATEGORIES.STORY || 'story',
+  'create-interactive': WISH_CATEGORIES.INTERACTIVE || 'interactive',
+  'create-ai': WISH_CATEGORIES.AI || 'ai'
+};
+
 export class CreateWishAssembly {
   constructor() {
     this.previewInstance = null;
@@ -19,24 +30,31 @@ export class CreateWishAssembly {
 
   /**
    * Initialize and Bind All UI Elements
+   * @param {string} containerId 
+   * @param {string} subId - Router se aane wala sub-menu ID (e.g. 'create-image', 'create-audio')
    */
-  init(containerId = 'create-wish-module-root') {
+  init(containerId = 'create-wish-module-root', subId = 'create-text') {
     const root = document.getElementById(containerId);
     if (!root) {
       console.error(`[CreateWishAssembly] Root element #${containerId} not found.`);
       return;
     }
 
+    // Dynamic Category Detection based on subId
+    const targetCategory = SUBID_TO_CATEGORY_MAP[subId] || WISH_CATEGORIES.TEXT;
+
     // Render Basic Layout Structure
     root.innerHTML = `
       <div class="create-wish-layout">
         <div class="form-section">
-          <h2>Create New Wish</h2>
+          <h2>Create New Wish (${targetCategory.toUpperCase()})</h2>
           
           <div class="form-group">
             <label>Category</label>
             <select id="wish-category-select">
-              ${Object.values(WISH_CATEGORIES).map(cat => `<option value="${cat}">${cat.toUpperCase()}</option>`).join('')}
+              ${Object.values(WISH_CATEGORIES).map(cat => 
+                `<option value="${cat}" ${cat === targetCategory ? 'selected' : ''}>${cat.toUpperCase()}</option>`
+              ).join('')}
             </select>
           </div>
 
@@ -64,8 +82,8 @@ export class CreateWishAssembly {
     // Bind Event Listeners
     this.bindEvents();
     
-    // Initial Render
-    this.renderCategoryFields(WISH_CATEGORIES.TEXT);
+    // Target Category Render
+    this.renderCategoryFields(targetCategory);
   }
 
   /**
@@ -97,6 +115,19 @@ export class CreateWishAssembly {
         <div class="form-group">
           <label>Upload Image</label>
           <input type="file" id="input-image-file" accept="image/*" />
+        </div>
+      `;
+    }
+
+    if (category === WISH_CATEGORIES.AUDIO) {
+      html += `
+        <div class="form-group">
+          <label>Upload Audio File (.mp3)</label>
+          <input type="file" id="input-audio-file" accept="audio/*" />
+        </div>
+        <div class="form-group">
+          <label>Audio Overlay Text</label>
+          <textarea id="input-content" rows="2" placeholder="Optional text with audio..."></textarea>
         </div>
       `;
     }
@@ -188,3 +219,8 @@ export class CreateWishAssembly {
 }
 
 export const createWishAssemblyInstance = new CreateWishAssembly();
+
+// Router Integration Export Function
+export function init(containerId = 'dynamic-content-root', subId = 'create-text') {
+  createWishAssemblyInstance.init(containerId, subId);
+                            }
