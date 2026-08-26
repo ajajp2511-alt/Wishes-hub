@@ -8,7 +8,7 @@ export const ASSET_CATEGORIES = {
   SONGS: 'songs',
   INVITATIONS: 'invitations',
   PARTICLES: 'particles',
-  TYPOGRAPHY: 'typography',
+  FONTS: 'fonts',
   FRAMES: 'frames',
   STICKERS: 'stickers',
   PALETTES: 'palettes'
@@ -39,7 +39,7 @@ export const CATEGORY_PRESETS = [
   { id: 'songs', label: 'Song ID List', icon: '🎵' },
   { id: 'invitations', label: 'Invitation Card List', icon: '💌' },
   { id: 'particles', label: 'Particle & Effect List', icon: '✨' },
-  { id: 'typography', label: 'Typography & Font List', icon: '✍️' },
+  { id: 'fonts', label: 'Typography & Font List', icon: '✍️' },
   { id: 'frames', label: 'Frame & Border List', icon: '🖼️' },
   { id: 'stickers', label: 'Sticker & Emoji List', icon: '🎨' },
   { id: 'palettes', label: 'Color Palette Presets', icon: '🎨' }
