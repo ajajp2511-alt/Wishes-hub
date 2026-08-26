@@ -8,20 +8,12 @@ export class CreateWishAI {
     this.apiEndpoint = '/api/ai-generator';
   }
 
-  /**
-   * Generate Wish Content based on Occasion and Tone
-   */
   async generateContent(occasion, tone = 'Emotional', targetLang = 'hi') {
     try {
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'generate_wish',
-          occasion,
-          tone,
-          targetLang
-        })
+        body: JSON.stringify({ action: 'generate_wish', occasion, tone, targetLang })
       });
 
       const data = await response.json();
@@ -39,9 +31,6 @@ export class CreateWishAI {
     }
   }
 
-  /**
-   * Auto-Translate text into target language
-   */
   async translateText(text, targetLang) {
     if (!text || text.trim() === '') return { success: false, message: 'Text is empty' };
 
@@ -49,11 +38,7 @@ export class CreateWishAI {
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'translate',
-          text,
-          targetLang
-        })
+        body: JSON.stringify({ action: 'translate', text, targetLang })
       });
 
       const data = await response.json();
