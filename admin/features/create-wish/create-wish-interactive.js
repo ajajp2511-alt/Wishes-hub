@@ -13,9 +13,6 @@ export class CreateWishInteractive {
     };
   }
 
-  /**
-   * Interactive Widget Configuration Builder
-   */
   buildWidgetConfig(type, options = {}) {
     switch (type) {
       case this.widgetTypes.SCRATCH_CARD:
@@ -51,9 +48,6 @@ export class CreateWishInteractive {
     }
   }
 
-  /**
-   * Set Security PIN Lock for Private Wishes
-   */
   setupPinLock(pin) {
     if (!pin || pin.toString().length < 4) {
       return { success: false, message: 'PIN must be at least 4 digits.' };
