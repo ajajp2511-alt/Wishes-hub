@@ -1,98 +1,75 @@
 /**
- * Create Wish Feature - Modular Entry Assembly
- * Path: admin/features/create-wish/create-wish-assembly.js
+ * Manage Wish Feature - Modular Entry Assembly
+ * Path: admin/features/manage-wish/manage-wish-assembly.js
  */
 
-import { WISH_CATEGORIES } from './create-wish-config.js';
-import { createWishCoreInstance } from './create-wish-core.js';
-import { CreateWishPreview } from './create-wish-preview.js';
-import { renderAssemblyLayout } from './modules/assembly-ui-template.js';
-import { bindAssemblyEvents } from './modules/assembly-event-manager.js';
+import { manageWishCoreInstance } from './manage-wish-core.js';
+import { renderManageWishLayout } from './modules/manage-wish-layout.js';
 
-import { TextWishModule } from './modules/text-wish-module.js';
-import { ImageWishModule } from './modules/image-wish-module.js';
-import { AudioWishModule } from './modules/audio-wish-module.js';
-import { InteractiveWishModule } from './modules/interactive-wish-module.js';
+import { AllWishesModule } from './modules/all-wishes-module.js';
+import { CategoriesWishModule } from './modules/categories-wish-module.js';
+import { TemplatesWishModule } from './modules/templates-wish-module.js';
 
+// MODULE REGISTRY (Exact create-wish wala pattern)
 const MODULE_REGISTRY = {
-  'text': TextWishModule,
-  'create-text': TextWishModule,
-  'image': ImageWishModule,
-  'create-image': ImageWishModule,
-  'audio': AudioWishModule,
-  'create-audio': AudioWishModule,
-  'interactive': InteractiveWishModule,
-  'create-interactive': InteractiveWishModule
+  'wishes-all': AllWishesModule,
+  'wishes-categories': CategoriesWishModule,
+  'wishes-templates': TemplatesWishModule,
+  'manage-wish': AllWishesModule
 };
 
-export class CreateWishAssembly {
+export class ManageWishAssembly {
   constructor() {
     this.currentModule = null;
-    this.previewInstance = null;
   }
 
-  init(containerId = 'dynamic-content-root', subId = 'create-text') {
+  init(containerId = 'outlet-root', payload = 'wishes-all') {
+    // Router chahe object bhele ({ subId: 'wishes-all' }) ya direct string, subId extraction:
+    const subId = typeof payload === 'object' && payload !== null 
+      ? (payload.subId || payload.activeSubId || 'wishes-all') 
+      : payload;
+
     const root = document.getElementById(containerId);
     if (!root) return;
 
-    // 1. Render Base Layout
-    renderAssemblyLayout(root);
+    // 1. Render Base Layout (Navbar/Header controls if present)
+    if (typeof renderManageWishLayout === 'function') {
+      renderManageWishLayout(root);
+    }
 
-    // 2. Initialize Preview Sandbox
-    this.previewInstance = new CreateWishPreview('wish-staging-container');
-
-    // 3. Sync Select Dropdown
-    const select = document.getElementById('wish-category-select');
-    if (select) select.value = subId;
-
-    // 4. Load Target Module
-    this.loadModule(subId);
-
-    // 5. Attach Events
-    bindAssemblyEvents({
-      onCategoryChange: (newSubId) => this.loadModule(newSubId),
-      onPreviewUpdate: (viewMode) => {
-        if (viewMode) this.previewInstance.setViewMode(viewMode);
-        this.triggerPreviewUpdate();
-      }
-    });
+    // 2. Target Container me module load karein
+    this.loadModule(subId, root);
   }
 
-  loadModule(subId) {
-    const moduleContainer = document.getElementById('module-render-container');
-    if (!moduleContainer) return;
+  loadModule(subId, rootElement) {
+    const renderTarget = document.getElementById('manage-wish-render-container') || rootElement;
 
-    // Clear previous DOM
-    moduleContainer.innerHTML = '';
+    // Clean Previous View
+    renderTarget.innerHTML = '';
 
-    // Core State Reset
-    const categoryKey = subId.replace('create-', '');
-    const validCategory = WISH_CATEGORIES[categoryKey.toUpperCase()] || WISH_CATEGORIES.TEXT;
-    createWishCoreInstance.setCategory(validCategory);
+    // Core State Sync
+    if (manageWishCoreInstance && typeof manageWishCoreInstance.setActiveTab === 'function') {
+      manageWishCoreInstance.setActiveTab(subId);
+    }
 
-    // Mount Module
-    const ModuleClass = MODULE_REGISTRY[subId] || TextWishModule;
+    // Dynamic Module Mounting
+    const ModuleClass = MODULE_REGISTRY[subId] || AllWishesModule;
     this.currentModule = new ModuleClass();
-    this.currentModule.render(moduleContainer);
+    this.currentModule.render(renderTarget);
 
-    // Bind Module Events
-    this.currentModule.bindEvents((data) => {
-      Object.keys(data).forEach((key) => createWishCoreInstance.updateFormField(key, data[key]));
-      this.triggerPreviewUpdate();
-    });
-
-    this.triggerPreviewUpdate();
-  }
-
-  triggerPreviewUpdate() {
-    if (this.previewInstance) {
-      this.previewInstance.renderPreview(createWishCoreInstance.formData);
+    // Bind Sub-Module Events
+    if (typeof this.currentModule.bindEvents === 'function') {
+      this.currentModule.bindEvents((data) => {
+        if (manageWishCoreInstance && typeof manageWishCoreInstance.updateState === 'function') {
+          manageWishCoreInstance.updateState(data);
+        }
+      });
     }
   }
 }
 
-export const createWishAssemblyInstance = new CreateWishAssembly();
+export const manageWishAssemblyInstance = new ManageWishAssembly();
 
-export function init(containerId = 'dynamic-content-root', subId = 'create-text') {
-  createWishAssemblyInstance.init(containerId, subId);
+export function init(containerId = 'outlet-root', payload = 'wishes-all') {
+  manageWishAssemblyInstance.init(containerId, payload);
 }
