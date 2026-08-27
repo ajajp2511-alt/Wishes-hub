@@ -52,11 +52,27 @@ export class AssetsCore {
    * Filter assets by Search Query, Tag, and Category
    */
   applyFilters() {
+    const q = this.searchQuery.toLowerCase().trim();
+
     this.filteredAssets = this.assetsList.filter(asset => {
       const matchesCategory = !this.selectedCategory || asset.category === this.selectedCategory;
-      const matchesSearch = !this.searchQuery || 
-        (asset.title && asset.title.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
-        (asset.id && asset.id.toLowerCase().includes(this.searchQuery.toLowerCase()));
+      
+      // Universal Name Resolver across all sub-module schemas
+      const assetTitle = (
+        asset.title || 
+        asset.songName || 
+        asset.fontName || 
+        asset.cardName || 
+        asset.frameName || 
+        asset.stickerName || 
+        asset.effectName || 
+        asset.paletteName || 
+        ''
+      ).toLowerCase();
+
+      const assetId = (asset.id || '').toLowerCase();
+      const matchesSearch = !q || assetTitle.includes(q) || assetId.includes(q);
+
       const matchesTag = this.selectedTag === 'All' || (asset.tags && asset.tags.includes(this.selectedTag));
 
       return matchesCategory && matchesSearch && matchesTag;
