@@ -5,7 +5,16 @@
 
 import { CATEGORY_PRESETS, ASSET_CATEGORIES } from './assets-config.js';
 import { assetsCoreInstance } from './assets-core.js';
-import { AssetsCategories } from './assets-categories.js';
+
+// Importing Sub-Modules directly
+import { AnimationAssetModule } from './modules/animation-asset-module.js';
+import { AudioAssetModule } from './modules/audio-asset-module.js';
+import { InvitationAssetModule } from './modules/invitation-asset-module.js';
+import { ParticleAssetModule } from './modules/particle-asset-module.js';
+import { FontAssetModule } from './modules/font-asset-module.js';
+import { FrameAssetModule } from './modules/frame-asset-module.js';
+import { StickerAssetModule } from './modules/sticker-asset-module.js';
+import { PaletteAssetModule } from './modules/palette-asset-module.js';
 
 export class AssetsAssembly {
   constructor() {
@@ -119,7 +128,7 @@ export class AssetsAssembly {
   }
 
   /**
-   * Render Items Grid View
+   * Render Items Grid View using modular processors
    */
   renderGrid() {
     const gridView = this.container.querySelector('#asset-grid-view');
@@ -134,46 +143,36 @@ export class AssetsAssembly {
       return;
     }
 
-    gridView.innerHTML = paginated.items.map(item => {
-      const formatted = AssetsCategories.formatItemForPreview(item, assetsCoreInstance.selectedCategory);
-      return `
-        <div class="asset-card" data-id="${item.id}">
-          <div class="card-preview">
-            ${this.renderPreviewContent(formatted)}
-          </div>
-          <div class="card-info">
-            <div class="card-title">${formatted.title}</div>
-            <div class="card-subtext">${formatted.subText}</div>
-          </div>
-          <div class="card-actions">
-            <button class="btn-sm btn-danger btn-delete-asset" data-id="${item.id}">Delete</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
+    const currentCat = assetsCoreInstance.selectedCategory;
 
-  /**
-   * Render Item Preview Based on Asset Type
-   */
-  renderPreviewContent(formatted) {
-    if (formatted.previewType === 'image') {
-      return `<img src="${formatted.url}" alt="${formatted.title}" loading="lazy" />`;
-    }
-    if (formatted.previewType === 'audio') {
-      return `<audio controls src="${formatted.url}"></audio>`;
-    }
-    if (formatted.previewType === 'text') {
-      return `<div class="text-preview-box">${formatted.sample}</div>`;
-    }
-    if (formatted.previewType === 'colors') {
-      return `
-        <div class="palette-swatch-box">
-          ${(formatted.colors || []).map(c => `<span style="background-color: ${c}"></span>`).join('')}
-        </div>
-      `;
-    }
-    return `<div class="generic-preview">📦 ${(formatted.previewType || 'ASSET').toUpperCase()}</div>`;
+    gridView.innerHTML = paginated.items.map(item => {
+      switch (currentCat) {
+        case ASSET_CATEGORIES.ANIMATIONS:
+          return AnimationAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.SONGS:
+          return AudioAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.INVITATIONS:
+          return InvitationAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.PARTICLES:
+          return ParticleAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.FONTS:
+          return FontAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.FRAMES:
+          return FrameAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.STICKERS:
+          return StickerAssetModule.renderCard(item);
+        case ASSET_CATEGORIES.PALETTES:
+          return PaletteAssetModule.renderCard(item);
+        default:
+          return `
+            <div class="asset-card" data-id="${item.id}">
+              <div class="card-info">
+                <h4>${item.title || item.id}</h4>
+              </div>
+            </div>
+          `;
+      }
+    }).join('');
   }
 
   /**
@@ -218,4 +217,4 @@ export const assetsAssemblyInstance = new AssetsAssembly();
 // Universal export function for features-assembly router compatibility
 export async function init(rootId, subId) {
   await assetsAssemblyInstance.init(rootId, subId);
-  }
+        }
