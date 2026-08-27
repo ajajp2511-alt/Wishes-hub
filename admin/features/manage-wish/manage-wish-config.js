@@ -6,7 +6,7 @@
 export const MANAGE_WISH_CONFIG = {
   defaultPageSize: 10,
   maxBulkSelect: 50,
-  quotaWarningThreshold: 80, // Percentage
+  quotaWarningThreshold: 80,
 };
 
 export const WISH_STATUSES = {
@@ -17,7 +17,6 @@ export const WISH_STATUSES = {
   SPAM: 'Spam'
 };
 
-// Unified Table Column Definitions
 export const TABLE_COLUMNS = [
   { key: 'select', label: '', sortable: false },
   { key: 'Wish_ID', label: 'Wish ID', sortable: true },
@@ -28,7 +27,6 @@ export const TABLE_COLUMNS = [
   { key: 'Actions', label: 'Actions', sortable: false }
 ];
 
-// Filter Configuration Options
 export const FILTER_OPTIONS = {
   categories: ['All', 'text', 'image', 'audio', 'video', 'story', 'interactive', 'ai'],
   statuses: ['All', 'Active', 'Scheduled', 'Expired', 'Archived', 'Spam']
