@@ -3,7 +3,7 @@
  * Path: admin/features/manage-wish/manage-wish-core.js
  */
 
-import { MANAGE_WISH_CONFIG, WISH_STATUSES } from './manage-wish-config.js';
+import { MANAGE_WISH_CONFIG } from './manage-wish-config.js';
 
 export class ManageWishCore {
   constructor() {
@@ -17,9 +17,6 @@ export class ManageWishCore {
     this.searchQuery = '';
   }
 
-  /**
-   * Fetch All Wishes across registered Google Sheets
-   */
   async fetchAllWishes() {
     try {
       const response = await fetch('/api/sheets?action=list_all', {
@@ -39,9 +36,6 @@ export class ManageWishCore {
     }
   }
 
-  /**
-   * Apply Search & Dynamic Filters
-   */
   applyFilters() {
     this.filteredWishes = this.wishes.filter((wish) => {
       const matchesCategory =
@@ -56,12 +50,9 @@ export class ManageWishCore {
       return matchesCategory && matchesStatus && matchesSearch;
     });
 
-    this.currentPage = 1; // Reset to first page
+    this.currentPage = 1;
   }
 
-  /**
-   * Get Paginated Data
-   */
   getPaginatedWishes() {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
@@ -73,9 +64,6 @@ export class ManageWishCore {
     };
   }
 
-  /**
-   * Selection Management
-   */
   toggleSelectWish(wishId) {
     if (this.selectedWishIds.has(wishId)) {
       this.selectedWishIds.delete(wishId);
@@ -93,9 +81,6 @@ export class ManageWishCore {
     this.selectedWishIds.clear();
   }
 
-  /**
-   * Bulk Status Update Execution
-   */
   async bulkUpdateStatus(newStatus) {
     if (this.selectedWishIds.size === 0) {
       return { success: false, message: 'No items selected.' };
@@ -115,7 +100,6 @@ export class ManageWishCore {
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || 'Bulk update failed');
 
-      // Refresh local cache
       await this.fetchAllWishes();
       this.clearSelection();
 
