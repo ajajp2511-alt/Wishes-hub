@@ -11,6 +11,9 @@
 /* 3. Create Wish Feature CSS */
 @import url('./create-wish/assets/create-wish.css');
 
+/* 4. Assets & Inventory Hub CSS */
+@import url('./assets/assets/assets.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
