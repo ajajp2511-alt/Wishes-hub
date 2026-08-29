@@ -16,40 +16,69 @@ export class ManageWishAssembly {
     this.rootElement = null;
   }
 
-  async init(containerId = 'outlet-root') {
-    this.rootElement = document.getElementById(containerId);
-    if (!this.rootElement) return;
+  async init(containerId = 'dynamic-content-root', payload = null) {
+    // Dynamic Container Resolving (Supports 'outlet-root' and 'dynamic-content-root')
+    this.rootElement = typeof containerId === 'string' 
+      ? document.getElementById(containerId) 
+      : containerId;
 
-    // Load visual skeleton
-    this.rootElement.innerHTML = getManageWishLayoutHTML();
+    if (!this.rootElement) {
+      this.rootElement = document.getElementById('dynamic-content-root') || document.getElementById('outlet-root');
+    }
+
+    if (!this.rootElement) {
+      console.error('❌ Manage Wish Root Container Not Found');
+      return false;
+    }
+
+    // Load visual skeleton template
+    if (typeof getManageWishLayoutHTML === 'function') {
+      this.rootElement.innerHTML = getManageWishLayoutHTML();
+    } else {
+      this.rootElement.innerHTML = `<div style="padding: 20px;"><h2>Wishes Management Hub</h2><div id="wish-table-body"></div></div>`;
+    }
 
     this.bindEvents();
     await this.refreshData();
     this.runHealthCheck();
+
+    return true; // Explicitly return true for App Router safeRun check!
   }
 
   async refreshData() {
-    const res = await manageWishCoreInstance.fetchAllWishes();
-    if (res.success) {
+    try {
+      const res = await manageWishCoreInstance.fetchAllWishes();
+      if (res && res.success) {
+        this.render();
+      } else {
+        const tbody = document.getElementById('wish-table-body');
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="7" class="error-msg">${res?.message || 'No wishes found or API error.'}</td></tr>`;
+        }
+      }
+    } catch (err) {
+      console.warn('Refresh Data Fallback Warning:', err);
       this.render();
-    } else {
-      const tbody = document.getElementById('wish-table-body');
-      if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="error-msg">${res.message}</td></tr>`;
     }
   }
 
   render() {
     const tbody = document.getElementById('wish-table-body');
     const paginationContainer = document.getElementById('pagination-container');
-    const paginated = manageWishCoreInstance.getPaginatedWishes();
+    const paginated = manageWishCoreInstance.getPaginatedWishes ? manageWishCoreInstance.getPaginatedWishes() : [];
 
-    manageWishTableRendererInstance.renderRows(tbody, paginated, manageWishCoreInstance.selectedWishIds);
-    manageWishTableRendererInstance.renderPagination(
-      paginationContainer,
-      paginated,
-      () => { manageWishCoreInstance.currentPage--; this.render(); },
-      () => { manageWishCoreInstance.currentPage++; this.render(); }
-    );
+    if (manageWishTableRendererInstance && tbody) {
+      manageWishTableRendererInstance.renderRows(tbody, paginated, manageWishCoreInstance.selectedWishIds || []);
+      
+      if (paginationContainer) {
+        manageWishTableRendererInstance.renderPagination(
+          paginationContainer,
+          paginated,
+          () => { manageWishCoreInstance.currentPage--; this.render(); },
+          () => { manageWishCoreInstance.currentPage++; this.render(); }
+        );
+      }
+    }
 
     this.attachRowEvents();
   }
@@ -57,41 +86,43 @@ export class ManageWishAssembly {
   bindEvents() {
     document.getElementById('search-wish-input')?.addEventListener('input', (e) => {
       manageWishCoreInstance.searchQuery = e.target.value;
-      manageWishCoreInstance.applyFilters();
+      if (manageWishCoreInstance.applyFilters) manageWishCoreInstance.applyFilters();
       this.render();
     });
 
     document.getElementById('filter-category-select')?.addEventListener('change', (e) => {
       manageWishCoreInstance.activeCategoryFilter = e.target.value;
-      manageWishCoreInstance.applyFilters();
+      if (manageWishCoreInstance.applyFilters) manageWishCoreInstance.applyFilters();
       this.render();
     });
 
     document.getElementById('filter-status-select')?.addEventListener('change', (e) => {
       manageWishCoreInstance.activeStatusFilter = e.target.value;
-      manageWishCoreInstance.applyFilters();
+      if (manageWishCoreInstance.applyFilters) manageWishCoreInstance.applyFilters();
       this.render();
     });
 
     document.getElementById('select-all-checkbox')?.addEventListener('change', (e) => {
-      e.target.checked ? manageWishCoreInstance.selectAllOnPage() : manageWishCoreInstance.clearSelection();
+      e.target.checked ? manageWishCoreInstance.selectAllOnPage?.() : manageWishCoreInstance.clearSelection?.();
       this.render();
     });
 
     document.getElementById('btn-export-csv')?.addEventListener('click', () => {
-      manageWishImportExportInstance.exportData(manageWishCoreInstance.filteredWishes, 'csv');
+      manageWishImportExportInstance.exportData?.(manageWishCoreInstance.filteredWishes, 'csv');
     });
 
     document.getElementById('btn-undo-action')?.addEventListener('click', async () => {
-      const undoRes = await manageWishHistoryInstance.undoLastAction();
-      alert(undoRes.success ? `Action Undone for Wish: ${undoRes.wishId}` : undoRes.message);
-      if (undoRes.success) this.refreshData();
+      const undoRes = await manageWishHistoryInstance.undoLastAction?.();
+      if (undoRes) {
+        alert(undoRes.success ? `Action Undone for Wish: ${undoRes.wishId}` : undoRes.message);
+        if (undoRes.success) this.refreshData();
+      }
     });
 
     document.getElementById('btn-bulk-delete')?.addEventListener('click', async () => {
       if (confirm('Move selected wishes to Archived/Spam?')) {
-        const res = await manageWishCoreInstance.bulkUpdateStatus(WISH_STATUSES.ARCHIVED);
-        alert(res.success ? `Updated ${res.count} items.` : res.message);
+        const res = await manageWishCoreInstance.bulkUpdateStatus?.(WISH_STATUSES.ARCHIVED);
+        if (res) alert(res.success ? `Updated ${res.count} items.` : res.message);
         this.render();
       }
     });
@@ -99,13 +130,13 @@ export class ManageWishAssembly {
 
   attachRowEvents() {
     document.querySelectorAll('.row-checkbox').forEach(box => {
-      box.addEventListener('change', (e) => manageWishCoreInstance.toggleSelectWish(e.target.dataset.id));
+      box.addEventListener('change', (e) => manageWishCoreInstance.toggleSelectWish?.(e.target.dataset.id));
     });
 
     document.querySelectorAll('.btn-archive').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const wishId = e.target.dataset.id;
-        manageWishHistoryInstance.pushAction('STATUS_UPDATE', { Wish_ID: wishId }, WISH_STATUSES.ACTIVE);
+        manageWishHistoryInstance.pushAction?.('STATUS_UPDATE', { Wish_ID: wishId }, WISH_STATUSES.ACTIVE);
         alert(`Archived Wish ID: ${wishId}`);
         await this.refreshData();
       });
@@ -113,17 +144,22 @@ export class ManageWishAssembly {
   }
 
   async runHealthCheck() {
-    const health = await manageWishHealthInstance.checkSheetHealth();
-    const bar = document.getElementById('health-status-bar');
-    if (bar) {
-      bar.className = `wish-health-bar status-${health.status.toLowerCase()}`;
-      bar.innerHTML = `<strong>Sheet API Health:</strong> ${health.message} (${health.quotaUsedPercent}% Quota Used)`;
+    if (manageWishHealthInstance && typeof manageWishHealthInstance.checkSheetHealth === 'function') {
+      const health = await manageWishHealthInstance.checkSheetHealth();
+      const bar = document.getElementById('health-status-bar');
+      if (bar && health) {
+        bar.className = `wish-health-bar status-${health.status?.toLowerCase()}`;
+        bar.innerHTML = `<strong>Sheet API Health:</strong> ${health.message} (${health.quotaUsedPercent}% Quota Used)`;
+      }
     }
   }
 }
 
 export const manageWishAssemblyInstance = new ManageWishAssembly();
 
-export async function init(containerId = 'outlet-root') {
-  await manageWishAssemblyInstance.init(containerId);
-                                       }
+// Unified Router Entry Point
+export async function init(containerId = 'dynamic-content-root', payload = null) {
+  return await manageWishAssemblyInstance.init(containerId, payload);
+}
+
+export default manageWishAssemblyInstance;
