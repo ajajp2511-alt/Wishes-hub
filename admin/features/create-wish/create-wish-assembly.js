@@ -4,21 +4,20 @@
  */
 
 import { createWishCoreInstance } from './create-wish-core.js';
-import { renderCreateWishLayout } from './modules/assembly-ui-template.js'; // Check layout template name
 
-// Sub-Modules Exact GitHub Path Imports
-import { CreateTextWishModule } from './modules/text-wish-module.js';
-import { CreateImageWishModule } from './modules/image-wish-module.js';
-import { CreateAudioWishModule } from './modules/audio-wish-module.js';
-import { CreateInteractiveWishModule } from './modules/interactive-wish-module.js';
+// Sub-Modules Import (Exact Named Exports Match)
+import { TextWishModule } from './modules/text-wish-module.js';
+import { ImageWishModule } from './modules/image-wish-module.js';
+import { AudioWishModule } from './modules/audio-wish-module.js';
+import { InteractiveWishModule } from './modules/interactive-wish-module.js';
 
 // MODULE REGISTRY
 const MODULE_REGISTRY = {
-  'create-text': CreateTextWishModule,
-  'create-image': CreateImageWishModule,
-  'create-audio': CreateAudioWishModule,
-  'create-interactive': CreateInteractiveWishModule,
-  'create-wish': CreateTextWishModule // Fallback
+  'create-text': TextWishModule,
+  'create-image': ImageWishModule,
+  'create-audio': AudioWishModule,
+  'create-interactive': InteractiveWishModule,
+  'create-wish': TextWishModule // Default Fallback
 };
 
 export class CreateWishAssembly {
@@ -34,16 +33,6 @@ export class CreateWishAssembly {
     const root = document.getElementById(containerId);
     if (!root) return false;
 
-    // Base Layout Render
-    if (typeof renderCreateWishLayout === 'function') {
-      try {
-        await renderCreateWishLayout(root);
-      } catch (e) {
-        console.warn('Layout render warning:', e);
-      }
-    }
-
-    // Load Sub Module
     return await this.loadModule(subId, root);
   }
 
@@ -55,22 +44,22 @@ export class CreateWishAssembly {
       createWishCoreInstance.setActiveTab(subId);
     }
 
-    const ModuleClass = MODULE_REGISTRY[subId] || CreateTextWishModule;
+    const ModuleClass = MODULE_REGISTRY[subId] || TextWishModule;
     
     if (!ModuleClass) {
-      console.error(`Module class missing for subId: ${subId}`);
+      console.error(`❌ Class mapping missing for subId: ${subId}`);
       return false;
     }
 
     try {
       this.currentModule = new ModuleClass();
       
+      // Module Rendering
       if (typeof this.currentModule.render === 'function') {
         await this.currentModule.render(renderTarget);
-      } else {
-        renderTarget.innerHTML = `<div style="padding: 20px;"><h2>Module Ready: ${subId}</h2></div>`;
       }
 
+      // Bind Sub-Module Events
       if (typeof this.currentModule.bindEvents === 'function') {
         this.currentModule.bindEvents((data) => {
           if (createWishCoreInstance && typeof createWishCoreInstance.updateState === 'function') {
@@ -79,9 +68,9 @@ export class CreateWishAssembly {
         });
       }
 
-      return true; // Execution successful!
+      return true; // Return true so Router safeRun passes!
     } catch (err) {
-      console.error(`Error mounting module [${subId}]:`, err);
+      console.error(`❌ Error mounting sub-module [${subId}]:`, err);
       return false;
     }
   }
@@ -89,6 +78,7 @@ export class CreateWishAssembly {
 
 export const createWishAssemblyInstance = new CreateWishAssembly();
 
+// Router Entry Point
 export async function init(containerId = 'dynamic-content-root', payload = 'create-text') {
   return await createWishAssemblyInstance.init(containerId, payload);
 }
