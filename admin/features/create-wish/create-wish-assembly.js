@@ -32,25 +32,30 @@ export class CreateWishAssembly {
     this.currentModule = null;
   }
 
-  init(containerId = 'dynamic-content-root', payload = 'create-text') {
+  async init(containerId = 'dynamic-content-root', payload = 'create-text') {
     // SubId Extraction (Supports both String and Object payload from router)
     const subId = typeof payload === 'object' && payload !== null 
       ? (payload.subId || payload.activeSubId || 'create-text') 
       : payload;
 
     const root = document.getElementById(containerId);
-    if (!root) return;
+    if (!root) return false;
 
     // 1. Render Base Layout (Navbar/Header controls for Create Wish section)
     if (typeof renderCreateWishLayout === 'function') {
-      renderCreateWishLayout(root);
+      try {
+        await renderCreateWishLayout(root);
+      } catch (err) {
+        console.warn("⚠️ Base layout rendering issue:", err);
+      }
     }
 
     // 2. Specific Sub-module mount karein
-    this.loadModule(subId, root);
+    const loaded = await this.loadModule(subId, root);
+    return loaded; // Must return boolean for FeaturesAssembly router!
   }
 
-  loadModule(subId, rootElement) {
+  async loadModule(subId, rootElement) {
     const renderTarget = document.getElementById('create-wish-render-container') || rootElement;
 
     // Clear previous sub-view
@@ -63,27 +68,45 @@ export class CreateWishAssembly {
 
     // Dynamic Module Instantiation
     const ModuleClass = MODULE_REGISTRY[subId] || CreateTextWishModule;
-    this.currentModule = new ModuleClass();
     
-    // Render selected sub-feature view
-    if (typeof this.currentModule.render === 'function') {
-      this.currentModule.render(renderTarget);
+    if (!ModuleClass) {
+      console.error(`❌ Module Class not found for subId: ${subId}`);
+      return false;
     }
 
-    // Bind Sub-Module Events
-    if (typeof this.currentModule.bindEvents === 'function') {
-      this.currentModule.bindEvents((data) => {
-        if (createWishCoreInstance && typeof createWishCoreInstance.updateState === 'function') {
-          createWishCoreInstance.updateState(data);
-        }
-      });
+    try {
+      this.currentModule = new ModuleClass();
+      
+      // Render selected sub-feature view
+      if (typeof this.currentModule.render === 'function') {
+        await this.currentModule.render(renderTarget);
+      } else {
+        // Fallback UI agar module render method export na karein
+        renderTarget.innerHTML = `<div style="padding:20px;"><h3>Create Wish - ${subId}</h3></div>`;
+      }
+
+      // Bind Sub-Module Events
+      if (typeof this.currentModule.bindEvents === 'function') {
+        this.currentModule.bindEvents((data) => {
+          if (createWishCoreInstance && typeof createWishCoreInstance.updateState === 'function') {
+            createWishCoreInstance.updateState(data);
+          }
+        });
+      }
+
+      return true; // Dynamic UI rendered successfully
+    } catch (err) {
+      console.error(`❌ Error rendering sub-module [${subId}]:`, err);
+      return false;
     }
   }
 }
 
 export const createWishAssemblyInstance = new CreateWishAssembly();
 
-// Universal Smart Router Entry Point
-export function init(containerId = 'dynamic-content-root', payload = 'create-text') {
-  createWishAssemblyInstance.init(containerId, payload);
+// Universal Smart Router Entry Point (MUST RETURN TRUE)
+export async function init(containerId = 'dynamic-content-root', payload = 'create-text') {
+  return await createWishAssemblyInstance.init(containerId, payload);
 }
+
+export default createWishAssemblyInstance;
