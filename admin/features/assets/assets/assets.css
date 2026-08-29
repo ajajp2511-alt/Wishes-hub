@@ -1,5 +1,5 @@
 /**
- * Assets & Inventory Hub - Stylesheet
+ * Assets & Inventory Hub - Stylesheet (Fully Responsive)
  * Path: admin/features/assets/assets.css
  */
 
@@ -27,16 +27,19 @@
   color: var(--text-main);
   font-family: system-ui, -apple-system, sans-serif;
   min-height: 85vh;
+  box-sizing: border-box;
 }
 
 /* Sidebar Styles */
 .assets-sidebar {
   width: 260px;
+  flex-shrink: 0;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 20px 16px;
   box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
 }
 
 .sidebar-title {
@@ -67,6 +70,7 @@
   font-weight: 500;
   color: var(--text-muted);
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-item-btn:hover {
@@ -86,6 +90,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0; /* Prevents layout break in flexbox */
 }
 
 /* Top Toolbar */
@@ -93,6 +98,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   background: var(--card-bg);
   padding: 16px 20px;
   border-radius: var(--radius-lg);
@@ -100,13 +106,19 @@
   box-shadow: var(--shadow-sm);
 }
 
+.search-box {
+  flex: 1;
+}
+
 .search-box input {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   padding: 10px 14px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   outline: none;
+  box-sizing: border-box;
 }
 
 .search-box input:focus {
@@ -122,6 +134,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -236,6 +249,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
 }
 
 .modal-overlay.hidden {
@@ -246,8 +260,10 @@
   background: var(--card-bg);
   padding: 24px;
   border-radius: var(--radius-lg);
-  width: 420px;
+  width: 100%;
+  max-width: 420px;
   box-shadow: var(--shadow-md);
+  box-sizing: border-box;
 }
 
 .drop-zone-area {
@@ -270,3 +286,65 @@
   padding: 40px;
   color: var(--text-muted);
 }
+
+/* ===================================================
+   MOBILE & TABLET RESPONSIVE STYLES
+   =================================================== */
+
+@media (max-width: 768px) {
+  .assets-hub-layout {
+    flex-direction: column;
+    padding: 12px;
+    gap: 16px;
+  }
+
+  /* Horizontal Scrollable Menu Bar on Mobile */
+  .assets-sidebar {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+
+  .category-nav-list {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-item-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* Responsive Toolbar */
+  .assets-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .search-box input {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Responsive Grid */
+  .assets-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .card-preview {
+    height: 110px;
+  }
+  }
