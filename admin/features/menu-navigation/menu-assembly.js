@@ -1,3 +1,8 @@
+/**
+ * Menu Navigation Feature - Entry Assembly
+ * Path: /admin/features/menu-navigation/menu-assembly.js
+ */
+
 import { MenuCore } from './menu-core.js';
 
 export class MenuAssembly {
@@ -73,6 +78,7 @@ export class MenuAssembly {
   }
 
   bindEvents() {
+    // 1. Search Bar Input Handler
     const searchInput = this.container.querySelector('#menu-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -94,34 +100,41 @@ export class MenuAssembly {
       });
     }
 
+    // 2. Main Menu Accordion Toggle Handler
     this.container.querySelectorAll('.main-menu-header').forEach(header => {
       header.addEventListener('click', (e) => {
         const mainItem = e.target.closest('.main-menu-item');
+        if (!mainItem) return;
+
         const mainId = mainItem.dataset.id;
         this.core.toggleAccordion(mainId);
-        this.render();
-        this.bindEvents();
+        
+        // Accordion state toggle in DOM directly
+        mainItem.classList.toggle('open');
       });
     });
 
+    // 3. Sub-Menu Click Handler (Direct Router Dispatch & Class Switching)
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
       subItem.addEventListener('click', (e) => {
         e.stopPropagation();
         const subId = e.currentTarget.dataset.subId;
         
-        // 1. Core State update karein
+        if (!subId) return;
+
+        // Core State update
         this.core.setActiveSubItem(subId);
 
-        // 2. PEHLE Event Dispatch karein router ke liye
+        // UI Active Class Toggle (DOM destroy nahi karega)
+        this.container.querySelectorAll('.sub-menu-item').forEach(el => el.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+
+        // Emitting Event for FeaturesAssembly Router
         console.log("🌐 Emitting menu-navigate for:", subId);
         document.dispatchEvent(new CustomEvent('menu-navigate', {
           detail: { subId: subId },
           bubbles: true
         }));
-
-        // 3. UI update karein
-        this.render();
-        this.bindEvents();
       });
     });
   }
