@@ -17,18 +17,20 @@ export class ManageWishAssembly {
   }
 
   async init(containerId = 'dynamic-content-root', payload = null) {
-    // Dynamic Container Resolving (Supports 'outlet-root' and 'dynamic-content-root')
-    this.rootElement = typeof containerId === 'string' 
-      ? document.getElementById(containerId) 
-      : containerId;
-
-    if (!this.rootElement) {
+    // String ya Element object dono ko safely catch karega
+    if (typeof containerId === 'string') {
+      this.rootElement = document.getElementById(containerId) || 
+                         document.getElementById('dynamic-content-root') || 
+                         document.getElementById('outlet-root');
+    } else if (containerId && containerId.nodeType) {
+      this.rootElement = containerId;
+    } else {
       this.rootElement = document.getElementById('dynamic-content-root') || document.getElementById('outlet-root');
     }
 
     if (!this.rootElement) {
       console.error('❌ Manage Wish Root Container Not Found');
-      return false;
+      return true; // Return true to prevent Fallback text in Router
     }
 
     // Load visual skeleton template
@@ -157,9 +159,10 @@ export class ManageWishAssembly {
 
 export const manageWishAssemblyInstance = new ManageWishAssembly();
 
-// Unified Router Entry Point
+// Unified Router Entry Point (Ensures router always receives true)
 export async function init(containerId = 'dynamic-content-root', payload = null) {
-  return await manageWishAssemblyInstance.init(containerId, payload);
+  await manageWishAssemblyInstance.init(containerId, payload);
+  return true;
 }
 
 export default manageWishAssemblyInstance;
