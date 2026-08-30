@@ -203,35 +203,38 @@ export class FeaturesAssembly {
 
       if (!module) return false;
 
+      // Ensure root reference is up to date
+      const targetContainer = this.root || document.getElementById('dynamic-content-root') || 'dynamic-content-root';
+
       // 1. Direct function export (e.g., export async function init(containerId, subId))
       if (typeof module[initFn] === 'function') {
-        await module[initFn]('dynamic-content-root', name);
-        return true;
+        const res = await module[initFn](targetContainer, name);
+        return res !== false;
       }
 
-      // 2. Exported Class Instance (e.g., createWishAssemblyInstance.init(containerId, subId))
+      // 2. Exported Class Instance (e.g., manageWishAssemblyInstance.init(containerId, subId))
       for (const key of Object.keys(module)) {
         if (module[key] && typeof module[key][initFn] === 'function') {
-          await module[key][initFn]('dynamic-content-root', name);
-          return true;
+          const res = await module[key][initFn](targetContainer, name);
+          return res !== false;
         }
       }
 
       // 3. Default Class / Function Export
       if (module.default) {
         if (typeof module.default[initFn] === 'function') {
-          await module.default[initFn]('dynamic-content-root', name);
-          return true;
+          const res = await module.default[initFn](targetContainer, name);
+          return res !== false;
         }
         if (typeof module.default === 'function') {
           try {
             const instance = new module.default();
             if (typeof instance[initFn] === 'function') {
-              await instance[initFn]('dynamic-content-root', name);
-              return true;
+              const res = await instance[initFn](targetContainer, name);
+              return res !== false;
             }
           } catch (e) {
-            await module.default('dynamic-content-root', name);
+            await module.default(targetContainer, name);
             return true;
           }
         }
@@ -246,6 +249,7 @@ export class FeaturesAssembly {
   }
 
   async bootSystem() {
+    this.root = document.getElementById('dynamic-content-root');
     if (this.root) {
       this.root.innerHTML = `
         <div style="padding: 20px;">
@@ -290,6 +294,7 @@ export class FeaturesAssembly {
       return;
     }
 
+    this.root = document.getElementById('dynamic-content-root');
     if (this.root) {
       this.root.innerHTML = `<div style="padding: 20px;"><p>Loading module...</p></div>`;
     }
@@ -302,6 +307,7 @@ export class FeaturesAssembly {
   }
 
   renderFallback(subId, message) {
+    this.root = document.getElementById('dynamic-content-root');
     if (this.root) {
       this.root.innerHTML = `
         <div style="padding: 20px;">
