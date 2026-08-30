@@ -17,7 +17,7 @@ export class ManageWishAssembly {
   }
 
   async init(containerId = 'dynamic-content-root', payload = null) {
-    // String ya Element object dono ko safely catch karega
+    // 1. Target resolution for element or string container
     if (typeof containerId === 'string') {
       this.rootElement = document.getElementById(containerId) || 
                          document.getElementById('dynamic-content-root') || 
@@ -29,22 +29,43 @@ export class ManageWishAssembly {
     }
 
     if (!this.rootElement) {
-      console.error('❌ Manage Wish Root Container Not Found');
-      return true; // Return true to prevent Fallback text in Router
+      console.error('❌ Dynamic content container missing in DOM.');
+      return true; // Return true to clear fallback render
     }
 
-    // Load visual skeleton template
+    // 2. Clear pre-existing fallback notice
+    this.rootElement.innerHTML = '';
+
+    // 3. Inject visual structural layout
     if (typeof getManageWishLayoutHTML === 'function') {
       this.rootElement.innerHTML = getManageWishLayoutHTML();
     } else {
-      this.rootElement.innerHTML = `<div style="padding: 20px;"><h2>Wishes Management Hub</h2><div id="wish-table-body"></div></div>`;
+      this.rootElement.innerHTML = `
+        <div style="padding: 20px;">
+          <h2>Wishes Management Hub</h2>
+          <div id="health-status-bar"></div>
+          <table class="wish-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all-checkbox" /></th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="wish-table-body"></tbody>
+          </table>
+          <div id="pagination-container"></div>
+        </div>`;
     }
 
+    // 4. Attach event listeners and load sheet data
     this.bindEvents();
     await this.refreshData();
     this.runHealthCheck();
 
-    return true; // Explicitly return true for App Router safeRun check!
+    return true;
   }
 
   async refreshData() {
@@ -55,7 +76,7 @@ export class ManageWishAssembly {
       } else {
         const tbody = document.getElementById('wish-table-body');
         if (tbody) {
-          tbody.innerHTML = `<tr><td colspan="7" class="error-msg">${res?.message || 'No wishes found or API error.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 15px; color: #d9534f;">${res?.message || 'No wishes found or API error.'}</td></tr>`;
         }
       }
     } catch (err) {
@@ -159,10 +180,9 @@ export class ManageWishAssembly {
 
 export const manageWishAssemblyInstance = new ManageWishAssembly();
 
-// Unified Router Entry Point (Ensures router always receives true)
+// Unified Router Entry Point
 export async function init(containerId = 'dynamic-content-root', payload = null) {
-  await manageWishAssemblyInstance.init(containerId, payload);
-  return true;
+  return await manageWishAssemblyInstance.init(containerId, payload);
 }
 
 export default manageWishAssemblyInstance;
