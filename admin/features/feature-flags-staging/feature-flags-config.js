@@ -3,7 +3,7 @@
  * Path: admin/features/feature-flags-staging/feature-flags-config.js
  */
 
-export const FLAGS_CONFIG = {
+export const FLAGS_CONFIG = Object.freeze({
   version: '2.0.0',
   defaultFlags: [
     {
@@ -39,4 +39,22 @@ export const FLAGS_CONFIG = {
     syncUrl: '/api/staging/sync',
     rollbackUrl: '/api/staging/rollback'
   }
+});
+
+/**
+ * Validates whether a flag configuration object meets basic schema requirements
+ * @param {Object} flag 
+ * @returns {boolean}
+ */
+export const validateFlagConfig = (flag) => {
+  if (!flag || typeof flag !== 'object') return false;
+  
+  const hasValidId = typeof flag.id === 'string' && flag.id.trim() !== '';
+  const hasValidName = typeof flag.name === 'string' && flag.name.trim() !== '';
+  const hasValidRollout = typeof flag.rolloutPercentage === 'number' && 
+                          flag.rolloutPercentage >= 0 && 
+                          flag.rolloutPercentage <= 100;
+  const hasValidEnabled = typeof flag.enabled === 'boolean';
+
+  return hasValidId && hasValidName && hasValidRollout && hasValidEnabled;
 };
