@@ -29,6 +29,9 @@
 /* 9. App & PWA Manager Feature CSS */
 @import url('./app-pwa-manager/assets/pwa-style.css');
 
+/* 10. Feature Flags & Staging CSS */
+@import url('./feature-flags-staging/assets/flags-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
