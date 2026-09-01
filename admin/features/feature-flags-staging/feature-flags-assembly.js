@@ -25,20 +25,20 @@ export class FeatureFlagsAssembly {
 
   renderLayout() {
     this.container.innerHTML = `
-      <div class="flags-manager-container" style="padding: 16px;">
-        <header class="flags-header" style="display:flex; justify-space-between; align-items:center; margin-bottom: 20px;">
-          <div>
-            <h2 style="margin:0;">Feature Flags & Staging</h2>
-            <small style="color: #6e7681;">Modular Control Center</small>
+      <div class="feature-flags-container">
+        <header class="flags-header">
+          <div class="flags-title-group">
+            <h2>Feature Flags & Staging</h2>
+            <span class="subtitle">Modular Control Center</span>
           </div>
-          <span class="badge" style="background:#2da44e; color:#fff; padding:4px 8px; border-radius:12px; font-size:12px;">Staging Active</span>
+          <span class="badge-staging-active">Staging Active</span>
         </header>
 
-        <nav class="flags-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
-          <button class="tab-btn active" data-subtab="feature-toggles">Feature Toggles</button>
-          <button class="tab-btn" data-subtab="staging-sandbox">Staging Sandbox</button>
-          <button class="tab-btn" data-subtab="rollback-reset">Data Rollback & Reset</button>
-          <button class="tab-btn" data-subtab="audit-logs">Audit Logs</button>
+        <nav class="flags-tabs">
+          <button class="tab-btn ${this.activeSubTab === 'feature-toggles' ? 'active' : ''}" data-subtab="feature-toggles">Feature Toggles</button>
+          <button class="tab-btn ${this.activeSubTab === 'staging-sandbox' ? 'active' : ''}" data-subtab="staging-sandbox">Staging Sandbox</button>
+          <button class="tab-btn ${this.activeSubTab === 'rollback-reset' ? 'active' : ''}" data-subtab="rollback-reset">Data Rollback & Reset</button>
+          <button class="tab-btn ${this.activeSubTab === 'audit-logs' ? 'active' : ''}" data-subtab="audit-logs">Audit Logs</button>
         </nav>
 
         <main id="flags-main-view" class="flags-main-view"></main>
@@ -50,6 +50,7 @@ export class FeatureFlagsAssembly {
 
   renderActiveSubTab() {
     const view = this.container.querySelector('#flags-main-view');
+    if (!view) return;
 
     switch (this.activeSubTab) {
       case 'feature-toggles':
@@ -64,50 +65,46 @@ export class FeatureFlagsAssembly {
       case 'audit-logs':
         AuditLogsModule.render(view, featureFlagsCoreInstance);
         break;
+      default:
+        FeatureTogglesModule.render(view, featureFlagsCoreInstance);
     }
   }
 
   attachEventListeners() {
-    this.container.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        this.container.querySelectorAll('.tab-btn').forEach(b => b.style.fontWeight = 'normal');
-        e.target.style.fontWeight = 'bold';
-        this.activeSubTab = e.target.dataset.subtab;
-        this.renderActiveSubTab();
-      });
-    });
-
-    this.container.addEventListener('change', (e) => {
-      if (e.target.classList.contains('chk-flag')) {
-        featureFlagsCoreInstance.toggleFlag(e.target.dataset.id, e.target.checked);
-        this.renderActiveSubTab();
-      }
-
-      if (e.target.classList.contains('rng-rollout')) {
-        const flagId = e.target.dataset.id;
-        const val = e.target.value;
-        featureFlagsCoreInstance.updateRolloutPercentage(flagId, val);
-        const lbl = this.container.querySelector(`#lbl-${flagId}`);
-        if (lbl) lbl.textContent = `${val}% Users`;
-      }
-    });
-
+    // Single Event Delegation Listener for Container
     this.container.addEventListener('click', async (e) => {
+      // Tab Switching Logic
+      const tabBtn = e.target.closest('.tab-btn');
+      if (tabBtn) {
+        this.container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        tabBtn.classList.add('active');
+        this.activeSubTab = tabBtn.dataset.subtab;
+        this.renderActiveSubTab();
+        return;
+      }
+
+      // Circuit Breaker / Kill Test Action
       if (e.target.classList.contains('btn-kill-test')) {
-        const res = featureFlagsCoreInstance.triggerKillSwitch(e.target.dataset.id, 8.5);
+        const flagId = e.target.dataset.id;
+        const res = featureFlagsCoreInstance.triggerKillSwitch(flagId, 8.5);
         if (res.triggered) {
           alert(res.message);
           this.renderActiveSubTab();
         }
+        return;
       }
 
+      // Sync Sandbox Action
       if (e.target.id === 'btn-sync-sandbox') {
         featureFlagsCoreInstance.addAuditLog('SANDBOX_SYNC', 'SANDBOX', 'Data synced with production');
         alert('Staging Sandbox Synced Successfully!');
+        return;
       }
 
+      // Data Rollback Action
       if (e.target.id === 'btn-execute-rollback') {
-        const snapshot = this.container.querySelector('#snapshot-select')?.value;
+        const snapshotSelect = this.container.querySelector('#snapshot-select');
+        const snapshot = snapshotSelect ? snapshotSelect.value : 'Latest';
         if (confirm(`Confirm data rollback to ${snapshot}?`)) {
           const res = await featureFlagsCoreInstance.executeDataRollback(snapshot);
           alert(res.message);
@@ -115,6 +112,28 @@ export class FeatureFlagsAssembly {
         }
       }
     });
+
+    // Checkbox Toggles
+    this.container.addEventListener('change', (e) => {
+      if (e.target.classList.contains('chk-flag')) {
+        featureFlagsCoreInstance.toggleFlag(e.target.dataset.id, e.target.checked);
+        this.renderActiveSubTab();
+      }
+    });
+
+    // Realtime Rollout Range Slider
+    const handleSliderChange = (e) => {
+      if (e.target.classList.contains('rng-rollout')) {
+        const flagId = e.target.dataset.id;
+        const val = e.target.value;
+        featureFlagsCoreInstance.updateRolloutPercentage(flagId, val);
+        const lbl = this.container.querySelector(`#lbl-${flagId}`);
+        if (lbl) lbl.textContent = `${val}% Users`;
+      }
+    };
+
+    this.container.addEventListener('input', handleSliderChange);
+    this.container.addEventListener('change', handleSliderChange);
   }
 }
 
