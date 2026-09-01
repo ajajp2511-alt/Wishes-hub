@@ -26,6 +26,9 @@
 /* 8. Security Shield Feature CSS */
 @import url('./security-shield/assets/security.css');
 
+/* 9. App & PWA Manager Feature CSS */
+@import url('./app-pwa-manager/assets/pwa-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
