@@ -17,7 +17,6 @@ export class ManageWishAssembly {
   }
 
   async init(containerId = 'dynamic-content-root', payload = null) {
-    // 1. Target resolution for element or string container
     if (typeof containerId === 'string') {
       this.rootElement = document.getElementById(containerId) || 
                          document.getElementById('dynamic-content-root') || 
@@ -30,13 +29,11 @@ export class ManageWishAssembly {
 
     if (!this.rootElement) {
       console.error('❌ Dynamic content container missing in DOM.');
-      return true; // Return true to clear fallback render
+      return true;
     }
 
-    // 2. Clear pre-existing fallback notice
     this.rootElement.innerHTML = '';
 
-    // 3. Inject visual structural layout
     if (typeof getManageWishLayoutHTML === 'function') {
       this.rootElement.innerHTML = getManageWishLayoutHTML();
     } else {
@@ -60,7 +57,6 @@ export class ManageWishAssembly {
         </div>`;
     }
 
-    // 4. Attach event listeners and load sheet data
     this.bindEvents();
     await this.refreshData();
     this.runHealthCheck();
@@ -88,10 +84,15 @@ export class ManageWishAssembly {
   render() {
     const tbody = document.getElementById('wish-table-body');
     const paginationContainer = document.getElementById('pagination-container');
-    const paginated = manageWishCoreInstance.getPaginatedWishes ? manageWishCoreInstance.getPaginatedWishes() : [];
+    const paginated = manageWishCoreInstance.getPaginatedWishes ? manageWishCoreInstance.getPaginatedWishes() : { items: [], totalPages: 1, currentPage: 1, totalCount: 0 };
 
     if (manageWishTableRendererInstance && tbody) {
-      manageWishTableRendererInstance.renderRows(tbody, paginated, manageWishCoreInstance.selectedWishIds || []);
+      // FIX: Passing paginated.items array directly
+      manageWishTableRendererInstance.renderRows(
+        tbody, 
+        paginated.items || [], 
+        manageWishCoreInstance.selectedWishIds
+      );
       
       if (paginationContainer) {
         manageWishTableRendererInstance.renderPagination(
@@ -137,7 +138,7 @@ export class ManageWishAssembly {
     document.getElementById('btn-undo-action')?.addEventListener('click', async () => {
       const undoRes = await manageWishHistoryInstance.undoLastAction?.();
       if (undoRes) {
-        alert(undoRes.success ? `Action Undone for Wish: ${undoRes.wishId}` : undoRes.message);
+        alert(undoRes.success ? `Action Undone for Wish: ${undoRes.wishId || 'N/A'}` : undoRes.message);
         if (undoRes.success) this.refreshData();
       }
     });
@@ -171,8 +172,8 @@ export class ManageWishAssembly {
       const health = await manageWishHealthInstance.checkSheetHealth();
       const bar = document.getElementById('health-status-bar');
       if (bar && health) {
-        bar.className = `wish-health-bar status-${health.status?.toLowerCase()}`;
-        bar.innerHTML = `<strong>Sheet API Health:</strong> ${health.message} (${health.quotaUsedPercent}% Quota Used)`;
+        bar.className = `wish-health-bar status-${health.status?.toLowerCase() || 'healthy'}`;
+        bar.innerHTML = `<strong>Sheet API Health:</strong> ${health.message} (${health.quotaUsedPercent || 0}% Quota Used)`;
       }
     }
   }
@@ -180,7 +181,6 @@ export class ManageWishAssembly {
 
 export const manageWishAssemblyInstance = new ManageWishAssembly();
 
-// Unified Router Entry Point
 export async function init(containerId = 'dynamic-content-root', payload = null) {
   return await manageWishAssemblyInstance.init(containerId, payload);
 }
