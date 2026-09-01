@@ -20,6 +20,9 @@
 /* 6. Assets & Inventory Hub CSS */
 @import url('./assets/assets/assets.css');
 
+/* 7. Users CRM Feature CSS */
+@import url('./users-crm/assets/users.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
