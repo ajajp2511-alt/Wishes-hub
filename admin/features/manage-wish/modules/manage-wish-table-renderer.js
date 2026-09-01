@@ -3,31 +3,36 @@
  * Path: admin/features/manage-wish/modules/manage-wish-table-renderer.js
  */
 
-import { manageWishSafetyInstance } from './manage-wish-safety.js';
-
 export class ManageWishTableRenderer {
   renderRows(tbody, paginatedData, selectedIds) {
     if (!tbody) return;
 
-    if (paginatedData.items.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No wishes found.</td></tr>`;
+    // FIX: Safe extract items array regardless of parameter format
+    const items = Array.isArray(paginatedData) 
+      ? paginatedData 
+      : (paginatedData?.items || []);
+
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-msg" style="text-align:center; padding:15px;">No wishes found.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = paginatedData.items.map(item => {
-      const safetyCheck = manageWishSafetyInstance.inspectForSpam(item.Content, item.Title);
-      const isSelected = selectedIds.has(item.Wish_ID);
+    tbody.innerHTML = items.map(item => {
+      // FIX: Safe selection check (Supports both Set and Array)
+      const isSelected = selectedIds?.has 
+        ? selectedIds.has(item.Wish_ID) 
+        : (Array.isArray(selectedIds) && selectedIds.includes(item.Wish_ID));
 
       return `
-        <tr class="${safetyCheck.isSpam ? 'row-spam-warning' : ''}">
+        <tr>
           <td>
             <input type="checkbox" class="row-checkbox" data-id="${item.Wish_ID}" ${isSelected ? 'checked' : ''} />
           </td>
-          <td><code>${item.Wish_ID}</code></td>
+          <td><code>${item.Wish_ID || 'N/A'}</code></td>
           <td><strong>${item.Title || 'Untitled'}</strong></td>
-          <td><span class="badge category-${item.Category}">${item.Category}</span></td>
-          <td><span class="badge status-${item.Status}">${item.Status}</span></td>
-          <td>${new Date(item.Created_At).toLocaleDateString()}</td>
+          <td><span class="badge category-${item.Category || 'default'}">${item.Category || 'General'}</span></td>
+          <td><span class="badge status-${item.Status || 'active'}">${item.Status || 'Active'}</span></td>
+          <td>${item.Created_At ? new Date(item.Created_At).toLocaleDateString() : 'N/A'}</td>
           <td>
             <button class="btn-sm btn-inspect" data-id="${item.Wish_ID}">Inspect</button>
             <button class="btn-sm btn-archive" data-id="${item.Wish_ID}">Archive</button>
@@ -37,14 +42,14 @@ export class ManageWishTableRenderer {
     }).join('');
   }
 
-  renderPagination(container, { currentPage, totalPages, totalCount }, onPrev, onNext) {
+  renderPagination(container, { currentPage = 1, totalPages = 1, totalCount = 0 }, onPrev, onNext) {
     if (!container) return;
 
     container.innerHTML = `
       <span>Showing Page ${currentPage} of ${totalPages} (${totalCount} Total Items)</span>
       <div class="page-btns">
         <button id="btn-prev-page" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
-        <button id="btn-next-page" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+        <button id="btn-next-page" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Next</button>
       </div>
     `;
 
