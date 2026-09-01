@@ -20,11 +20,13 @@
 }
 
 .crm-container {
-  padding: 24px;
+  padding: 16px;
   background-color: var(--crm-bg);
   min-height: 85vh;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
   color: var(--crm-text);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Header & Tabs */
@@ -33,40 +35,49 @@
   justify-content: space-between;
   align-items: center;
   background: var(--crm-card-bg);
-  padding: 16px 20px;
+  padding: 16px;
   border-radius: 12px;
   border: 1px solid var(--crm-border);
   margin-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .crm-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
 }
 
 .tab-btn {
-  background: transparent;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  background: #f1f5f9;
+  border: 1px solid var(--crm-border);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--crm-muted);
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  text-align: center;
+  font-family: inherit;
 }
 
 .tab-btn:hover {
-  background: #f1f5f9;
+  background: #e2e8f0;
   color: var(--crm-text);
 }
 
 .tab-btn.active {
-  background: #e0e7ff;
-  color: var(--crm-primary);
+  background: var(--crm-primary);
+  color: #ffffff;
+  border-color: var(--crm-primary);
   font-weight: 600;
 }
 
@@ -74,6 +85,9 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 4px;
 }
 
 .crm-actions input,
@@ -83,6 +97,9 @@
   border-radius: 6px;
   font-size: 0.9rem;
   outline: none;
+  font-family: inherit;
+  flex: 1 1 180px;
+  box-sizing: border-box;
 }
 
 .crm-actions input:focus,
@@ -97,6 +114,7 @@
   border-radius: 12px;
   overflow-x: auto;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .crm-table {
@@ -172,6 +190,7 @@
   background: #ffffff;
   cursor: pointer;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .btn-sm:hover {
@@ -193,6 +212,7 @@
   top: 0;
   right: 0;
   width: 380px;
+  max-width: 100vw;
   height: 100vh;
   background: var(--crm-card-bg);
   border-left: 1px solid var(--crm-border);
@@ -200,6 +220,7 @@
   z-index: 100;
   padding: 20px;
   transition: transform 0.3s ease;
+  box-sizing: border-box;
 }
 
 .user-drawer.hidden {
@@ -228,4 +249,5 @@
   padding: 40px;
   text-align: center;
   color: var(--crm-muted);
+  font-family: inherit;
 }
