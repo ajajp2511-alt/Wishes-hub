@@ -1,6 +1,6 @@
 /**
  * Manage Wish Feature - Bulk CSV Importer & Backup Generator
- * Path: admin/features/manage-wish/manage-wish-import-export.js
+ * Path: admin/features/manage-wish/modules/manage-wish-import-export.js
  */
 
 export class ManageWishImportExport {
@@ -8,11 +8,9 @@ export class ManageWishImportExport {
     this.apiEndpoint = '/api/sheets';
   }
 
-  /**
-   * Export Wish Data to JSON or CSV File Download
-   */
   exportData(wishesData, format = 'json', filename = 'wishes_backup') {
-    if (!wishesData || wishesData.length === 0) {
+    if (!Array.isArray(wishesData) || wishesData.length === 0 || !wishesData[0]) {
+      alert('No data available to export.');
       return { success: false, message: 'No data available to export.' };
     }
 
@@ -26,13 +24,12 @@ export class ManageWishImportExport {
     } else if (format === 'csv') {
       const headers = Object.keys(wishesData[0]).join(',');
       const rows = wishesData.map(row => 
-        Object.values(row).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
+        Object.values(row).map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',')
       );
       fileContent = [headers, ...rows].join('\n');
       mimeType = 'text/csv';
     }
 
-    // Trigger Browser File Download
     const blob = new Blob([fileContent], { type: mimeType });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -43,9 +40,6 @@ export class ManageWishImportExport {
     return { success: true, count: wishesData.length };
   }
 
-  /**
-   * Parse CSV File Content into Array of Objects
-   */
   async parseCSVFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
