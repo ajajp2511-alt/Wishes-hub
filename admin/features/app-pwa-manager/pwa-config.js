@@ -3,8 +3,12 @@
  * Path: admin/features/app-pwa-manager/pwa-config.js
  */
 
-export const PWA_CONFIG = {
+export const PWA_CONFIG = Object.freeze({
   version: '2.1.0',
+  serviceWorker: {
+    script: '/sw.js',
+    scope: '/'
+  },
   manifest: {
     name: 'Wishes Hub - Custom Greetings Platform',
     short_name: 'Wishes Hub',
@@ -35,4 +39,6 @@ export const PWA_CONFIG = {
     pushUnregister: '/api/pwa/push/unregister',
     deepLinksUpdate: '/api/pwa/deeplinks/sync'
   }
-};
+});
+
+export default PWA_CONFIG;
