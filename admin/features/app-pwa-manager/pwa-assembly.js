@@ -12,13 +12,32 @@ export class PWAAssembly {
     this.activeSubTab = 'manifest-workers';
   }
 
-  async init(rootId) {
-    this.container = document.getElementById(rootId);
-    if (!this.container) return;
+  async init(rootId = 'dynamic-content-root') {
+    if (typeof rootId === 'string') {
+      this.container = document.getElementById(rootId) || 
+                       document.getElementById('dynamic-content-root') || 
+                       document.getElementById('outlet-root');
+    } else if (rootId && rootId.nodeType) {
+      this.container = rootId;
+    } else {
+      this.container = document.getElementById('dynamic-content-root') || document.getElementById('outlet-root');
+    }
 
-    await pwaCoreInstance.initServiceWorker();
+    if (!this.container) {
+      console.error('❌ Dynamic content container missing in DOM.');
+      return true;
+    }
+
+    this.container.innerHTML = '';
+
+    if (pwaCoreInstance?.initServiceWorker) {
+      await pwaCoreInstance.initServiceWorker();
+    }
+    
     this.render();
     this.attachEventListeners();
+
+    return true;
   }
 
   render() {
@@ -27,7 +46,7 @@ export class PWAAssembly {
         <!-- Module Header -->
         <header class="pwa-header">
           <h2>App & PWA Manager</h2>
-          <span class="badge live">Version ${PWA_CONFIG.version}</span>
+          <span class="badge live">Version ${PWA_CONFIG?.version || '1.0.0'}</span>
         </header>
 
         <!-- Sub Tabs Navigation -->
@@ -48,6 +67,7 @@ export class PWAAssembly {
 
   renderActiveSubTab() {
     const view = this.container.querySelector('#pwa-main-view');
+    if (!view) return;
 
     if (this.activeSubTab === 'manifest-workers') {
       this.renderManifestView(view);
@@ -66,22 +86,22 @@ export class PWAAssembly {
         <div class="pwa-card">
           <h4>Service Worker Lifecycle</h4>
           <p>Status: <strong style="color: #2da44e;">Active / Running</strong></p>
-          <p>Scope: <code>${PWA_CONFIG.serviceWorker.scope}</code></p>
+          <p>Scope: <code>${PWA_CONFIG?.serviceWorker?.scope || '/'}</code></p>
           <button id="btn-trigger-install" class="btn-primary">Prompt App Install</button>
         </div>
 
         <div class="pwa-card">
           <h4>Manifest Properties</h4>
-          <p>App Name: <strong>${PWA_CONFIG.manifest.name}</strong></p>
-          <p>Display Mode: <code>${PWA_CONFIG.manifest.display}</code></p>
-          <p>Shortcuts: <strong>${PWA_CONFIG.manifest.shortcuts.length} Active Actions</strong></p>
+          <p>App Name: <strong>${PWA_CONFIG?.manifest?.name || 'Wishes Hub'}</strong></p>
+          <p>Display Mode: <code>${PWA_CONFIG?.manifest?.display || 'standalone'}</code></p>
+          <p>Shortcuts: <strong>${PWA_CONFIG?.manifest?.shortcuts?.length || 0} Active Actions</strong></p>
         </div>
       </div>
     `;
   }
 
   renderPushRegistryView(target) {
-    const tokens = Array.from(pwaCoreInstance.pushTokenRegistry.entries());
+    const tokens = pwaCoreInstance?.pushTokenRegistry ? Array.from(pwaCoreInstance.pushTokenRegistry.entries()) : [];
     target.innerHTML = `
       <div class="push-registry-panel">
         <div class="push-actions-bar">
@@ -94,7 +114,7 @@ export class PWAAssembly {
               ${tokens.map(([token, data]) => `
                 <li class="token-item">
                   <code>${token}</code>
-                  <span>${data.device.substring(0, 30)}...</span>
+                  <span>${data.device ? data.device.substring(0, 30) : ''}...</span>
                 </li>
               `).join('')}
              </ul>`
@@ -104,7 +124,7 @@ export class PWAAssembly {
   }
 
   renderDeepLinksView(target) {
-    const rules = Array.from(pwaCoreInstance.deepLinkRules.entries());
+    const rules = pwaCoreInstance?.deepLinkRules ? Array.from(pwaCoreInstance.deepLinkRules.entries()) : [];
     target.innerHTML = `
       <div class="deep-links-panel">
         <h4>Configured Deep Link Routing Rules</h4>
@@ -129,7 +149,10 @@ export class PWAAssembly {
   }
 
   async renderStorageCacheView(target) {
-    const storage = await pwaCoreInstance.getStorageDiagnostic();
+    const storage = pwaCoreInstance?.getStorageDiagnostic 
+      ? await pwaCoreInstance.getStorageDiagnostic() 
+      : { usedMB: 0, quotaMB: 0, percentage: 0 };
+
     target.innerHTML = `
       <div class="storage-panel">
         <h4>Cache & Storage Diagnostics</h4>
@@ -139,7 +162,7 @@ export class PWAAssembly {
     `;
 
     target.querySelector('#btn-purge-cache')?.addEventListener('click', async () => {
-      await pwaCoreInstance.clearAppCache();
+      if (pwaCoreInstance?.clearAppCache) await pwaCoreInstance.clearAppCache();
       alert('App Cache Purged Successfully!');
       this.renderActiveSubTab();
     });
@@ -157,12 +180,12 @@ export class PWAAssembly {
 
     this.container.addEventListener('click', async (e) => {
       if (e.target.id === 'btn-trigger-install') {
-        const res = await pwaCoreInstance.triggerInstallPrompt();
+        const res = pwaCoreInstance?.triggerInstallPrompt ? await pwaCoreInstance.triggerInstallPrompt() : { success: false, message: 'Core instance missing' };
         alert(res.success ? 'Installation Initiated!' : res.message || 'Install Banner Skipped');
       }
 
       if (e.target.id === 'btn-register-device') {
-        const res = await pwaCoreInstance.registerPushNotifications();
+        const res = pwaCoreInstance?.registerPushNotifications ? await pwaCoreInstance.registerPushNotifications() : { success: false, message: 'Core instance missing' };
         if (res.success) {
           alert(`Push Token Registered: ${res.token}`);
           this.renderActiveSubTab();
@@ -175,3 +198,9 @@ export class PWAAssembly {
 }
 
 export const pwaAssemblyInstance = new PWAAssembly();
+
+export async function init(containerId = 'dynamic-content-root', payload = null) {
+  return await pwaAssemblyInstance.init(containerId);
+}
+
+export default pwaAssemblyInstance;
