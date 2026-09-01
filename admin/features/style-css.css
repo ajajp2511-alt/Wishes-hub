@@ -23,6 +23,9 @@
 /* 7. Users CRM Feature CSS */
 @import url('./users-crm/assets/users.css');
 
+/* 8. Security Shield Feature CSS */
+@import url('./security-shield/assets/security.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
