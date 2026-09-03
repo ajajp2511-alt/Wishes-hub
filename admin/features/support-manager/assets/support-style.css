@@ -1,0 +1,31 @@
+.support-wrapper {
+    font-family: inherit;
+}
+
+.ticket-card-active {
+    border-color: #4f46e5;
+    background-color: #eef2ff;
+}
+
+.chat-bubble-user {
+    background-color: #ffffff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+}
+
+.chat-bubble-admin {
+    background-color: #4f46e5;
+    color: #ffffff;
+}
+
+.chat-bubble-ai {
+    background-color: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.chat-bubble-system {
+    background-color: #faf5ff;
+    color: #6b21a8;
+    border: 1px solid #e9d5ff;
+}
