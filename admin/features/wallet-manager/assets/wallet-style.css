@@ -1,0 +1,22 @@
+.wallet-wrapper {
+    font-family: inherit;
+}
+
+.ledger-badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.ledger-badge-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.ledger-badge-escrow {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.wallet-card-gradient {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+}
