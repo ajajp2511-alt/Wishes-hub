@@ -1,0 +1,17 @@
+.omni-wrapper {
+    font-family: inherit;
+}
+
+.os-badge-active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.os-badge-queued {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.omni-card-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
