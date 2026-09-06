@@ -1,0 +1,15 @@
+.branding-wrapper {
+    font-family: inherit;
+}
+
+.toggle-switch-on {
+    background-color: #10b981;
+}
+
+.toggle-switch-off {
+    background-color: #cbd5e1;
+}
+
+.branding-card-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
