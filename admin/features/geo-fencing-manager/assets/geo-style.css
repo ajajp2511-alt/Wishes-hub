@@ -1,0 +1,22 @@
+.geo-wrapper {
+    font-family: inherit;
+}
+
+.geo-badge-allowed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.geo-badge-blocked {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.geo-badge-quarantine {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.geo-card-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
