@@ -1,0 +1,7 @@
+export const BRANDING_CONFIG = {
+    STUDIO_NAME: 'Wishes Hub Ecosystem',
+    DEFAULT_ACTIVE_VARIANT: 'Dark Mode High-Contrast',
+    WATERMARK_DEFAULT_OPACITY: 0.15,
+    SONIC_BRANDING_ENABLED: true,
+    AI_WCAG_CHECK_STRICTNESS: 'AAA'
+};
