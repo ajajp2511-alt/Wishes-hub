@@ -11,6 +11,8 @@ export class MenuAssembly {
     this.core = new MenuCore();
     if (this.container) {
       this.init();
+    } else {
+      console.error(`🚨 Menu container with id '${containerId}' not found in DOM!`);
     }
   }
 
@@ -29,12 +31,16 @@ export class MenuAssembly {
         e.stopPropagation();
         this.toggleMobileMenu();
       });
+    } else {
+      console.warn("⚠️ Hamburger button #toggle-sidebar-btn not found.");
     }
 
     if (backdrop) {
       backdrop.addEventListener('click', () => {
         this.closeMobileMenu();
       });
+    } else {
+      console.warn("⚠️ Backdrop element #sidebar-backdrop not found.");
     }
   }
 
@@ -46,6 +52,7 @@ export class MenuAssembly {
       if (backdrop) {
         backdrop.classList.toggle('backdrop-active');
       }
+      console.log('📱 Mobile menu toggled successfully');
     }
   }
 
@@ -137,7 +144,7 @@ export class MenuAssembly {
       });
     });
 
-    // 3. Sub-Menu Click Handler (Direct Router Dispatch & Mobile Close)
+    // 3. Sub-Menu Click Handler
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
       subItem.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -145,17 +152,13 @@ export class MenuAssembly {
         
         if (!subId) return;
 
-        // Core State update
         this.core.setActiveSubItem(subId);
 
-        // UI Active Class Toggle
         this.container.querySelectorAll('.sub-menu-item').forEach(el => el.classList.remove('active'));
         e.currentTarget.classList.add('active');
 
-        // Auto-close sidebar on mobile view when a feature is selected
         this.closeMobileMenu();
 
-        // Emitting Event for FeaturesAssembly Router
         console.log("🌐 Emitting menu-navigate for:", subId);
         document.dispatchEvent(new CustomEvent('menu-navigate', {
           detail: { subId: subId },
