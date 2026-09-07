@@ -22,17 +22,41 @@ export class MenuAssembly {
 
   bindTopNavToggle() {
     const hamburgerBtn = document.getElementById('toggle-sidebar-btn');
+    const backdrop = document.getElementById('sidebar-backdrop');
     
     if (hamburgerBtn) {
       hamburgerBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        
-        if (this.container) {
-          this.container.classList.toggle('active');
-          document.body.classList.toggle('menu-open');
-          console.log('Sidebar toggled!');
-        }
+        this.toggleMobileMenu();
       });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', () => {
+        this.closeMobileMenu();
+      });
+    }
+  }
+
+  toggleMobileMenu() {
+    if (this.container) {
+      this.container.classList.toggle('active');
+      document.body.classList.toggle('sidebar-mobile-open');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (backdrop) {
+        backdrop.classList.toggle('backdrop-active');
+      }
+    }
+  }
+
+  closeMobileMenu() {
+    if (this.container) {
+      this.container.classList.remove('active');
+      document.body.classList.remove('sidebar-mobile-open');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (backdrop) {
+        backdrop.classList.remove('backdrop-active');
+      }
     }
   }
 
@@ -109,12 +133,11 @@ export class MenuAssembly {
         const mainId = mainItem.dataset.id;
         this.core.toggleAccordion(mainId);
         
-        // Accordion state toggle in DOM directly
         mainItem.classList.toggle('open');
       });
     });
 
-    // 3. Sub-Menu Click Handler (Direct Router Dispatch & Class Switching)
+    // 3. Sub-Menu Click Handler (Direct Router Dispatch & Mobile Close)
     this.container.querySelectorAll('.sub-menu-item').forEach(subItem => {
       subItem.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -125,9 +148,12 @@ export class MenuAssembly {
         // Core State update
         this.core.setActiveSubItem(subId);
 
-        // UI Active Class Toggle (DOM destroy nahi karega)
+        // UI Active Class Toggle
         this.container.querySelectorAll('.sub-menu-item').forEach(el => el.classList.remove('active'));
         e.currentTarget.classList.add('active');
+
+        // Auto-close sidebar on mobile view when a feature is selected
+        this.closeMobileMenu();
 
         // Emitting Event for FeaturesAssembly Router
         console.log("🌐 Emitting menu-navigate for:", subId);
