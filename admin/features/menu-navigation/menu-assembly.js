@@ -46,3 +46,13 @@ export class MenuCore {
     }).filter(Boolean);
   }
 }
+
+// Router ke liye initMenu function yahan add karein
+export function initMenu(container) {
+  const menuInstance = new MenuCore();
+  
+  // Agar DOM elements render karne hain ya event listeners lagane hain, toh yahan likhein
+  console.log("Menu initialized for brand:", menuInstance.getBrand());
+  
+  return menuInstance;
+}
