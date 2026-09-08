@@ -47,12 +47,18 @@ export class MenuCore {
   }
 }
 
-// Router ke liye initMenu function yahan add karein
-export function initMenu(container) {
+export function initMenu() {
   const menuInstance = new MenuCore();
   
-  // Agar DOM elements render karne hain ya event listeners lagane hain, toh yahan likhein
-  console.log("Menu initialized for brand:", menuInstance.getBrand());
+  // Hamburger button aur sidebar elements ko dhoondhein
+  const hamburgerBtn = document.querySelector('header .hamburger, .menu-toggle, [aria-label="Menu"]');
   
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      console.log("Hamburger clicked, brand:", menuInstance.getBrand().NAME);
+      // Yahan sidebar open/close toggle logic likhein
+    });
+  }
+
   return menuInstance;
 }
