@@ -37,6 +37,14 @@ import { complianceNavItem } from './items/compliance-nav.js';
 import { logsNavItem } from './items/logs-nav.js';
 import { authNavItem } from './items/auth-nav.js';
 import { settingNavItem } from './items/setting-nav.js';
+// Newly Integrated Module Nav Items
+import { walletNavItem } from './items/wallet-nav.js';
+import { categoriesNavItem } from './items/categories-nav.js';
+import { geoNavItem } from './items/geo-nav.js';
+import { globalLangNavItem } from './items/global-lang-nav.js';
+import { brandingNavItem } from './items/branding-nav.js';
+import { platformSuiteNavItem } from './items/platform-suite-nav.js';
+import { supportNavItem } from './items/support-nav.js';
 
 export const MENU_CONFIG = {
   BRAND: {
@@ -77,6 +85,14 @@ export const MENU_CONFIG = {
     complianceNavItem,
     logsNavItem,
     authNavItem,
-    settingNavItem
+    settingNavItem,
+    // Integrated Features
+    walletNavItem,
+    categoriesNavItem,
+    geoNavItem,
+    globalLangNavItem,
+    brandingNavItem,
+    platformSuiteNavItem,
+    supportNavItem
   ]
 };
