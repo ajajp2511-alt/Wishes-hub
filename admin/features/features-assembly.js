@@ -226,13 +226,13 @@ export class FeaturesAssembly {
 
       if (!module) return false;
 
-      // 1. Direct function export (e.g., export async function init(containerId, subId))
+      // 1. Direct function export
       if (typeof module[initFn] === 'function') {
         await module[initFn]('dynamic-content-root', name);
         return true;
       }
 
-      // 2. Exported Class Instance (e.g., createWishAssemblyInstance.init(containerId, subId))
+      // 2. Exported Class Instance
       for (const key of Object.keys(module)) {
         if (module[key] && typeof module[key][initFn] === 'function') {
           await module[key][initFn]('dynamic-content-root', name);
@@ -317,7 +317,8 @@ export class FeaturesAssembly {
       this.root.innerHTML = `<div style="padding: 20px;"><p>Loading module...</p></div>`;
     }
 
-    const isSuccess = await this.safeQueryRun ? null : await this.safeRun(subId, config.path, config.initFn);
+    // Fixed bug here: calling safeRun directly instead of undefined 'safeQueryRun'
+    const isSuccess = await this.safeRun(subId, config.path, config.initFn);
 
     if (!isSuccess) {
       this.renderFallback(subId, "Module assembly loaded, but UI initialization requires configuration.");
