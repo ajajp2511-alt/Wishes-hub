@@ -5,32 +5,50 @@
 /* Main Sidebar Box with Scroll Fix */
 #menu-navigation-root, 
 .admin-sidebar {
-  position: fixed !important; /* Screen ke upar floating box banane ke liye */
-  top: 60px !important;       /* Header ke niche se shuru hoga */
-  left: 12px !important;      /* Thoda margin chhod kar */
+  position: fixed !important;
+  top: 60px !important;
+  left: 12px !important;
   width: 100%;
   max-width: 280px;
-  height: calc(100vh - 80px); /* Screen ki height ke andar fit rahega */
+  height: calc(100vh - 80px);
   max-height: calc(100vh - 80px);
-  overflow-y: auto !important;       /* Enables vertical scrolling */
+  overflow-y: auto !important;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;   /* Smooth scrolling for mobile */
+  -webkit-overflow-scrolling: touch;
   background-color: #ffffff;
-  border: 1px solid #cbd5e1;         /* Box border */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Floating box shadow */
-  border-radius: 12px;               /* Rounded corners for box look */
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
   padding: 16px;
-  padding-bottom: 80px;                /* Prevents bottom items from getting cut off */
+  padding-bottom: 80px;
   box-sizing: border-box;
-  z-index: 9999;                       /* Sabhi elements ke upar dikhega */
+  z-index: 9999;
   
-  /* Initially hidden jab tak open class na ho (Agar JS class toggle karta hai) */
-  display: none; 
+  /* Hidden by default off-screen */
+  transform: translateX(-110%);
+  transition: transform 0.3s ease-in-out;
 }
 
-/* Jab sidebar open class ke sath active ho */
-.admin-sidebar.open,
-#menu-navigation-root.open {
+/* Jab body me 'sidebar-mobile-open' class aye tab sidebar show ho jaye */
+body.sidebar-mobile-open #menu-navigation-root,
+body.sidebar-mobile-open .admin-sidebar {
+  transform: translateX(0) !important;
+}
+
+/* Backdrop ko active karne ke liye CSS */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+}
+
+body.sidebar-mobile-open .sidebar-backdrop,
+.sidebar-backdrop.backdrop-active {
   display: block !important;
 }
 
