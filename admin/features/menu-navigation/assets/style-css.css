@@ -1,97 +1,112 @@
 /* ==========================================
-   📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
-   ========================================== */
+   📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
+   ========================================== */
 
 /* Main Sidebar Box with Scroll Fix */
-#menu-navigation-root, 
+#menu-navigation-root, 
 .admin-sidebar {
-  width: 100%;
-  max-width: 300px;
-  height: 100vh;                       /* Fixed screen height */
-  max-height: 100vh;
-  overflow-y: auto !important;         /* Enables vertical scrolling */
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;   /* Smooth scrolling for mobile */
-  background-color: #ffffff;
-  border-right: 1px solid #e2e8f0;
-  padding: 16px;
-  padding-bottom: 80px;                /* Prevents bottom items from getting cut off */
-  box-sizing: border-box;
+  position: fixed !important; /* Screen ke upar floating box banane ke liye */
+  top: 60px !important;       /* Header ke niche se shuru hoga */
+  left: 12px !important;      /* Thoda margin chhod kar */
+  width: 100%;
+  max-width: 280px;
+  height: calc(100vh - 80px); /* Screen ki height ke andar fit rahega */
+  max-height: calc(100vh - 80px);
+  overflow-y: auto !important;       /* Enables vertical scrolling */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;   /* Smooth scrolling for mobile */
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;         /* Box border */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Floating box shadow */
+  border-radius: 12px;               /* Rounded corners for box look */
+  padding: 16px;
+  padding-bottom: 80px;                /* Prevents bottom items from getting cut off */
+  box-sizing: border-box;
+  z-index: 9999;                       /* Sabhi elements ke upar dikhega */
+  
+  /* Initially hidden jab tak open class na ho (Agar JS class toggle karta hai) */
+  display: none; 
+}
+
+/* Jab sidebar open class ke sath active ho */
+.admin-sidebar.open,
+#menu-navigation-root.open {
+  display: block !important;
 }
 
 /* Custom Clean Scrollbar */
 #menu-navigation-root::-webkit-scrollbar,
 .admin-sidebar::-webkit-scrollbar {
-  width: 5px;
+  width: 5px;
 }
 
 #menu-navigation-root::-webkit-scrollbar-thumb,
 .admin-sidebar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
+  background-color: #cbd5e1;
+  border-radius: 4px;
 }
 
 /* Header & Search Bar */
 .sidebar-search input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  margin-top: 10px;
-  margin-bottom: 16px;
-  outline: none;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+  outline: none;
 }
 
 /* Category Headers (Create Wish, Asset & Inventory Hub, etc.) */
-.main-menu-header, 
+.main-menu-header, 
 .main-menu-item > div:first-child,
 .main-menu-item > a {
-  font-weight: 700 !important;
-  font-size: 1rem !important;
-  color: #1e293b !important;
-  padding: 10px 8px;
-  margin-top: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: #f8fafc;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  color: #1e293b !important;
+  padding: 10px 8px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #f8fafc;
 }
 
 /* Sub-items (Text & Quote Wish, Animation List, etc.) */
-.sub-menu-list, 
+.sub-menu-list, 
 .main-menu-item > ul {
-  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
-  padding-left: 0px;
-  margin: 6px 0 12px 0;
-  list-style: none;
+  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
+  padding-left: 0px;
+  margin: 6px 0 12px 0;
+  list-style: none;
 }
 
 /* Jab category open ho tabhi sub-menu dikhe */
-.main-menu-item.open .sub-menu-list, 
+.main-menu-item.open .sub-menu-list, 
 .main-menu-item.open > ul {
-  display: block !important;
+  display: block !important;
 }
 
 /* Sub-item Text Styling (Block Cards with Bigger Text) */
-.sub-menu-item, 
-.sub-menu-list li, 
+.sub-menu-item, 
+.sub-menu-list li, 
 .main-menu-item ul li {
-  display: block;
-  padding: 10px 12px;
-  margin: 6px 0;
-  font-size: 0.98rem;
-  font-weight: 500;
-  color: #334155;
-  background-color: #f1f5f9;
-  border-radius: 6px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  display: block;
+  padding: 10px 12px;
+  margin: 6px 0;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #334155;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.sub-menu-item:hover, 
+.sub-menu-item:hover, 
 .sub-menu-list li:hover {
-  background-color: #e2e8f0;
-  color: #1e40af;
+  background-color: #e2e8f0;
+  color: #1e40af;
 }
