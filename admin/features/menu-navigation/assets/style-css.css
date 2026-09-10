@@ -97,23 +97,26 @@
 }
 
 /* ==========================================
-   📱 MOBILE LEFT-SIDE SLIDE & TOGGLE FIX
+   📱 MOBILE LEFT-SIDE SLIDE & TOGGLE FIX (ROBUST)
    ========================================== */
 @media (max-width: 1024px) {
   #menu-navigation-root, 
   .admin-sidebar {
     position: fixed !important;
-    top: 0;
+    top: 0 !important;
     left: -320px !important; /* Default: Left side se screen ke bahar rahega */
     right: auto !important;
-    z-index: 10000;
-    transition: left 0.3s ease-in-out;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    bottom: 0 !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    transition: left 0.3s ease-in-out !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2) !important;
   }
 
   body.sidebar-mobile-open #menu-navigation-root,
   body.sidebar-mobile-open .admin-sidebar {
-    left: 0 !important; /* Hamburger click karne par left se slide hokar aayega */
+    left: 0 !important; /* Hamburger click karne par left se smooth slide hokar aayega */
     right: auto !important;
   }
 }
