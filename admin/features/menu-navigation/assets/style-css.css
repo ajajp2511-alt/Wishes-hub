@@ -97,14 +97,15 @@
 }
 
 /* ==========================================
-   📱 MOBILE OFF-SCREEN SLIDE & TOGGLE FIX
+   📱 MOBILE LEFT-SIDE SLIDE & TOGGLE FIX
    ========================================== */
 @media (max-width: 1024px) {
   #menu-navigation-root, 
   .admin-sidebar {
     position: fixed !important;
     top: 0;
-    left: -320px; /* Default: screen ke bahar chhupa rahega */
+    left: -320px !important; /* Default: Left side se screen ke bahar rahega */
+    right: auto !important;
     z-index: 10000;
     transition: left 0.3s ease-in-out;
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
@@ -112,6 +113,7 @@
 
   body.sidebar-mobile-open #menu-navigation-root,
   body.sidebar-mobile-open .admin-sidebar {
-    left: 0 !important; /* Hamburger button dabane par screen par aa jayega */
+    left: 0 !important; /* Hamburger click karne par left se slide hokar aayega */
+    right: auto !important;
   }
 }
