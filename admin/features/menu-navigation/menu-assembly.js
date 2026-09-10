@@ -53,13 +53,13 @@ export function initMenu(containerId = 'dynamic-content-root') {
   // 1. Render Menu UI into the Sidebar / Nav container
   renderMenuUI(menuInstance);
 
-  // 2. Hamburger button handling
-  const hamburgerBtn = document.querySelector('header .hamburger, .menu-toggle, [aria-label="Menu"]');
-  const sidebar = document.querySelector('.sidebar, aside, #sidebar');
+  // 2. Hamburger button handling (matching index.html toggle-sidebar-btn)
+  const hamburgerBtn = document.getElementById('toggle-sidebar-btn') || document.querySelector('header .hamburger, .menu-toggle, [aria-label="Menu"]');
+  const sidebar = document.getElementById('menu-navigation-root') || document.querySelector('.sidebar, aside, #sidebar');
 
   if (hamburgerBtn && sidebar) {
     hamburgerBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
+      document.body.classList.toggle('sidebar-mobile-open');
       console.log("Hamburger clicked, brand:", menuInstance.getBrand().NAME);
     });
   }
@@ -69,8 +69,8 @@ export function initMenu(containerId = 'dynamic-content-root') {
 
 // Helper function to build and insert HTML into the DOM
 function renderMenuUI(menuInstance) {
-  // Apne sidebar container ka selector yahan check kar lena (jaise '.sidebar-nav', '#sidebar-menu', etc.)
-  const navContainer = document.querySelector('.sidebar-nav, #sidebar-menu, aside nav') || document.getElementById('sidebar');
+  // Updated selector to match index.html (#menu-navigation-root)
+  const navContainer = document.getElementById('menu-navigation-root') || document.querySelector('.admin-sidebar, .sidebar-nav, #sidebar-menu, aside nav');
   
   if (!navContainer) {
     console.warn("⚠️ Sidebar container element not found in DOM for rendering menu.");
