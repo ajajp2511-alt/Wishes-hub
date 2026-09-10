@@ -1,37 +1,41 @@
 /* ==========================================
-   📌 ACCORDION & LAYOUT FIX FOR SIDEBAR
+   📌 WISHES HUB ADMIN - SIDEBAR COMPONENT
    ========================================== */
 
-/* Main Sidebar Box with Scroll & Mobile Fix */
 #menu-navigation-root, 
 .admin-sidebar {
-  position: fixed;         /* Fixes sidebar to the viewport on mobile/desktop */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   max-width: 300px;
-  height: 100vh;           /* Fixed screen height */
+  height: 100vh;
   max-height: 100vh;
-  overflow-y: auto !important;   /* Enables vertical scrolling */
+  overflow-y: auto !important;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;   /* Smooth scrolling for mobile */
+  -webkit-overflow-scrolling: touch;
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   padding: 16px;
-  padding-bottom: 80px;    /* Prevents bottom items from getting cut off */
+  padding-bottom: 80px;
   box-sizing: border-box;
-  z-index: 9999;           /* Ensures sidebar stays on top of content */
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1); /* Adds shadow so it looks like a drawer */
+  z-index: 9999;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  
+  /* Default closed state (Hidden off-screen) */
+  transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
 }
 
-/* Agar aapke paas sidebar hide/show karne ke liye koi class hai (Jaise .closed ya mobile drawer hidden state) */
-.admin-sidebar.closed,
-#menu-navigation-root.closed {
-  transform: translateX(-100%);
+/* Open state when 3-line menu is clicked */
+#menu-navigation-root.open, 
+.admin-sidebar.open,
+#menu-navigation-root.active, 
+.admin-sidebar.active {
+  transform: translateX(0);
 }
 
-/* Custom Clean Scrollbar */
+/* Custom Scrollbar */
 #menu-navigation-root::-webkit-scrollbar,
 .admin-sidebar::-webkit-scrollbar {
   width: 5px;
@@ -54,7 +58,7 @@
   outline: none;
 }
 
-/* Category Headers (Create Wish, Asset & Inventory Hub, etc.) */
+/* Category Headers */
 .main-menu-header, 
 .main-menu-item > div:first-child,
 .main-menu-item > a {
@@ -71,22 +75,22 @@
   background-color: #f8fafc;
 }
 
-/* Sub-items (Text & Quote Wish, Animation List, etc.) */
+/* Sub-items Container */
 .sub-menu-list, 
 .main-menu-item > ul {
-  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
+  display: none;
   padding-left: 0px;
   margin: 6px 0 12px 0;
   list-style: none;
 }
 
-/* Jab category open ho tabhi sub-menu dikhe */
+/* Open Sub-menu */
 .main-menu-item.open .sub-menu-list, 
 .main-menu-item.open > ul {
   display: block !important;
 }
 
-/* Sub-item Text Styling (Block Cards with Bigger Text) */
+/* Sub-item Styling */
 .sub-menu-item, 
 .sub-menu-list li, 
 .main-menu-item ul li {
