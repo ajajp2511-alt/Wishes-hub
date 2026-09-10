@@ -50,23 +50,8 @@ export class MenuCore {
 export function initMenu(containerId = 'dynamic-content-root') {
   const menuInstance = new MenuCore();
   
-  // 1. Render Menu UI into the Sidebar / Nav container
+  // Render Menu UI into the Sidebar / Nav container
   renderMenuUI(menuInstance);
-
-  // 2. Hamburger button handling
-  const hamburgerBtn = document.getElementById('toggle-sidebar-btn') || document.querySelector('header .hamburger, .menu-toggle, [aria-label="Menu"]');
-  const sidebar = document.getElementById('menu-navigation-root') || document.querySelector('.sidebar, aside, #sidebar');
-
-  if (hamburgerBtn && sidebar) {
-    hamburgerBtn.addEventListener('click', () => {
-      document.body.classList.toggle('sidebar-mobile-open');
-      const backdrop = document.getElementById('sidebar-backdrop');
-      if (backdrop) {
-        backdrop.classList.toggle('backdrop-active');
-      }
-      console.log("Hamburger clicked, brand:", menuInstance.getBrand().NAME);
-    });
-  }
 
   return menuInstance;
 }
@@ -113,7 +98,7 @@ function renderMenuUI(menuInstance) {
   html += `</ul>`;
   navContainer.innerHTML = html;
 
-  // Event listeners for accordion toggle and subItem navigation clicks
+  // Event listeners for accordion toggle
   navContainer.querySelectorAll('.menu-main-link').forEach(link => {
     link.addEventListener('click', (e) => {
       const mainId = link.getAttribute('data-id');
@@ -126,19 +111,20 @@ function renderMenuUI(menuInstance) {
     });
   });
 
+  // Event listeners for subItem clicks (Auto-hide sidebar when any submenu is tapped)
   navContainer.querySelectorAll('.sub-item-link').forEach(subLink => {
     subLink.addEventListener('click', (e) => {
       e.preventDefault();
       const subId = subLink.getAttribute('data-subid');
       menuInstance.setActiveSubItem(subId);
 
-      // Dispatch custom event jo FeaturesAssembly sun raha hai
+      // Dispatch custom event for FeaturesAssembly
       const event = new CustomEvent('menu-navigate', {
         detail: { subId }
       });
       document.dispatchEvent(event);
 
-      // Auto-close mobile sidebar and backdrop on item click
+      // Automatically hide mobile sidebar and backdrop
       document.body.classList.remove('sidebar-mobile-open');
       const backdrop = document.getElementById('sidebar-backdrop');
       if (backdrop) {
