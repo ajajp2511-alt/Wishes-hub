@@ -1,9 +1,13 @@
 /* ==========================================
-   📌 WISHES HUB ADMIN - SIDEBAR COMPONENT
+   📌 WISHES HUB ADMIN - SIDEBAR & MENU CORE CSS
    ========================================== */
 
+/* Main Sidebar Container (Matches JS selectors) */
 #menu-navigation-root, 
-.admin-sidebar {
+.admin-sidebar,
+.sidebar-nav, 
+#sidebar-menu, 
+aside nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -22,50 +26,52 @@
   z-index: 9999;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
   
-  /* Default closed state (Hidden off-screen) */
+  /* Default closed state for mobile (Hidden off-screen) */
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
 }
 
-/* Open state when 3-line menu is clicked */
+/* Open state when 3-line hamburger button is clicked */
 #menu-navigation-root.open, 
 .admin-sidebar.open,
 #menu-navigation-root.active, 
-.admin-sidebar.active {
+.admin-sidebar.active,
+body.sidebar-mobile-open .admin-sidebar {
   transform: translateX(0);
 }
 
-/* Custom Scrollbar */
+/* Custom Clean Scrollbar */
 #menu-navigation-root::-webkit-scrollbar,
-.admin-sidebar::-webkit-scrollbar {
+.admin-sidebar::-webkit-scrollbar,
+aside nav::-webkit-scrollbar {
   width: 5px;
 }
 
 #menu-navigation-root::-webkit-scrollbar-thumb,
-.admin-sidebar::-webkit-scrollbar-thumb {
+.admin-sidebar::-webkit-scrollbar-thumb,
+aside nav::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 4px;
 }
 
-/* Header & Search Bar */
-.sidebar-search input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  margin-top: 10px;
-  margin-bottom: 16px;
-  outline: none;
+/* Main Menu List */
+.main-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Category Headers */
-.main-menu-header, 
-.main-menu-item > div:first-child,
-.main-menu-item > a {
+/* Individual Menu Item Wrapper */
+.menu-item {
+  margin-bottom: 5px;
+}
+
+/* Main Accordion Link / Header */
+.menu-main-link {
   font-weight: 700 !important;
   font-size: 1rem !important;
   color: #1e293b !important;
-  padding: 10px 8px;
+  padding: 10px 15px;
   margin-top: 8px;
   display: flex;
   justify-content: space-between;
@@ -73,41 +79,66 @@
   border-radius: 6px;
   cursor: pointer;
   background-color: #f8fafc;
+  transition: background-color 0.2s ease;
 }
 
-/* Sub-items Container */
-.sub-menu-list, 
-.main-menu-item > ul {
-  display: none;
-  padding-left: 0px;
-  margin: 6px 0 12px 0;
+.menu-main-link:hover {
+  background-color: #f1f5f9;
+}
+
+/* Accordion Arrow Icon */
+.menu-main-link .arrow {
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+/* Sub-menu List Container */
+.sub-menu-list {
   list-style: none;
+  padding-left: 20px;
+  margin: 6px 0 12px 0;
+  display: none; /* Controlled by MenuCore JS via style.display */
 }
 
-/* Open Sub-menu */
-.main-menu-item.open .sub-menu-list, 
-.main-menu-item.open > ul {
-  display: block !important;
-}
-
-/* Sub-item Styling */
-.sub-menu-item, 
-.sub-menu-list li, 
-.main-menu-item ul li {
-  display: block;
-  padding: 10px 12px;
+/* Sub-item Card Styling */
+.sub-menu-list li {
+  padding: 6px 10px;
   margin: 6px 0;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+/* Sub-item Hyperlink */
+.sub-item-link {
+  display: block;
+  text-decoration: none;
   font-size: 0.98rem;
   font-weight: 500;
   color: #334155;
-  background-color: #f1f5f9;
-  border-radius: 6px;
-  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.sub-menu-item:hover, 
 .sub-menu-list li:hover {
   background-color: #e2e8f0;
+}
+
+.sub-menu-list li:hover .sub-item-link {
   color: #1e40af;
+}
+
+/* Optional Backdrop Styling for Mobile Drawer */
+#sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#sidebar-backdrop.backdrop-active {
+  opacity: 1;
+  visibility: visible;
 }
