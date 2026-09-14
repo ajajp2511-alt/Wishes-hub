@@ -1,0 +1,25 @@
+/**
+ * Activity Feed Component Styling
+ */
+#wh-activity-widget {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+#wh-activity-widget h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #60a5fa;
+}
+
+.wh-activity-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+  font-size: 14px;
+  color: #cbd5e1;
+}
