@@ -1,0 +1,28 @@
+/**
+ * assets/manage-home.css
+ * Core structural and layout styling for Wishes Hub Home Dashboard
+ */
+.wh-home-wrapper {
+  padding: 24px;
+  font-family: inherit;
+  color: #f8fafc;
+}
+
+.wh-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.wh-dashboard-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.wh-widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
