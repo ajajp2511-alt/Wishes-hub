@@ -1,0 +1,14 @@
+/**
+ * Infinity Loop Animation
+ */
+.wh-infinity-loop {
+  width: 60px;
+  height: 30px;
+  border: 4px solid #3b82f6;
+  border-radius: 30px;
+  animation: wh-infinity 2s linear infinite;
+}
+@keyframes wh-infinity {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
