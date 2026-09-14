@@ -1,0 +1,14 @@
+/**
+ * Skeleton Shimmer Box Animation
+ */
+.wh-skeleton-box {
+  width: 160px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  animation: wh-skeleton-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes wh-skeleton-pulse {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
