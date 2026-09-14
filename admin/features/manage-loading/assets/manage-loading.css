@@ -1,0 +1,26 @@
+/**
+ * assets/manage-loading.css
+ * Core structural and overlay styles for Wishes Hub Loading Module
+ */
+#wishes-loading-overlay {
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease-in-out;
+}
+
+#wishes-loading-message {
+  margin-top: 16px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
