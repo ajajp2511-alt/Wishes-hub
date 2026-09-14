@@ -1,0 +1,11 @@
+/**
+ * assets/animations/animation.css
+ * Central connection hub for all individual loading animations
+ */
+@import url('./spinner.css');
+@import url('./pulse.css');
+@import url('./progress.css');
+@import url('./skeleton.css');
+@import url('./ripple.css');
+@import url('./cube.css');
+@import url('./infinity.css');
