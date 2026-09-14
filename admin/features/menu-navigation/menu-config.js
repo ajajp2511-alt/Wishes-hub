@@ -5,6 +5,7 @@
 
 import { createWishNavItem } from './items/create-wish-nav.js';
 import { assetHubNavItem } from './items/asset-hub-nav.js';
+import { manageLoadingNavItem } from './items/manage-loading-nav.js';
 import { wishesNavItem } from './items/wishes-nav.js';
 import { usersNavItem } from './items/users-nav.js';
 import { securityNavItem } from './items/security-nav.js';
@@ -54,6 +55,7 @@ export const MENU_CONFIG = {
   NAV_ITEMS: [
     createWishNavItem,
     assetHubNavItem,
+    manageLoadingNavItem,
     wishesNavItem,
     usersNavItem,
     securityNavItem,
