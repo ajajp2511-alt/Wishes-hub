@@ -27,7 +27,16 @@ export class FeaturesAssembly {
     'asset-frames': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
     'asset-stickers': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
     'asset-palettes': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-
+    
+    // Manage Loading & Overlays
+    'loading-spinner': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-overlay': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-safety': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-health': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-history': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-analytics': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-template': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+ 
     // Wishes Manager
     'wishes-all': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
     'wishes-categories': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
