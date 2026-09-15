@@ -1,5 +1,7 @@
 console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
+import { assembleHomeModule } from './manage-home/manage-home-assembly.js';
+
 export class FeaturesAssembly {
   constructor() {
     console.log("🚀 Booting Dynamic System Architecture...");
@@ -279,12 +281,8 @@ export class FeaturesAssembly {
 
   async bootSystem() {
     if (this.root) {
-      this.root.innerHTML = `
-        <div style="padding: 20px;">
-          <h2 style="margin-bottom: 10px;">Welcome to Wishes Hub Admin</h2>
-          <p>Select any feature from the sidebar menu to start.</p>
-        </div>
-      `;
+      this.root.innerHTML = '';
+      assembleHomeModule('dynamic-content-root');
     }
 
     // ⚡ Init Menu System
@@ -326,7 +324,6 @@ export class FeaturesAssembly {
       this.root.innerHTML = `<div style="padding: 20px;"><p>Loading module...</p></div>`;
     }
 
-    // Fixed bug here: calling safeRun directly instead of undefined 'safeQueryRun'
     const isSuccess = await this.safeRun(subId, config.path, config.initFn);
 
     if (!isSuccess) {
