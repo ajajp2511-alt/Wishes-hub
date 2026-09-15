@@ -2,7 +2,7 @@
  * manage-loading-core.js
  * Core show/hide logic, queue management, and Custom Events dispatcher
  */
-import { LoadingConfig } from './manage-loading-config.js';
+import { LoadingConfig } from './manager-loading-config.js';
 import { LoadingOverlay } from './modules/manage-loading-overlay.js';
 import { LoadingSpinner } from './modules/manage-loading-spinner.js';
 import { LoadingSafety } from './modules/manage-loading-safety.js';
