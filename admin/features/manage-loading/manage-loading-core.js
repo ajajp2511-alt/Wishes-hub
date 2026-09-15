@@ -8,7 +8,7 @@ import { LoadingSpinner } from './modules/manage-loading-spinner.js';
 import { LoadingSafety } from './modules/manage-loading-safety.js';
 import { LoadingAnalytics } from './modules/manage-loading-analytics.js';
 
-class LoadingManage {
+class LoadingManager {
   constructor() {
     this.queueCount = 0;
     this.startTime = null;
@@ -54,7 +54,7 @@ class LoadingManage {
   }
 }
 
-export const loader = new LoadingManage();
+export const loader = new LoadingManager();
 
 window.addEventListener('wishes-loader:show', (e) => loader.show(e.detail));
 window.addEventListener('wishes-loader:hide', () => loader.hide());
