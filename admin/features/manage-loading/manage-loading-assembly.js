@@ -3,7 +3,7 @@
  * Combines all sub-modules and registers views for the router registry
  */
 import { loader } from './manage-loading-core.js';
-import { LoadingConfig } from './manage-loading-config.js';
+import { LoadingConfig } from './manager-loading-config.js';
 import { LoadingHistory } from './modules/manage-loading-history.js';
 import { LoadingHealth } from './modules/manage-loading-health.js';
 import { LoadingSpinner } from './modules/manage-loading-spinner.js';
