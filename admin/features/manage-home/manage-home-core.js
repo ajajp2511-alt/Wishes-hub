@@ -13,7 +13,7 @@ class HomeDashboardManager {
     this.isInitialized = false;
   }
 
-  init(containerSelector = '#wishes-home-root') {
+  init(containerSelector = '#dynamic-content-root') {
     const container = document.querySelector(containerSelector);
     if (!container) return;
 
