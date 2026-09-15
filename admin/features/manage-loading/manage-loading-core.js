@@ -2,13 +2,13 @@
  * manage-loading-core.js
  * Core show/hide logic, queue management, and Custom Events dispatcher
  */
-import { LoadingConfig } from './manager-loading-config.js';
+import { LoadingConfig } from './manage-loading-config.js';
 import { LoadingOverlay } from './modules/manage-loading-overlay.js';
 import { LoadingSpinner } from './modules/manage-loading-spinner.js';
 import { LoadingSafety } from './modules/manage-loading-safety.js';
 import { LoadingAnalytics } from './modules/manage-loading-analytics.js';
 
-class LoadingManager {
+class LoadingManage {
   constructor() {
     this.queueCount = 0;
     this.startTime = null;
@@ -54,7 +54,7 @@ class LoadingManager {
   }
 }
 
-export const loader = new LoadingManager();
+export const loader = new LoadingManage();
 
 window.addEventListener('wishes-loader:show', (e) => loader.show(e.detail));
 window.addEventListener('wishes-loader:hide', () => loader.hide());
