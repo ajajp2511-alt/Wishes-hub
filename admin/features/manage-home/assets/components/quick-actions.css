@@ -2,36 +2,54 @@
  * Quick Actions Component Styling
  */
 #wh-actions-widget {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 20px;
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#wh-actions-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 #wh-actions-widget h3 {
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-size: 16px;
+  font-weight: 600;
   color: #60a5fa;
+  letter-spacing: -0.01em;
 }
 
 .wh-actions-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .wh-actions-grid button, .wh-btn-secondary {
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
+  font-family: inherit;
+  font-size: 14px;
+  transition: background 0.15s ease, transform 0.1s ease;
+  width: 100%;
+  text-align: center;
 }
 
 .wh-actions-grid button:hover, .wh-btn-secondary:hover {
   background: #2563eb;
-    }
+}
+
+.wh-actions-grid button:active, .wh-btn-secondary:active {
+  transform: scale(0.98);
+}
