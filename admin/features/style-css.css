@@ -32,6 +32,9 @@
 /* 10. Feature Flags & Staging CSS */
 @import url('./feature-flags-staging/assets/flags-style.css');
 
+/* 11. Manage Home Feature CSS */
+@import url('./admin/features/manage-home/assets/manage-home.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
