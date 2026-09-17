@@ -14,8 +14,16 @@ class HomeDashboardManager {
   }
 
   init(containerSelector = '#dynamic-content-root') {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
+    // Safe selector resolution: Automatically handles IDs passed with or without '#'
+    const safeSelector = containerSelector.startsWith('#') || containerSelector.startsWith('.')
+      ? containerSelector
+      : `#${containerSelector}`;
+      
+    const container = document.querySelector(safeSelector);
+    if (!container) {
+      console.error(`❌ Dashboard container not found for selector: ${containerSelector}`);
+      return;
+    }
 
     container.innerHTML = `
       <div class="wh-home-wrapper">
