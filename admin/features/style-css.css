@@ -33,7 +33,7 @@
 @import url('./feature-flags-staging/assets/flags-style.css');
 
 /* 11. Manage Home Feature CSS */
-@import url('./admin/features/manage-home/assets/manage-home.css');
+@import url('./admin/features/manage-home/assets/home-style.css);
 
 /* ==========================================
    📌 GENERAL RESETS & STYLES
