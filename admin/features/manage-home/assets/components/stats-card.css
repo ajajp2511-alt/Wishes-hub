@@ -2,22 +2,33 @@
  * Stats Card Component Styling
  */
 #wh-stats-card {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 20px;
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#wh-stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 #wh-stats-card h3 {
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-size: 16px;
+  font-weight: 600;
   color: #60a5fa;
+  letter-spacing: -0.01em;
 }
 
 .wh-stats-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  color: #e2e8f0;
+  font-size: 14px;
 }
