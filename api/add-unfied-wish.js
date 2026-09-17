@@ -1,25 +1,7 @@
 // Wishes-hub/api/add-unified-wish.js
-// Patel Studio - 2026
-// Combined Engine for Realtime Database Sync
+// Combined Engine for Google Sheets Database Sync
 
-import admin from 'firebase-admin';
-
-// FIREBASE ADMIN SDK CRASH-PROOF INITIALIZATION
-if (!admin.apps.length) {
-    try {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
-            }),
-            databaseURL: process.env.FIREBASE_DATABASE_URL
-        });
-        console.log("🚀 Firebase Admin Engine initialized successfully in Unified Router!");
-    } catch (error) {
-        console.error("🚨 Firebase Admin Initialization Failed:", error);
-    }
-}
+import { appendToGoogleSheet } from './sheets.js'; // Google Sheets handler connection
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -74,33 +56,32 @@ export default async function handler(req, res) {
         }
 
         // ==========================================================
-        // 2. REALTIME DATABASE PUSH ENGINE (Firestore se Realtime DB kiya)
+        // 2. GOOGLE SHEETS SYNC ENGINE (Replaced Firebase)
         // ==========================================================
-        const db = admin.database();
-        const wishesRef = db.ref('wishes').push();
-        const newKey = wishesRef.key;
+        const uniqueWishId = `WISH_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        const createdAt = new Date().toISOString();
 
-        const wishData = {
-            id: newKey,
-            title: wishText,              // Global naming format mapping
-            wishText: wishText,           // Fallback support for older frontend pages
-            category: mainCategory,        
-            mainCategory: mainCategory,   // Fallback supporting code
+        const wishRowData = {
+            id: uniqueWishId,
+            title: wishText,
+            wishText: wishText,
+            category: mainCategory,
+            mainCategory: mainCategory,
             sub_category: subCategory || '',
-            subCategory: subCategory || '', 
-            image: finalImageLink,
-            tgMessageId: telegramMessageId,
+            subCategory: subCategory || '',
+            image: finalImageLink || '',
+            tgMessageId: telegramMessageId || '',
             status: "active",
-            createdAt: new Date().toISOString()
+            createdAt: createdAt
         };
 
-        // Realtime database node save sequence
-        await wishesRef.set(wishData);
+        // Append data to Google Sheets via sheets.js helper
+        await appendToGoogleSheet(wishRowData);
 
         return res.status(200).json({
             success: true,
-            message: "Wish Published onto the Synchronized Database!",
-            wishId: newKey,
+            message: "Wish Published onto Google Sheets Successfully!",
+            wishId: uniqueWishId,
             tgMessageId: telegramMessageId
         });
 
