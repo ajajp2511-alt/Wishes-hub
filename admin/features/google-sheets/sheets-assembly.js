@@ -30,6 +30,11 @@ export class SheetsAssembly {
     this.activeSheetRows = [];
   }
 
+  // Universal Smart Router compatibility wrapper
+  initGoogleSheets(rootId) {
+    return this.init(rootId);
+  }
+
   init(rootId) {
     this.container = document.getElementById(rootId);
     if (!this.container) return;
