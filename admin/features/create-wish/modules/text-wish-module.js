@@ -14,8 +14,10 @@ export class TextWishModule {
   }
 
   bindEvents(onUpdate) {
-    document.getElementById('input-content')?.addEventListener('input', (e) => {
-      onUpdate({ Content: e.target.value });
+    const contentInput = document.getElementById('input-content');
+    
+    contentInput?.addEventListener('input', (e) => {
+      onUpdate({ Content: e.target.value.trim() });
     });
   }
 }
