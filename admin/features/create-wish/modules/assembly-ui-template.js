@@ -6,8 +6,8 @@
 import { categoriesConfig } from '../category-data.js';
 
 export function renderAssemblyLayout(container) {
-  const categoryKeys = Object.keys(categoriesConfig);
-  const firstCategory = categoryKeys[0];
+  const categoryKeys = Object.keys(categoriesConfig || {});
+  const firstCategory = categoryKeys[0] || '';
   const firstSubCategories = categoriesConfig[firstCategory] || [];
 
   container.innerHTML = `
@@ -44,8 +44,8 @@ export function renderAssemblyLayout(container) {
           </select>
         </div>
 
-        <!-- Dynamic Active Sub-Module Slot -->
-        <div id="module-render-container"></div>
+        <!-- Dynamic Active Sub-Module Slot (ID aligned with Assembly loader) -->
+        <div id="create-wish-render-container"></div>
 
         <div class="form-actions">
           <button id="btn-ai-generate" type="button" class="btn-secondary">✨ AI Generate</button>
