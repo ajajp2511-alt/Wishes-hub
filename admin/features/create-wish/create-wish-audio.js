@@ -8,12 +8,13 @@ export class CreateWishAudio {
     this.mediaRecorder = null;
     this.audioChunks = [];
     this.recordedAudioBlob = null;
+    this.mediaStream = null;
   }
 
   async startRecording() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(this.mediaStream);
       this.audioChunks = [];
 
       this.mediaRecorder.ondataavailable = (event) => {
@@ -38,12 +39,21 @@ export class CreateWishAudio {
       }
 
       this.mediaRecorder.onstop = () => {
-        this.recordedAudioBlob = new Blob(this.audioChunks, { type: 'audio/mp3' });
+        const mimeType = this.mediaRecorder.mimeType || 'audio/webm';
+        this.recordedAudioBlob = new Blob(this.audioChunks, { type: mimeType });
         const audioUrl = URL.createObjectURL(this.recordedAudioBlob);
+
+        // Release microphone hardware resources
+        if (this.mediaStream) {
+          this.mediaStream.getTracks().forEach((track) => track.stop());
+          this.mediaStream = null;
+        }
+
         resolve({
           success: true,
           audioBlob: this.recordedAudioBlob,
-          audioUrl
+          audioUrl,
+          mimeType
         });
       };
 
