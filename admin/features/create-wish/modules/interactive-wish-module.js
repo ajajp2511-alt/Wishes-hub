@@ -21,6 +21,13 @@ export class InteractiveWishModule {
         <input type="password" id="input-pin-code" maxlength="6" placeholder="Set 4-6 digit PIN" />
       </div>
     `;
+
+    // Trigger initial default widget config load
+    const defaultWidgetSelect = document.getElementById('interactive-widget-type');
+    if (defaultWidgetSelect && createWishInteractiveInstance) {
+      const initialConfig = createWishInteractiveInstance.buildWidgetConfig(defaultWidgetSelect.value);
+      // We can let the parent controller handle initial state or leave it to change event
+    }
   }
 
   bindEvents(onUpdate) {
@@ -30,8 +37,14 @@ export class InteractiveWishModule {
     });
 
     document.getElementById('input-pin-code')?.addEventListener('input', (e) => {
-      const res = createWishInteractiveInstance.setupPinLock(e.target.value);
-      if (res.success) {
+      const pinValue = e.target.value.trim();
+      if (pinValue === '') {
+        onUpdate({ Passcode: '', IsProtected: false });
+        return;
+      }
+
+      const res = createWishInteractiveInstance.setupPinLock(pinValue);
+      if (res && res.success) {
         onUpdate({ Passcode: res.passcode, IsProtected: true });
       }
     });
