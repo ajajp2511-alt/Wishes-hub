@@ -41,3 +41,6 @@ export function init() {
 
     ui.init();
 }
+
+// Fallback default export for Universal Smart Router
+export default init;
