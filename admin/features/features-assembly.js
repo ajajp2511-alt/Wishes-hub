@@ -222,6 +222,16 @@ export class FeaturesAssembly {
 
     'platform-builds': { path: '/admin/features/platform-suite/platform-suite-assembly.js', initFn: 'init' },
     'platform-targets': { path: '/admin/features/platform-suite/platform-suite-assembly.js', initFn: 'init' },
+    
+    // --- User Permissions Module ---
+    'user-perm-types': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
+    'user-perm-config': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
+    'user-perm-messages': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
+
+    // --- Manage Permissions Module ---
+    'manage-perm-config': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
+    'manage-perm-roles': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
+    'manage-perm-actions': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
 
     'support-tickets': { path: '/admin/features/support/support-assembly.js', initFn: 'init' },
     'support-settings': { path: '/admin/features/support/support-assembly.js', initFn: 'init' }
