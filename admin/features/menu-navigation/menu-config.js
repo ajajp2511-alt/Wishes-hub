@@ -46,6 +46,9 @@ import { globalLangNavItem } from './items/global-lang-nav.js';
 import { brandingNavItem } from './items/branding-nav.js';
 import { platformSuiteNavItem } from './items/platform-suite-nav.js';
 import { supportNavItem } from './items/support-nav.js';
+// Separate Permissions Nav Items
+import { userPermissionsNavItem } from './items/user-permissions-nav.js';
+import { managePermissionsNavItem } from './items/manage-permissions-nav.js';
 
 export const MENU_CONFIG = {
   BRAND: {
@@ -95,6 +98,9 @@ export const MENU_CONFIG = {
     globalLangNavItem,
     brandingNavItem,
     platformSuiteNavItem,
-    supportNavItem
+    supportNavItem,
+    // Separate Permissions Modules
+    userPermissionsNavItem,
+    managePermissionsNavItem
   ]
 };
