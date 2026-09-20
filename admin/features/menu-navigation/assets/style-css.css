@@ -10,8 +10,8 @@
   left: 12px !important;
   width: 100%;
   max-width: 280px;
-  height: calc(100vh - 80px);
-  max-height: calc(100vh - 80px);
+  height: calc(100vh - 70px);
+  max-height: calc(100vh - 70px);
   overflow-y: auto !important;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -20,7 +20,7 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   padding: 16px;
-  padding-bottom: 120px; /* Updated bottom padding so the last modules (Permissions) are fully scrollable and visible */
+  padding-bottom: 160px !important; /* Fixed padding taaki saare modules end tak scroll ho sakein */
   box-sizing: border-box;
   z-index: 9999;
   
@@ -75,7 +75,7 @@ body.sidebar-mobile-open .sidebar-backdrop,
   outline: none;
 }
 
-/* Category Headers (Create Wish, Asset & Inventory Hub, etc.) */
+/* Category Headers */
 .main-menu-header, 
 .main-menu-item > div:first-child,
 .main-menu-item > a {
@@ -92,10 +92,10 @@ body.sidebar-mobile-open .sidebar-backdrop,
   background-color: #f8fafc;
 }
 
-/* Sub-items (Text & Quote Wish, Animation List, etc.) */
+/* Sub-items */
 .sub-menu-list, 
 .main-menu-item > ul {
-  display: none; /* Sub-items ko hide rakhega jab tak open class na ho */
+  display: none;
   padding-left: 0px;
   margin: 6px 0 12px 0;
   list-style: none;
@@ -107,7 +107,7 @@ body.sidebar-mobile-open .sidebar-backdrop,
   display: block !important;
 }
 
-/* Sub-item Text Styling (Block Cards with Bigger Text) */
+/* Sub-item Text Styling */
 .sub-menu-item, 
 .sub-menu-list li, 
 .main-menu-item ul li {
