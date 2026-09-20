@@ -72,20 +72,21 @@ function renderMenuUI(menuInstance) {
   items.forEach(item => {
     const hasSubItems = item.subItems && item.subItems.length > 0;
     
+    // Updated classes (.main-menu-item and .main-menu-header) to match CSS
     html += `
-      <li class="menu-item" style="margin-bottom: 5px;">
-        <div class="menu-main-link" data-id="${item.id}" style="padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+      <li class="main-menu-item" style="margin-bottom: 5px;">
+        <div class="main-menu-header" data-id="${item.id}">
           <span>${item.icon || ''} ${item.label}</span>
           ${hasSubItems ? '<span class="arrow">▼</span>' : ''}
         </div>
     `;
 
     if (hasSubItems) {
-      html += `<ul class="sub-menu-list" style="list-style: none; padding-left: 20px; display: none;">`;
+      html += `<ul class="sub-menu-list">`;
       item.subItems.forEach(sub => {
         html += `
-          <li style="padding: 6px 10px;">
-            <a href="#" class="sub-item-link" data-subid="${sub.id}" style="text-decoration: none; color: inherit;">${sub.label}</a>
+          <li class="sub-menu-item">
+            <a href="#" class="sub-item-link" data-subid="${sub.id}" style="text-decoration: none; color: inherit; display: block;">${sub.label}</a>
           </li>
         `;
       });
@@ -98,15 +99,18 @@ function renderMenuUI(menuInstance) {
   html += `</ul>`;
   navContainer.innerHTML = html;
 
-  // Event listeners for accordion toggle
-  navContainer.querySelectorAll('.menu-main-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const mainId = link.getAttribute('data-id');
-      const subList = link.nextElementSibling;
+  // Event listeners for accordion toggle using .open class and .main-menu-header
+  navContainer.querySelectorAll('.main-menu-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const parentLi = header.closest('.main-menu-item');
+      const mainId = header.getAttribute('data-id');
       
-      if (subList && subList.classList.contains('sub-menu-list')) {
-        const isExpanded = menuInstance.toggleAccordion(mainId);
-        subList.style.display = isExpanded ? 'block' : 'none';
+      const isExpanded = menuInstance.toggleAccordion(mainId);
+      
+      if (isExpanded) {
+        parentLi.classList.add('open');
+      } else {
+        parentLi.classList.remove('open');
       }
     });
   });
