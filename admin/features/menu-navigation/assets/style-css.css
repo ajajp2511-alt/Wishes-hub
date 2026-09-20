@@ -20,7 +20,7 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: 120px; /* Updated bottom padding so the last modules (Permissions) are fully scrollable and visible */
   box-sizing: border-box;
   z-index: 9999;
   
