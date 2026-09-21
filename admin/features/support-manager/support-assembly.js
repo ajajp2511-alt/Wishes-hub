@@ -34,6 +34,17 @@ window.triggerGoogleSheetsSync = (id) => {
 window.triggerHandoff = (id) => handleHumanHandoff(core, ui, id);
 window.applyCanned = (id, index) => handleApplyCannedResponse(core, ui, id, index);
 
+// ✅ Add this export init function for the Universal Smart Router
+export function init(containerId) {
+    const root = document.getElementById(containerId);
+    if (root) {
+        ui.init();
+    }
+}
+
+// Fallback for direct page load
 document.addEventListener('DOMContentLoaded', () => {
-    ui.init();
+    if (!document.getElementById('dynamic-content-root')) {
+        ui.init();
+    }
 });
