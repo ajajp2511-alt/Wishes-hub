@@ -30,4 +30,11 @@ export class UserPermissionsMic {
             return { success: false, error: err.message };
         }
     }
+
+    static checkStatus() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            return 'unsupported';
+        }
+        return userPermissionsCore.getPermissionState(PERMISSION_TYPES.MICROPHONE);
+    }
 }
