@@ -125,3 +125,10 @@ export class UserPermissionsAssembly {
         this.renderUI();
     }
 }
+
+// Universal Smart Router compatibility wrapper
+export async function init(containerElement) {
+    const assembly = new UserPermissionsAssembly(containerElement);
+    await assembly.init();
+    return assembly;
+}
