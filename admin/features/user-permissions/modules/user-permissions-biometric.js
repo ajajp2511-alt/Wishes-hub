@@ -36,4 +36,11 @@ export class UserPermissionsBiometric {
             return { success: false, error: err.message };
         }
     }
+
+    static checkStatus() {
+        if (!window.PublicKeyCredential) {
+            return 'unsupported';
+        }
+        return userPermissionsCore.getPermissionState(PERMISSION_TYPES.BIOMETRIC);
+    }
 }
