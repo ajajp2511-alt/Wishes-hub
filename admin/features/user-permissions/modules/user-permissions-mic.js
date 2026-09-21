@@ -1,5 +1,5 @@
 /**
- * User Permissions - Microphone Sub-Module
+ * User Permissions - Microphone Sub-Module (Enhanced)
  * Manages audio recording permissions for custom voice greetings.
  */
 
@@ -14,7 +14,15 @@ export class UserPermissionsMic {
         }
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Enhanced with standard audio constraints for cleaner recordings
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: { 
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true 
+                } 
+            });
+            
             userPermissionsCore.setPermissionState(PERMISSION_TYPES.MICROPHONE, 'granted');
             return { success: true, stream };
         } catch (err) {
