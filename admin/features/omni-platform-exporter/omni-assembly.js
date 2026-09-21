@@ -12,7 +12,6 @@ window.triggerCloudBuild = (targetId) => {
     }
 };
 
-// ✅ Add this export init function for the Universal Smart Router
 export function init(containerId) {
     const root = document.getElementById(containerId);
     if (root) {
@@ -20,7 +19,6 @@ export function init(containerId) {
     }
 }
 
-// Fallback for direct page load
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('dynamic-content-root')) {
         ui.init();
