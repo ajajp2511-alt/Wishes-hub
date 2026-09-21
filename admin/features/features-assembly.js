@@ -220,8 +220,8 @@ export class FeaturesAssembly {
     'branding-variants': { path: '/admin/features/branding/branding-assembly.js', initFn: 'init' },
     'branding-watermark': { path: '/admin/features/branding/branding-assembly.js', initFn: 'init' },
 
-    'platform-builds': { path: '/admin/features/omni-platform-exporter/platform-assembly.js', initFn: 'init' },
-    'platform-targets': { path: '/admin/features/omni-platform-exporter/platform-assembly.js', initFn: 'init' },
+    'platform-builds': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
+    'platform-targets': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
     
     // --- User Permissions Module ---
     'user-perm-types': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
