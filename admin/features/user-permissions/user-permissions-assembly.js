@@ -1,4 +1,4 @@
- /**
+/**
  * User Permissions - Assembly File
  * Binds core logic, UI rendering, and all sub-modules together.
  */
@@ -46,20 +46,42 @@ export class UserPermissionsAssembly {
             return;
         }
 
-        // Load initial core state
-        await userPermissionsCore.init();
+        try {
+            // Load initial core state
+            await userPermissionsCore.init();
 
-        // Render main UI shell
-        this.renderUI();
-        
-        // Bind event listeners for buttons/actions
-        this.bindEvents();
+            // Render main UI shell
+            this.renderUI();
+            
+            // Bind event listeners for buttons/actions
+            this.bindEvents();
 
-        // Run background status checks where applicable
-        await UserPermissionsBattery.checkBatteryStatus();
+            // Run background status checks where applicable
+            await UserPermissionsBattery.checkBatteryStatus();
+        } catch (err) {
+            console.error('Error initializing UserPermissionsAssembly:', err);
+            this.container.innerHTML = `<div class="permissions-error">Failed to load permissions module. Please refresh.</div>`;
+        }
     }
 
     renderUI() {
+        // Safe status fetchers with try-catch fallback
+        const getSafeStatus = (module, fallback = 'prompt') => {
+            try {
+                if (module && typeof module.checkStatus === 'function') {
+                    return module.checkStatus();
+                }
+            } catch (e) {
+                console.warn('Status check failed:', e);
+            }
+            return fallback;
+        };
+
+        const notifStatus = getSafeStatus(UserPermissionsNotifications, 'prompt');
+        const locStatus = getSafeStatus(UserPermissionsLocation, 'prompt');
+        const micStatus = getSafeStatus(UserPermissionsMic, 'prompt');
+        const bioStatus = getSafeStatus(UserPermissionsBiometric, 'prompt');
+
         this.container.innerHTML = `
             <div class="user-permissions-panel">
                 <h3>Device & User Permissions Management</h3>
@@ -68,25 +90,25 @@ export class UserPermissionsAssembly {
                 <div class="permissions-grid">
                     <div class="permission-card" data-perm="${PERMISSION_TYPES.NOTIFICATIONS}">
                         <span class="perm-name">Push Notifications</span>
-                        <span class="perm-status status-${UserPermissionsNotifications.checkStatus()}">${UserPermissionsNotifications.checkStatus()}</span>
+                        <span class="perm-status status-${notifStatus}">${notifStatus}</span>
                         <button class="btn-perm-action" data-action="notification">Request Access</button>
                     </div>
 
                     <div class="permission-card" data-perm="${PERMISSION_TYPES.LOCATION}">
                         <span class="perm-name">Geolocation (Region Wishes)</span>
-                        <span class="perm-status status-prompt">Check</span>
+                        <span class="perm-status status-${locStatus}">${locStatus}</span>
                         <button class="btn-perm-action" data-action="location">Get Location</button>
                     </div>
 
                     <div class="permission-card" data-perm="${PERMISSION_TYPES.MICROPHONE}">
                         <span class="perm-name">Microphone (Voice Greeting)</span>
-                        <span class="perm-status status-prompt">Check</span>
+                        <span class="perm-status status-${micStatus}">${micStatus}</span>
                         <button class="btn-perm-action" data-action="mic">Enable Mic</button>
                     </div>
 
                     <div class="permission-card" data-perm="${PERMISSION_TYPES.BIOMETRIC}">
                         <span class="perm-name">Biometric / Passkey</span>
-                        <span class="perm-status status-prompt">Check</span>
+                        <span class="perm-status status-${bioStatus}">${bioStatus}</span>
                         <button class="btn-perm-action" data-action="biometric">Verify</button>
                     </div>
                 </div>
@@ -108,7 +130,9 @@ export class UserPermissionsAssembly {
             }
 
             if (e.target.id === 'btn-export-perms') {
-                UserPermissionsImportExport.exportData();
+                if (UserPermissionsImportExport && typeof UserPermissionsImportExport.exportData === 'function') {
+                    UserPermissionsImportExport.exportData();
+                }
             }
 
             if (e.target.id === 'btn-wakelock-toggle') {
@@ -129,13 +153,19 @@ export class UserPermissionsAssembly {
                 await UserPermissionsNotifications.requestAndRegister();
                 break;
             case 'location':
-                await UserPermissionsLocation.requestLocation();
+                if (typeof UserPermissionsLocation.requestLocation === 'function') {
+                    await UserPermissionsLocation.requestLocation();
+                }
                 break;
             case 'mic':
-                await UserPermissionsMic.requestMicrophone();
+                if (typeof UserPermissionsMic.requestMicrophone === 'function') {
+                    await UserPermissionsMic.requestMicrophone();
+                }
                 break;
             case 'biometric':
-                await UserPermissionsBiometric.verifyBiometric();
+                if (typeof UserPermissionsBiometric.verifyBiometric === 'function') {
+                    await UserPermissionsBiometric.verifyBiometric();
+                }
                 break;
             default:
                 console.warn('Unknown permission action:', actionType);
