@@ -1,5 +1,5 @@
 /**
- * User Permissions - Stylesheet
+ * User Permissions - Stylesheet (Enhanced)
  */
 
 .user-permissions-panel {
@@ -35,6 +35,12 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.permission-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
 .perm-name {
@@ -51,6 +57,7 @@
     border-radius: 4px;
     width: fit-content;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .status-granted {
@@ -66,4 +73,10 @@
 .status-prompt {
     background: #fff3cd;
     color: #856404;
+}
+
+.status-unsupported,
+.status-error {
+    background: #e2e3e5;
+    color: #383d41;
 }
