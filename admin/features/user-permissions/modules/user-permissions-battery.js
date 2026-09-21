@@ -1,5 +1,5 @@
 /**
- * User Permissions - Battery Status Sub-Module
+ * User Permissions - Battery Status Sub-Module (Enhanced with Real-time Listeners)
  * Checks device battery level to toggle power-saving mode for animations.
  */
 
@@ -14,19 +14,28 @@ export class UserPermissionsBattery {
 
         try {
             const battery = await navigator.getBattery();
-            const isLow = battery.level <= userPermissionsCore.config.batterySaverThreshold;
             
-            userPermissionsCore.setPermissionState(
-                PERMISSION_TYPES.BATTERY, 
-                isLow ? 'power-saver-active' : 'normal'
-            );
+            const evaluateAndSave = (bat) => {
+                const isLow = bat.level <= userPermissionsCore.config.batterySaverThreshold;
+                
+                userPermissionsCore.setPermissionState(
+                    PERMISSION_TYPES.BATTERY, 
+                    isLow ? 'power-saver-active' : 'normal'
+                );
 
-            return {
-                supported: true,
-                level: battery.level,
-                charging: battery.charging,
-                isLowPower: isLow
+                return {
+                    supported: true,
+                    level: bat.level,
+                    charging: bat.charging,
+                    isLowPower: isLow
+                };
             };
+
+            // Listen to real-time changes in battery level or charging state
+            battery.addEventListener('levelchange', () => evaluateAndSave(battery));
+            battery.addEventListener('chargingchange', () => evaluateAndSave(battery));
+
+            return evaluateAndSave(battery);
         } catch (e) {
             console.error('Battery API error', e);
             return { supported: false, error: e.message };
