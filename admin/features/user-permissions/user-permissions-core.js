@@ -11,6 +11,14 @@ class UserPermissionsCore {
         this.state = this.loadState();
     }
 
+    async init() {
+        // Ensure state is refreshed and ready on boot
+        if (!this.state) {
+            this.state = this.loadState();
+        }
+        return true;
+    }
+
     loadState() {
         try {
             const saved = localStorage.getItem(this.config.storageKey);
