@@ -1,5 +1,5 @@
 /**
- * User Permissions - Location Sub-Module
+ * User Permissions - Location Sub-Module (Enhanced)
  * Fetches geolocation to recommend regional and local festival wishes.
  */
 
@@ -20,14 +20,19 @@ export class UserPermissionsLocation {
                     resolve({
                         success: true,
                         latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy
                     });
                 },
                 (error) => {
                     userPermissionsCore.setPermissionState(PERMISSION_TYPES.LOCATION, 'denied');
-                    resolve({ success: false, error: error.message });
+                    resolve({ success: false, error: error.message, code: error.code });
                 },
-                { timeout: 10000, maximumAge: 60000 }
+                { 
+                    enableHighAccuracy: false, // Set to false for faster response and lower battery drain
+                    timeout: 10000, 
+                    maximumAge: 60000 
+                }
             );
         });
     }
