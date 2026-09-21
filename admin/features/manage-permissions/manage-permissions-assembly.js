@@ -10,8 +10,13 @@ import { ManageUsersModule } from './modules/manage-permissions-users.js';
 import { PermissionAuditModule } from './modules/manage-permissions-audit.js';
 
 export class ManagePermissionsAssembly {
-    constructor(containerId) {
-        this.container = document.getElementById(containerId);
+    constructor(containerInput) {
+        // Support both string ID or direct DOM element
+        if (typeof containerInput === 'string') {
+            this.container = document.getElementById(containerInput);
+        } else {
+            this.container = containerInput;
+        }
     }
 
     init() {
@@ -75,4 +80,10 @@ export class ManagePermissionsAssembly {
             });
         });
     }
-        }
+}
+
+// 🟢 Router ke liye required module-level init export
+export function init(container) {
+    const assembly = new ManagePermissionsAssembly(container || 'app');
+    assembly.init();
+}
