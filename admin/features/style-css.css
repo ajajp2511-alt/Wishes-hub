@@ -38,6 +38,9 @@
 /* 12. User Permissions Feature CSS */
 @import url('./user-permissions/assets/user-permissions.css');
 
+/* 13. Support Manager Feature CSS */
+@import url('./support-manager/assets/support-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
