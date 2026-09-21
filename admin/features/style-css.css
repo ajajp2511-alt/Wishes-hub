@@ -35,6 +35,9 @@
 /* 11. Manage Home Feature CSS */
 @import url('./manage-home/assets/home-style.css');
 
+/* 12. User Permissions Feature CSS */
+@import url('./user-permissions/assets/user-permissions.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
