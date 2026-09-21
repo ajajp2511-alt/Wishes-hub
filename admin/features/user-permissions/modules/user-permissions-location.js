@@ -36,4 +36,11 @@ export class UserPermissionsLocation {
             );
         });
     }
+
+    static checkStatus() {
+        if (!('geolocation' in navigator)) {
+            return 'unsupported';
+        }
+        return userPermissionsCore.getPermissionState(PERMISSION_TYPES.LOCATION);
+    }
 }
