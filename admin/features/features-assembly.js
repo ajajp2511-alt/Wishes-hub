@@ -233,8 +233,8 @@ export class FeaturesAssembly {
     'manage-perm-roles': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
     'manage-perm-actions': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
 
-    'support-tickets': { path: '/admin/features/support/support-assembly.js', initFn: 'init' },
-    'support-settings': { path: '/admin/features/support/support-assembly.js', initFn: 'init' }
+    'support-tickets': { path: '/admin/features/support-manager/support-assembly.js', initFn: 'init' },
+    'support-settings': { path: '/admin/features/support-manager/support-assembly.js', initFn: 'init' }
   };
 
   async safeRun(name, importPath, initFn) {
