@@ -1,75 +1,153 @@
-/**
- * User Permissions - Core Logic
- * Handles browser API integrations, state persistence, and permission wrappers.
+ /**
+ * User Permissions - Assembly File
+ * Binds core logic, UI rendering, and all sub-modules together.
  */
 
-import { DEFAULT_CONFIG, PERMISSION_TYPES } from './user-permissions-config.js';
+import { userPermissionsCore } from './user-permissions-core.js';
+import { UserPermissionsWakeLock } from './modules/user-permissions-wakelock.js';
+import { UserPermissionsBattery } from './modules/user-permissions-battery.js';
+import { UserPermissionsShare } from './modules/user-permissions-share.js';
+import { UserPermissionsNotifications } from './modules/user-permissions-notifications.js';
+import { UserPermissionsLocation } from './modules/user-permissions-location.js';
+import { UserPermissionsClipboard } from './modules/user-permissions-clipboard.js';
+import { UserPermissionsMic } from './modules/user-permissions-mic.js';
+import { UserPermissionsBiometric } from './modules/user-permissions-biometric.js';
+import { UserPermissionsImportExport } from './user-permissions-import-export.js';
+import { PERMISSION_TYPES } from './user-permissions-config.js';
 
-class UserPermissionsCore {
-    constructor() {
-        this.config = DEFAULT_CONFIG;
-        this.state = this.loadState();
-    }
+export class UserPermissionsAssembly {
+    constructor(containerElement) {
+        if (typeof containerElement === 'string') {
+            this.container = document.querySelector(containerElement);
+        } else {
+            this.container = containerElement;
+        }
 
-    loadState() {
-        try {
-            const saved = localStorage.getItem(this.config.storageKey);
-            if (saved) {
-                return JSON.parse(saved);
+        // Fallback: If no container is found, create one dynamically
+        if (!this.container) {
+            const existing = document.getElementById('dynamic-permissions-container');
+            if (existing) {
+                this.container = existing;
+            } else {
+                const newContainer = document.createElement('div');
+                newContainer.id = 'dynamic-permissions-container';
+                const mainContent = document.querySelector('main') || document.body;
+                mainContent.appendChild(newContainer);
+                this.container = newContainer;
             }
-        } catch (e) {
-            console.error('Failed to load user permissions state', e);
         }
 
-        // Default initial states
-        return {
-            grants: {},
-            lastUpdated: new Date().toISOString(),
-            auditLog: []
-        };
+        this.wakeLockModule = new UserPermissionsWakeLock();
     }
 
-    saveState() {
-        try {
-            this.state.lastUpdated = new Date().toISOString();
-            localStorage.setItem(this.config.storageKey, JSON.stringify(this.state));
-            return true;
-        } catch (e) {
-            console.error('Failed to save user permissions state', e);
-            return false;
+    async init() {
+        if (!this.container) {
+            console.error('UserPermissionsAssembly: Container element not found.');
+            return;
         }
+
+        // Load initial core state
+        await userPermissionsCore.init();
+
+        // Render main UI shell
+        this.renderUI();
+        
+        // Bind event listeners for buttons/actions
+        this.bindEvents();
+
+        // Run background status checks where applicable
+        await UserPermissionsBattery.checkBatteryStatus();
     }
 
-    setPermissionState(type, status) {
-        this.state.grants[type] = {
-            status, // 'granted', 'denied', 'prompt'
-            timestamp: Date.now()
-        };
-        this.saveState();
+    renderUI() {
+        this.container.innerHTML = `
+            <div class="user-permissions-panel">
+                <h3>Device & User Permissions Management</h3>
+                <p>Manage and monitor browser permissions, hardware sensors, and feature access for Wishes Hub.</p>
+                
+                <div class="permissions-grid">
+                    <div class="permission-card" data-perm="${PERMISSION_TYPES.NOTIFICATIONS}">
+                        <span class="perm-name">Push Notifications</span>
+                        <span class="perm-status status-${UserPermissionsNotifications.checkStatus()}">${UserPermissionsNotifications.checkStatus()}</span>
+                        <button class="btn-perm-action" data-action="notification">Request Access</button>
+                    </div>
+
+                    <div class="permission-card" data-perm="${PERMISSION_TYPES.LOCATION}">
+                        <span class="perm-name">Geolocation (Region Wishes)</span>
+                        <span class="perm-status status-prompt">Check</span>
+                        <button class="btn-perm-action" data-action="location">Get Location</button>
+                    </div>
+
+                    <div class="permission-card" data-perm="${PERMISSION_TYPES.MICROPHONE}">
+                        <span class="perm-name">Microphone (Voice Greeting)</span>
+                        <span class="perm-status status-prompt">Check</span>
+                        <button class="btn-perm-action" data-action="mic">Enable Mic</button>
+                    </div>
+
+                    <div class="permission-card" data-perm="${PERMISSION_TYPES.BIOMETRIC}">
+                        <span class="perm-name">Biometric / Passkey</span>
+                        <span class="perm-status status-prompt">Check</span>
+                        <button class="btn-perm-action" data-action="biometric">Verify</button>
+                    </div>
+                </div>
+
+                <div class="permissions-toolbar" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button id="btn-export-perms" class="btn-secondary">Export Permissions Config</button>
+                    <button id="btn-wakelock-toggle" class="btn-secondary">Toggle Wake Lock</button>
+                </div>
+            </div>
+        `;
     }
 
-    getPermissionState(type) {
-        return this.state.grants[type]?.status || 'prompt';
+    bindEvents() {
+        this.container.addEventListener('click', async (e) => {
+            const actionBtn = e.target.closest('.btn-perm-action');
+            if (actionBtn) {
+                const action = actionBtn.getAttribute('data-action');
+                await this.handleAction(action);
+            }
+
+            if (e.target.id === 'btn-export-perms') {
+                UserPermissionsImportExport.exportData();
+            }
+
+            if (e.target.id === 'btn-wakelock-toggle') {
+                if (this.wakeLockModule.wakeLock) {
+                    await this.wakeLockModule.releaseLock();
+                    e.target.textContent = 'Toggle Wake Lock (Off)';
+                } else {
+                    await this.wakeLockModule.requestLock();
+                    e.target.textContent = 'Toggle Wake Lock (Active)';
+                }
+            }
+        });
     }
 
-    async requestNotification() {
-        if (!('Notification' in window)) return 'unsupported';
-        const result = await Notification.requestPermission();
-        this.setPermissionState(PERMISSION_TYPES.NOTIFICATIONS, result);
-        return result;
-    }
-
-    async requestWakeLock() {
-        if (!('wakeLock' in navigator)) return 'unsupported';
-        try {
-            const lock = await navigator.wakeLock.request('screen');
-            this.setPermissionState(PERMISSION_TYPES.WAKELOCK, 'granted');
-            return { success: true, lock };
-        } catch (err) {
-            this.setPermissionState(PERMISSION_TYPES.WAKELOCK, 'denied');
-            return { success: false, error: err.message };
+    async handleAction(actionType) {
+        switch (actionType) {
+            case 'notification':
+                await UserPermissionsNotifications.requestAndRegister();
+                break;
+            case 'location':
+                await UserPermissionsLocation.requestLocation();
+                break;
+            case 'mic':
+                await UserPermissionsMic.requestMicrophone();
+                break;
+            case 'biometric':
+                await UserPermissionsBiometric.verifyBiometric();
+                break;
+            default:
+                console.warn('Unknown permission action:', actionType);
         }
+        // Re-render UI to reflect updated statuses
+        this.renderUI();
     }
 }
 
-export const userPermissionsCore = new UserPermissionsCore();
+// Universal Smart Router compatibility wrapper
+export async function init(containerElement) {
+    const assembly = new UserPermissionsAssembly(containerElement);
+    await assembly.init();
+    return assembly;
+}
