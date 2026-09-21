@@ -17,7 +17,11 @@ import { PERMISSION_TYPES } from './user-permissions-config.js';
 
 export class UserPermissionsAssembly {
     constructor(containerElement) {
-        this.container = containerElement;
+        if (typeof containerElement === 'string') {
+            this.container = document.querySelector(containerElement);
+        } else {
+            this.container = containerElement;
+        }
         this.wakeLockModule = new UserPermissionsWakeLock();
     }
 
