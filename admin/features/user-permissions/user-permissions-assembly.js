@@ -1,4 +1,4 @@
-/**
+ /**
  * User Permissions - Assembly File
  * Binds core logic, UI rendering, and all sub-modules together.
  */
@@ -22,6 +22,21 @@ export class UserPermissionsAssembly {
         } else {
             this.container = containerElement;
         }
+
+        // Fallback: If no container is found, create one dynamically
+        if (!this.container) {
+            const existing = document.getElementById('dynamic-permissions-container');
+            if (existing) {
+                this.container = existing;
+            } else {
+                const newContainer = document.createElement('div');
+                newContainer.id = 'dynamic-permissions-container';
+                const mainContent = document.querySelector('main') || document.body;
+                mainContent.appendChild(newContainer);
+                this.container = newContainer;
+            }
+        }
+
         this.wakeLockModule = new UserPermissionsWakeLock();
     }
 
