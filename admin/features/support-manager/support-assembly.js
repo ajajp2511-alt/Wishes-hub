@@ -38,36 +38,34 @@ window.triggerGoogleSheetsSync = (id) => {
 window.triggerHandoff = (id) => handleHumanHandoff(core, ui, id);
 window.applyCanned = (id, index) => handleApplyCannedResponse(core, ui, id, index);
 
-// ✅ Export init function with proper HTML layout injection
+// Export init function using the CSS classes
 export function init(containerId) {
     const root = document.getElementById(containerId);
     if (!root) return;
 
-    // Inject the necessary container layout for Support Tickets UI
     root.innerHTML = `
-        <div class="p-4 max-w-7xl mx-auto">
+        <div class="support-wrapper p-4 max-w-7xl mx-auto">
             <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Support Tickets</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-1">Support Tickets</h2>
                 <p class="text-xs text-gray-500">Manage user support queries, live chat, and automated FAQ syncing.</p>
             </div>
             
             <!-- Trending FAQs Container -->
             <div id="trendingFAQContainer" class="mb-4"></div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-4">
                 <!-- Ticket List Column -->
-                <div class="md:col-span-1 bg-white border rounded-lg p-3 h-[600px] overflow-y-auto shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-lg p-3 max-h-[400px] overflow-y-auto shadow-xs">
                     <h3 class="font-bold text-xs text-gray-700 uppercase mb-2">Inbox Tickets</h3>
                     <div id="ticketListContainer"></div>
                 </div>
 
                 <!-- Ticket Detail Column -->
-                <div class="md:col-span-2 h-[600px]" id="ticketDetailContainer"></div>
+                <div class="bg-white border border-gray-200 rounded-lg min-h-[500px]" id="ticketDetailContainer"></div>
             </div>
         </div>
     `;
 
-    // Now render the components inside the newly created containers
     ui.init();
 }
 
