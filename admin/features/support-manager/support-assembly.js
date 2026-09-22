@@ -38,30 +38,30 @@ window.triggerGoogleSheetsSync = (id) => {
 window.triggerHandoff = (id) => handleHumanHandoff(core, ui, id);
 window.applyCanned = (id, index) => handleApplyCannedResponse(core, ui, id, index);
 
-// Export init function using the CSS classes
+// Export init function using inline styles
 export function init(containerId) {
     const root = document.getElementById(containerId);
     if (!root) return;
 
     root.innerHTML = `
-        <div class="support-wrapper p-4 max-w-7xl mx-auto">
-            <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-1">Support Tickets</h2>
-                <p class="text-xs text-gray-500">Manage user support queries, live chat, and automated FAQ syncing.</p>
+        <div style="padding: 16px; max-width: 1200px; margin: 0 auto; color: #1e293b; font-family: inherit;">
+            <div style="margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin: 0 0 4px 0;">Support Tickets</h2>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Manage user support queries, live chat, and automated FAQ syncing.</p>
             </div>
             
             <!-- Trending FAQs Container -->
-            <div id="trendingFAQContainer" class="mb-4"></div>
+            <div id="trendingFAQContainer" style="margin-bottom: 16px;"></div>
 
-            <div class="flex flex-col gap-4">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
                 <!-- Ticket List Column -->
-                <div class="bg-white border border-gray-200 rounded-lg p-3 max-h-[400px] overflow-y-auto shadow-xs">
-                    <h3 class="font-bold text-xs text-gray-700 uppercase mb-2">Inbox Tickets</h3>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; max-height: 400px; overflow-y: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 style="font-weight: bold; font-size: 11px; color: #475569; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Inbox Tickets</h3>
                     <div id="ticketListContainer"></div>
                 </div>
 
                 <!-- Ticket Detail Column -->
-                <div class="bg-white border border-gray-200 rounded-lg min-h-[500px]" id="ticketDetailContainer"></div>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 500px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" id="ticketDetailContainer"></div>
             </div>
         </div>
     `;
