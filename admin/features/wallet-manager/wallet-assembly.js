@@ -5,7 +5,9 @@ import { handleManualAdjustment } from './modules/manual-adjustment.js';
 import { handleSendMoneyWish } from './modules/money-wishes.js';
 import { spinAndWinReward } from './modules/gamified-bonus.js';
 
-export function init() {
+export function init(containerId) {
+    const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+    
     const core = new WalletCore();
     const ui = new WalletUI(core);
 
@@ -39,7 +41,7 @@ export function init() {
         }
     };
 
-    ui.init();
+    ui.init(container);
 }
 
 // Fallback default export for Universal Smart Router
