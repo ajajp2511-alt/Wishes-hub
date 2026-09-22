@@ -2,6 +2,37 @@ console.log("⚡ features-assembly.js initialized with Universal Smart Router!")
 
 import { assembleHomeModule } from './manage-home/manage-home-assembly.js';
 
+// --- On-Screen Visual Error Logger Integration ---
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+  const errorMsg = `UI Error: ${msg} (${url}:${lineNo}:${columnNo})`;
+  console.error(errorMsg);
+  showVisualErrorOverlay(errorMsg);
+  return false;
+};
+
+window.addEventListener('unhandledrejection', function (event) {
+  const errorMsg = `Async Error: ${event.reason?.message || event.reason}`;
+  console.error(errorMsg);
+  showVisualErrorOverlay(errorMsg);
+});
+
+function showVisualErrorOverlay(message) {
+  let existingOverlay = document.getElementById('visual-error-logger-box');
+  if (!existingOverlay) {
+    existingOverlay = document.createElement('div');
+    existingOverlay.id = 'visual-error-logger-box';
+    existingOverlay.style.cssText = `
+      position: fixed; bottom: 10px; left: 10px; right: 10px; max-height: 200px;
+      overflow-y: auto; background: rgba(217, 83, 79, 0.95); color: white;
+      padding: 12px; border-radius: 8px; z-index: 99999; font-family: monospace;
+      font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    `;
+    document.body.appendChild(existingOverlay);
+  }
+  existingOverlay.innerHTML += `<div>❌ ${message}</div>`;
+}
+// ------------------------------------------------
+
 export class FeaturesAssembly {
   constructor() {
     console.log("🚀 Booting Dynamic System Architecture...");
@@ -285,9 +316,11 @@ export class FeaturesAssembly {
       }
 
       console.warn(`⚠️ Warning: No executable '${initFn}' method found in [${importPath}]`);
+      showVisualErrorOverlay(`No '${initFn}' found in ${importPath}`);
       return false;
     } catch (err) {
       console.error(`❌ Module dynamic import error [${name}]:`, err);
+      showVisualErrorOverlay(`Import Fail [${name}]: ${err.message}`);
       return false;
     }
   }
