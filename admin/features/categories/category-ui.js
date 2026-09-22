@@ -22,21 +22,22 @@ export class CategoryUI {
         const sectionInfo = document.getElementById('sectionInfo');
 
         if (type === 'Wishes') {
-            wishTab.className = "pb-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center";
-            shayariTab.className = "pb-3 font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition flex items-center";
-            sectionInfo.innerText = "Showing all categories under Wishes";
+            if (wishTab) wishTab.className = "pb-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center";
+            if (shayariTab) shayariTab.className = "pb-3 font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition flex items-center";
+            if (sectionInfo) sectionInfo.innerText = "Showing all categories under Wishes";
         } else {
-            shayariTab.className = "pb-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center";
-            wishTab.className = "pb-3 font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition flex items-center";
-            sectionInfo.innerText = "Showing all categories under Shayari";
+            if (shayariTab) shayariTab.className = "pb-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center";
+            if (wishTab) wishTab.className = "pb-3 font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition flex items-center";
+            if (sectionInfo) sectionInfo.innerText = "Showing all categories under Shayari";
         }
     }
 
     renderTableRows(data) {
         const tbody = document.getElementById('categoryTableBody');
+        if (!tbody) return;
         tbody.innerHTML = '';
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="py-6 px-6 text-center text-gray-400">No categories found.</td></tr>`;
             return;
         }
@@ -62,19 +63,34 @@ export class CategoryUI {
     }
 
     openModal() {
-        document.getElementById('modalCatType').value = this.core.activeTab;
-        document.getElementById('categoryModal').classList.remove('hidden');
-        document.getElementById('categoryModal').classList.add('flex');
+        const modalType = document.getElementById('modalCatType');
+        const modal = document.getElementById('categoryModal');
+        if (modalType) modalType.value = this.core.activeTab;
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
     }
 
     closeModal() {
-        document.getElementById('categoryModal').classList.add('hidden');
-        document.getElementById('categoryModal').classList.remove('flex');
-        document.getElementById('categoryForm').reset();
+        const modal = document.getElementById('categoryModal');
+        const form = document.getElementById('categoryForm');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        if (form) form.reset();
     }
 
     bindEvents() {
-        document.getElementById('categoryForm').addEventListener('submit', (e) => this.handlers.onAdd(e));
-        document.getElementById('searchCategory').addEventListener('input', () => this.handlers.onSearch());
+        const form = document.getElementById('categoryForm');
+        const searchInput = document.getElementById('searchCategory');
+
+        if (form) {
+            form.addEventListener('submit', (e) => this.handlers.onAdd(e));
+        }
+        if (searchInput) {
+            searchInput.addEventListener('input', () => this.handlers.onSearch());
+        }
     }
 }
