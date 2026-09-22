@@ -1,5 +1,5 @@
 /**
- * Categories Assembly Controller
+ * Categories Assembly Controller (Fixed Scope)
  * Path: admin/features/categories/categories-assembly.js
  */
 
@@ -12,13 +12,16 @@ import { handleSearchAndFilter } from './modules/filter-category.js';
 export const CategoriesAssembly = {
   init(rootId) {
     const core = new CategoryCore();
+    
+    // Pehle UI instance banayein taaki handlers ke andar 'ui' variable defined rahe
+    let ui = null;
 
     const handlers = {
       onAdd: (e) => handleAddCategory(core, ui, e),
       onSearch: () => handleSearchAndFilter(core, ui)
     };
 
-    const ui = new CategoryUI(core, handlers);
+    ui = new CategoryUI(core, handlers);
 
     // Expose handlers globally for template event bindings
     window.switchMainTab = (type) => ui.render(type);
@@ -30,14 +33,16 @@ export const CategoriesAssembly = {
       ui.render(core.activeTab);
     };
 
-    // Initialize UI directly without waiting for DOMContentLoaded
+    // Safe initialization with root container check
     if (typeof ui.init === 'function') {
       ui.init(rootId);
     } else {
-      ui.render();
+      const container = document.getElementById(rootId);
+      if (container) {
+        ui.render();
+      }
     }
   }
 };
 
-// Fallback default export agar router default import karta ho
 export default CategoriesAssembly;
