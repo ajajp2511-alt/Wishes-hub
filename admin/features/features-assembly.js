@@ -214,8 +214,8 @@ export class FeaturesAssembly {
     'categories-all': { path: './categories/category-assembly.js', initFn: 'init' },
     'categories-add': { path: './categories/category-assembly.js', initFn: 'init' },
 
-    'geo-settings': { path: './geo/geo-assembly.js', initFn: 'init' },
-    'geo-vpn-logs': { path: './geo/geo-assembly.js', initFn: 'init' },
+    'geo-settings': { path: './geo-fencing-manager/geo-assembly.js', initFn: 'init' },
+    'geo-vpn-logs': { path: './geo-fencing-manager/geo-assembly.js', initFn: 'init' },
 
     'lang-settings': { path: './global-language/global-language-assembly.js', initFn: 'init' },
     'lang-translations': { path: './global-language/global-language-assembly.js', initFn: 'init' },
