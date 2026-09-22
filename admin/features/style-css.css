@@ -44,6 +44,9 @@
 /* 14. Omni Platform Exporter Feature CSS */
 @import url('./omni-platform-exporter/assets/omni-style.css');
 
+/* 15. Logo Branding Manager Feature CSS */
+@import url('./logo-branding-manager/assets/branding-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
