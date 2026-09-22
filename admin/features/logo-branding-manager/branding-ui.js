@@ -4,9 +4,8 @@ export class BrandingUI {
     }
 
     init() {
-        // Bind global handler so inline onclick works smoothly
-        window.togglePlacementVisibility = (id) => {
-            const success = this.core.togglePlacement(id);
+        window.handleVisibilityToggle = (placementId) => {
+            const success = this.core.togglePlacement(placementId);
             if (success) {
                 this.render();
             }
@@ -56,7 +55,7 @@ export class BrandingUI {
                         <p class="text-xs text-gray-500">Category: <strong class="text-indigo-600">${p.category}</strong></p>
                     </div>
                     <div>
-                        <button onclick="window.togglePlacementVisibility('${p.id}')" class="text-xs text-white px-3 py-1.5 rounded transition font-semibold ${btnClass}">
+                        <button onclick="window.handleVisibilityToggle('${p.id}')" class="text-xs text-white px-3 py-1.5 rounded transition font-semibold ${btnClass}">
                             ${p.enabled ? 'Turn OFF' : 'Turn ON'}
                         </button>
                     </div>
