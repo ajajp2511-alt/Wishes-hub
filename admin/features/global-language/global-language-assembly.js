@@ -10,11 +10,16 @@ import { handleSwitchLanguage } from './modules/switch-language.js';
 
 const core = new GlobalLanguageCore();
 
+// Pehle 'ui' ka instance banayein (handlers ko null ya empty rakh kar)
+const ui = new GlobalLanguageUI(core, {});
+
+// Phir handlers define karein jisme 'ui' safely use ho sake
 const handlers = {
     onAdd: (e) => handleAddLanguage(core, ui, e)
 };
 
-const ui = new GlobalLanguageUI(core, handlers);
+// Agar GlobalLanguageUI me baad me handlers set karne ka method hai toh use karein, 
+// ya fir upar wale order ko theek karein:
 
 window.openLanguageModal = () => ui.openModal();
 window.closeLanguageModal = () => ui.closeModal();
