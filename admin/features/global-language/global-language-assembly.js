@@ -10,36 +10,44 @@ import { handleSwitchLanguage } from './modules/switch-language.js';
 
 const core = new GlobalLanguageCore();
 
-// Pehle 'ui' ka instance banayein (handlers ko null ya empty rakh kar)
-const ui = new GlobalLanguageUI(core, {});
-
-// Phir handlers define karein jisme 'ui' safely use ho sake
+// Saare handlers ko ek hi object mein define karein taaki UI ko turant mil sakein
 const handlers = {
-    onAdd: (e) => handleAddLanguage(core, ui, e)
+    onAdd: (e) => handleAddLanguage(core, uiInstance, e),
+    onDelete: (code) => handleDeleteLanguage(core, uiInstance, code),
+    onToggleStatus: (code) => handleToggleLanguageStatus(core, uiInstance, code),
+    setDefault: (code) => handleSetDefaultLanguage(core, uiInstance, code),
+    updateTrans: (group, key, langCode, value) => handleUpdateTranslation(core, uiInstance, group, key, langCode, value),
+    exportJSON: () => handleExportJSON(core),
+    importJSON: (e) => handleImportJSON(core, uiInstance, e),
+    switchLang: (code) => handleSwitchLanguage(core, uiInstance, code)
 };
 
-// Agar GlobalLanguageUI me baad me handlers set karne ka method hai toh use karein, 
-// ya fir upar wale order ko theek karein:
+// UI instance banate waqt handlers pass karein
+const uiInstance = new GlobalLanguageUI(core, handlers);
 
-window.openLanguageModal = () => ui.openModal();
-window.closeLanguageModal = () => ui.closeModal();
-window.setDefaultLang = (code) => handleSetDefaultLanguage(core, ui, code);
-window.toggleLangStatus = (code) => handleToggleLanguageStatus(core, ui, code);
-window.deleteLang = (code) => handleDeleteLanguage(core, ui, code);
-window.updateTrans = (group, key, langCode, value) => handleUpdateTranslation(core, ui, group, key, langCode, value);
+// Global window functions assign karein (agar HTML inline onclicks ke liye zaroori ho)
+window.openLanguageModal = () => uiInstance.openModal();
+window.closeLanguageModal = () => uiInstance.closeModal();
+window.setDefaultLang = (code) => handleSetDefaultLanguage(core, uiInstance, code);
+window.toggleLangStatus = (code) => handleToggleLanguageStatus(core, uiInstance, code);
+window.deleteLang = (code) => handleDeleteLanguage(core, uiInstance, code);
+window.updateTrans = (group, key, langCode, value) => handleUpdateTranslation(core, uiInstance, group, key, langCode, value);
 window.exportTranslations = () => handleExportJSON(core);
-window.triggerImportTranslations = (e) => handleImportJSON(core, ui, e);
-window.switchLang = (code) => handleSwitchLanguage(core, ui, code);
+window.triggerImportTranslations = (e) => handleImportJSON(core, uiInstance, e);
+window.switchLang = (code) => handleSwitchLanguage(core, uiInstance, code);
 
 export function init(containerId) {
     const container = document.getElementById(containerId);
     if (container) {
-        ui.init();
+        uiInstance.init(container);
+    } else {
+        console.error(`Container with ID "${containerId}" not found.`);
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (!document.getElementById('dynamic-content-root')) {
-        ui.init();
+    const rootElement = document.getElementById('dynamic-content-root');
+    if (rootElement) {
+        uiInstance.init(rootElement);
     }
 });
