@@ -211,8 +211,8 @@ export class FeaturesAssembly {
     'wallet-transactions': { path: './wallet-manager/wallet-assembly.js', initFn: 'init' },
     'wallet-commissions': { path: './wallet-manager/wallet-assembly.js', initFn: 'init' },
 
-    'categories-all': { path: './categories/categories-assembly.js', initFn: 'init' },
-    'categories-add': { path: './categories/categories-assembly.js', initFn: 'init' },
+    'categories-all': { path: './categories/category-assembly.js', initFn: 'init' },
+    'categories-add': { path: './categories/category-assembly.js', initFn: 'init' },
 
     'geo-settings': { path: './geo/geo-assembly.js', initFn: 'init' },
     'geo-vpn-logs': { path: './geo/geo-assembly.js', initFn: 'init' },
