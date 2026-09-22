@@ -3,7 +3,62 @@ export class WalletUI {
         this.core = core;
     }
 
-    init() {
+    init(container) {
+        if (container) {
+            container.innerHTML = `
+                <div class="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border shadow-sm">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Wallet & Financial Ledger</h2>
+                            <p class="text-sm text-gray-500">Monitor user balances, track transactions, and manage money wishes.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.triggerSendMoneyWishModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-gift"></i> Send Money Wish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Wallets Summary Grid -->
+                    <div class="space-y-3">
+                        <h3 class="text-md font-semibold text-gray-700">User Wallets Overview</h3>
+                        <div id="walletSummaryContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+
+                    <!-- Money Wishes Section -->
+                    <div class="space-y-3 mt-6">
+                        <h3 class="text-md font-semibold text-gray-700">Active Money Wishes</h3>
+                        <div id="moneyWishesContainer" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Transaction Ledger Section -->
+                    <div class="bg-white border rounded-xl shadow-sm overflow-hidden mt-8">
+                        <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                            <h3 class="text-md font-semibold text-gray-700">Transaction Ledger</h3>
+                            <span class="text-xs text-gray-500 font-mono">Real-time Financial Activity</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b bg-gray-50/50 text-xs font-semibold text-gray-500 uppercase">
+                                        <th class="p-3">TXN ID</th>
+                                        <th class="p-3">Timestamp</th>
+                                        <th class="p-3">User Email</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Amount</th>
+                                        <th class="p-3">Gateway</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Wish ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionLedgerContainer"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         this.render();
     }
 
@@ -52,9 +107,9 @@ export class WalletUI {
         const ledger = this.core.getLedger();
 
         ledger.forEach(txn => {
-            let badgeClass = 'ledger-badge-success';
-            if (txn.status === 'Pending') badgeClass = 'ledger-badge-pending';
-            if (txn.status === 'Escalated' || txn.status === 'Escrow') badgeClass = 'ledger-badge-escrow';
+            let badgeClass = 'bg-green-100 text-green-800';
+            if (txn.status === 'Pending') badgeClass = 'bg-yellow-100 text-yellow-800';
+            if (txn.status === 'Escalated' || txn.status === 'Escrow') badgeClass = 'bg-purple-100 text-purple-800';
 
             container.innerHTML += `
                 <tr class="border-b hover:bg-slate-50 text-xs">
