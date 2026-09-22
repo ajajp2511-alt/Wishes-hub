@@ -9,6 +9,17 @@ window.togglePlacementVisibility = (id) => {
     handleVisibilityToggle(core, ui, id);
 };
 
+export function init(containerId, moduleName) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        // Agar BrandingUI containerId ko use karta hai ya direct init() call hota hai
+        ui.init();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    ui.init();
+    // Agar direct page load ho toh
+    if (!document.getElementById('dynamic-content-root')?.innerHTML.trim()) {
+        ui.init();
+    }
 });
