@@ -4,6 +4,13 @@ export class BrandingUI {
     }
 
     init() {
+        // Bind global handler so inline onclick works smoothly
+        window.togglePlacementVisibility = (id) => {
+            const success = this.core.togglePlacement(id);
+            if (success) {
+                this.render();
+            }
+        };
         this.render();
     }
 
