@@ -1,5 +1,5 @@
 /**
- * Geo Fencing Assembly Controller (With HTML Shell Rendering)
+ * Geo Fencing Assembly Controller (Complete UI Mapping)
  * Path: admin/features/geo-fencing-manager/geo-assembly.js
  */
 
@@ -16,21 +16,30 @@ export const GeoAssembly = {
       return;
     }
 
-    // Container ke andar required HTML shell inject karein
+    // GeoUI ke saare required elements ko map karne wala HTML shell
     container.innerHTML = `
-      <div class="p-6 max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-800">Geo-Fencing & Localization</h1>
-            <p class="text-sm text-gray-500">Manage country whitelists and emergency kill-switches.</p>
-          </div>
-          <button onclick="window.togglePanicKillSwitch()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition">
-            <i class="fa-solid fa-triangle-exclamation mr-2"></i> Global Kill-Switch
-          </button>
+      <div class="p-6 max-w-7xl mx-auto space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Geo-Fencing & Cyber Fortress</h1>
+          <p class="text-sm text-gray-500">Manage global security configurations, whitelists, and live system audits.</p>
         </div>
 
-        <div id="geoContentContainer" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <!-- Geo UI will render its content here -->
+        <!-- 1. Kill Switch Status Container -->
+        <div id="killSwitchContainer"></div>
+
+        <!-- 2. AI Predictive Shield Container -->
+        <div id="aiPredictiveContainer"></div>
+
+        <!-- 3. Country Whitelist / Management Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Country Whitelists & Regional Gateways</h3>
+          <div id="geoCountryContainer"></div>
+        </div>
+
+        <!-- 4. Geo Logs Container -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Real-time Security Logs</h3>
+          <div id="geoLogsContainer"></div>
         </div>
       </div>
     `;
@@ -53,7 +62,7 @@ export const GeoAssembly = {
     };
 
     if (typeof ui.init === 'function') {
-        ui.init(rootId);
+        ui.init();
     } else {
         ui.render();
     }
