@@ -217,8 +217,8 @@ export class FeaturesAssembly {
     'lang-settings': { path: '/admin/features/global-lang/global-lang-assembly.js', initFn: 'init' },
     'lang-translations': { path: '/admin/features/global-lang/global-lang-assembly.js', initFn: 'init' },
 
-    'branding-variants': { path: '/admin/features/branding/branding-assembly.js', initFn: 'init' },
-    'branding-watermark': { path: '/admin/features/branding/branding-assembly.js', initFn: 'init' },
+    'branding-variants': { path: '/admin/features/logo-branding-manager/branding-assembly.js', initFn: 'init' },
+    'branding-watermark': { path: '/admin/features/logo-branding-manager/branding-assembly.js', initFn: 'init' },
 
     'platform-builds': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
     'platform-targets': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
