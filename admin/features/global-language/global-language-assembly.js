@@ -26,6 +26,15 @@ window.exportTranslations = () => handleExportJSON(core);
 window.triggerImportTranslations = (e) => handleImportJSON(core, ui, e);
 window.switchLang = (code) => handleSwitchLanguage(core, ui, code);
 
+export function init(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        ui.init();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    ui.init();
+    if (!document.getElementById('dynamic-content-root')) {
+        ui.init();
+    }
 });
