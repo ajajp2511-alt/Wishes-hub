@@ -11,6 +11,9 @@ export class FeaturesAssembly {
   }
 
   featureRegistry = {
+    // Menu System (Added to fix boot navigation error)
+    'menu': { path: './menu-navigation/menu-assembly.js', initFn: 'initMenu' },
+
     // Create Wish
     'create-text': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
     'create-image': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
@@ -337,7 +340,7 @@ export class FeaturesAssembly {
     const isSuccess = await this.safeRun(subId, config.path, config.initFn);
 
     if (!isSuccess) {
-      this.renderFallback(subId, "Module assembly loaded, but UI initialization requires configuration.");
+      this.renderFallback(subId, `Failed to initialize module from path: ${config.path}`);
     }
   }
 
@@ -346,7 +349,7 @@ export class FeaturesAssembly {
       this.root.innerHTML = `
         <div style="padding: 20px;">
           <h2 style="margin-bottom: 8px; text-transform: capitalize;">${subId.replace(/-/g, ' ')}</h2>
-          <p style="color: #666;">${message}</p>
+          <p style="color: #d9534f;">${message}</p>
         </div>
       `;
     }
