@@ -6,7 +6,92 @@ export class GlobalLanguageUI {
         this.filterLangCode = 'hi';
     }
 
-    init() {
+    init(container) {
+        if (container) {
+            container.innerHTML = `
+                <div class="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border shadow-sm">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Global Language & Translations</h2>
+                            <p class="text-sm text-gray-500">Manage site languages, active view states, and dynamic translation keys.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.openLanguageModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add Language
+                            </button>
+                            <button onclick="window.exportTranslations()" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition" title="Export JSON">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                            <label class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition cursor-pointer" title="Import JSON">
+                                <i class="fa-solid fa-upload"></i>
+                                <input type="file" accept=".json" onchange="window.triggerImportTranslations(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Languages List Section -->
+                    <div class="space-y-3">
+                        <h3 class="text-md font-semibold text-gray-700">Supported Languages</h3>
+                        <div id="languageListContainer" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Translations Matrix Section -->
+                    <div class="bg-white border rounded-xl shadow-sm overflow-hidden mt-8">
+                        <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                            <h3 class="text-md font-semibold text-gray-700">Translation Matrix</h3>
+                            <span class="text-xs text-gray-500 font-mono">Live Key-Value Mapping</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b bg-gray-50/50 text-xs font-semibold text-gray-500 uppercase">
+                                        <th class="py-3 px-4">Key / Group</th>
+                                        <th class="py-3 px-3">English (en)</th>
+                                        <th class="py-3 px-3">Hindi (hi)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="translationTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Language Modal -->
+                <div id="languageModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+                    <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl space-y-4">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <h3 class="font-bold text-gray-800 text-lg">Add New Language</h3>
+                            <button onclick="window.closeLanguageModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+                        <form id="languageForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Language Name</label>
+                                <input type="text" name="name" required placeholder="e.g. Spanish" class="w-full text-sm px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Native Name</label>
+                                <input type="text" name="nativeName" required placeholder="e.g. Español" class="w-full text-sm px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Language Code</label>
+                                    <input type="text" name="code" required placeholder="e.g. es" class="w-full text-sm px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Flag Emoji</label>
+                                    <input type="text" name="flag" required placeholder="🇪🇸" class="w-full text-sm px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-3 pt-2">
+                                <button type="button" onclick="window.closeLanguageModal()" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+                                <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-sm">Save Language</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
         this.render();
         this.bindEvents();
     }
@@ -135,14 +220,23 @@ export class GlobalLanguageUI {
     }
 
     openModal() {
-        document.getElementById('languageModal').classList.remove('hidden');
-        document.getElementById('languageModal').classList.add('flex');
+        const modal = document.getElementById('languageModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
     }
 
     closeModal() {
-        document.getElementById('languageModal').classList.add('hidden');
-        document.getElementById('languageModal').classList.remove('flex');
-        document.getElementById('languageForm').reset();
+        const modal = document.getElementById('languageModal');
+        const form = document.getElementById('languageForm');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        if (form) {
+            form.reset();
+        }
     }
 
     bindEvents() {
@@ -151,4 +245,4 @@ export class GlobalLanguageUI {
             form.addEventListener('submit', (e) => this.handlers.onAdd(e));
         }
     }
-  }
+    }
