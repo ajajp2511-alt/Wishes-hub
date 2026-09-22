@@ -50,6 +50,9 @@
 /* 16. Global Language Feature CSS */
 @import url('./global-language/assets/global-language-style.css');
 
+/* 17. Wallet Manager Feature CSS */
+@import url('./wallet-manager/assets/wallet-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
