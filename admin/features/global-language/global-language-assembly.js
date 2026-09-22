@@ -10,6 +10,7 @@ import { handleSwitchLanguage } from './modules/switch-language.js';
 
 let core = null;
 let uiInstance = null;
+let initializationError = null;
 
 try {
     core = new GlobalLanguageCore();
@@ -40,17 +41,29 @@ try {
 
 } catch (err) {
     console.error("❌ Error initializing Global Language module instances:", err);
+    initializationError = err;
 }
 
-export function init(containerId) {
+export async function init(containerId) {
     const container = document.getElementById(containerId);
-    if (container) {
+    if (!container) {
+        console.error(`Container with ID "${containerId}" not found.`);
+        return;
+    }
+
+    if (initializationError) {
+        container.innerHTML = `<div style="padding: 20px; color: #d9534f;"><h3>Initialization Error</h3><p>${initializationError.message || 'Failed to initialize core or UI instances.'}</p></div>`;
+        return;
+    }
+
+    try {
         if (uiInstance && typeof uiInstance.init === 'function') {
-            uiInstance.init(container);
+            await uiInstance.init(container);
         } else {
             container.innerHTML = `<div style="padding: 20px; color: #d9534f;"><h3>Error</h3><p>Language UI instance failed to initialize properly.</p></div>`;
         }
-    } else {
-        console.error(`Container with ID "${containerId}" not found.`);
+    } catch (err) {
+        console.error("❌ Error during module initialization rendering:", err);
+        container.innerHTML = `<div style="padding: 20px; color: #d9534f;"><h3>Runtime Error</h3><p>${err.message || 'Unknown error occurred while loading module content.'}</p></div>`;
     }
 }
