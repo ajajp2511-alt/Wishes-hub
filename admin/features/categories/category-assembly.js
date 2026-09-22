@@ -1,5 +1,5 @@
 /**
- * Categories Assembly Controller (Fixed Scope)
+ * Categories Assembly Controller (Defensive Guard)
  * Path: admin/features/categories/categories-assembly.js
  */
 
@@ -11,9 +11,13 @@ import { handleSearchAndFilter } from './modules/filter-category.js';
 
 export const CategoriesAssembly = {
   init(rootId) {
+    const container = document.getElementById(rootId);
+    if (!container) {
+      console.error(`Root container with ID "${rootId}" not found.`);
+      return;
+    }
+
     const core = new CategoryCore();
-    
-    // Pehle UI instance banayein taaki handlers ke andar 'ui' variable defined rahe
     let ui = null;
 
     const handlers = {
@@ -23,7 +27,6 @@ export const CategoriesAssembly = {
 
     ui = new CategoryUI(core, handlers);
 
-    // Expose handlers globally for template event bindings
     window.switchMainTab = (type) => ui.render(type);
     window.openModal = () => ui.openModal();
     window.closeModal = () => ui.closeModal();
@@ -33,14 +36,10 @@ export const CategoriesAssembly = {
       ui.render(core.activeTab);
     };
 
-    // Safe initialization with root container check
     if (typeof ui.init === 'function') {
       ui.init(rootId);
     } else {
-      const container = document.getElementById(rootId);
-      if (container) {
-        ui.render();
-      }
+      ui.render();
     }
   }
 };
