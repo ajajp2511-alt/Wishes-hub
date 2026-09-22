@@ -3,13 +3,34 @@ export class BrandingUI {
         this.core = core;
     }
 
-    init() {
+    init(container) {
         window.handleVisibilityToggle = (placementId) => {
             const success = this.core.togglePlacement(placementId);
             if (success) {
                 this.render();
             }
         };
+
+        if (container) {
+            container.innerHTML = `
+                <div class="p-4 max-w-4xl mx-auto space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h2 class="text-lg font-bold text-gray-800">Logo & Branding Manager</h2>
+                        <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-semibold">Active Studio Ecosystem</span>
+                    </div>
+                    <div id="aiBrandingAuditContainer"></div>
+                    <div class="bg-white border rounded-lg p-4 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-700 mb-3">Placement Visibility Control</h3>
+                        <div id="brandingPlacementsContainer"></div>
+                    </div>
+                    <div class="bg-white border rounded-lg p-4 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-700 mb-3">Audit Logs & History</h3>
+                        <div id="brandingLogsContainer"></div>
+                    </div>
+                </div>
+            `;
+        }
+
         this.render();
     }
 
