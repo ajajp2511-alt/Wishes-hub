@@ -1,4 +1,5 @@
-constructor(core) {
+export class OmniUI {
+    constructor(core) {
         this.core = core;
     }
 
