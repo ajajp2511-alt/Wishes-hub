@@ -12,229 +12,229 @@ export class FeaturesAssembly {
 
   featureRegistry = {
     // Create Wish
-    'create-text': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-image': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-audio': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-video': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-story': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-interactive': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
-    'create-ai': { path: '/admin/features/create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-text': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-image': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-audio': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-video': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-story': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-interactive': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
+    'create-ai': { path: './create-wish/create-wish-assembly.js', initFn: 'init' },
 
     // Asset Hub
-    'asset-animations': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-songs': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-invitations': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-particles': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-fonts': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-frames': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-stickers': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
-    'asset-palettes': { path: '/admin/features/assets/assets-assembly.js', initFn: 'init' },
+    'asset-animations': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-songs': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-invitations': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-particles': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-fonts': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-frames': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-stickers': { path: './assets/assets-assembly.js', initFn: 'init' },
+    'asset-palettes': { path: './assets/assets-assembly.js', initFn: 'init' },
     
     // Manage Loading & Overlays
-    'loading-spinner': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-overlay': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-safety': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-health': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-history': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-analytics': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
-    'loading-template': { path: '/admin/features/manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-spinner': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-overlay': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-safety': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-health': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-history': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-analytics': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
+    'loading-template': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
  
     // Wishes Manager
-    'wishes-all': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
-    'wishes-categories': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
-    'wishes-templates': { path: '/admin/features/manage-wish/manage-wish-assembly.js', initFn: 'init' },
+    'wishes-all': { path: './manage-wish/manage-wish-assembly.js', initFn: 'init' },
+    'wishes-categories': { path: './manage-wish/manage-wish-assembly.js', initFn: 'init' },
+    'wishes-templates': { path: './manage-wish/manage-wish-assembly.js', initFn: 'init' },
 
     // Users CRM
-    'users-all': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
-    'users-activity': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
-    'users-saved': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
-    'users-data-collected': { path: '/admin/features/users-crm/users-assembly.js', initFn: 'init' },
+    'users-all': { path: './users-crm/users-assembly.js', initFn: 'init' },
+    'users-activity': { path: './users-crm/users-assembly.js', initFn: 'init' },
+    'users-saved': { path: './users-crm/users-assembly.js', initFn: 'init' },
+    'users-data-collected': { path: './users-crm/users-assembly.js', initFn: 'init' },
 
     // Security Shield
-    'sec-threat-logs': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
-    'sec-ip-blacklist': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
-    'sec-bot-protection': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
-    'sec-2fa-sessions': { path: '/admin/features/security-shield/security-assembly.js', initFn: 'init' },
+    'sec-threat-logs': { path: './security-shield/security-assembly.js', initFn: 'init' },
+    'sec-ip-blacklist': { path: './security-shield/security-assembly.js', initFn: 'init' },
+    'sec-bot-protection': { path: './security-shield/security-assembly.js', initFn: 'init' },
+    'sec-2fa-sessions': { path: './security-shield/security-assembly.js', initFn: 'init' },
 
     // PWA Manager
-    'pwa-manifest': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
-    'pwa-tokens': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
-    'pwa-deeplinks': { path: '/admin/features/app-pwa-manager/pwa-assembly.js', initFn: 'init' },
+    'pwa-manifest': { path: './app-pwa-manager/pwa-assembly.js', initFn: 'init' },
+    'pwa-tokens': { path: './app-pwa-manager/pwa-assembly.js', initFn: 'init' },
+    'pwa-deeplinks': { path: './app-pwa-manager/pwa-assembly.js', initFn: 'init' },
 
     // Feature Flags
-    'flags-toggles': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
-    'flags-staging': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
-    'flags-rollback': { path: '/admin/features/feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
+    'flags-toggles': { path: './feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
+    'flags-staging': { path: './feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
+    'flags-rollback': { path: './feature-flags-staging/feature-flags-assembly.js', initFn: 'init' },
 
     // Gamification
-    'gami-streaks': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
-    'gami-spin': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
-    'gami-leaderboard': { path: '/admin/features/gamification-rewards/gamification-assembly.js', initFn: 'init' },
+    'gami-streaks': { path: './gamification-rewards/gamification-assembly.js', initFn: 'init' },
+    'gami-spin': { path: './gamification-rewards/gamification-assembly.js', initFn: 'init' },
+    'gami-leaderboard': { path: './gamification-rewards/gamification-assembly.js', initFn: 'init' },
 
     // Marketplace
-    'market-store': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
-    'market-creators': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
-    'market-payouts': { path: '/admin/features/marketplace-creators/marketplace-assembly.js', initFn: 'init' },
+    'market-store': { path: './marketplace-creators/marketplace-assembly.js', initFn: 'init' },
+    'market-creators': { path: './marketplace-creators/marketplace-assembly.js', initFn: 'init' },
+    'market-payouts': { path: './marketplace-creators/marketplace-assembly.js', initFn: 'init' },
 
     // Campaigns
-    'camp-scheduler': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
-    'camp-bots': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
-    'camp-newsletters': { path: '/admin/features/campaigns-marketing/marketing-assembly.js', initFn: 'init' },
+    'camp-scheduler': { path: './campaigns-marketing/marketing-assembly.js', initFn: 'init' },
+    'camp-bots': { path: './campaigns-marketing/marketing-assembly.js', initFn: 'init' },
+    'camp-newsletters': { path: './campaigns-marketing/marketing-assembly.js', initFn: 'init' },
 
     // Content Engine
-    'engine-canvas': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
-    'engine-fonts': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
-    'engine-packs': { path: '/admin/features/content-templates/content-assembly.js', initFn: 'init' },
+    'engine-canvas': { path: './content-templates/content-assembly.js', initFn: 'init' },
+    'engine-fonts': { path: './content-templates/content-assembly.js', initFn: 'init' },
+    'engine-packs': { path: './content-templates/content-assembly.js', initFn: 'init' },
 
     // Media Manager
-    'media-images': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
-    'media-audio': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
-    'media-stickers': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
-    'media-storage': { path: '/admin/features/media-manager/media-assembly.js', initFn: 'init' },
+    'media-images': { path: './media-manager/media-assembly.js', initFn: 'init' },
+    'media-audio': { path: './media-manager/media-assembly.js', initFn: 'init' },
+    'media-stickers': { path: './media-manager/media-assembly.js', initFn: 'init' },
+    'media-storage': { path: './media-manager/media-assembly.js', initFn: 'init' },
 
     // AI Automation Studio
-    'ai-generator': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
-    'ai-prompts': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
-    'ai-translator': { path: '/admin/features/ai-automation/ai-assembly.js', initFn: 'init' },
+    'ai-generator': { path: './ai-automation/ai-assembly.js', initFn: 'init' },
+    'ai-prompts': { path: './ai-automation/ai-assembly.js', initFn: 'init' },
+    'ai-translator': { path: './ai-automation/ai-assembly.js', initFn: 'init' },
 
     // Localization
-    'loc-languages': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
-    'loc-translations': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
-    'loc-regional-dates': { path: '/admin/features/localization/loc-assembly.js', initFn: 'init' },
+    'loc-languages': { path: './localization/loc-assembly.js', initFn: 'init' },
+    'loc-translations': { path: './localization/loc-assembly.js', initFn: 'init' },
+    'loc-regional-dates': { path: './localization/loc-assembly.js', initFn: 'init' },
 
     // Analytics
-    'analytics-traffic': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
-    'analytics-generations': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
-    'analytics-geo': { path: '/admin/features/analytics/analytics-assembly.js', initFn: 'init' },
+    'analytics-traffic': { path: './analytics/analytics-assembly.js', initFn: 'init' },
+    'analytics-generations': { path: './analytics/analytics-assembly.js', initFn: 'init' },
+    'analytics-geo': { path: './analytics/analytics-assembly.js', initFn: 'init' },
 
     // SEO
-    'seo-sitemap': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
-    'seo-schema': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
-    'seo-domains': { path: '/admin/features/seo/seo-assembly.js', initFn: 'init' },
+    'seo-sitemap': { path: './seo/seo-assembly.js', initFn: 'init' },
+    'seo-schema': { path: './seo/seo-assembly.js', initFn: 'init' },
+    'seo-domains': { path: './seo/seo-assembly.js', initFn: 'init' },
 
     // Reports
-    'reports-builder': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
-    'reports-scheduled': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
-    'reports-exports': { path: '/admin/features/reports/reports-assembly.js', initFn: 'init' },
+    'reports-builder': { path: './reports/reports-assembly.js', initFn: 'init' },
+    'reports-scheduled': { path: './reports/reports-assembly.js', initFn: 'init' },
+    'reports-exports': { path: './reports/reports-assembly.js', initFn: 'init' },
 
     // Trending Engine
-    'trending-featured': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
-    'trending-festive': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
-    'trending-scoreboard': { path: '/admin/features/trending/trending-assembly.js', initFn: 'init' },
+    'trending-featured': { path: './trending/trending-assembly.js', initFn: 'init' },
+    'trending-festive': { path: './trending/trending-assembly.js', initFn: 'init' },
+    'trending-scoreboard': { path: './trending/trending-assembly.js', initFn: 'init' },
 
     // A/B Testing
-    'ab-campaigns': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
-    'ab-layouts': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
-    'ab-conversions': { path: '/admin/features/ab-testing/ab-assembly.js', initFn: 'init' },
+    'ab-campaigns': { path: './ab-testing/ab-assembly.js', initFn: 'init' },
+    'ab-layouts': { path: './ab-testing/ab-assembly.js', initFn: 'init' },
+    'ab-conversions': { path: './ab-testing/ab-assembly.js', initFn: 'init' },
 
     // Monetization
-    'monetization-adsense': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
-    'monetization-banners': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
-    'monetization-revenue': { path: '/admin/features/monetization/monetization-assembly.js', initFn: 'init' },
+    'monetization-adsense': { path: './monetization/monetization-assembly.js', initFn: 'init' },
+    'monetization-banners': { path: './monetization/monetization-assembly.js', initFn: 'init' },
+    'monetization-revenue': { path: './monetization/monetization-assembly.js', initFn: 'init' },
 
     // Link Manager
-    'link-shortener': { path: '/admin/features/link-manager/link-assembly.js', initFn: 'init' },
-    'link-utm': { path: '/admin/features/link-manager/link-assembly.js', initFn: 'init' },
-    'link-redirects': { path: '/admin/features/link-manager/link-assembly.js', initFn: 'init' },
+    'link-shortener': { path: './link-manager/link-assembly.js', initFn: 'init' },
+    'link-utm': { path: './link-manager/link-assembly.js', initFn: 'init' },
+    'link-redirects': { path: './link-manager/link-assembly.js', initFn: 'init' },
 
     // Share Manager
-    'share-whatsapp': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
-    'share-social': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
-    'share-widgets': { path: '/admin/features/share-manager/share-assembly.js', initFn: 'init' },
+    'share-whatsapp': { path: './share-manager/share-assembly.js', initFn: 'init' },
+    'share-social': { path: './share-manager/share-assembly.js', initFn: 'init' },
+    'share-widgets': { path: './share-manager/share-assembly.js', initFn: 'init' },
 
     // Community
-    'comm-requests': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
-    'comm-feedback': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
-    'comm-comments': { path: '/admin/features/community-feedback/community-assembly.js', initFn: 'init' },
+    'comm-requests': { path: './community-feedback/community-assembly.js', initFn: 'init' },
+    'comm-feedback': { path: './community-feedback/community-assembly.js', initFn: 'init' },
+    'comm-comments': { path: './community-feedback/community-assembly.js', initFn: 'init' },
 
     // Notifications
-    'notifications-push': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
-    'notifications-broadcast': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
-    'notifications-templates': { path: '/admin/features/notifications/notifications-assembly.js', initFn: 'init' },
+    'notifications-push': { path: './notifications/notifications-assembly.js', initFn: 'init' },
+    'notifications-broadcast': { path: './notifications/notifications-assembly.js', initFn: 'init' },
+    'notifications-templates': { path: './notifications/notifications-assembly.js', initFn: 'init' },
 
     // Pricing
-    'price-tiers': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
-    'price-discounts': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
-    'price-gateways': { path: '/admin/features/price-plans/pricing-assembly.js', initFn: 'init' },
+    'price-tiers': { path: './price-plans/pricing-assembly.js', initFn: 'init' },
+    'price-discounts': { path: './price-plans/pricing-assembly.js', initFn: 'init' },
+    'price-gateways': { path: './price-plans/pricing-assembly.js', initFn: 'init' },
 
     // Performance Cache
-    'perf-cache-purge': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
-    'perf-image-opt': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
-    'perf-speed': { path: '/admin/features/performance-cache/performance-assembly.js', initFn: 'init' },
+    'perf-cache-purge': { path: './performance-cache/performance-assembly.js', initFn: 'init' },
+    'perf-image-opt': { path: './performance-cache/performance-assembly.js', initFn: 'init' },
+    'perf-speed': { path: './performance-cache/performance-assembly.js', initFn: 'init' },
 
     // System Health
-    'sys-server': { path: '/admin/features/health-monitor/health-assembly.js', initFn: 'init' },
-    'sys-db': { path: '/admin/features/health-monitor/health-assembly.js', initFn: 'init' },
-    'sys-alerts': { path: '/admin/features/health-monitor/health-assembly.js', initFn: 'init' },
+    'sys-server': { path: './health-monitor/health-assembly.js', initFn: 'init' },
+    'sys-db': { path: './health-monitor/health-assembly.js', initFn: 'init' },
+    'sys-alerts': { path: './health-monitor/health-assembly.js', initFn: 'init' },
 
     // Worker Analytics
-    'worker-status': { path: '/admin/features/worker-analytics/worker-assembly.js', initFn: 'init' },
-    'worker-cache': { path: '/admin/features/worker-analytics/worker-assembly.js', initFn: 'init' },
-    'worker-logs': { path: '/admin/features/worker-analytics/worker-assembly.js', initFn: 'init' },
+    'worker-status': { path: './worker-analytics/worker-assembly.js', initFn: 'init' },
+    'worker-cache': { path: './worker-analytics/worker-assembly.js', initFn: 'init' },
+    'worker-logs': { path: './worker-analytics/worker-assembly.js', initFn: 'init' },
 
     // Google Sheets
-    'google-sheets-dashboard': { path: '/admin/features/google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
-    'sheets-sync': { path: '/admin/features/google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
-    'sheets-responses': { path: '/admin/features/google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
-    'sheets-mapping': { path: '/admin/features/google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
+    'google-sheets-dashboard': { path: './google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
+    'sheets-sync': { path: './google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
+    'sheets-responses': { path: './google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
+    'sheets-mapping': { path: './google-sheets/sheets-assembly.js', initFn: 'initGoogleSheets' },
 
     // Integrations
-    'webhooks-active': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
-    'api-endpoints': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
-    'third-party': { path: '/admin/features/integrations/integration-assembly.js', initFn: 'init' },
+    'webhooks-active': { path: './integrations/integration-assembly.js', initFn: 'init' },
+    'api-endpoints': { path: './integrations/integration-assembly.js', initFn: 'init' },
+    'third-party': { path: './integrations/integration-assembly.js', initFn: 'init' },
 
     // Compliance
-    'legal-gdpr': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
-    'legal-terms': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
-    'legal-abuse': { path: '/admin/features/compliance/compliance-assembly.js', initFn: 'init' },
+    'legal-gdpr': { path: './compliance/compliance-assembly.js', initFn: 'init' },
+    'legal-terms': { path: './compliance/compliance-assembly.js', initFn: 'init' },
+    'legal-abuse': { path: './compliance/compliance-assembly.js', initFn: 'init' },
 
     // System Logs
-    'logs-audit': { path: '/admin/features/system-logs/logs-assembly.js', initFn: 'init' },
-    'logs-backups': { path: '/admin/features/system-logs/logs-assembly.js', initFn: 'init' },
-    'logs-errors': { path: '/admin/features/system-logs/logs-assembly.js', initFn: 'init' },
+    'logs-audit': { path: './system-logs/logs-assembly.js', initFn: 'init' },
+    'logs-backups': { path: './system-logs/logs-assembly.js', initFn: 'init' },
+    'logs-errors': { path: './system-logs/logs-assembly.js', initFn: 'init' },
 
     // Auth & Security
-    'auth-users': { path: '/admin/features/auth-security/auth-assembly.js', initFn: 'init' },
-    'auth-keys': { path: '/admin/features/auth-security/auth-assembly.js', initFn: 'init' },
-    'auth-security': { path: '/admin/features/auth-security/auth-assembly.js', initFn: 'init' },
+    'auth-users': { path: './auth-security/auth-assembly.js', initFn: 'init' },
+    'auth-keys': { path: './auth-security/auth-assembly.js', initFn: 'init' },
+    'auth-security': { path: './auth-security/auth-assembly.js', initFn: 'init' },
 
     // Settings
-    'setting-seo': { path: '/admin/features/settings/settings-assembly.js', initFn: 'init' },
-    'setting-ads': { path: '/admin/features/settings/settings-assembly.js', initFn: 'init' },
-    'setting-theme': { path: '/admin/features/settings/settings-assembly.js', initFn: 'init' },
+    'setting-seo': { path: './settings/settings-assembly.js', initFn: 'init' },
+    'setting-ads': { path: './settings/settings-assembly.js', initFn: 'init' },
+    'setting-theme': { path: './settings/settings-assembly.js', initFn: 'init' },
 
     // Newly Integrated Modules
-    'wallet-overview': { path: '/admin/features/wallet-manager/wallet-assembly.js', initFn: 'init' },
-    'wallet-transactions': { path: '/admin/features/wallet-manager/wallet-assembly.js', initFn: 'init' },
-    'wallet-commissions': { path: '/admin/features/wallet-manager/wallet-assembly.js', initFn: 'init' },
+    'wallet-overview': { path: './wallet-manager/wallet-assembly.js', initFn: 'init' },
+    'wallet-transactions': { path: './wallet-manager/wallet-assembly.js', initFn: 'init' },
+    'wallet-commissions': { path: './wallet-manager/wallet-assembly.js', initFn: 'init' },
 
-    'categories-all': { path: '/admin/features/categories/categories-assembly.js', initFn: 'init' },
-    'categories-add': { path: '/admin/features/categories/categories-assembly.js', initFn: 'init' },
+    'categories-all': { path: './categories/categories-assembly.js', initFn: 'init' },
+    'categories-add': { path: './categories/categories-assembly.js', initFn: 'init' },
 
-    'geo-settings': { path: '/admin/features/geo/geo-assembly.js', initFn: 'init' },
-    'geo-vpn-logs': { path: '/admin/features/geo/geo-assembly.js', initFn: 'init' },
+    'geo-settings': { path: './geo/geo-assembly.js', initFn: 'init' },
+    'geo-vpn-logs': { path: './geo/geo-assembly.js', initFn: 'init' },
 
-    'lang-settings': { path: '/admin/features/global-lang/global-lang-assembly.js', initFn: 'init' },
-    'lang-translations': { path: '/admin/features/global-lang/global-lang-assembly.js', initFn: 'init' },
+    'lang-settings': { path: './global-lang/global-lang-assembly.js', initFn: 'init' },
+    'lang-translations': { path: './global-lang/global-lang-assembly.js', initFn: 'init' },
 
-    'branding-variants': { path: '/admin/features/logo-branding-manager/branding-assembly.js', initFn: 'init' },
-    'branding-watermark': { path: '/admin/features/logo-branding-manager/branding-assembly.js', initFn: 'init' },
+    'branding-variants': { path: './logo-branding-manager/branding-assembly.js', initFn: 'init' },
+    'branding-watermark': { path: './logo-branding-manager/branding-assembly.js', initFn: 'init' },
 
-    'platform-builds': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
-    'platform-targets': { path: '/admin/features/omni-platform-exporter/omni-assembly.js', initFn: 'init' },
+    'platform-builds': { path: './omni-platform-exporter/omni-assembly.js', initFn: 'init' },
+    'platform-targets': { path: './omni-platform-exporter/omni-assembly.js', initFn: 'init' },
     
     // --- User Permissions Module ---
-    'user-perm-types': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
-    'user-perm-config': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
-    'user-perm-messages': { path: '/admin/features/user-permissions/user-permissions-assembly.js', initFn: 'init' },
+    'user-perm-types': { path: './user-permissions/user-permissions-assembly.js', initFn: 'init' },
+    'user-perm-config': { path: './user-permissions/user-permissions-assembly.js', initFn: 'init' },
+    'user-perm-messages': { path: './user-permissions/user-permissions-assembly.js', initFn: 'init' },
 
     // --- Manage Permissions Module ---
-    'manage-perm-config': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
-    'manage-perm-roles': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
-    'manage-perm-actions': { path: '/admin/features/manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
+    'manage-perm-config': { path: './manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
+    'manage-perm-roles': { path: './manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
+    'manage-perm-actions': { path: './manage-permissions/manage-permissions-assembly.js', initFn: 'init' },
 
-    'support-tickets': { path: '/admin/features/support-manager/support-assembly.js', initFn: 'init' },
-    'support-settings': { path: '/admin/features/support-manager/support-assembly.js', initFn: 'init' }
+    'support-tickets': { path: './support-manager/support-assembly.js', initFn: 'init' },
+    'support-settings': { path: './support-manager/support-assembly.js', initFn: 'init' }
   };
 
   async safeRun(name, importPath, initFn) {
@@ -296,7 +296,7 @@ export class FeaturesAssembly {
     }
 
     // ⚡ Init Menu System
-    await this.safeRun('menu', '/admin/features/menu-navigation/menu-assembly.js', 'initMenu');
+    await this.safeRun('menu', './menu-navigation/menu-assembly.js', 'initMenu');
 
     // ⚡ Start Background AI Engine
     this.startBackgroundAIEngine();
@@ -312,7 +312,7 @@ export class FeaturesAssembly {
 
   async startBackgroundAIEngine() {
     try {
-      const aiModule = await import('/admin/features/ai-automation/ai-assembly.js');
+      const aiModule = await import('./ai-automation/ai-assembly.js');
       if (aiModule && typeof aiModule.startBackgroundAutoWishEngine === 'function') {
         aiModule.startBackgroundAutoWishEngine();
         console.log("🤖 Silent AI engine running.");
