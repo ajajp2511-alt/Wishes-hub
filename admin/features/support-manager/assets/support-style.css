@@ -1,5 +1,5 @@
 /* =================================================================
-   WISHES HUB - SUPPORT & TICKET MODULE STYLESHEET
+   WISHES HUB - ADMIN SUPPORT & TICKET MODULE STYLESHEET
    ================================================================= */
 
 /* --- 1. SUPPORT WRAPPER CONTAINER --- */
@@ -16,30 +16,33 @@
   margin-bottom: 24px;
 }
 
-/* --- 2. TICKET CARD STATES --- */
+/* --- 2. TICKET LIST & CARDS --- */
+.ticket-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .ticket-card {
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(15, 23, 42, 0.6);
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm, 12px);
   padding: 16px;
   transition: var(--transition, all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
   cursor: pointer;
 }
 
 .ticket-card:hover {
-  border-color: rgba(79, 70, 229, 0.5);
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(30, 41, 59, 0.8);
   transform: translateY(-2px);
 }
 
 .ticket-card-active {
-  border-color: #4f46e5;
-  background-color: #eef2ff;
-  color: #1e293b;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
-}
-
-.ticket-card-active .text-muted {
-  color: #64748b;
+  border-color: #6366f1 !important;
+  background-color: #1e1b4b !important;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
 }
 
 /* --- 3. CHAT BUBBLES ARCHITECTURE --- */
@@ -47,7 +50,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 450px;
+  max-height: 500px;
   overflow-y: auto;
   padding: 16px;
   background: rgba(15, 23, 42, 0.5);
@@ -57,12 +60,12 @@
 }
 
 .chat-bubble {
-  max-width: 75%;
+  max-width: 80%;
   padding: 12px 16px;
   border-radius: var(--radius-md, 16px);
   font-size: 0.95rem;
   line-height: 1.5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -77,27 +80,27 @@
 
 /* Admin Message */
 .chat-bubble-admin {
-  background-color: #4f46e5;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: #ffffff;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 /* AI Automated Response */
 .chat-bubble-ai {
-  background-color: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background-color: #064e3b;
+  color: #6ee7b7;
+  border: 1px solid #047857;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
 
 /* System Notice / Log */
 .chat-bubble-system {
-  background-color: #faf5ff;
-  color: #6b21a8;
-  border: 1px solid #e9d5ff;
+  background-color: #3b0764;
+  color: #d8b4fe;
+  border: 1px solid #6b21a8;
   align-self: center;
   text-align: center;
   max-width: 90%;
@@ -106,12 +109,37 @@
   border-radius: 50px;
 }
 
-/* --- 4. RESPONSIVE ADJUSTMENTS --- */
+/* --- 4. ACTION CONTROLS & QUICK CANNED BUTTONS --- */
+.quick-canned-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.canned-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-muted, #94a3b8);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition, all 0.2s ease);
+}
+
+.canned-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  color: #f8fafc;
+  border-color: #6366f1;
+}
+
+/* --- 5. RESPONSIVE MEDIA QUERIES --- */
 @media (max-width: 768px) {
   .support-wrapper {
-    padding: 16px;
+    padding: 14px;
   }
   .chat-bubble {
-    max-width: 85%;
+    max-width: 90%;
   }
 }
