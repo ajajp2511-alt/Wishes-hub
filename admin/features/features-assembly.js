@@ -214,8 +214,8 @@ export class FeaturesAssembly {
     'geo-settings': { path: './geo/geo-assembly.js', initFn: 'init' },
     'geo-vpn-logs': { path: './geo/geo-assembly.js', initFn: 'init' },
 
-    'lang-settings': { path: './global-lang/global-lang-assembly.js', initFn: 'init' },
-    'lang-translations': { path: './global-lang/global-lang-assembly.js', initFn: 'init' },
+    'lang-settings': { path: './global-language/global-language-assembly.js', initFn: 'init' },
+    'lang-translations': { path: './global-language/global-language-assembly.js', initFn: 'init' },
 
     'branding-variants': { path: './logo-branding-manager/branding-assembly.js', initFn: 'init' },
     'branding-watermark': { path: './logo-branding-manager/branding-assembly.js', initFn: 'init' },
