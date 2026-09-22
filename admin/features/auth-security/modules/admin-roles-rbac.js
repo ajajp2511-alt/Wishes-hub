@@ -1,13 +1,9 @@
 /**
- * Admin Roles & RBAC Module (Improved with Interactive Form & Actions)
- * Path: admin/features/auth-security/modules/admin-roles-rbac-module.js
+ * Admin Roles & RBAC Module (Fixed for Direct Object Export)
+ * Path: admin/features/auth-security/modules/admin-roles-rbac.js
  */
 
-export class AdminRolesRbacModule {
-  constructor() {
-    // Instance-based state tracking if needed
-  }
-
+export const AdminRolesRbacModule = {
   render(container, core) {
     const roles = core.getAdminRoles();
     
@@ -47,7 +43,9 @@ export class AdminRolesRbacModule {
         </table>
       </div>
     `;
-  }
+
+    this.bindEvents(container, core);
+  },
 
   bindEvents(container, core, onUpdate) {
     const addBtn = container.querySelector('#btn-add-role');
@@ -64,7 +62,6 @@ export class AdminRolesRbacModule {
 
       if (core.addAdminRole(newRole)) {
         this.render(container, core);
-        this.bindEvents(container, core, onUpdate);
         if (typeof onUpdate === 'function') onUpdate({ action: 'ROLE_ADDED', role: newRole });
       }
     });
@@ -75,10 +72,9 @@ export class AdminRolesRbacModule {
         if (confirm(`Are you sure you want to delete role ${roleId}?`)) {
           core.removeAdminRole(roleId);
           this.render(container, core);
-          this.bindEvents(container, core, onUpdate);
           if (typeof onUpdate === 'function') onUpdate({ action: 'ROLE_REMOVED', roleId });
         }
       });
     });
   }
-}
+};
