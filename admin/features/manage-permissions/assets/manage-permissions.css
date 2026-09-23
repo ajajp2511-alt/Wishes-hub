@@ -1,6 +1,6 @@
 /**
  * ==========================================================
- * WISHES HUB ADMIN - MANAGE PERMISSIONS PROFESSIONAL STYLES
+ * WISHES HUB ADMIN - ADVANCED ACCESS CONTROL & PERMISSIONS
  * ==========================================================
  */
 
@@ -8,19 +8,20 @@
 .permission-dashboard {
     background: #ffffff !important;
     border-radius: 12px !important;
-    padding: 24px !important;
+    padding: 20px !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
     font-family: system-ui, -apple-system, sans-serif !important;
     color: #1e293b !important;
-    max-width: 1200px !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
 }
 
 .permission-dashboard h2 {
-    font-size: 20px !important;
+    font-size: 18px !important;
     font-weight: 700 !important;
     color: #0f172a !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
@@ -29,10 +30,10 @@
 /* 2. Navigation Tabs Styling */
 .permission-tabs {
     display: flex !important;
-    gap: 8px !important;
+    gap: 6px !important;
     border-bottom: 1px solid #e2e8f0 !important;
     padding-bottom: 12px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
     flex-wrap: wrap !important;
 }
 
@@ -41,8 +42,8 @@
     color: #475569 !important;
     border: 1px solid #cbd5e1 !important;
     border-radius: 8px !important;
-    padding: 8px 16px !important;
-    font-size: 13px !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
@@ -66,15 +67,16 @@
     background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 10px !important;
-    padding: 20px !important;
+    padding: 12px !important;
     min-height: 250px !important;
+    overflow-x: auto !important;
 }
 
 /* 4. Tables, Matrix Grid & Audit Logs Styling */
 .permission-tab-content table {
     width: 100% !important;
     border-collapse: collapse !important;
-    margin-top: 10px !important;
+    margin-top: 5px !important;
     font-size: 12px !important;
     text-align: left !important;
     background: #ffffff !important;
@@ -86,16 +88,18 @@
 .permission-tab-content th {
     background-color: #f1f5f9 !important;
     color: #334155 !important;
-    padding: 12px 16px !important;
+    padding: 10px 12px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     font-size: 10px !important;
     letter-spacing: 0.05em !important;
     border-bottom: 2px solid #cbd5e1 !important;
+    white-space: nowrap !important;
 }
 
 .permission-tab-content td {
-    padding: 12px 16px !important;
+    padding: 10px 12px !important;
+    border-bottom: 19px solid #f8fafc !important; /* Soft row separation */
     border-bottom: 1px solid #f1f5f9 !important;
     color: #475569 !important;
     vertical-align: middle !important;
@@ -105,7 +109,7 @@
     background-color: #f8fafc !important;
 }
 
-/* 5. Checkboxes Styling inside Matrices */
+/* 5. Custom Checkboxes Alignment inside Matrix Grid */
 .permission-tab-content input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
@@ -123,13 +127,13 @@
 }
 
 .permission-tab-content input[type="checkbox"]:checked {
-    background-color: #4f46e5;
-    border-color: #4f46e5;
+    background-color: #0f172a;
+    border-color: #0f172a;
 }
 
 .permission-tab-content input[type="checkbox"]:checked::after {
     content: "✓";
     color: white;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
 }
