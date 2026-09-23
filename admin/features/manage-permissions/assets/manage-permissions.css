@@ -1,0 +1,68 @@
+/**
+ * Manage Permissions - Professional Stylesheet (Complete)
+ */
+
+.permission-dashboard {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 24px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    color: #1e293b !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.permission-dashboard h2 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Tab Navigation Styling */
+.permission-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
+    flex-wrap: wrap !important;
+}
+
+.permission-tabs .tab-btn {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.permission-tabs .tab-btn:hover {
+    background: #e2e8f0 !important;
+    color: #1e293b !important;
+    border-color: #94a3b8 !important;
+}
+
+.permission-tabs .tab-btn.active {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-color: #0f172a !important;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Tab Content Container Styling */
+.permission-tab-content {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
+    min-height: 250px !important;
+}
