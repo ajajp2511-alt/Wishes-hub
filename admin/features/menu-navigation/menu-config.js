@@ -49,6 +49,8 @@ import { supportNavItem } from './items/support-nav.js';
 // Separate Permissions Nav Items
 import { userPermissionsNavItem } from './items/user-permissions-nav.js';
 import { managePermissionsNavItem } from './items/manage-permissions-nav.js';
+// Sandbox Testing Module Nav Item
+import { sandboxNavItem } from './items/sandbox-nav.js';
 
 export const MENU_CONFIG = {
   BRAND: {
@@ -101,6 +103,8 @@ export const MENU_CONFIG = {
     supportNavItem,
     // Separate Permissions Modules
     userPermissionsNavItem,
-    managePermissionsNavItem
+    managePermissionsNavItem,
+    // Sandbox Testing Module
+    sandboxNavItem
   ]
 };
