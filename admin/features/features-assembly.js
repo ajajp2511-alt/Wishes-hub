@@ -240,10 +240,10 @@ export class FeaturesAssembly {
     'support-settings': { path: './support-manager/support-assembly.js', initFn: 'init' },
 
     // --- Sandbox Testing Module ---
-    'sandbox-module': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
-    'sandbox-config': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
-    'sandbox-rollout': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
-    'sandbox-risk': { path: './sandbox/sandbox-assembly.js', initFn: 'init' }
+    'sandbox-module': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-config': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-rollout': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-risk': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' }
   };
 
   async safeRun(name, importPath, initFn) {
