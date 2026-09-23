@@ -238,6 +238,12 @@ export class FeaturesAssembly {
 
     'support-tickets': { path: './support-manager/support-assembly.js', initFn: 'init' },
     'support-settings': { path: './support-manager/support-assembly.js', initFn: 'init' }
+      
+    // --- Sandbox Testing Module ---
+    'sandbox-module': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-config': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-rollout': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
+    'sandbox-risk': { path: './sandbox/sandbox-assembly.js', initFn: 'init' },
   };
 
   async safeRun(name, importPath, initFn) {
