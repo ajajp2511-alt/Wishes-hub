@@ -1,54 +1,119 @@
 /* ==========================================
-   📌 PRIVATE SANDBOX MODULE STYLING
+   📌 PRIVATE SANDBOX MODULE PROFESSIONAL CSS
    ========================================== */
 
 .sandbox-wrapper {
-    font-family: inherit;
+    font-family: system-ui, -apple-system, sans-serif !important;
     background-color: #f8fafc;
+    padding: 20px;
     border-radius: 12px;
-    padding: 16px;
+    color: #1e293b;
 }
 
-/* Sandbox Container Cards */
-.sandbox-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    transition: all 0.2s ease-in-out;
+/* Fallback Flexbox Layout rules for JS injected elements */
+.sandbox-wrapper .flex {
+    display: flex !important;
+}
+.sandbox-wrapper .justify-between {
+    justify-content: space-between !important;
+}
+.sandbox-wrapper .items-center {
+    align-items: center !important;
+}
+.sandbox-wrapper .space-x-2 > * + * {
+    margin-left: 8px !important;
+}
+.sandbox-wrapper .space-y-6 > * + * {
+    margin-top: 24px !important;
 }
 
-.sandbox-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+/* 1. Feature Toggle Matrix Cards */
+#featureToggleContainer > div {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    transition: all 0.2s ease;
 }
 
-/* Feature Status Badges */
+#featureToggleContainer > div:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 2. Status Badges */
 .flag-badge-active {
-    background-color: #d1fae5;
-    color: #065f46;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: inline-block;
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    padding: 3px 10px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-family: monospace !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
 }
 
 .flag-badge-inactive {
-    background-color: #fee2e2;
-    color: #991b1b;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: inline-block;
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 3px 10px !important;
+    border-radius: 6px !important;
+    font-size: 10px !important;
+    font-family: monospace !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
 }
 
-/* Sandbox Preview Frame */
-.sandbox-preview-frame {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 2px dashed #cbd5e1;
-    border-radius: 10px;
-    padding: 16px;
+/* 3. Audit Logs Items */
+#sandboxAuditContainer > div {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 12px !important;
+}
+
+/* 4. Sandbox Notes Items */
+#sandboxNotesContainer > div {
+    background-color: #fffbeb !important;
+    border: 1px solid #fde68a !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+    font-size: 12px !important;
+}
+
+/* 5. AI Risk Analysis Box */
+#aiAnalysisContainer > div {
+    background-color: #eef2ff !important;
+    border: 1px solid #c7d2fe !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    font-size: 12px !important;
+}
+
+/* 6. Form Controls & Buttons Styling */
+.sandbox-wrapper button {
+    cursor: pointer !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: background-color 0.2s ease;
+}
+
+.sandbox-wrapper input[type="text"] {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    outline: none !important;
+    font-size: 12px !important;
+    background: #ffffff !important;
 }
