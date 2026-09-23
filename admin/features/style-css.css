@@ -53,6 +53,9 @@
 /* 17. Wallet Manager Feature CSS */
 @import url('./wallet-manager/assets/wallet-style.css');
 
+/* 18. Private Sandbox Feature CSS */
+@import url('./private-sandbox/assets/sandbox-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
