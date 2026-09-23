@@ -38,16 +38,16 @@ window.triggerGoogleSheetsSync = (id) => {
 window.triggerHandoff = (id) => handleHumanHandoff(core, ui, id);
 window.applyCanned = (id, index) => handleApplyCannedResponse(core, ui, id, index);
 
-// Export init function using inline styles
+// Export init function with professional support-wrapper class connected
 export function init(containerId) {
     const root = document.getElementById(containerId);
     if (!root) return;
 
     root.innerHTML = `
-        <div style="padding: 16px; max-width: 1200px; margin: 0 auto; color: #1e293b; font-family: inherit;">
-            <div style="margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+        <div class="support-wrapper" style="max-width: 1200px; margin: 0 auto;">
+            <div style="margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
                 <h2 style="font-size: 18px; font-weight: bold; margin: 0 0 4px 0;">Support Tickets</h2>
-                <p style="font-size: 12px; color: #64748b; margin: 0;">Manage user support queries, live chat, and automated FAQ syncing.</p>
+                <p style="font-size: 12px; color: var(--text-muted, #94a3b8); margin: 0;">Manage user support queries, live chat, and automated FAQ syncing.</p>
             </div>
             
             <!-- Trending FAQs Container -->
@@ -55,13 +55,13 @@ export function init(containerId) {
 
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <!-- Ticket List Column -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; max-height: 400px; overflow-y: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <h3 style="font-weight: bold; font-size: 11px; color: #475569; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Inbox Tickets</h3>
+                <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; max-height: 400px; overflow-y: auto;">
+                    <h3 style="font-weight: bold; font-size: 11px; color: var(--text-muted, #94a3b8); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Inbox Tickets</h3>
                     <div id="ticketListContainer"></div>
                 </div>
 
                 <!-- Ticket Detail Column -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 500px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" id="ticketDetailContainer"></div>
+                <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; min-height: 500px;" id="ticketDetailContainer"></div>
             </div>
         </div>
     `;
