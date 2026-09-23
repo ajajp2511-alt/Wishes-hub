@@ -8,8 +8,8 @@ export function init(containerId, name) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Optional: Agar aapko module ka header ya container setup karna ho
-    // container.innerHTML = `<div id="sandbox-root"></div>`;
+    // Ensure karo ki Sandbox UI ke liye ek root container available ho
+    container.innerHTML = `<div id="sandbox-root"></div>`;
 
     const core = new SandboxCore();
     const ui = new SandboxUI(core);
@@ -34,6 +34,11 @@ export function init(containerId, name) {
         }
     };
 
-    // Dynamically imported modules execute immediately, so initialize UI right here:
-    ui.init();
+    // Initialize UI inside the container root
+    try {
+        ui.init();
+    } catch (err) {
+        console.error("Sandbox UI Init Error:", err);
+        container.innerHTML += `<p style="color: red; padding: 10px;">Error loading sandbox UI: ${err.message}</p>`;
+    }
 }
