@@ -56,6 +56,9 @@
 /* 18. Private Sandbox Feature CSS */
 @import url('./private-sandbox/assets/sandbox-style.css');
 
+/* 19. Manage Permissions Feature CSS */
+@import url('./manage-permissions/assets/manage-permissions.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
