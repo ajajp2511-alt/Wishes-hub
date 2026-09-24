@@ -1,16 +1,48 @@
+/* ==========================================================================
+   Wishes Hub - Global Language & Translations Custom Styles
+   ========================================================================== */
+
 .lang-wrapper {
     font-family: inherit;
+    background-color: #f8fafc;
 }
 
+/* Active Language Card Styling */
 .lang-card-active {
-    border-color: #4f46e5;
-    background-color: #eef2ff;
+    border-color: #4f46e5 !important;
+    background-color: #eef2ff !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+}
+
+/* Custom Toggle Switch */
+.toggle-checkbox {
+    transition: all 0.25s ease-in-out;
+    top: 2px;
+    left: 2px;
 }
 
 .toggle-checkbox:checked {
     right: 0;
     border-color: #4f46e5;
+    transform: translateX(100%);
 }
+
 .toggle-checkbox:checked + .toggle-label {
     background-color: #4f46e5;
+}
+
+/* Table Inputs & Matrix Polish */
+#translationTableBody input[type="text"]:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+#translationTableBody input.border-red-300 {
+    background-color: #fff5f5 !important;
+    border-color: #feb2b2 !important;
+}
+
+#languageModal {
+    backdrop-filter: blur(5px);
+    background-color: rgba(15, 23, 42, 0.6);
 }
