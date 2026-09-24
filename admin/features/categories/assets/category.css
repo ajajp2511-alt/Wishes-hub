@@ -1,5 +1,5 @@
 /* ================================================================= */
-/* Wishes Hub: Categories Management - Clean Professional CSS        */
+/* Wishes Hub: Categories Management - Responsive Polish CSS         */
 /* ================================================================= */
 
 /* Force Clean Font Across Entire Categories Module & Modal */
@@ -16,6 +16,7 @@
 .p-6.max-w-7xl {
     background-color: #f8fafc;
     border-radius: 1rem;
+    overflow-x: hidden;
 }
 
 /* Header Add Category Button */
@@ -24,6 +25,7 @@
     font-weight: 600 !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: background-color 0.15s ease;
+    white-space: nowrap;
 }
 
 .p-6.max-w-7xl > div button:hover {
@@ -34,6 +36,7 @@
 .border-b.border-gray-200 button {
     font-size: 0.875rem !important;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 /* Search Input Styling */
@@ -49,12 +52,21 @@
     outline: none !important;
 }
 
-/* Data Table Container */
+/* Data Table Container with Smooth Mobile Horizontal Scroll */
 .overflow-hidden.bg-white {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 0.75rem !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Table Layout Fix */
+.p-6.max-w-7xl table {
+    width: 100%;
+    min-width: 600px; /* Forces proper spacing on small screens without breaking */
+    border-collapse: collapse;
 }
 
 /* Table Header */
@@ -68,7 +80,8 @@ thead th {
     font-size: 0.7rem !important;
     font-weight: 600 !important;
     letter-spacing: 0.05em;
-    padding: 0.75rem 1.5rem !important;
+    padding: 0.75rem 1rem !important;
+    white-space: nowrap;
 }
 
 /* Table Body Rows & Hover */
@@ -81,9 +94,10 @@ thead th {
 }
 
 #categoryTableBody td {
-    padding: 0.875rem 1.5rem !important;
-    font-size: 0.875rem !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.8125rem !important;
     color: #334155 !important;
+    white-space: nowrap;
 }
 
 /* Status Badges */
@@ -108,9 +122,11 @@ thead th {
 #categoryModal > div {
     background: #ffffff !important;
     border-radius: 1rem !important;
-    padding: 1.75rem !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 1.5rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
+    width: 90%;
+    max-width: 400px;
 }
 
 /* Modal Form Inputs */
@@ -137,8 +153,4 @@ thead th {
     font-weight: 600 !important;
     border-radius: 0.5rem !important;
     padding: 0.5rem 1rem !important;
-}
-
-#categoryModal button[type="submit"]:hover {
-    background-color: #4338ca !important;
 }
