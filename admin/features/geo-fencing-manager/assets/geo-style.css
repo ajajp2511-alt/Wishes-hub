@@ -1,22 +1,126 @@
-.geo-wrapper {
-    font-family: inherit;
+/* ================================================================= */
+/* Wishes Hub: Geo-Fencing & Cyber Fortress - Clean Professional CSS */
+/* ================================================================= */
+
+/* Force Clean Font Across Entire Geo Module */
+.p-6.max-w-7xl, 
+.p-6.max-w-7xl *, 
+#killSwitchContainer *, 
+#aiPredictiveContainer *, 
+#geoCountryContainer *, 
+#geoLogsContainer * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
 }
 
+/* Main Container Background */
+.p-6.max-w-7xl {
+    background-color: #f8fafc;
+    border-radius: 1rem;
+}
+
+/* Global Cyber Fortress Kill-Switch Banner Style */
+#killSwitchContainer > div {
+    border-radius: 0.75rem !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Kill Switch Button */
+#killSwitchContainer button {
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.025em;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.375rem !important;
+    transition: background-color 0.2s ease;
+}
+
+/* AI Predictive Shield Box */
+#aiPredictiveContainer > div {
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important;
+    border: 1px solid #c7d2fe !important;
+    border-radius: 0.75rem !important;
+    padding: 1rem 1.25rem !important;
+    box-shadow: 0 1px 3px rgba(79, 70, 229, 0.05);
+}
+
+/* Country Whitelist Cards */
+#geoCountryContainer > div {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.75rem !important;
+    padding: 1rem 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    #geoCountryContainer > div {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+#geoCountryContainer > div:hover {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Status Badges */
 .geo-badge-allowed {
-    background-color: #d1fae5;
-    color: #065f46;
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+    border: 1px solid #bbf7d0;
 }
 
 .geo-badge-blocked {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fecaca;
 }
 
-.geo-badge-quarantine {
-    background-color: #fef3c7;
-    color: #92400e;
+/* Toggle Access Button */
+#geoCountryContainer button {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 0.875rem !important;
+    border-radius: 0.375rem !important;
+    transition: background-color 0.15s ease;
 }
 
-.geo-card-gradient {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+#geoCountryContainer button:hover {
+    background-color: #1e293b !important;
+}
+
+/* Real-time Security Logs Container */
+#geoLogsContainer > div {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 0.5rem !important;
+    transition: background-color 0.15s ease;
+}
+
+#geoLogsContainer > div:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* Main Section Card Wrappers */
+.bg-white.rounded-xl.shadow-sm {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    padding: 1.5rem !important;
 }
