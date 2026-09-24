@@ -9,7 +9,7 @@ export class GlobalLanguageUI {
     init(container) {
         if (container) {
             container.innerHTML = `
-                <div class="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
+                <div class="lang-wrapper space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border shadow-sm">
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">Global Language & Translations</h2>
@@ -245,4 +245,4 @@ export class GlobalLanguageUI {
             form.addEventListener('submit', (e) => this.handlers.onAdd(e));
         }
     }
-    }
+}
