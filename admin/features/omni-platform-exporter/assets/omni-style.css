@@ -3,12 +3,12 @@
    ================================================= */
 
 :root {
-    --omni-bg-dark: #090d16;
-    --omni-card-bg-start: #0f172a;
-    --omni-card-bg-end: #1e293b;
+    --omni-bg-dark: #f8fafc;
+    --omni-card-bg-start: #1e293b; /* Soft Light Black / Charcoal Start */
+    --omni-card-bg-end: #334155;   /* Rich Slate / Charcoal End */
     --omni-text-main: #f8fafc;
-    --omni-text-muted: #94a3b8;
-    --omni-border-color: rgba(255, 255, 255, 0.08);
+    --omni-text-muted: #cbd5e1;   /* Soft Ivory / Light Gray Tone */
+    --omni-border-color: rgba(255, 255, 255, 0.15);
     --omni-primary: #6366f1;
     --omni-radius: 12px;
 }
@@ -30,7 +30,7 @@
     border-radius: var(--omni-radius);
     padding: 18px;
     margin-bottom: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -90,14 +90,14 @@
     padding: 6px 14px;
     font-size: 0.85rem;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--omni-text-main);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .omni-card-gradient button:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.18);
     border-color: var(--omni-primary);
 }
