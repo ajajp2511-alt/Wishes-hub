@@ -59,6 +59,9 @@
 /* 19. Manage Permissions Feature CSS */
 @import url('./manage-permissions/assets/manage-permissions.css');
 
+/* 20. Geo Fencing Manager Feature CSS */
+@import url('./geo-fencing-manager/assets/geo-style.css');
+
 /* ==========================================
    📌 GENERAL RESETS & STYLES
    ========================================== */
