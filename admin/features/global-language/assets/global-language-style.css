@@ -1,48 +1,106 @@
-/* ==========================================================================
-   Wishes Hub - Global Language & Translations Custom Styles
-   ========================================================================== */
+/* ================================================================= */
+/* Wishes Hub: Global Language & Translations Module - Professional CSS */
+/* ================================================================= */
 
 .lang-wrapper {
-    font-family: inherit;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+}
+
+/* Card Styling & Hover Enhancements */
+.lang-wrapper .bg-white {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.lang-wrapper .hover\:shadow:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+    border-color: #cbd5e1;
+}
+
+/* Header Action Buttons */
+.lang-wrapper button, 
+.lang-wrapper label.cursor-pointer {
+    transition: all 0.15s ease-in-out;
+}
+
+/* Translation Matrix Table Customizations */
+.lang-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.lang-wrapper th {
     background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #e2e8f0;
 }
 
-/* Active Language Card Styling */
-.lang-card-active {
-    border-color: #4f46e5 !important;
-    background-color: #eef2ff !important;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+.lang-wrapper td {
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
 }
 
-/* Custom Toggle Switch */
-.toggle-checkbox {
-    transition: all 0.25s ease-in-out;
-    top: 2px;
-    left: 2px;
+/* Input Fields inside Translation Matrix & Forms */
+.lang-wrapper input[type="text"] {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.toggle-checkbox:checked {
-    right: 0;
+.lang-wrapper input[type="text"]:focus {
     border-color: #4f46e5;
-    transform: translateX(100%);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    outline: none;
 }
 
-.toggle-checkbox:checked + .toggle-label {
-    background-color: #4f46e5;
+/* Missing Translation Highlight styling */
+.lang-wrapper input.border-red-300 {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
 }
 
-/* Table Inputs & Matrix Polish */
-#translationTableBody input[type="text"]:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+.lang-wrapper input.border-red-300:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-#translationTableBody input.border-red-300 {
-    background-color: #fff5f5 !important;
-    border-color: #feb2b2 !important;
+/* Progress Bar Smooth Transition */
+.lang-wrapper .bg-indigo-600.h-1\.5 {
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Modal Animation & Backdrop */
 #languageModal {
-    backdrop-filter: blur(5px);
-    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    background-color: rgba(15, 23, 42, 0.5);
+    animation: fadeInModal 0.2s ease-out forwards;
 }
+
+#languageModal > div {
+    animation: scaleUpModal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Group Headers in Translation Matrix */
+.lang-wrapper tbody tr.bg-slate-100 td {
+    background-color: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 700;
+    color: #334155;
+   }
