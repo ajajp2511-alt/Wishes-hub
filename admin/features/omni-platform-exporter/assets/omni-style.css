@@ -1,17 +1,48 @@
-/* --- Omni Wrapper Professional Styles --- */
-.omni-wrapper {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: #f8fafc;
-    background: #090d16;
-    padding: 24px;
-    border-radius: 16px;
+/* =================================================_
+   Wishes Hub - Omni Platform Exporter Professional CSS
+   ================================================= */
+
+:root {
+    --omni-bg-dark: #090d16;
+    --omni-card-bg-start: #0f172a;
+    --omni-card-bg-end: #1e293b;
+    --omni-text-main: #f8fafc;
+    --omni-text-muted: #94a3b8;
+    --omni-border-color: rgba(255, 255, 255, 0.08);
+    --omni-primary: #6366f1;
+    --omni-radius: 12px;
 }
 
-/* --- Active Status Badge --- */
+/* Main Container Wrapper */
+.omni-wrapper {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--omni-text-main);
+    background: var(--omni-bg-dark);
+    padding: 24px;
+    border-radius: var(--omni-radius);
+    line-height: 1.5;
+}
+
+/* Typography Inside Omni Section */
+.omni-wrapper h2, 
+.omni-wrapper h3 {
+    color: var(--omni-text-main);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.omni-wrapper p {
+    color: var(--omni-text-muted);
+    font-size: 0.925rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Active Status Badge */
 .os-badge-active {
     background-color: #d1fae5;
     color: #065f46;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -20,13 +51,14 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     display: inline-flex;
     align-items: center;
+    gap: 6px;
 }
 
-/* --- Queued / Pending Status Badge --- */
+/* Queued / Pending Status Badge */
 .os-badge-queued {
     background-color: #fef3c7;
     color: #92400e;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -35,12 +67,16 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     display: inline-flex;
     align-items: center;
+    gap: 6px;
 }
 
-/* --- Omni Card Gradient with Hover Effects --- */
+/* Omni Card Gradient with Modern Hover & Shadows */
 .omni-card-gradient {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, var(--omni-card-bg-start) 0%, var(--omni-card-bg-end) 100%);
+    border: 1px solid var(--omni-border-color);
+    border-radius: var(--omni-radius);
+    padding: 20px;
+    margin-bottom: 16px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
