@@ -9,6 +9,31 @@ export class TextWishModule {
       <div class="form-section">
         <h2>Create Message</h2>
         
+        <!-- Wish Title Field -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="input-title">Wish Title / Heading</label>
+          <input type="text" id="input-title" placeholder="e.g., Happy Birthday Dost! 🎉" style="width: 100%; padding: 10px; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 6px;" />
+        </div>
+
+        <!-- Category Selector -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="input-category">Category</label>
+          <select id="input-category" style="width: 100%; padding: 10px; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <option value="birthday">🎂 Birthday</option>
+            <option value="anniversary">❤️ Anniversary</option>
+            <option value="festival">🎆 Festival / New Year</option>
+            <option value="friendship">🤝 Friendship</option>
+            <option value="morning">🌅 Good Morning / Night</option>
+            <option value="general">✨ General / Other</option>
+          </select>
+        </div>
+
+        <!-- Author / Sender Name Field -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="input-author">Author / Sender Name</label>
+          <input type="text" id="input-author" placeholder="e.g., Patel Studio or Your Name" style="width: 100%; padding: 10px; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 6px;" />
+        </div>
+
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="input-content">Message Content</label>
@@ -41,11 +66,30 @@ export class TextWishModule {
   }
 
   bindEvents(onUpdate) {
+    const titleInput = document.getElementById('input-title');
+    const categorySelect = document.getElementById('input-category');
+    const authorInput = document.getElementById('input-author');
     const textarea = document.getElementById('input-content');
     const charCounter = document.getElementById('char-counter');
     const presetSelect = document.getElementById('preset-wishes');
     const fontSelect = document.getElementById('text-font-style');
 
+    // Title Event
+    titleInput?.addEventListener('input', (e) => {
+      onUpdate({ Title: e.target.value.trim() });
+    });
+
+    // Category Event
+    categorySelect?.addEventListener('change', (e) => {
+      onUpdate({ Category: e.target.value });
+    });
+
+    // Author Event
+    authorInput?.addEventListener('input', (e) => {
+      onUpdate({ Author: e.target.value.trim() });
+    });
+
+    // Content Textarea Event
     textarea?.addEventListener('input', (e) => {
       const text = e.target.value;
       if (charCounter) {
