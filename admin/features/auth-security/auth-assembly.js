@@ -1,10 +1,11 @@
 /**
- * Main Assembly Controller - Auth & Security (Optimized with Verifier Module)
+ * Main Assembly Controller - Auth & Security (Integrated with Login Flow)
  * Path: admin/features/auth-security/auth-assembly.js
  */
 
 import { authCoreInstance } from './auth-core.js';
 import { verifyAdminPassword } from './modules/auth-verifier.js';
+import { AdminLoginView } from './modules/admin-login-view.js';
 import { AdminRolesRbacModule } from './modules/admin-roles-rbac.js';
 import { ApiKeysSecretsModule } from './modules/api-keys-secrets.js';
 import { IpWhitelistModule } from './modules/ip-whitelist.js';
@@ -20,22 +21,39 @@ export class AuthAssembly {
   constructor() {
     this.container = null;
     this.activeSubTab = 'roles-rbac';
+    
+    // Login view instance with success callback
+    this.loginView = new AdminLoginView(() => {
+      this.renderDashboard();
+    });
   }
 
   init(rootId) {
     this.container = document.getElementById(rootId);
     if (!this.container) return;
 
-    this.renderLayout();
-    this.attachEventListeners();
+    // Check karein ki admin already logged in hai ya nahi
+    if (this.isLoggedIn()) {
+      this.renderDashboard();
+    } else {
+      this.loginView.render(this.container);
+    }
   }
 
-  renderLayout() {
+  isLoggedIn() {
+    return localStorage.getItem('wishes_hub_admin_auth') === 'active' || 
+           sessionStorage.getItem('wishes_hub_admin_auth') === 'active';
+  }
+
+  renderDashboard() {
     this.container.innerHTML = `
       <div class="auth-container" style="padding:16px;">
-        <header style="margin-bottom:20px;">
-          <h2 style="margin:0;">Auth & Security Control Center</h2>
-          <small style="color:#6e7681;">RBAC Roles, API Vault, IP Whitelisting, MFA & Security Posture</small>
+        <header style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2 style="margin:0; color:#f0f6fc;">Auth & Security Control Center</h2>
+            <small style="color:#8b949e;">RBAC Roles, API Vault, IP Whitelisting, MFA & Security Posture</small>
+          </div>
+          <button id="admin-logout-btn" style="background:#f85149; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; transition:background 0.2s;">Logout</button>
         </header>
 
         <nav style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
@@ -56,6 +74,7 @@ export class AuthAssembly {
     `;
 
     this.renderActiveSubTab();
+    this.attachDashboardEvents();
   }
 
   renderActiveSubTab() {
@@ -77,7 +96,8 @@ export class AuthAssembly {
     }
   }
 
-  attachEventListeners() {
+  attachDashboardEvents() {
+    // Tab switching event listeners
     this.container.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const targetBtn = e.target.closest('.tab-btn');
@@ -88,14 +108,22 @@ export class AuthAssembly {
         });
         
         targetBtn.classList.add('active');
-        
         this.activeSubTab = targetBtn.dataset.subtab;
         this.renderActiveSubTab();
       });
     });
+
+    // Logout button handler
+    const logoutBtn = this.container.querySelector('#admin-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('wishes_hub_admin_auth');
+        sessionStorage.removeItem('wishes_hub_admin_auth');
+        this.loginView.render(this.container);
+      });
+    }
   }
 
-  // Expose Verifier to Auth Assembly Class context if needed externally
   async verifyPassword(password) {
     return await verifyAdminPassword(password);
   }
