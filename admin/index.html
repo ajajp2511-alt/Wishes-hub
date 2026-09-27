@@ -21,6 +21,8 @@
 
     <!-- Master CSS Link -->
     <link rel="stylesheet" href="/admin/features/style-css.css">
+    <!-- Admin Login CSS Link -->
+    <link rel="stylesheet" href="/admin/features/auth-security/modules/admin-login.css">
 </head>
 <body>
 
@@ -70,7 +72,24 @@
         });
     </script>
 
-    <!-- Main Entry JS Module -->
-    <script type="module" src="/admin/features/features-assembly.js"></script>
+    <!-- Authentication & Main Assembly Entry Script -->
+    <script type="module">
+        import { authAssemblyInstance } from '/admin/features/auth-security/auth-assembly.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check karein ki admin logged in hai ya nahi
+            if (!authAssemblyInstance.isLoggedIn()) {
+                // Agar logged in nahi hai, toh dashboard hata kar login view render karein
+                document.body.innerHTML = '<div id="admin-login-root" style="width:100%; min-height:100vh;"></div>';
+                authAssemblyInstance.loginView.render(document.getElementById('admin-login-root'));
+            } else {
+                // Agar logged in hai, toh normal features assembly load karein
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = '/admin/features/features-assembly.js';
+                document.body.appendChild(script);
+            }
+        });
+    </script>
 </body>
-</html>
+    </html>
