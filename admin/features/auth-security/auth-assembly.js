@@ -1,5 +1,5 @@
 /**
- * Main Assembly Controller - Auth & Security (Integrated with Login Flow)
+ * Main Assembly Controller - Auth & Security (Integrated with Login & Router)
  * Path: admin/features/auth-security/auth-assembly.js
  */
 
@@ -46,6 +46,7 @@ export class AuthAssembly {
   }
 
   renderDashboard() {
+    if (!this.container) return;
     this.container.innerHTML = `
       <div class="auth-container" style="padding:16px;">
         <header style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -97,7 +98,6 @@ export class AuthAssembly {
   }
 
   attachDashboardEvents() {
-    // Tab switching event listeners
     this.container.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const targetBtn = e.target.closest('.tab-btn');
@@ -113,7 +113,6 @@ export class AuthAssembly {
       });
     });
 
-    // Logout button handler
     const logoutBtn = this.container.querySelector('#admin-logout-btn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
@@ -130,3 +129,8 @@ export class AuthAssembly {
 }
 
 export const authAssemblyInstance = new AuthAssembly();
+
+// Router safeRun compatibility ke liye direct export function
+export function init(rootId) {
+  authAssemblyInstance.init(rootId);
+}
