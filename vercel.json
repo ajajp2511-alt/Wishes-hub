@@ -1,25 +1,7 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "functions": {
-    "api/verify-pass.js": {
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api/verify-pass",
-      "destination": "/api/verify-pass"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/[...endpoint]"
-    },
-    {
-      "source": "/admin/(.*)",
-      "headers": { "Cache-Control": "no-store, max-age=0" },
-      "destination": "/admin/$1"
-    },
     {
       "source": "/admin",
       "destination": "/admin/index.html"
@@ -29,8 +11,8 @@
       "destination": "/admin/index.html"
     },
     {
-      "source": "/((?!api|admin).*)",
-      "destination": "/public/$1"
+      "source": "/admin/(.*)",
+      "destination": "/admin/$1"
     }
   ]
 }
