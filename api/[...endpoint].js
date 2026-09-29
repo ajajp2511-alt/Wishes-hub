@@ -41,26 +41,29 @@ export default async function handler(req, res) {
         console.log("🔍 Incoming API Request URL:", req.url);
         console.log("🔍 Incoming Query Params:", req.query);
 
-        // Robust Endpoint Extraction
-        let endpointArr = req.query.endpoint;
-        
-        if (!endpointArr) {
+        // Foolproof Endpoint Extraction directly from URL or query
+        let currentEndpoint = '';
+
+        if (req.query && req.query.endpoint) {
+            currentEndpoint = Array.isArray(req.query.endpoint) ? req.query.endpoint[0] : req.query.endpoint;
+        }
+
+        if (!currentEndpoint) {
             const urlPath = req.url.split('?')[0]; 
             const parts = urlPath.split('/').filter(Boolean); 
-            if (parts.length > 0) {
-                if (parts[0] === 'api') {
-                    endpointArr = parts.slice(1);
-                } else {
-                    endpointArr = parts;
-                }
+            // parts can be ['api', 'verify-pass'] or ['verify-pass']
+            const apiIndex = parts.indexOf('api');
+            if (apiIndex !== -1 && parts[apiIndex + 1]) {
+                currentEndpoint = parts[apiIndex + 1];
+            } else if (parts.length > 0) {
+                currentEndpoint = parts[0];
             }
         }
 
-        if (!endpointArr || (Array.isArray(endpointArr) && endpointArr.length === 0)) {
+        if (!currentEndpoint) {
             return res.status(404).json({ ok: false, error: 'API Endpoint not specified.' });
         }
 
-        const currentEndpoint = Array.isArray(endpointArr) ? endpointArr[0] : endpointArr;
         console.log("🎯 Resolved Target Endpoint:", currentEndpoint);
 
         let targetModule;
