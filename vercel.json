@@ -13,10 +13,6 @@
     {
       "source": "/admin/(.*)",
       "destination": "/admin/$1"
-    },
-    {
-      "source": "/((?!api|admin).*)",
-      "destination": "/public/$1"
     }
   ]
 }
