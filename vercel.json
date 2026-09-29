@@ -16,7 +16,7 @@
     },
     {
       "source": "/((?!api|admin).*)",
-      "destination": "/$1"
+      "destination": "/public/$1"
     }
   ]
 }
