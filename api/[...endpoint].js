@@ -1,6 +1,7 @@
 /**
  * Single Catch-All API Dispatcher (Wishes Hub)
  * Path: api/[...endpoint].js
+ * Updated with all router modules
  */
 
 export default async function handler(req, res) {
@@ -25,9 +26,7 @@ export default async function handler(req, res) {
             return res.status(404).json({ ok: false, error: 'API Endpoint not specified.' });
         }
 
-        // Pehla segment endpoint name hoga (jaise verify-pass, sheets, add-wish-to-db)
         const currentEndpoint = endpointArr[0];
-
         let targetModule;
         
         switch (currentEndpoint) {
@@ -37,6 +36,9 @@ export default async function handler(req, res) {
             case 'add-wish-to-db':
                 targetModule = await import('../router/add-wish-to-db.js');
                 break;
+            case 'add-unified-wish':
+                targetModule = await import('../router/add-unified-wish.js');
+                break;
             case 'sheets':
                 targetModule = await import('../router/sheets.js');
                 break;
@@ -45,6 +47,42 @@ export default async function handler(req, res) {
                 break;
             case 'upload-to-tg':
                 targetModule = await import('../router/upload-to-tg.js');
+                break;
+            case 'ai-generator':
+                targetModule = await import('../router/ai-generator.js');
+                break;
+            case 'audit-logs':
+                targetModule = await import('../router/audit-logs.js');
+                break;
+            case 'cdn-upload':
+                targetModule = await import('../router/cdn-upload.js');
+                break;
+            case 'get-config':
+                targetModule = await import('../router/get-config.js');
+                break;
+            case 'get-image':
+                targetModule = await import('../router/get-image.js');
+                break;
+            case 'get-media':
+                targetModule = await import('../router/get-media.js');
+                break;
+            case 'get-youtube-song':
+                targetModule = await import('../router/get-youtube-song.js');
+                break;
+            case 'manage-wish':
+                targetModule = await import('../router/manage-wish.js');
+                break;
+            case 'save-security-config':
+                targetModule = await import('../router/save-security-config.js');
+                break;
+            case 'send-wish':
+                targetModule = await import('../router/send-wish.js');
+                break;
+            case 'system-analytics':
+                targetModule = await import('../router/system-analytics.js');
+                break;
+            case 'user-permissions':
+                targetModule = await import('../router/user-permissions.js');
                 break;
             default:
                 return res.status(404).json({ ok: false, error: `Endpoint '${currentEndpoint}' not found in router registry.` });
