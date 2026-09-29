@@ -1,5 +1,5 @@
 /**
- * Single Catch-All API Dispatcher (Wishes Hub - Robust Version)
+ * Single Catch-All API Dispatcher (Wishes Hub - Ultra Robust Version)
  * Path: api/[...endpoint].js
  */
 
@@ -19,14 +19,21 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Robust Endpoint Extraction (Handles both query array and direct URL path fallback)
+        console.log("🔍 Incoming API Request URL:", req.url);
+        console.log("🔍 Incoming Query Params:", req.query);
+
+        // Robust Endpoint Extraction
         let endpointArr = req.query.endpoint;
         
         if (!endpointArr) {
-            const urlPath = req.url.split('?')[0]; // Remove query params
-            const parts = urlPath.split('/').filter(Boolean); // e.g., ['api', 'verify-pass']
-            if (parts.length > 1 && parts[0] === 'api') {
-                endpointArr = parts.slice(1);
+            const urlPath = req.url.split('?')[0]; 
+            const parts = urlPath.split('/').filter(Boolean); 
+            if (parts.length > 0) {
+                if (parts[0] === 'api') {
+                    endpointArr = parts.slice(1);
+                } else {
+                    endpointArr = parts;
+                }
             }
         }
 
@@ -35,62 +42,77 @@ export default async function handler(req, res) {
         }
 
         const currentEndpoint = Array.isArray(endpointArr) ? endpointArr[0] : endpointArr;
+        console.log("🎯 Resolved Target Endpoint:", currentEndpoint);
+
         let targetModule;
         
+        // Helper to try importing from both relative paths (root vs api folder)
+        const loadRouter = async (routerName) => {
+            try {
+                return await import(`../router/${routerName}.js`);
+            } catch (err1) {
+                try {
+                    return await import(`./router/${routerName}.js`);
+                } catch (err2) {
+                    throw new Error(`Router file '${routerName}.js' not found in router/ or api/router/.`);
+                }
+            }
+        };
+
         switch (currentEndpoint) {
             case 'verify-pass':
-                targetModule = await import('../router/verify-pass.js');
+                targetModule = await loadRouter('verify-pass');
                 break;
             case 'add-wish-to-db':
-                targetModule = await import('../router/add-wish-to-db.js');
+                targetModule = await loadRouter('add-wish-to-db');
                 break;
             case 'add-unified-wish':
-                targetModule = await import('../router/add-unified-wish.js');
+                targetModule = await loadRouter('add-unified-wish');
                 break;
             case 'sheets':
-                targetModule = await import('../router/sheets.js');
+                targetModule = await loadRouter('sheets');
                 break;
             case 'get-wishes':
-                targetModule = await import('../router/get-wishes.js');
+                targetModule = await loadRouter('get-wishes');
                 break;
             case 'upload-to-tg':
-                targetModule = await import('../router/upload-to-tg.js');
+                targetModule = await loadRouter('upload-to-tg');
                 break;
             case 'ai-generator':
-                targetModule = await import('../router/ai-generator.js');
+                targetModule = await loadRouter('ai-generator');
                 break;
             case 'audit-logs':
-                targetModule = await import('../router/audit-logs.js');
+                targetModule = await loadRouter('audit-logs');
                 break;
             case 'cdn-upload':
-                targetModule = await import('../router/cdn-upload.js');
+                targetModule = await loadRouter('cdn-upload');
                 break;
             case 'get-config':
-                targetModule = await import('../router/get-config.js');
+                targetModule = await loadRouter('get-config');
                 break;
             case 'get-image':
-                targetModule = await import('../router/get-image.js');
+                targetModule = await loadRouter('get-image');
                 break;
             case 'get-media':
-                targetModule = await import('../router/get-media.js');
+                targetModule = await loadRouter('get-media');
                 break;
             case 'get-youtube-song':
-                targetModule = await import('../router/get-youtube-song.js');
+                targetModule = await loadRouter('get-youtube-song');
                 break;
             case 'manage-wish':
-                targetModule = await import('../router/manage-wish.js');
+                targetModule = await loadRouter('manage-wish');
                 break;
             case 'save-security-config':
-                targetModule = await import('../router/save-security-config.js');
+                targetModule = await loadRouter('save-security-config');
                 break;
             case 'send-wish':
-                targetModule = await import('../router/send-wish.js');
+                targetModule = await loadRouter('send-wish');
                 break;
             case 'system-analytics':
-                targetModule = await import('../router/system-analytics.js');
+                targetModule = await loadRouter('system-analytics');
                 break;
             case 'user-permissions':
-                targetModule = await import('../router/user-permissions.js');
+                targetModule = await loadRouter('user-permissions');
                 break;
             default:
                 return res.status(404).json({ ok: false, error: `Endpoint '${currentEndpoint}' not found in router registry.` });
@@ -103,11 +125,11 @@ export default async function handler(req, res) {
         }
 
     } catch (error) {
-        console.error("API Dispatcher Error:", error);
+        console.error("🚨 API Dispatcher Error:", error);
         return res.status(500).json({ 
             ok: false, 
             error: "Internal Server Error in API Dispatcher.", 
             details: error.message 
         });
     }
-}
+    }
