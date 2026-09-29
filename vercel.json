@@ -1,18 +1,27 @@
 {
-  "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/admin",
-      "destination": "/admin/index.html"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/admin/$1"
-    },
-    {
-      "source": "/((?!api|admin).*)",
-      "destination": "/index.html"
-    }
-  ]
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/[...endpoint]?endpoint=$1"
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": { "Cache-Control": "no-store, max-age=0" },
+      "destination": "/admin/$1"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/((?!api|admin).*)",
+      "destination": "/public/$1"
+    }
+  ]
 }
