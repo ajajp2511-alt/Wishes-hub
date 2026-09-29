@@ -3,6 +3,25 @@
  * Path: api/[...endpoint].js
  */
 
+import * as verifyPassModule from '../router/verify-pass.js';
+import * as addWishToDbModule from '../router/add-wish-to-db.js';
+import * as addUnifiedWishModule from '../router/add-unified-wish.js';
+import * as sheetsModule from '../router/sheets.js';
+import * as getWishesModule from '../router/get-wishes.js';
+import * as uploadToTgModule from '../router/upload-to-tg.js';
+import * as aiGeneratorModule from '../router/ai-generator.js';
+import * as auditLogsModule from '../router/audit-logs.js';
+import * as cdnUploadModule from '../router/cdn-upload.js';
+import * as getConfigModule from '../router/get-config.js';
+import * as getImageModule from '../router/get-image.js';
+import * as getMediaModule from '../router/get-media.js';
+import * as getYoutubeSongModule from '../router/get-youtube-song.js';
+import * as manageWishModule from '../router/manage-wish.js';
+import * as saveSecurityConfigModule from '../router/save-security-config.js';
+import * as sendWishModule from '../router/send-wish.js';
+import * as systemAnalyticsModule from '../router/system-analytics.js';
+import * as userPermissionsModule from '../router/user-permissions.js';
+
 export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -45,74 +64,61 @@ export default async function handler(req, res) {
         console.log("🎯 Resolved Target Endpoint:", currentEndpoint);
 
         let targetModule;
-        
-        // Helper to try importing from both relative paths (root vs api folder)
-        const loadRouter = async (routerName) => {
-            try {
-                return await import(`../router/${routerName}.js`);
-            } catch (err1) {
-                try {
-                    return await import(`./router/${routerName}.js`);
-                } catch (err2) {
-                    throw new Error(`Router file '${routerName}.js' not found in router/ or api/router/.`);
-                }
-            }
-        };
 
         switch (currentEndpoint) {
             case 'verify-pass':
-                targetModule = await loadRouter('verify-pass');
+                targetModule = verifyPassModule;
                 break;
             case 'add-wish-to-db':
-                targetModule = await loadRouter('add-wish-to-db');
+                targetModule = addWishToDbModule;
                 break;
             case 'add-unified-wish':
-                targetModule = await loadRouter('add-unified-wish');
+                targetModule = addUnifiedWishModule;
                 break;
             case 'sheets':
-                targetModule = await loadRouter('sheets');
+                targetModule = sheetsModule;
                 break;
             case 'get-wishes':
-                targetModule = await loadRouter('get-wishes');
+                targetModule = getWishesModule;
                 break;
             case 'upload-to-tg':
-                targetModule = await loadRouter('upload-to-tg');
+                targetModule = uploadToTgModule;
                 break;
             case 'ai-generator':
-                targetModule = await loadRouter('ai-generator');
+                targetModule = aiGeneratorModule;
                 break;
             case 'audit-logs':
-                targetModule = await loadRouter('audit-logs');
+                targetModule = auditLogsModule;
                 break;
             case 'cdn-upload':
-                targetModule = await loadRouter('cdn-upload');
+                targetModule = cdnUploadModule;
                 break;
             case 'get-config':
-                targetModule = await loadRouter('get-config');
+                targetModule = getConfigModule;
                 break;
             case 'get-image':
-                targetModule = await loadRouter('get-image');
+                targetModule = getImageModule;
                 break;
             case 'get-media':
-                targetModule = await loadRouter('get-media');
+                targetModule = getMediaModule;
                 break;
             case 'get-youtube-song':
-                targetModule = await loadRouter('get-youtube-song');
+                targetModule = getYoutubeSongModule;
                 break;
             case 'manage-wish':
-                targetModule = await loadRouter('manage-wish');
+                targetModule = manageWishModule;
                 break;
             case 'save-security-config':
-                targetModule = await loadRouter('save-security-config');
+                targetModule = saveSecurityConfigModule;
                 break;
             case 'send-wish':
-                targetModule = await loadRouter('send-wish');
+                targetModule = sendWishModule;
                 break;
             case 'system-analytics':
-                targetModule = await loadRouter('system-analytics');
+                targetModule = systemAnalyticsModule;
                 break;
             case 'user-permissions':
-                targetModule = await loadRouter('user-permissions');
+                targetModule = userPermissionsModule;
                 break;
             default:
                 return res.status(404).json({ ok: false, error: `Endpoint '${currentEndpoint}' not found in router registry.` });
@@ -132,4 +138,4 @@ export default async function handler(req, res) {
             details: error.message 
         });
     }
-    }
+}
