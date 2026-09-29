@@ -9,12 +9,8 @@
   ],
   "routes": [
     {
-     "src": "/api/(.*)",
-     "dest": "/api/[...endpoint].js" 
-    },
-    {
       "src": "/api/(.*)",
-      "dest": "api/$1.js"
+      "dest": "/api/[...endpoint].js"
     },
     {
       "src": "/admin/(.*)",
@@ -30,7 +26,7 @@
       "dest": "/admin/index.html"
     },
     {
-      "src": "/((?!api|admin).*)" ,
+      "src": "/((?!api|admin).*)",
       "dest": "/public/$1"
     }
   ]
