@@ -1,7 +1,6 @@
 /**
- * Single Catch-All API Dispatcher (Wishes Hub)
+ * Single Catch-All API Dispatcher (Wishes Hub - Robust Version)
  * Path: api/[...endpoint].js
- * Updated with all router modules
  */
 
 export default async function handler(req, res) {
@@ -20,13 +19,22 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { endpoint: endpointArr } = req.query;
+        // Robust Endpoint Extraction (Handles both query array and direct URL path fallback)
+        let endpointArr = req.query.endpoint;
         
-        if (!endpointArr || endpointArr.length === 0) {
+        if (!endpointArr) {
+            const urlPath = req.url.split('?')[0]; // Remove query params
+            const parts = urlPath.split('/').filter(Boolean); // e.g., ['api', 'verify-pass']
+            if (parts.length > 1 && parts[0] === 'api') {
+                endpointArr = parts.slice(1);
+            }
+        }
+
+        if (!endpointArr || (Array.isArray(endpointArr) && endpointArr.length === 0)) {
             return res.status(404).json({ ok: false, error: 'API Endpoint not specified.' });
         }
 
-        const currentEndpoint = endpointArr[0];
+        const currentEndpoint = Array.isArray(endpointArr) ? endpointArr[0] : endpointArr;
         let targetModule;
         
         switch (currentEndpoint) {
