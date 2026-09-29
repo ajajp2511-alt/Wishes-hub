@@ -9,10 +9,6 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/[...endpoint].js"
-    },
-    {
       "src": "/admin/(.*)",
       "headers": { "Cache-Control": "no-store, max-age=0" },
       "dest": "/admin/$1"
