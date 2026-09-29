@@ -1,5 +1,5 @@
 // api/verify-pass.js
-// Wishes Hub: Double-Trim Sync Fix - 2026
+// Wishes Hub: Direct Dedicated API Route - 2026
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
-    if (req.method !== 'POST') return res.status(405).json({ ok: false });
+    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
 
     try {
         let body = req.body;
@@ -16,15 +16,13 @@ export default async function handler(req, res) {
             body = JSON.parse(body);
         }
 
-        // Frontend se aaya hua password (Trimming space)
         const enteredPassword = body?.password ? String(body.password).replace(/\s+/g, '') : '';
         
-        // Dashboard se aaya hua password (Force String + Heavy Trimming space)
         let correctPassword = process.env.ADMIN_PASSWORD ? String(process.env.ADMIN_PASSWORD) : '';
-        correctPassword = correctPassword.replace(/\s+/g, ''); // Kisi bhi hidden space ko poora saaf karne ke liye
+        correctPassword = correctPassword.replace(/\s+/g, '');
 
         if (!correctPassword) {
-            return res.status(500).json({ ok: false, error: "Server Configuration Error" });
+            return res.status(500).json({ ok: false, error: "Server Configuration Error: ADMIN_PASSWORD missing" });
         }
 
         if (enteredPassword === correctPassword) {
@@ -33,6 +31,7 @@ export default async function handler(req, res) {
             return res.status(401).json({ ok: false, error: 'Incorrect password!' });
         }
     } catch (error) {
+        console.error("Verify Pass Error:", error);
         return res.status(500).json({ ok: false, error: 'Server Error' });
     }
-}
+                                                  }
