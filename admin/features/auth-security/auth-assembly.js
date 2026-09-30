@@ -4,8 +4,6 @@
  */
 
 import { authCoreInstance } from './auth-core.js';
-import { verifyAdminPassword } from './modules/auth-verifier.js';
-import { AdminLoginView } from './modules/admin-login-view.js';
 import { AdminRolesRbacModule } from './modules/admin-roles-rbac.js';
 import { ApiKeysSecretsModule } from './modules/api-keys-secrets.js';
 import { IpWhitelistModule } from './modules/ip-whitelist.js';
