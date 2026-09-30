@@ -1,11 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "functions": {
-    "api/verify-pass.js": {
-      "maxDuration": 10
-    }
-  },
   "headers": [
     {
       "source": "/admin/(.*)",
@@ -18,10 +13,6 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/verify-pass",
-      "destination": "/api/verify-pass"
-    },
     {
       "source": "/api/(.*)",
       "destination": "/api/[...endpoint]"
