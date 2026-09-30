@@ -6,6 +6,17 @@
       "maxDuration": 10
     }
   },
+  "headers": [
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/verify-pass",
@@ -17,7 +28,6 @@
     },
     {
       "source": "/admin/(.*)",
-      "headers": { "Cache-Control": "no-store, max-age=0" },
       "destination": "/admin/$1"
     },
     {
