@@ -1,5 +1,5 @@
 /**
- * Main Assembly Controller - Auth & Security (Integrated with Login & Router)
+ * Main Assembly Controller - Auth & Security (Dashboard Only)
  * Path: admin/features/auth-security/auth-assembly.js
  */
 
@@ -19,28 +19,14 @@ export class AuthAssembly {
   constructor() {
     this.container = null;
     this.activeSubTab = 'roles-rbac';
-    
-    // Login view instance with success callback
-    this.loginView = new AdminLoginView(() => {
-      this.renderDashboard();
-    });
   }
 
   init(rootId) {
     this.container = document.getElementById(rootId);
     if (!this.container) return;
 
-    // Check karein ki admin already logged in hai ya nahi
-    if (this.isLoggedIn()) {
-      this.renderDashboard();
-    } else {
-      this.loginView.render(this.container);
-    }
-  }
-
-  isLoggedIn() {
-    return localStorage.getItem('wishes_hub_admin_auth') === 'active' || 
-           sessionStorage.getItem('wishes_hub_admin_auth') === 'active';
+    // Direct dashboard render (Login check hata diya gaya hai)
+    this.renderDashboard();
   }
 
   renderDashboard() {
@@ -52,7 +38,6 @@ export class AuthAssembly {
             <h2 style="margin:0; color:#f0f6fc;">Auth & Security Control Center</h2>
             <small style="color:#8b949e;">RBAC Roles, API Vault, IP Whitelisting, MFA & Security Posture</small>
           </div>
-          <button id="admin-logout-btn" style="background:#f85149; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; transition:background 0.2s;">Logout</button>
         </header>
 
         <nav style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
@@ -110,25 +95,11 @@ export class AuthAssembly {
         this.renderActiveSubTab();
       });
     });
-
-    const logoutBtn = this.container.querySelector('#admin-logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('wishes_hub_admin_auth');
-        sessionStorage.removeItem('wishes_hub_admin_auth');
-        this.loginView.render(this.container);
-      });
-    }
-  }
-
-  async verifyPassword(password) {
-    return await verifyAdminPassword(password);
   }
 }
 
 export const authAssemblyInstance = new AuthAssembly();
 
-// Router safeRun compatibility ke liye direct export function
 export function init(rootId) {
   authAssemblyInstance.init(rootId);
-}
+      }
