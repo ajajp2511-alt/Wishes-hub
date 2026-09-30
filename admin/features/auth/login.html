@@ -14,16 +14,15 @@
     </style>
 </head>
 <body>
-    <!-- Root Container jahan login view render hoga -->
+    <!-- Root Container -->
     <div id="admin-login-root"></div>
 
-    <!-- Login Logic & Security Modules Import from 'auth-security' folder -->
     <script type="module">
-        import { AdminLoginView } from '../auth-security/modules/admin-login-view.js';
+        import { AdminLoginView } from './admin-login-view.js';
 
-        // Jab login successful ho jaye, tab admin dashboard par redirect karein
+        // Successful login ke baad dashboard par redirect karein
         const loginView = new AdminLoginView(() => {
-            window.location.href = '../dashboard.html'; // Aapke main admin dashboard ka path
+            window.location.href = '../index.html'; // Aapke main dashboard ka path
         });
 
         loginView.render(document.getElementById('admin-login-root'));
