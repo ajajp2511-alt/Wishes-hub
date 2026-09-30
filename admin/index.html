@@ -70,16 +70,15 @@
         });
     </script>
 
-    <!-- Authentication & Main Assembly Entry Script -->
+    <!-- Authentication & Main Assembly Entry Script (Updated for standalone auth/login.html) -->
     <script type="module">
         import { authAssemblyInstance } from '/admin/features/auth-security/auth-assembly.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             // Check karein ki admin logged in hai ya nahi
             if (!authAssemblyInstance.isLoggedIn()) {
-                // Agar logged in nahi hai, toh dashboard hata kar login view render karein
-                document.body.innerHTML = '<div id="admin-login-root" style="width:100%; min-height:100vh;"></div>';
-                authAssemblyInstance.loginView.render(document.getElementById('admin-login-root'));
+                // Agar logged in nahi hai, toh seedha naye auth/login.html par redirect karein
+                window.location.href = './auth/login.html';
             } else {
                 // Agar logged in hai, toh normal features assembly load karein
                 const script = document.createElement('script');
@@ -90,4 +89,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
