@@ -36,7 +36,15 @@ export class PasskeyAuthModule {
             return;
         }
 
+        const passkeyBtn = document.getElementById('passkey-login-btn');
+
         try {
+            if (passkeyBtn) {
+                passkeyBtn.disabled = true;
+                passkeyBtn.dataset.originalText = passkeyBtn.textContent;
+                passkeyBtn.textContent = 'Verifying Passkey... 🔑';
+            }
+
             // Mock challenge options received from server
             const challengeOptions = {
                 challenge: new Uint8Array([21, 31, 105, 42, 77, 88, 90, 11]),
@@ -55,13 +63,18 @@ export class PasskeyAuthModule {
             if (this.onSuccessCallback) {
                 this.onSuccessCallback({
                     status: 'SUCCESS',
-                    redirectUrl: LoginConfig.roles.adminPanelPath,
+                    redirectUrl: LoginConfig.roles.adminPanelPath || '/admin/dashboard.html',
                     role: 'SUPER_ADMIN'
                 });
             }
         } catch (error) {
             console.error('Passkey Authentication Error:', error);
             alert('Passkey sign-in cancelled or failed.');
+        } finally {
+            if (passkeyBtn) {
+                passkeyBtn.disabled = false;
+                passkeyBtn.textContent = passkeyBtn.dataset.originalText || 'Sign in with Passkey';
+            }
         }
     }
 }
