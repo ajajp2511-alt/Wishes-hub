@@ -48,7 +48,7 @@ export class LoginCore {
     }
 
     bindEvents() {
-        const loginForm = document.getElementById('admin-login-form');
+        const loginForm = document.getElementById('login-form');
         if (!loginForm) return;
 
         loginForm.addEventListener('submit', async (e) => {
@@ -77,7 +77,7 @@ export class LoginCore {
     }
 
     async handleSignInAttempt(email, password) {
-        const submitBtn = document.querySelector('#admin-login-form button[type="submit"]');
+        const submitBtn = document.querySelector('#login-form button[type="submit"]');
         
         try {
             // Set Loading State on Button
@@ -155,7 +155,6 @@ export class LoginCore {
     }
 
     showNotification(message, type = 'info') {
-        // Optional helper for displaying inline messages if required by UI
         console.log(`[${type.toUpperCase()}] ${message}`);
     }
 }
