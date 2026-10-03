@@ -20,11 +20,11 @@ export class BackupCodesModule {
             modal.innerHTML = `
                 <div class="modal-card">
                     <h3>Emergency Recovery Codes 🔑</h3>
-                    <p>Enter one of your single-use 8-character backup recovery codes.</p>
+                    <p>Enter one of your single-use backup recovery codes.</p>
                     
                     <form id="backup-code-form">
                         <div class="input-group">
-                            <input type="text" id="backup-code-input" required placeholder="e.g. AB12-CD34" autocomplete="off" autofocus>
+                            <input type="text" id="backup-code-input" required placeholder="e.g. WH-BACKUP-99" autocomplete="off" autofocus style="text-transform: uppercase;">
                         </div>
                         <div class="modal-actions">
                             <button type="button" id="close-backup-modal" class="btn-secondary">Cancel</button>
@@ -39,13 +39,30 @@ export class BackupCodesModule {
                 modal.classList.remove('active');
             });
 
+            const codeInput = document.getElementById('backup-code-input');
+            
+            // Auto uppercase formatting as user types
+            if (codeInput) {
+                codeInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                });
+            }
+
             document.getElementById('backup-code-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const code = document.getElementById('backup-code-input').value.trim();
+                const code = codeInput ? codeInput.value.trim() : '';
+                
+                if (!code) {
+                    alert('Please enter a backup code.');
+                    return;
+                }
+
                 await this.verifyBackupCode(userId, code, modal);
             });
         } else {
             modal.classList.add('active');
+            const codeInput = document.getElementById('backup-code-input');
+            if (codeInput) codeInput.value = '';
         }
     }
 
@@ -53,14 +70,24 @@ export class BackupCodesModule {
      * Verify the entered backup recovery code
      */
     async verifyBackupCode(userId, code, modalElement) {
+        const verifyBtn = document.getElementById('verify-backup-btn');
+
         try {
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.dataset.originalText = verifyBtn.textContent;
+                verifyBtn.textContent = 'Verifying...';
+            }
+
             // Simulating API verification call
             await new Promise((resolve) => setTimeout(resolve, 800));
 
             // Mock successful match condition (e.g., 'WH-BACKUP-99')
-            if (code.toUpperCase() === 'WH-BACKUP-99') {
+            if (code === 'WH-BACKUP-99') {
                 alert('Backup code verified successfully!');
-                modalElement.remove();
+                if (modalElement && modalElement.parentNode) {
+                    modalElement.remove();
+                }
                 if (this.onSuccessCallback) {
                     this.onSuccessCallback();
                 }
@@ -70,6 +97,11 @@ export class BackupCodesModule {
         } catch (error) {
             console.error('Backup Code Verification Error:', error);
             alert('Verification failed. Please try again.');
+        } finally {
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = verifyBtn.dataset.originalText || 'Verify Code';
+            }
         }
     }
 }
