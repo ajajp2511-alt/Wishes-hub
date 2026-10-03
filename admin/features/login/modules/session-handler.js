@@ -9,24 +9,29 @@ export class SessionHandler {
     constructor() {
         this.inactivityTimeout = null;
         this.warningTimeout = null;
-        this.timeoutMinutes = LoginConfig.security.sessionTimeoutMinutes || 30;
+        this.timeoutMinutes = LoginConfig?.security?.sessionTimeoutMinutes || 30;
+        this.lastActivityTime = Date.now();
         this.initSessionTracking();
         this.initTabSync();
     }
 
     /**
-     * Track user activity and set auto-logout timers
+     * Track user activity and set auto-logout timers with throttling
      */
     initSessionTracking() {
-        const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        const events = ['mousedown', 'keydown', 'click', 'scroll', 'touchstart'];
         
-        const resetTimer = () => {
-            this.clearTimers();
-            this.startTimers();
+        const handleActivity = () => {
+            const now = Date.now();
+            if (now - this.lastActivityTime > 5000) { // Reset at most once every 5 seconds
+                this.lastActivityTime = now;
+                this.clearTimers();
+                this.startTimers();
+            }
         };
 
         events.forEach(event => {
-            window.addEventListener(event, resetTimer, { passive: true });
+            window.addEventListener(event, handleActivity, { passive: true });
         });
 
         this.startTimers();
@@ -46,8 +51,14 @@ export class SessionHandler {
     }
 
     clearTimers() {
-        if (this.warningTimeout) clearTimeout(this.warningTimeout);
-        if (this.inactivityTimeout) clearTimeout(this.inactivityTimeout);
+        if (this.warningTimeout) {
+            clearTimeout(this.warningTimeout);
+            this.warningTimeout = null;
+        }
+        if (this.inactivityTimeout) {
+            clearTimeout(this.inactivityTimeout);
+            this.inactivityTimeout = null;
+        }
     }
 
     showInactivityWarning() {
@@ -68,7 +79,10 @@ export class SessionHandler {
             document.body.appendChild(warningModal);
 
             document.getElementById('stay-logged-in-btn').addEventListener('click', () => {
-                warningModal.remove();
+                if (warningModal && warningModal.parentNode) {
+                    warningModal.remove();
+                }
+                this.lastActivityTime = Date.now();
                 this.clearTimers();
                 this.startTimers();
             });
@@ -86,7 +100,7 @@ export class SessionHandler {
         localStorage.setItem('wh_logout_event', Date.now().toString());
 
         alert(reason);
-        window.location.href = '/admin/login.html';
+        window.location.href = LoginConfig?.roles?.loginPath || '/admin/login.html';
     }
 
     /**
@@ -96,7 +110,7 @@ export class SessionHandler {
         window.addEventListener('storage', (e) => {
             if (e.key === 'wh_logout_event') {
                 alert('You have been logged out from another tab.');
-                window.location.href = '/admin/login.html';
+                window.location.href = LoginConfig?.roles?.loginPath || '/admin/login.html';
             }
         });
     }
