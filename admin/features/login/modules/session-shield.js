@@ -9,16 +9,20 @@ export class SessionShield {
     constructor() {
         this.shieldKey = 'wh_session_shield_hash';
         this.trustedDeviceModule = new TrustedDeviceModule();
+        this.salt = 'wh_secure_salt_2026';
     }
 
     /**
      * Bind current session to the device fingerprint upon successful login
      */
-    establishShield() {
+    async establishShield() {
         try {
-            const fingerprint = this.trustedDeviceModule.generateFingerprint();
-            // Create a secondary verification hash combining fingerprint and salt
-            const shieldHash = btoa(fingerprint + '---wh_secure_salt_2026');
+            const fingerprint = await this.trustedDeviceModule.generateFingerprint();
+            const rawData = fingerprint + '---' + this.salt;
+            
+            // Generate secure hash using Web Crypto API if available, fallback to btoa
+            const shieldHash = await this.hashString(rawData);
+            
             localStorage.setItem(this.shieldKey, shieldHash);
             console.log('Session Shield established successfully.');
         } catch (error) {
@@ -29,15 +33,16 @@ export class SessionShield {
     /**
      * Validate current session against active device fingerprint to prevent hijacking
      */
-    validateShield() {
+    async validateShield() {
         try {
             const storedShield = localStorage.getItem(this.shieldKey);
             if (!storedShield) {
                 return { valid: false, reason: 'No session shield token found.' };
             }
 
-            const currentFingerprint = this.trustedDeviceModule.generateFingerprint();
-            const expectedShield = btoa(currentFingerprint + '---wh_secure_salt_2026');
+            const currentFingerprint = await this.trustedDeviceModule.generateFingerprint();
+            const rawData = currentFingerprint + '---' + this.salt;
+            const expectedShield = await this.hashString(rawData);
 
             if (storedShield !== expectedShield) {
                 console.warn('Security Alert: Session hijacking attempt detected! Fingerprint mismatch.');
@@ -52,6 +57,20 @@ export class SessionShield {
             console.error('Validate Shield Error:', error);
             return { valid: false, reason: 'Shield validation exception.' };
         }
+    }
+
+    /**
+     * Helper to create a secure SHA-256 hash with btoa fallback
+     */
+    async hashString(message) {
+        if (window.crypto && window.crypto.subtle) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        // Fallback for older environments
+        return btoa(message);
     }
 
     /**
