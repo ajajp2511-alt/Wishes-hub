@@ -4,10 +4,10 @@
  */
 
 export class LoginAlertsModule {
-    constructor() {
-        // Telegram Bot credentials configuration stubs
-        this.telegramBotToken = 'YOUR_TELEGRAM_BOT_TOKEN';
-        this.telegramChatId = 'YOUR_ADMIN_CHAT_ID';
+    constructor(botToken = null, chatId = null) {
+        // Telegram Bot credentials configuration with fallback stubs
+        this.telegramBotToken = botToken || 'YOUR_TELEGRAM_BOT_TOKEN';
+        this.telegramChatId = chatId || 'YOUR_ADMIN_CHAT_ID';
     }
 
     /**
@@ -20,16 +20,16 @@ export class LoginAlertsModule {
 
             switch (alertType) {
                 case 'SUCCESS':
-                    message = `🟢 **Admin Login Success**\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• IP: ${details.ip || 'Unknown'}\n• Device: ${navigator.userAgent}`;
+                    message = `🟢 *Admin Login Success*\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• IP: ${details.ip || 'Unknown'}\n• Device: ${navigator.userAgent}`;
                     break;
                 case 'FAILED':
-                    message = `🔴 **Failed Login Attempt**\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• IP: ${details.ip || 'Unknown'}`;
+                    message = `🔴 *Failed Login Attempt*\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• IP: ${details.ip || 'Unknown'}`;
                     break;
                 case 'LOCKED':
-                    message = `⚠️ **Account Lockout Triggered**\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• Reason: Exceeded maximum failed login attempts.`;
+                    message = `⚠️ *Account Lockout Triggered*\n\n• Email: ${adminEmail}\n• Time: ${timestamp}\n• Reason: Exceeded maximum failed login attempts.`;
                     break;
                 default:
-                    message = `ℹ️ **Security Notice**\n\n• Email: ${adminEmail}\n• Event: ${alertType}\n• Time: ${timestamp}`;
+                    message = `ℹ️ *Security Notice*\n\n• Email: ${adminEmail}\n• Event: ${alertType}\n• Time: ${timestamp}`;
             }
 
             // Dispatch notification via Telegram Bot API
@@ -45,13 +45,13 @@ export class LoginAlertsModule {
 
     async sendTelegramNotification(message) {
         // If bot tokens are placeholders, skip actual fetch to avoid network errors in simulation
-        if (this.telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN') {
+        if (this.telegramBotToken === 'YOUR_TELEGRAM_BOT_TOKEN' || !this.telegramBotToken) {
             await new Promise((resolve) => setTimeout(resolve, 200));
             return;
         }
 
         const url = `https://api.telegram.org/bot${this.telegramBotToken}/sendMessage`;
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -60,5 +60,9 @@ export class LoginAlertsModule {
                 parse_mode: 'Markdown'
             })
         });
+
+        if (!response.ok) {
+            throw new Error(`Telegram API Error: ${response.statusText}`);
+        }
     }
 }
