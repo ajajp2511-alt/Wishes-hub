@@ -18,12 +18,14 @@ export const LoginConfig = {
 
     // Security & Brute-Force Thresholds
     security: {
-        maxLoginAttempts: 5,               // Lock account after 5 failed attempts
-        lockoutDurationMinutes: 15,        // Temporary lockout duration
-        captchaTriggerAttempts: 3,         // Show captcha after 3 wrong attempts
-        sessionTimeoutMinutes: 30,         // Auto-logout after inactivity
-        inactivityWarningSeconds: 120,     // Show warning 2 minutes before timeout
-        trustedDeviceDays: 30              // Days to remember trusted device
+        maxLoginAttempts: 5,             // Lock account after 5 failed attempts
+        lockoutDurationMinutes: 15,      // Temporary lockout duration
+        captchaTriggerAttempts: 3,       // Show captcha after 3 wrong attempts
+        sessionTimeoutMinutes: 30,       // Auto-logout after inactivity
+        inactivityWarningSeconds: 120,   // Show warning 2 minutes before timeout
+        trustedDeviceDays: 30,           // Days to remember trusted device
+        rateLimitMaxRequests: 10,        // Max requests allowed in the time window (for rate-gate.js)
+        rateLimitWindowMs: 60000         // Time window in milliseconds (1 minute)
     },
 
     // Feature Toggles (Enable/Disable modules dynamically)
@@ -34,7 +36,7 @@ export const LoginConfig = {
         biometricEnabled: true,
         backupCodesEnabled: true,
         ipWhitelistEnabled: true,
-        maintenanceMode: false             // Emergency global login lock
+        maintenanceMode: false           // Emergency global login lock
     },
 
     // Role & Redirection Rules
@@ -42,13 +44,13 @@ export const LoginConfig = {
         superAdminRole: 'SUPER_ADMIN',
         subAdminRole: 'SUB_ADMIN',
         userRole: 'USER',
-        adminPanelPath: '/admin/dashboard.html',
+        adminPanelPath: '/admin/index.html',  // Fixed to point directly to admin index file
         userPanelPath: '/user/dashboard.html'
     },
 
     // UI Preferences
     ui: {
-        defaultTheme: 'dark',              // 'dark' or 'light'
+        defaultTheme: 'dark',            // 'dark' or 'light'
         animationSpeedMs: 300
     }
 };
