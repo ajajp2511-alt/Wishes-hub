@@ -9,11 +9,17 @@ export class LoginUI {
     }
 
     initUIInteractions() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.initPasswordToggle();
-            this.initInputAnimations();
-            this.enhanceButtons();
-        });
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setupUI());
+        } else {
+            this.setupUI();
+        }
+    }
+
+    setupUI() {
+        this.initPasswordToggle();
+        this.initInputAnimations();
+        this.enhanceButtons();
     }
 
     /**
@@ -46,6 +52,7 @@ export class LoginUI {
                 padding: 0;
                 opacity: 0.7;
                 transition: opacity 0.2s;
+                z-index: 10;
             `;
 
             toggleBtn.addEventListener('click', () => {
@@ -66,13 +73,21 @@ export class LoginUI {
      * Add subtle focus/blur floating animations to input groups
      */
     initInputAnimations() {
-        const inputs = document.querySelectorAll('.input-group input');
+        const inputs = document.querySelectorAll('.input-group input, .form-control');
         inputs.forEach(input => {
-            input.addEventListener('focus', () => {
+            // Check initial state on load
+            if (input.value && input.parentElement) {
                 input.parentElement.classList.add('focused');
+            }
+
+            input.addEventListener('focus', () => {
+                if (input.parentElement) {
+                    input.parentElement.classList.add('focused');
+                }
             });
+
             input.addEventListener('blur', () => {
-                if (!input.value) {
+                if (!input.value && input.parentElement) {
                     input.parentElement.classList.remove('focused');
                 }
             });
@@ -83,7 +98,7 @@ export class LoginUI {
      * Add smooth ripple or loading state effect to submit buttons
      */
     enhanceButtons() {
-        const submitBtn = document.getElementById('signin-submit-btn');
+        const submitBtn = document.getElementById('signin-submit-btn') || document.querySelector('#admin-login-form button[type="submit"]');
         if (!submitBtn) return;
 
         submitBtn.addEventListener('click', () => {
@@ -91,6 +106,9 @@ export class LoginUI {
             if (form && form.checkValidity()) {
                 submitBtn.classList.add('btn-loading');
                 submitBtn.disabled = true;
+                if (!submitBtn.dataset.originalText) {
+                    submitBtn.dataset.originalText = submitBtn.textContent;
+                }
                 submitBtn.textContent = 'Authenticating...';
             }
         });
