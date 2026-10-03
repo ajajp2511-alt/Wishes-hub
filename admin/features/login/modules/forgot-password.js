@@ -34,7 +34,7 @@ export class ForgotPasswordModule {
                     <form id="forgot-pwd-form">
                         <div class="input-group">
                             <label for="reset-email">Admin Email</label>
-                            <input type="email" id="reset-email" required placeholder="Enter your email">
+                            <input type="email" id="reset-email" required placeholder="Enter your email" autocomplete="email">
                         </div>
                         <div class="modal-actions">
                             <button type="button" id="close-modal-btn" class="btn-secondary">Cancel</button>
@@ -52,19 +52,33 @@ export class ForgotPasswordModule {
 
             document.getElementById('forgot-pwd-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = document.getElementById('reset-email').value.trim();
+                const emailInput = document.getElementById('reset-email');
+                const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+                
+                if (!email) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
                 this.handlePasswordResetRequest(email, modal);
             });
+        } else {
+            modal.classList.add('active');
+            const emailInput = document.getElementById('reset-email');
+            if (emailInput) emailInput.value = '';
         }
-
-        modal.classList.add('active');
     }
 
     async handlePasswordResetRequest(email, modalElement) {
+        const submitBtn = document.getElementById('send-reset-btn');
         try {
-            const submitBtn = document.getElementById('send-reset-btn');
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                if (!submitBtn.dataset.originalText) {
+                    submitBtn.dataset.originalText = submitBtn.textContent;
+                }
+                submitBtn.textContent = 'Sending...';
+            }
 
             // Simulating API request for password reset
             // const response = await fetch(LoginConfig.endpoints.forgotPassword, { method: 'POST', body: JSON.stringify({ email }) });
@@ -77,10 +91,9 @@ export class ForgotPasswordModule {
             console.error('Password Reset Error:', error);
             alert('Failed to send reset link. Please try again.');
         } finally {
-            const submitBtn = document.getElementById('send-reset-btn');
             if (submitBtn) {
-                submitBtn.textContent = 'Send Reset Link';
                 submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.dataset.originalText || 'Send Reset Link';
             }
         }
     }
