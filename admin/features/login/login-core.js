@@ -1,6 +1,6 @@
 /**
  * Wishes Hub - Login Core Controller
- * Orchestrates authentication flow by integrating all 16 security and functional modules.
+ * Orchestrates authentication flow by integrating all security and functional modules.
  */
 
 import { LoginConfig } from './login-config.js';
@@ -24,23 +24,27 @@ export class LoginCore {
     }
 
     async init() {
-        // 1. Validate IP and Geo-Fencing before rendering or processing
-        const ipCheck = await this.ipWhitelist.validateAccess();
-        if (!ipCheck.allowed) {
-            document.body.innerHTML = `<div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
-                <h2 style="color:#d9534f;">Access Denied</h2>
-                <p>${ipCheck.message}</p>
-            </div>`;
-            return;
-        }
+        try {
+            // 1. Validate IP and Geo-Fencing before rendering or processing
+            const ipCheck = await this.ipWhitelist.validateAccess();
+            if (!ipCheck.allowed) {
+                document.body.innerHTML = `<div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
+                    <h2 style="color:#d9534f;">Access Denied</h2>
+                    <p>${ipCheck.message || 'Your IP or region is not authorized to access this portal.'}</p>
+                </div>`;
+                return;
+            }
 
-        // 2. Check if account is locked out
-        if (this.securityGuard.isLockedOut()) {
-            const mins = this.securityGuard.getRemainingLockoutMinutes();
-            alert(`Account temporarily locked due to multiple failed attempts. Try again in ${mins} minutes.`);
-        }
+            // 2. Check if account is locked out on load
+            if (this.securityGuard.isLockedOut()) {
+                const mins = this.securityGuard.getRemainingLockoutMinutes();
+                this.showNotification(`Account temporarily locked due to multiple failed attempts. Try again in ${mins} minutes.`, 'error');
+            }
 
-        this.bindEvents();
+            this.bindEvents();
+        } catch (error) {
+            console.error('Initialization Error:', error);
+        }
     }
 
     bindEvents() {
@@ -51,20 +55,39 @@ export class LoginCore {
             e.preventDefault();
             
             if (this.securityGuard.isLockedOut()) {
-                alert('Account is locked. Please wait before trying again.');
+                const mins = this.securityGuard.getRemainingLockoutMinutes();
+                alert(`Account is locked. Please wait ${mins} minutes before trying again.`);
                 return;
             }
 
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value.trim();
+            const emailInput = document.getElementById('admin-email');
+            const passwordInput = document.getElementById('admin-password');
+            
+            // Basic Input Sanitization & Trim
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+            const password = passwordInput ? passwordInput.value.trim() : '';
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
 
             await this.handleSignInAttempt(email, password);
         });
     }
 
     async handleSignInAttempt(email, password) {
+        const submitBtn = document.querySelector('#admin-login-form button[type="submit"]');
+        
         try {
-            // Simulating API authentication request
+            // Set Loading State on Button
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.dataset.originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Authenticating...';
+            }
+
+            // Simulating API authentication request delay
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             // Mock successful credentials check
@@ -103,12 +126,18 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Sign-in Error:', error);
-            alert('An unexpected error occurred during sign in.');
+            alert('An unexpected error occurred during sign in. Please try again.');
+        } finally {
+            // Restore Button State
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In';
+            }
         }
     }
 
     completeSuccessfulLogin(email, role) {
-        // Set tokens and role
+        // Set tokens and role securely
         localStorage.setItem('wh_admin_token', 'wh_mock_secure_jwt_token_2026');
         localStorage.setItem('wh_user_role', role);
 
@@ -123,6 +152,11 @@ export class LoginCore {
 
         alert('Sign-in successful! Redirecting to Admin Panel...');
         window.location.href = LoginConfig.roles.adminPanelPath;
+    }
+
+    showNotification(message, type = 'info') {
+        // Optional helper for displaying inline messages if required by UI
+        console.log(`[${type.toUpperCase()}] ${message}`);
     }
 }
 
