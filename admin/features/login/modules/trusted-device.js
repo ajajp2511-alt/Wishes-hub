@@ -18,10 +18,11 @@ export class TrustedDeviceModule {
         const screen = window.screen;
         
         const rawData = [
-            nav.userAgent,
-            nav.language,
-            screen.colorDepth,
-            screen.width + 'x' + screen.height,
+            nav.userAgent || '',
+            nav.language || '',
+            nav.hardwareConcurrency || 'unknown',
+            screen.colorDepth || '',
+            (screen.width || 0) + 'x' + (screen.height || 0),
             new Date().getTimezoneOffset()
         ].join('||');
 
@@ -39,8 +40,11 @@ export class TrustedDeviceModule {
      * Check if the current device/browser is marked as trusted
      */
     isDeviceTrusted(adminEmail) {
+        if (!adminEmail) return false;
+
         try {
-            const trustedStore = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+            const rawStore = localStorage.getItem(this.storageKey);
+            const trustedStore = rawStore ? JSON.parse(rawStore) : {};
             const deviceId = this.generateFingerprint();
             
             if (trustedStore[adminEmail] && trustedStore[adminEmail][deviceId]) {
@@ -48,8 +52,11 @@ export class TrustedDeviceModule {
                 if (Date.now() < expiryTime) {
                     return true;
                 } else {
-                    // Expired
+                    // Expired - clean up
                     delete trustedStore[adminEmail][deviceId];
+                    if (Object.keys(trustedStore[adminEmail]).length === 0) {
+                        delete trustedStore[adminEmail];
+                    }
                     localStorage.setItem(this.storageKey, JSON.stringify(trustedStore));
                 }
             }
@@ -64,10 +71,13 @@ export class TrustedDeviceModule {
      * Save current device as trusted for a specified duration
      */
     trustCurrentDevice(adminEmail) {
+        if (!adminEmail) return;
+
         try {
-            const trustedStore = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+            const rawStore = localStorage.getItem(this.storageKey);
+            const trustedStore = rawStore ? JSON.parse(rawStore) : {};
             const deviceId = this.generateFingerprint();
-            const days = LoginConfig.security.trustedDeviceDays || 30;
+            const days = LoginConfig?.security?.trustedDeviceDays || 30;
             const expiryTime = Date.now() + (days * 24 * 60 * 60 * 1000);
 
             if (!trustedStore[adminEmail]) {
