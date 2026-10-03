@@ -21,6 +21,7 @@ export class SigninModule {
             const emailInput = document.getElementById('admin-email');
             const passwordInput = document.getElementById('admin-password');
             const captchaInput = document.getElementById('captcha-input');
+            const submitBtn = loginForm.querySelector('button[type="submit"]') || document.getElementById('login-submit-btn');
 
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passwordInput ? passwordInput.value : '';
@@ -32,10 +33,27 @@ export class SigninModule {
                 return;
             }
 
-            // Trigger Core Authentication Processing
-            const result = await this.core.authenticateUser(email, password, captchaResponse);
+            try {
+                // Set loading state on submit button
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.dataset.originalText = submitBtn.textContent;
+                    submitBtn.textContent = 'Signing in... 🔄';
+                }
 
-            this.handleAuthResponse(result);
+                // Trigger Core Authentication Processing
+                const result = await this.core.authenticateUser(email, password, captchaResponse);
+                this.handleAuthResponse(result);
+            } catch (error) {
+                console.error('Signin Exception:', error);
+                this.showToast('An unexpected error occurred. Please try again.', 'error');
+            } finally {
+                // Restore submit button state
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = submitBtn.dataset.originalText || 'Sign In';
+                }
+            }
         });
     }
 
@@ -44,14 +62,14 @@ export class SigninModule {
             case 'SUCCESS':
                 this.showToast('Login successful! Redirecting to Admin Panel...', 'success');
                 setTimeout(() => {
-                    window.location.href = result.redirectUrl;
+                    window.location.href = result.redirectUrl || '/admin/dashboard.html';
                 }, 1000);
                 break;
 
             case 'REDIRECT_USER':
-                this.showToast(result.message, 'warning');
+                this.showToast(result.message || 'Redirecting...', 'warning');
                 setTimeout(() => {
-                    window.location.href = result.redirectUrl;
+                    window.location.href = result.redirectUrl || '/user/dashboard.html';
                 }, 1200);
                 break;
 
@@ -68,7 +86,6 @@ export class SigninModule {
     }
 
     showToast(message, type = 'info') {
-        // Simple toast notification helper (can be styled via CSS)
         let toast = document.getElementById('login-toast');
         if (!toast) {
             toast = document.createElement('div');
