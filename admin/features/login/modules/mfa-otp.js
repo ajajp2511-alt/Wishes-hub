@@ -25,7 +25,7 @@ export class MfaOtpModule {
                     
                     <form id="mfa-form">
                         <div class="input-group">
-                            <input type="text" id="otp-input" maxlength="6" required placeholder="Enter 6-digit OTP" autocomplete="one-time-code" autofocus>
+                            <input type="text" id="otp-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" required placeholder="Enter 6-digit OTP" autocomplete="one-time-code" autofocus>
                         </div>
                         <div class="otp-timer-box">
                             Resend OTP in <span id="otp-countdown">60</span>s
@@ -42,6 +42,8 @@ export class MfaOtpModule {
         } else {
             document.getElementById('mfa-channel-name').textContent = channel;
             modal.classList.add('active');
+            const inputField = document.getElementById('otp-input');
+            if (inputField) inputField.value = '';
         }
 
         this.startOtpTimer();
@@ -50,10 +52,18 @@ export class MfaOtpModule {
     bindMfaEvents(userId) {
         const mfaForm = document.getElementById('mfa-form');
         const resendBtn = document.getElementById('resend-otp-btn');
+        const otpInput = document.getElementById('otp-input');
+
+        // Restrict input to digits only
+        if (otpInput) {
+            otpInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
 
         mfaForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const otpCode = document.getElementById('otp-input').value.trim();
+            const otpCode = otpInput ? otpInput.value.trim() : '';
 
             if (otpCode.length !== 6) {
                 alert('Please enter a valid 6-digit OTP.');
@@ -64,8 +74,8 @@ export class MfaOtpModule {
         });
 
         resendBtn.addEventListener('click', async () => {
-            await this.resendOtp(userId);
             resendBtn.disabled = true;
+            await this.resendOtp(userId);
             this.startOtpTimer();
         });
     }
@@ -75,7 +85,12 @@ export class MfaOtpModule {
         const countdownEl = document.getElementById('otp-countdown');
         const resendBtn = document.getElementById('resend-otp-btn');
 
-        if (this.timerInterval) clearInterval(this.timerInterval);
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+
+        if (resendBtn) resendBtn.disabled = true;
 
         this.timerInterval = setInterval(() => {
             timeLeft--;
@@ -83,19 +98,31 @@ export class MfaOtpModule {
 
             if (timeLeft <= 0) {
                 clearInterval(this.timerInterval);
+                this.timerInterval = null;
                 if (resendBtn) resendBtn.disabled = false;
             }
         }, 1000);
     }
 
     async verifyOtp(userId, code) {
+        const verifyBtn = document.getElementById('verify-otp-btn');
+        
         try {
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.dataset.originalText = verifyBtn.textContent;
+                verifyBtn.textContent = 'Verifying...';
+            }
+
             // Simulating API call for OTP verification
             await new Promise((resolve) => setTimeout(resolve, 800));
 
             // Mock success condition
             if (code === '123456') {
-                document.getElementById('mfa-otp-modal').remove();
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                const modal = document.getElementById('mfa-otp-modal');
+                if (modal) modal.remove();
+                
                 if (this.onVerificationSuccess) this.onVerificationSuccess();
             } else {
                 alert('Invalid OTP code. Please try again.');
@@ -103,6 +130,11 @@ export class MfaOtpModule {
         } catch (error) {
             console.error('OTP Verification Error:', error);
             alert('Verification failed. Please try again.');
+        } finally {
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = verifyBtn.dataset.originalText || 'Verify & Sign In';
+            }
         }
     }
 
