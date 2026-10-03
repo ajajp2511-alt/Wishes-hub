@@ -3,7 +3,7 @@
  * Centralized settings for authentication, security limits, and feature toggles.
  */
 
-export const LoginConfig = {
+export const LoginConfig = Object.freeze({
     // API Endpoints
     endpoints: {
         authenticate: '/api/admin/auth/signin',
@@ -53,4 +53,4 @@ export const LoginConfig = {
         defaultTheme: 'dark',            // 'dark' or 'light'
         animationSpeedMs: 300
     }
-};
+});
