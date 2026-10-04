@@ -79,15 +79,15 @@
                 backdrop.addEventListener('click', toggleMenu);
             }
 
-            // Logout Event Listener with Fixed Absolute Path
+            // Logout Event Listener with Clean URL for Vercel
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
                     // Clear tokens and session data from localStorage
                     localStorage.removeItem('wh_admin_token');
                     localStorage.removeItem('wh_user_role');
                     
-                    // Redirect using absolute root path to prevent 404 errors
-                    window.location.href = '/admin/features/login/login.html';
+                    // Redirect using clean URL path (without .html) to match vercel.json settings
+                    window.location.href = '/admin/features/login/login';
                 });
             }
         });
