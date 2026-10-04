@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Dashboard</title>
 
+    <!-- 🛑 INSTANT SECURITY GUARD: Page render hone se pehle hi check karega -->
+    <script>
+        (function() {
+            const token = localStorage.getItem('wh_admin_token');
+            const role = localStorage.getItem('wh_user_role');
+            
+            // Agar token ya role nahi hai, ya invalid hai, toh turant login page par bhej do
+            if (!token || !role || token === 'undefined' || token === 'null' || token.trim() === '') {
+                window.location.replace('/admin/features/login/login');
+            }
+        })();
+    </script>
+
     <!-- Eruda Debugger -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
@@ -22,7 +35,7 @@
     <!-- Master CSS Link -->
     <link rel="stylesheet" href="/admin/features/style-css.css">
 
-    <!-- ✅ Admin Guard Integrated: Protects Dashboard from Unauthorized Access -->
+    <!-- ✅ Full Admin Guard Integrated (Session Shield & Timeout Sync) -->
     <script type="module" src="./admin-guard.js"></script>
 </head>
 <body>
@@ -87,7 +100,7 @@
                     localStorage.removeItem('wh_user_role');
                     
                     // Redirect using clean URL path (without .html) to match vercel.json settings
-                    window.location.href = '/admin/features/login/login';
+                    window.location.replace('/admin/features/login/login');
                 });
             }
         });
