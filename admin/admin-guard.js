@@ -24,6 +24,13 @@ class AdminGuard {
                 return;
             }
 
+            // 🛑 Extra Safety Check: Basic token format/validity check 
+            // (Agar token "undefined", "null" ya khali string hai toh block karein)
+            if (token === 'undefined' || token === 'null' || token.trim() === '') {
+                this.redirectToLogin('Invalid authentication token.');
+                return;
+            }
+
             // 2. Validate Session Shield against device fingerprint (Anti-Hijacking)
             const shieldCheck = await this.sessionShield.validateShield();
             if (!shieldCheck.valid) {
@@ -34,9 +41,9 @@ class AdminGuard {
             // 3. Initialize Inactivity Session Handler & Multi-tab Sync
             new SessionHandler();
 
-            console.log('Admin Guard: Session verified successfully. Welcome to Wishes Hub Admin.');
+            console.log('Admin Guard: Session verified successfully.');
 
-            // ✅ Verification pass hone ke baad hi admin features load karein
+            // ✅ Sab kuch sahi hone par hi admin features load honge
             this.loadAdminFeatures();
 
         } catch (error) {
@@ -62,10 +69,7 @@ class AdminGuard {
             this.sessionShield.clearShield();
         } catch (e) {}
         
-        // Optional: Aap alert hata bhi sakte hain agar baar-baar pop-up nahi chahiye
-        alert(reason);
-        
-        // Redirect using clean URL path matching Vercel settings
+        // Redirect immediately using replace so user cannot go back
         const loginPath = LoginConfig?.roles?.loginPath || '/admin/features/login/login';
         window.location.replace(loginPath);
     }
