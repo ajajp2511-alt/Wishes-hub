@@ -21,6 +21,9 @@
 
     <!-- Master CSS Link -->
     <link rel="stylesheet" href="/admin/features/style-css.css">
+
+    <!-- ✅ Admin Guard Integrated: Protects Dashboard from Unauthorized Access -->
+    <script type="module" src="./admin-guard.js"></script>
 </head>
 <body>
 
@@ -72,7 +75,7 @@
 
     <!-- Main Assembly Entry Script -->
     <script type="module">
-        // Direct features assembly load karein kyunki login check hata diya gaya hai
+        // Features assembly load karein jab guard verify ho jaye
         const script = document.createElement('script');
         script.type = 'module';
         script.src = '/admin/features/features-assembly.js';
