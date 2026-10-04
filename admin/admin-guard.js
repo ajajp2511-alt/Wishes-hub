@@ -1,13 +1,13 @@
 /**
  * Wishes Hub - Admin Panel Auth Guard
- * Protects admin dashboard routes by verifying tokens, session shields, and initializing session timeouts.
+ * Protects admin dashboard routes by verifying tokens instantly.
  */
 
 import { SessionShield } from './features/modules/session-shield.js';
 import { SessionHandler } from './features/modules/session-handler.js';
 import { LoginConfig } from './features/login/login-config.js';
 
-export class AdminGuard {
+class AdminGuard {
     constructor() {
         this.sessionShield = new SessionShield();
         this.initGuard();
@@ -15,7 +15,7 @@ export class AdminGuard {
 
     async initGuard() {
         try {
-            // 1. Check if admin token and role exist in localStorage
+            // 1. Instant Synchronous Token Check
             const token = localStorage.getItem('wh_admin_token');
             const role = localStorage.getItem('wh_user_role');
 
@@ -24,21 +24,33 @@ export class AdminGuard {
                 return;
             }
 
-            // 2. Validate Session Shield against device fingerprint (Anti-Hijacking)
+            // 2. Validate Session Shield (Anti-Hijacking)
             const shieldCheck = await this.sessionShield.validateShield();
             if (!shieldCheck.valid) {
                 this.redirectToLogin(shieldCheck.reason || 'Security integrity violation detected.');
                 return;
             }
 
-            // 3. Initialize Inactivity Session Handler & Multi-tab Sync
+            // 3. Initialize Inactivity Session Handler
             new SessionHandler();
 
-            console.log('Admin Guard: Session verified successfully. Welcome to Wishes Hub Admin.');
+            console.log('Admin Guard: Session verified successfully.');
+
+            // ✅ Token valid hone ke baad hi admin features load karein
+            this.loadAdminFeatures();
+
         } catch (error) {
             console.error('Admin Guard Error:', error);
             this.redirectToLogin('An unexpected security error occurred.');
         }
+    }
+
+    loadAdminFeatures() {
+        // Dynamically load features-assembly only after successful auth verification
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/admin/features/features-assembly.js';
+        document.body.appendChild(script);
     }
 
     redirectToLogin(reason) {
@@ -47,17 +59,15 @@ export class AdminGuard {
         // Clear sensitive session data
         localStorage.removeItem('wh_admin_token');
         localStorage.removeItem('wh_user_role');
-        this.sessionShield.clearShield();
+        try {
+            this.sessionShield.clearShield();
+        } catch (e) {}
         
-        alert(reason);
-        
-        // Updated login path pointing directly to your features/login folder structure
-        const loginPath = LoginConfig?.roles?.loginPath || '/admin/features/login/login.html';
-        window.location.href = loginPath;
+        // Redirect immediately using replace so users cannot go back
+        const loginPath = LoginConfig?.roles?.loginPath || '/admin/features/login/login';
+        window.location.replace(loginPath);
     }
 }
 
-// Run guard automatically when any admin panel page loads
-document.addEventListener('DOMContentLoaded', () => {
-    new AdminGuard();
-});
+// Run guard instantly when script loads
+new AdminGuard();
