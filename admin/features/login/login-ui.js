@@ -61,7 +61,7 @@ export class LoginUI {
                     toggleBtn.innerHTML = '🔒';
                 } else {
                     passwordInput.type = 'password';
-                    toggleBtn.innerHTML = '👁️';
+                    toggleBtn.innerHTML = '👁️️';
                 }
             });
 
@@ -98,11 +98,12 @@ export class LoginUI {
      * Add smooth ripple or loading state effect to submit buttons
      */
     enhanceButtons() {
-        const submitBtn = document.getElementById('signin-submit-btn') || document.querySelector('#admin-login-form button[type="submit"]');
+        // Updated ID to match login.html (login-submit-btn and login-form)
+        const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
         if (!submitBtn) return;
 
         submitBtn.addEventListener('click', () => {
-            const form = document.getElementById('admin-login-form');
+            const form = document.getElementById('login-form');
             if (form && form.checkValidity()) {
                 submitBtn.classList.add('btn-loading');
                 submitBtn.disabled = true;
