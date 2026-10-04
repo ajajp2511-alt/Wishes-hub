@@ -45,7 +45,8 @@ export const LoginConfig = Object.freeze({
         subAdminRole: 'SUB_ADMIN',
         userRole: 'USER',
         adminPanelPath: '/admin/index.html',  // Fixed to point directly to admin index file
-        userPanelPath: '/user/dashboard.html'
+        userPanelPath: '/user/dashboard.html',
+        loginPath: '/admin/features/login/login.html' // ✅ Centralized login path added
     },
 
     // UI Preferences
