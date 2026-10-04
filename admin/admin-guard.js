@@ -50,7 +50,9 @@ export class AdminGuard {
         this.sessionShield.clearShield();
         
         alert(reason);
-        const loginPath = LoginConfig?.roles?.loginPath || '/admin/login.html';
+        
+        // Updated login path pointing directly to your features/login folder structure
+        const loginPath = LoginConfig?.roles?.loginPath || '/admin/features/login/login.html';
         window.location.href = loginPath;
     }
 }
