@@ -27,7 +27,7 @@
 </head>
 <body>
 
-    <!-- Mobile Top Bar -->
+    <!-- Mobile Top Bar with Logout Button -->
     <header class="responsive-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0 15px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <button id="toggle-sidebar-btn" class="hamburger-btn" aria-label="Toggle Navigation">
@@ -38,7 +38,7 @@
             <span>Wishes Hub Admin</span>
         </div>
 
-        <!-- 🚪 Admin Logout Button Added Here -->
+        <!-- 🚪 Admin Logout Button -->
         <button id="admin-logout-btn" style="background: rgba(220, 53, 69, 0.15); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: background 0.2s;">
             🚪 Logout
         </button>
@@ -79,15 +79,15 @@
                 backdrop.addEventListener('click', toggleMenu);
             }
 
-            // Logout Event Listener
+            // Logout Event Listener with Fixed Absolute Path
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
                     // Clear tokens and session data from localStorage
                     localStorage.removeItem('wh_admin_token');
                     localStorage.removeItem('wh_user_role');
                     
-                    // Redirect directly to the login page
-                    window.location.href = './features/login/login.html';
+                    // Redirect using absolute root path to prevent 404 errors
+                    window.location.href = '/admin/features/login/login.html';
                 });
             }
         });
