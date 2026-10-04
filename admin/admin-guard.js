@@ -3,9 +3,9 @@
  * Protects admin dashboard routes by verifying tokens, session shields, and initializing session timeouts.
  */
 
-import { SessionShield } from './modules/session-shield.js';
-import { SessionHandler } from './modules/session-handler.js';
-import { LoginConfig } from './login-config.js';
+import { SessionShield } from './features/modules/session-shield.js';
+import { SessionHandler } from './features/modules/session-handler.js';
+import { LoginConfig } from './features/login/login-config.js';
 
 export class AdminGuard {
     constructor() {
