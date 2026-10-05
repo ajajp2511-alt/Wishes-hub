@@ -31,7 +31,7 @@ app.post('/api/save-wish', async (req, res) => {
       message: "Wish successfully saved via Render backend!" 
     });
 
-  } code (error) {
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
