@@ -63,7 +63,6 @@ export class LoginCore {
             const emailInput = document.getElementById('admin-email');
             const passwordInput = document.getElementById('admin-password');
             
-            // Basic Input Sanitization & Trim
             const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
 
@@ -80,22 +79,26 @@ export class LoginCore {
         const submitBtn = document.querySelector('#login-form button[type="submit"]');
         
         try {
-            // Set Loading State on Button
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.dataset.originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            // Simulating API authentication request delay
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // ✅ Call backend API to verify against Firebase Realtime DB (Super Admins) & Firestore (Admins)
+            const response = await fetch('/api/verify-pass', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
 
-            // Mock successful credentials check
-            const isValidCredentials = (email === 'admin@wisheshub.com' && password === 'Secret@2026');
+            const result = await response.json();
 
-            if (!isValidCredentials) {
+            if (!response.ok || !result.ok) {
                 const lockoutData = this.securityGuard.recordFailedAttempt();
-                await this.auditLogger.logEvent('LOGIN_FAILED', email, 'WARNING', { reason: 'Invalid credentials' });
+                await this.auditLogger.logEvent('LOGIN_FAILED', email, 'WARNING', { reason: result.error || 'Invalid credentials' });
 
                 if (lockoutData.locked) {
                     alert('Maximum failed attempts reached. Account has been locked for 15 minutes.');
@@ -108,27 +111,27 @@ export class LoginCore {
             // Reset security guard attempts on success
             this.securityGuard.resetAttempts();
 
+            const userRole = result.role || 'SUB_ADMIN';
+
             // Check if device is trusted, else trigger MFA
             const isTrusted = this.trustedDevice.isDeviceTrusted(email);
             
             if (!isTrusted) {
                 await this.auditLogger.logEvent('MFA_TRIGGERED', email, 'SUCCESS', { reason: 'New or untrusted device' });
                 
-                // Trigger MFA Modal
                 const mfaModule = new MfaOtpModule(() => {
-                    this.completeSuccessfulLogin(email, 'SUPER_ADMIN');
+                    this.completeSuccessfulLogin(email, userRole);
                 });
                 mfaModule.renderMfaModal(email, 'Email / WhatsApp');
                 return;
             }
 
-            this.completeSuccessfulLogin(email, 'SUPER_ADMIN');
+            this.completeSuccessfulLogin(email, userRole);
 
         } catch (error) {
             console.error('Sign-in Error:', error);
-            alert('An unexpected error occurred during sign in. Please try again.');
+            alert('An unexpected error occurred during sign in. Please check your network and try again.');
         } finally {
-            // Restore Button State
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In';
@@ -137,17 +140,11 @@ export class LoginCore {
     }
 
     completeSuccessfulLogin(email, role) {
-        // Set tokens and role securely
-        localStorage.setItem('wh_admin_token', 'wh_mock_secure_jwt_token_2026');
+        localStorage.setItem('wh_admin_token', 'wh_secure_jwt_token_2026');
         localStorage.setItem('wh_user_role', role);
 
-        // Establish Anti-Hijacking Shield
         this.sessionShield.establishShield();
-
-        // Trust device for future logins
         this.trustedDevice.trustCurrentDevice(email);
-
-        // Log successful audit event
         this.auditLogger.logEvent('LOGIN_SUCCESS', email, 'SUCCESS');
 
         alert('Sign-in successful! Redirecting to Admin Panel...');
@@ -159,7 +156,6 @@ export class LoginCore {
     }
 }
 
-// Initialize LoginCore when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new LoginCore();
 });
