@@ -1,26 +1,13 @@
 /**
- * Single Catch-All API Dispatcher (Wishes Hub - Ultra Robust Version)
+ * Single Catch-All API Proxy to Render (Wishes Hub - Ultra Robust Version)
  * Path: api/[...endpoint].js
  */
 
-import * as verifyPassModule from '../router/verify-pass.js';
-import * as addWishToDbModule from '../router/add-wish-to-db.js';
-import * as addUnifiedWishModule from '../router/add-unified-wish.js';
-import * as sheetsModule from '../router/sheets.js';
-import * as getWishesModule from '../router/get-wishes.js';
-import * as uploadToTgModule from '../router/upload-to-tg.js';
-import * as aiGeneratorModule from '../router/ai-generator.js';
-import * as auditLogsModule from '../router/audit-logs.js';
-import * as cdnUploadModule from '../router/cdn-upload.js';
-import * as getConfigModule from '../router/get-config.js';
-import * as getImageModule from '../router/get-image.js';
-import * as getMediaModule from '../router/get-media.js';
-import * as getYoutubeSongModule from '../router/get-youtube-song.js';
-import * as manageWishModule from '../router/manage-wish.js';
-import * as saveSecurityConfigModule from '../router/save-security-config.js';
-import * as sendWishModule from '../router/send-wish.js';
-import * as systemAnalyticsModule from '../router/system-analytics.js';
-import * as userPermissionsModule from '../router/user-permissions.js';
+export const config = {
+    api: {
+        bodyParser: true, // Vercel khud body parse kar lega taaki JSON aage bhej sakein
+    },
+};
 
 export default async function handler(req, res) {
     // CORS headers
@@ -29,34 +16,31 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader(
         'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, x-api-key'
     );
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     try {
-        console.log("🔍 Incoming API Request URL:", req.url);
-        console.log("🔍 Incoming Query Params:", req.query);
+        console.log("🔍 Incoming Vercel Proxy Request URL:", req.url);
 
         // Foolproof Endpoint Extraction directly from URL or query
         let currentEndpoint = '';
 
         if (req.query && req.query.endpoint) {
-            currentEndpoint = Array.isArray(req.query.endpoint) ? req.query.endpoint[0] : req.query.endpoint;
+            currentEndpoint = Array.isArray(req.query.endpoint) ? req.query.endpoint.join('/') : req.query.endpoint;
         }
 
         if (!currentEndpoint) {
             const urlPath = req.url.split('?')[0]; 
             const parts = urlPath.split('/').filter(Boolean); 
-            // parts can be ['api', 'verify-pass'] or ['verify-pass']
             const apiIndex = parts.indexOf('api');
             if (apiIndex !== -1 && parts[apiIndex + 1]) {
-                currentEndpoint = parts[apiIndex + 1];
+                currentEndpoint = parts.slice(apiIndex + 1).join('/');
             } else if (parts.length > 0) {
-                currentEndpoint = parts[0];
+                currentEndpoint = parts.join('/');
             }
         }
 
@@ -64,80 +48,54 @@ export default async function handler(req, res) {
             return res.status(404).json({ ok: false, error: 'API Endpoint not specified.' });
         }
 
-        console.log("🎯 Resolved Target Endpoint:", currentEndpoint);
+        console.log("🎯 Proxying to Render Endpoint:", currentEndpoint);
 
-        let targetModule;
+        const RENDER_BACKEND_URL = "https://wishes-hub.onrender.com";
+        
+        // Query parameters build karna
+        const incomingUrl = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+        const searchParams = incomingUrl.search;
+        const targetUrl = `${RENDER_BACKEND_URL}/api/${currentEndpoint}${searchParams}`;
 
-        switch (currentEndpoint) {
-            case 'verify-pass':
-                targetModule = verifyPassModule;
-                break;
-            case 'add-wish-to-db':
-                targetModule = addWishToDbModule;
-                break;
-            case 'add-unified-wish':
-                targetModule = addUnifiedWishModule;
-                break;
-            case 'sheets':
-                targetModule = sheetsModule;
-                break;
-            case 'get-wishes':
-                targetModule = getWishesModule;
-                break;
-            case 'upload-to-tg':
-                targetModule = uploadToTgModule;
-                break;
-            case 'ai-generator':
-                targetModule = aiGeneratorModule;
-                break;
-            case 'audit-logs':
-                targetModule = auditLogsModule;
-                break;
-            case 'cdn-upload':
-                targetModule = cdnUploadModule;
-                break;
-            case 'get-config':
-                targetModule = getConfigModule;
-                break;
-            case 'get-image':
-                targetModule = getImageModule;
-                break;
-            case 'get-media':
-                targetModule = getMediaModule;
-                break;
-            case 'get-youtube-song':
-                targetModule = getYoutubeSongModule;
-                break;
-            case 'manage-wish':
-                targetModule = manageWishModule;
-                break;
-            case 'save-security-config':
-                targetModule = saveSecurityConfigModule;
-                break;
-            case 'send-wish':
-                targetModule = sendWishModule;
-                break;
-            case 'system-analytics':
-                targetModule = systemAnalyticsModule;
-                break;
-            case 'user-permissions':
-                targetModule = userPermissionsModule;
-                break;
-            default:
-                return res.status(404).json({ ok: false, error: `Endpoint '${currentEndpoint}' not found in router registry.` });
+        // Headers setup karna (host change karna zaroori hai)
+        const headers = {};
+        for (const [key, value] of Object.entries(req.headers)) {
+            if (key.toLowerCase() !== 'host' && key.toLowerCase() !== 'connection') {
+                headers[key] = value;
+            }
+        }
+        headers['Host'] = 'wishes-hub.onrender.com';
+
+        const fetchOptions = {
+            method: req.method,
+            headers: headers
+        };
+
+        // Agar POST, PUT, PATCH request hai aur body maujood hai
+        if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.body) {
+            fetchOptions.body = JSON.stringify(req.body);
+            headers['Content-Type'] = 'application/json';
         }
 
-        if (targetModule && typeof targetModule.default === 'function') {
-            return await targetModule.default(req, res);
-        } else {
-            return res.status(500).json({ ok: false, error: `Endpoint handler for '${currentEndpoint}' is invalid.` });
+        // Render backend ko request bhejna
+        const backendResponse = await fetch(targetUrl, fetchOptions);
+        const responseText = await backendResponse.text();
+
+        // Status code aur content type set karna
+        res.status(backendResponse.status);
+        const contentType = backendResponse.headers.get('content-type');
+        if (contentType) {
+            res.setHeader('content-type', contentType);
         }
+
+        // Render ka response wapas client ko dena
+        return res.send(responseText);
 
     } catch (error) {
-        console.error("🚨 API Dispatcher Error:", error);
+        console.error("🚨 Vercel-to-Render Proxy Error:", error);
         return res.status(500).json({ 
             ok: false, 
-            error: "Internal Server Error in API Dispatcher.", 
+            error: "Failed to communicate with Render backend proxy.", 
             details: error.message 
         });
     }
