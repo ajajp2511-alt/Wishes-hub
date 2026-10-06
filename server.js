@@ -1,15 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-// Environment variables load karna
-dotenv.config();
 
 const app = express();
 
 // 1. Middleware Setup
 app.use(cors({
-    origin: '*', // Aap chaho toh yahan apna Vercel frontend ka URL bhi daal sakte ho security ke liye
+    origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'x-api-key']
 }));
