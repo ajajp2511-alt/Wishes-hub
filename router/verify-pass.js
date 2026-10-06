@@ -26,7 +26,6 @@ router.post('/verify-pass', async (req, res) => {
             const snapshot = await dbRef.once('value');
             if (snapshot.exists()) {
                 const superAdmins = snapshot.val();
-                // Find matching email key or field
                 for (const key in superAdmins) {
                     const adminData = superAdmins[key];
                     if (adminData.email && adminData.email.toLowerCase() === email && adminData.password === enteredPassword) {
@@ -40,7 +39,7 @@ router.post('/verify-pass', async (req, res) => {
             console.error("Realtime DB Check Error:", err);
         }
 
-        // 2. If not found in Realtime DB, check in Firestore for regular Admins
+        // 2. If not found in Realtime DB, check in Firestore for regular Admins ('admins' collection)
         if (!isValid) {
             try {
                 const firestoreDoc = await admin.firestore().collection('admins').doc(email).get();
