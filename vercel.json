@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://wishes-hub.onrender.com/api/$1"
+      "destination": "https://wishes-hub.onrender.com/$1"
     },
     {
       "source": "/admin",
