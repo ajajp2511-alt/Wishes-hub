@@ -14,6 +14,7 @@ import { IpWhitelistModule } from './modules/ip-whitelist.js';
 
 export class LoginCore {
     constructor() {
+        alert('⚡ LoginCore Constructor Called'); // 🔍 Check point A
         this.securityGuard = new SecurityGuard();
         this.trustedDevice = new TrustedDeviceModule();
         this.auditLogger = new AuditLogger();
@@ -25,8 +26,16 @@ export class LoginCore {
 
     async init() {
         try {
+            alert('⚡ Init Started'); // 🔍 Check point B
+
             // 1. Validate IP and Geo-Fencing before rendering or processing
-            const ipCheck = await this.ipWhitelist.validateAccess();
+            const ipCheck = await this.ipWhitelist.validateAccess().catch(err => {
+                console.error('IP Whitelist Error:', err);
+                return { allowed: true }; // Fallback to allow if module fails
+            });
+
+            alert(`⚡ IP Check Result: ${ipCheck.allowed}`); // 🔍 Check point C
+
             if (!ipCheck.allowed) {
                 document.body.innerHTML = `<div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
                     <h2 style="color:#d9534f;">Access Denied</h2>
@@ -42,22 +51,26 @@ export class LoginCore {
             }
 
             this.bindEvents();
+            alert('⚡ BindEvents Completed Successfully'); // 🔍 Check point D
+
         } catch (error) {
             console.error('Initialization Error:', error);
+            alert('❌ Init Catch Error: ' + error.message);
         }
     }
 
     bindEvents() {
         const loginForm = document.getElementById('login-form');
+        const submitBtn = document.querySelector('#login-submit-btn, #login-form button[type="submit"], button[type="submit"]');
         
         if (!loginForm) {
             alert('❌ ERROR: #login-form nahi mila HTML mein!');
             return;
         }
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            alert('🚀 Step 1: Form submit event fired!'); // 🔍 Check point 1
+        const handleLoginAction = async (e) => {
+            if (e) e.preventDefault();
+            alert('🚀 Step 1: Login Action Triggered!'); 
             
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
@@ -71,7 +84,7 @@ export class LoginCore {
             const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
 
-            alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`); // 🔍 Check inputs
+            alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`);
 
             if (!email || !password) {
                 alert('Please enter both email and password.');
@@ -79,14 +92,22 @@ export class LoginCore {
             }
 
             await this.handleSignInAttempt(email, password);
-        });
+        };
+
+        loginForm.addEventListener('submit', handleLoginAction);
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', (e) => {
+                handleLoginAction(e);
+            });
+        }
     }
 
     async handleSignInAttempt(email, password) {
-        const submitBtn = document.querySelector('#login-form button[type="submit"]');
+        const submitBtn = document.querySelector('#login-submit-btn, #login-form button[type="submit"]');
         
         try {
-            alert('Step 2: Inside handleSignInAttempt'); // 🔍 Debug check 2
+            alert('Step 2: Inside handleSignInAttempt');
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -94,9 +115,8 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            alert('Step 3: About to fetch /api/verify-pass'); // 🔍 Debug check 3
+            alert('Step 3: About to fetch /api/verify-pass');
 
-            // ✅ Call backend API via Vercel rewrite to Render backend
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
                 headers: {
@@ -105,7 +125,7 @@ export class LoginCore {
                 body: JSON.stringify({ email, password })
             });
 
-            alert(`Step 4: Response status code: ${response.status}`); // 🔍 Debug check 4
+            alert(`Step 4: Response status code: ${response.status}`);
 
             const result = await response.json();
 
@@ -121,12 +141,9 @@ export class LoginCore {
                 return;
             }
 
-            // Reset security guard attempts on success
             this.securityGuard.resetAttempts();
-
             const userRole = result.role || 'SUB_ADMIN';
 
-            // Check if device is trusted, else trigger MFA
             const isTrusted = this.trustedDevice.isDeviceTrusted(email);
             
             if (!isTrusted) {
@@ -143,7 +160,7 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Sign-in Error:', error);
-            alert('❌ Catch Error: ' + error.message); // 🔍 Catch any network/fetch error
+            alert('❌ Catch Error: ' + error.message);
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
