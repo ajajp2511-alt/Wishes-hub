@@ -79,11 +79,15 @@ export class LoginCore {
         const submitBtn = document.querySelector('#login-form button[type="submit"]');
         
         try {
+            alert('Step 1: Inside handleSignInAttempt'); // 🔍 Debug check 1
+
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.dataset.originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = 'Authenticating...';
             }
+
+            alert('Step 2: About to fetch /api/verify-pass'); // 🔍 Debug check 2
 
             // ✅ Call backend API via Vercel rewrite to Render backend
             const response = await fetch('/api/verify-pass', {
@@ -93,6 +97,8 @@ export class LoginCore {
                 },
                 body: JSON.stringify({ email, password })
             });
+
+            alert('Step 3: Response received from server'); // 🔍 Debug check 3
 
             const result = await response.json();
 
@@ -130,7 +136,7 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Sign-in Error:', error);
-            alert('An unexpected error occurred during sign in. Please check your network and try again.');
+            alert('Catch Error: ' + error.message); // 🔍 Catch any network/fetch error
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
