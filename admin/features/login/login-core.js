@@ -53,13 +53,11 @@ export class LoginCore {
         if (!loginForm) {
             alert('❌ ERROR: #login-form nahi mila HTML mein!');
             return;
-        } else {
-            alert('✅ SUCCESS: #login-form mil gaya!');
         }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('🚀 Step 1: Form submit event fired!');
+            alert('🚀 Step 1: Form submit event fired!'); // 🔍 Check point 1
             
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
@@ -72,6 +70,8 @@ export class LoginCore {
             
             const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
+
+            alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`); // 🔍 Check inputs
 
             if (!email || !password) {
                 alert('Please enter both email and password.');
@@ -86,7 +86,7 @@ export class LoginCore {
         const submitBtn = document.querySelector('#login-form button[type="submit"]');
         
         try {
-            alert('Step 1.5: Inside handleSignInAttempt'); // 🔍 Debug check
+            alert('Step 2: Inside handleSignInAttempt'); // 🔍 Debug check 2
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -94,7 +94,7 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            alert('Step 2: About to fetch /api/verify-pass'); // 🔍 Debug check 2
+            alert('Step 3: About to fetch /api/verify-pass'); // 🔍 Debug check 3
 
             // ✅ Call backend API via Vercel rewrite to Render backend
             const response = await fetch('/api/verify-pass', {
@@ -105,7 +105,7 @@ export class LoginCore {
                 body: JSON.stringify({ email, password })
             });
 
-            alert('Step 3: Response received from server'); // 🔍 Debug check 3
+            alert(`Step 4: Response status code: ${response.status}`); // 🔍 Debug check 4
 
             const result = await response.json();
 
@@ -143,7 +143,7 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Sign-in Error:', error);
-            alert('Catch Error: ' + error.message); // 🔍 Catch any network/fetch error
+            alert('❌ Catch Error: ' + error.message); // 🔍 Catch any network/fetch error
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
