@@ -1,9 +1,12 @@
 /**
- * Admin Action Audit Logs API
- * Path: api/audit-logs.js
+ * Admin Action Audit Logs Router
+ * Path: router/audit-logs.js
  */
 
+import express from 'express';
 import admin from 'firebase-admin';
+
+const router = express.Router();
 
 if (!admin.apps.length) {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
@@ -17,36 +20,27 @@ if (!admin.apps.length) {
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: privateKey,
     }),
+    databaseURL: process.env.FIREBASE_DATABASE_URL
   });
 }
 
 const db = admin.firestore();
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+router.post('/audit-logs', async (req, res) => {
+  try {
+    const { adminUser, action, details } = req.body;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    await db.collection('audit_logs').add({
+      adminUser: adminUser || 'system',
+      action: action || 'UNKNOWN_ACTION',
+      details: details || {},
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return res.status(200).json({ success: true, message: 'Audit log recorded' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
+});
 
-  if (req.method === 'POST') {
-    try {
-      const { adminUser, action, details } = req.body;
-
-      await db.collection('audit_logs').add({
-        adminUser: adminUser || 'system',
-        action: action || 'UNKNOWN_ACTION',
-        details: details || {},
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      return res.status(200).json({ success: true, message: 'Audit log recorded' });
-    } catch (error) {
-      return res.status(500).json({ success: false, message: error.message });
-    }
-  }
-
-  return res.status(405).json({ success: false, message: 'Method not allowed' });
-                                   }
+export default router;
