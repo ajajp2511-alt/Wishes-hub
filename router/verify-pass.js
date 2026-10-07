@@ -12,20 +12,18 @@ router.post('/verify-pass', async (req, res) => {
     try {
         let body = req.body;
         
-        // Agar body string hai ya nested hai toh safely parse karo
         if (typeof body === 'string') {
             try { body = JSON.parse(body); } catch (e) {}
         }
 
-        // Agar req.body empty hai toh query params ya headers check karo
         if (!body || Object.keys(body).length === 0) {
             body = req.query || {};
         }
 
         const email = body?.email ? String(body.email).trim().toLowerCase() : '';
-        const enteredPassword = body?.password ? String(body.password).trim() : '';
+        const enteredPassword = body?.password ? String(body.password) : ''; // Do not trim password abruptly if spaces are intended, but keep it clean
 
-        console.log(`🔑 Login Attempt for Email: "${email}" | Password Length: ${enteredPassword.length}`);
+        console.log(`🔑 Login Attempt for Email: "${email}" | Entered Password Length: ${enteredPassword.length}`);
 
         if (!email || !enteredPassword) {
             console.log("❌ Missing email or password in request body:", req.body);
@@ -44,7 +42,9 @@ router.post('/verify-pass', async (req, res) => {
                 for (const key in superAdmins) {
                     const adminData = superAdmins[key];
                     const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
-                    const dbPassword = adminData.password ? String(adminData.password).trim() : '';
+                    const dbPassword = adminData.password ? String(adminData.password) : '';
+
+                    console.log(`🔎 Checking DB Node [${key}] -> DB Email: "${dbEmail}" | DB Pass Length: ${dbPassword.length}`);
 
                     if (dbEmail === email && dbPassword === enteredPassword) {
                         isValid = true;
@@ -52,18 +52,21 @@ router.post('/verify-pass', async (req, res) => {
                         break;
                     }
                 }
+            } else {
+                console.log("⚠️ 'super-admins' node does not exist in Realtime Database!");
             }
         } catch (err) {
             console.error("❌ Realtime DB Check Error:", err.message);
         }
 
-        // 2. If not found in Realtime DB, check in Firestore for regular Admins ('admins' collection)
+        // 2. If not found in Realtime DB, check in Firestore for regular Admins
         if (!isValid) {
             try {
                 const firestoreDoc = await admin.firestore().collection('admins').doc(email).get();
                 if (firestoreDoc.exists) {
                     const data = firestoreDoc.data();
-                    if (data.password && String(data.password).trim() === enteredPassword) {
+                    const dbPass = data.password ? String(data.password) : '';
+                    if (dbPass === enteredPassword) {
                         isValid = true;
                         userRole = 'SUB_ADMIN';
                     }
