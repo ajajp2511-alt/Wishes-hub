@@ -72,8 +72,6 @@ export class LoginCore {
 
     async executeLoginSequence() {
         try {
-            alert('🚀 Login triggered successfully!');
-
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
                 alert(`Account is locked. Please wait ${mins} minutes.`);
@@ -85,8 +83,6 @@ export class LoginCore {
             
             const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
-
-            alert(`📧 Email: ${email}`);
 
             if (!email || !password) {
                 alert('Please enter both email and password.');
@@ -101,7 +97,7 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            // 🔍 Direct API Call
+            // 🔍 API Call with Safe Content-Type Validation
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
                 headers: {
@@ -110,8 +106,14 @@ export class LoginCore {
                 body: JSON.stringify({ email, password })
             });
 
-            alert(`📡 Response Status: ${response.status}`);
-            const result = await response.json();
+            const contentType = response.headers.get('content-type');
+            let result;
+
+            if (contentType && contentType.includes('application/json')) {
+                result = await response.json();
+            } else {
+                throw new Error(`API endpoint '/api/verify-pass' returned non-JSON response (Status ${response.status}). Check backend route.`);
+            }
 
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -148,7 +150,7 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Login Error:', error);
-            alert('❌ Network/API Error: ' + error.message);
+            alert('❌ Login Error: ' + error.message);
             
             const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
             if (submitBtn) {
