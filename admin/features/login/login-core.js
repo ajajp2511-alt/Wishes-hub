@@ -85,7 +85,7 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            // ✅ Call backend API to verify against Firebase Realtime DB (Super Admins) & Firestore (Admins)
+            // ✅ Call backend API via Vercel rewrite to Render backend
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
                 headers: {
@@ -156,6 +156,5 @@ export class LoginCore {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new LoginCore();
-});
+// ✅ Correct instantiation for ES Modules
+new LoginCore();
