@@ -1,3 +1,8 @@
+/**
+ * Admin Pass Verification Router
+ * Path: router/verify-pass.js
+ */
+
 import express from 'express';
 import admin from 'firebase-admin';
 
@@ -6,17 +11,25 @@ const router = express.Router();
 router.post('/verify-pass', async (req, res) => {
     try {
         let body = req.body;
+        
+        // Agar body string hai ya nested hai toh safely parse karo
         if (typeof body === 'string') {
-            body = JSON.parse(body);
+            try { body = JSON.parse(body); } catch (e) {}
+        }
+
+        // Agar req.body empty hai toh query params ya headers check karo
+        if (!body || Object.keys(body).length === 0) {
+            body = req.query || {};
         }
 
         const email = body?.email ? String(body.email).trim().toLowerCase() : '';
         const enteredPassword = body?.password ? String(body.password).trim() : '';
 
-        console.log(`🔑 Login Attempt for Email: "${email}"`);
+        console.log(`🔑 Login Attempt for Email: "${email}" | Password Length: ${enteredPassword.length}`);
 
         if (!email || !enteredPassword) {
-            return res.status(400).json({ ok: false, error: 'Email and password are required' });
+            console.log("❌ Missing email or password in request body:", req.body);
+            return res.status(400).json({ ok: false, error: 'Email and password are required fields' });
         }
 
         let isValid = false;
@@ -28,8 +41,6 @@ router.post('/verify-pass', async (req, res) => {
             const snapshot = await dbRef.once('value');
             if (snapshot.exists()) {
                 const superAdmins = snapshot.val();
-                console.log("📊 Realtime DB Super Admins fetched successfully:", superAdmins);
-                
                 for (const key in superAdmins) {
                     const adminData = superAdmins[key];
                     const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
@@ -41,8 +52,6 @@ router.post('/verify-pass', async (req, res) => {
                         break;
                     }
                 }
-            } else {
-                console.log("⚠️ Realtime DB 'super-admins' node is empty or doesn't exist!");
             }
         } catch (err) {
             console.error("❌ Realtime DB Check Error:", err.message);
@@ -73,7 +82,7 @@ router.post('/verify-pass', async (req, res) => {
         }
     } catch (error) {
         console.error("❌ Verify Pass Server Error:", error);
-        return res.status(500).json({ ok: false, error: 'Server Error' });
+        return res.status(500).json({ ok: false, error: 'Server Error: ' + error.message });
     }
 });
 
