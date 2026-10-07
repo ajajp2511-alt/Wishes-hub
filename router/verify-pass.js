@@ -13,6 +13,8 @@ router.post('/verify-pass', async (req, res) => {
         const email = body?.email ? String(body.email).trim().toLowerCase() : '';
         const enteredPassword = body?.password ? String(body.password).trim() : '';
 
+        console.log(`🔑 Login Attempt for Email: "${email}"`);
+
         if (!email || !enteredPassword) {
             return res.status(400).json({ ok: false, error: 'Email and password are required' });
         }
@@ -26,17 +28,24 @@ router.post('/verify-pass', async (req, res) => {
             const snapshot = await dbRef.once('value');
             if (snapshot.exists()) {
                 const superAdmins = snapshot.val();
+                console.log("📊 Realtime DB Super Admins fetched successfully:", superAdmins);
+                
                 for (const key in superAdmins) {
                     const adminData = superAdmins[key];
-                    if (adminData.email && adminData.email.toLowerCase() === email && adminData.password === enteredPassword) {
+                    const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
+                    const dbPassword = adminData.password ? String(adminData.password).trim() : '';
+
+                    if (dbEmail === email && dbPassword === enteredPassword) {
                         isValid = true;
                         userRole = 'SUPER_ADMIN';
                         break;
                     }
                 }
+            } else {
+                console.log("⚠️ Realtime DB 'super-admins' node is empty or doesn't exist!");
             }
         } catch (err) {
-            console.error("Realtime DB Check Error:", err);
+            console.error("❌ Realtime DB Check Error:", err.message);
         }
 
         // 2. If not found in Realtime DB, check in Firestore for regular Admins ('admins' collection)
@@ -45,23 +54,25 @@ router.post('/verify-pass', async (req, res) => {
                 const firestoreDoc = await admin.firestore().collection('admins').doc(email).get();
                 if (firestoreDoc.exists) {
                     const data = firestoreDoc.data();
-                    if (data.password === enteredPassword) {
+                    if (data.password && String(data.password).trim() === enteredPassword) {
                         isValid = true;
                         userRole = 'SUB_ADMIN';
                     }
                 }
             } catch (err) {
-                console.error("Firestore Check Error:", err);
+                console.error("❌ Firestore Check Error:", err.message);
             }
         }
 
         if (isValid) {
+            console.log(`✅ Login Successful for ${email} with role ${userRole}`);
             return res.status(200).json({ ok: true, role: userRole });
         } else {
+            console.log(`❌ Login Failed: Incorrect credentials for ${email}`);
             return res.status(401).json({ ok: false, error: 'Incorrect email or password!' });
         }
     } catch (error) {
-        console.error("Verify Pass Error:", error);
+        console.error("❌ Verify Pass Server Error:", error);
         return res.status(500).json({ ok: false, error: 'Server Error' });
     }
 });
