@@ -14,7 +14,6 @@ import { IpWhitelistModule } from './modules/ip-whitelist.js';
 
 export class LoginCore {
     constructor() {
-        alert('⚡ LoginCore Constructor Called'); // 🔍 Check point A
         this.securityGuard = new SecurityGuard();
         this.trustedDevice = new TrustedDeviceModule();
         this.auditLogger = new AuditLogger();
@@ -26,15 +25,8 @@ export class LoginCore {
 
     async init() {
         try {
-            alert('⚡ Init Started'); // 🔍 Check point B
-
             // 1. Validate IP and Geo-Fencing before rendering or processing
-            const ipCheck = await this.ipWhitelist.validateAccess().catch(err => {
-                console.error('IP Whitelist Error:', err);
-                return { allowed: true }; // Fallback to allow if module fails
-            });
-
-            alert(`⚡ IP Check Result: ${ipCheck.allowed}`); // 🔍 Check point C
+            const ipCheck = await this.ipWhitelist.validateAccess().catch(() => ({ allowed: true }));
 
             if (!ipCheck.allowed) {
                 document.body.innerHTML = `<div style="text-align:center; margin-top:20vh; font-family:sans-serif;">
@@ -51,56 +43,56 @@ export class LoginCore {
             }
 
             this.bindEvents();
-            alert('⚡ BindEvents Completed Successfully'); // 🔍 Check point D
-
         } catch (error) {
             console.error('Initialization Error:', error);
-            alert('❌ Init Catch Error: ' + error.message);
         }
     }
 
     bindEvents() {
-        const loginForm = document.getElementById('login-form');
-        const submitBtn = document.querySelector('#login-submit-btn, #login-form button[type="submit"], button[type="submit"]');
-        
-        if (!loginForm) {
-            alert('❌ ERROR: #login-form nahi mila HTML mein!');
+        // ✅ Using Event Delegation on the document to capture form submissions and button clicks globally
+        document.addEventListener('submit', async (e) => {
+            if (e.target && e.target.id === 'login-form') {
+                e.preventDefault();
+                alert('🚀 Step 1: Form Submit Captured via Delegation!');
+                await this.processLogin();
+            }
+        });
+
+        document.addEventListener('click', async (e) => {
+            const target = e.target.closest('#login-submit-btn, button[type="submit"]');
+            if (target) {
+                // Prevent default form submit double-firing if button is inside form
+                const form = target.closest('form');
+                if (!form) {
+                    e.preventDefault();
+                    alert('🚀 Step 1: Button Click Captured via Delegation!');
+                    await this.processLogin();
+                }
+            }
+        });
+    }
+
+    async processLogin() {
+        if (this.securityGuard.isLockedOut()) {
+            const mins = this.securityGuard.getRemainingLockoutMinutes();
+            alert(`Account is locked. Please wait ${mins} minutes before trying again.`);
             return;
         }
 
-        const handleLoginAction = async (e) => {
-            if (e) e.preventDefault();
-            alert('🚀 Step 1: Login Action Triggered!'); 
-            
-            if (this.securityGuard.isLockedOut()) {
-                const mins = this.securityGuard.getRemainingLockoutMinutes();
-                alert(`Account is locked. Please wait ${mins} minutes before trying again.`);
-                return;
-            }
+        const emailInput = document.getElementById('admin-email');
+        const passwordInput = document.getElementById('admin-password');
+        
+        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        const password = passwordInput ? passwordInput.value.trim() : '';
 
-            const emailInput = document.getElementById('admin-email');
-            const passwordInput = document.getElementById('admin-password');
-            
-            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-            const password = passwordInput ? passwordInput.value.trim() : '';
+        alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`);
 
-            alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`);
-
-            if (!email || !password) {
-                alert('Please enter both email and password.');
-                return;
-            }
-
-            await this.handleSignInAttempt(email, password);
-        };
-
-        loginForm.addEventListener('submit', handleLoginAction);
-
-        if (submitBtn) {
-            submitBtn.addEventListener('click', (e) => {
-                handleLoginAction(e);
-            });
+        if (!email || !password) {
+            alert('Please enter both email and password.');
+            return;
         }
+
+        await this.handleSignInAttempt(email, password);
     }
 
     async handleSignInAttempt(email, password) {
