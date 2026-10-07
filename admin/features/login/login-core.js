@@ -20,6 +20,9 @@ export class LoginCore {
         this.sessionShield = new SessionShield();
         this.ipWhitelist = new IpWhitelistModule();
         
+        // Make instance globally available for direct inline HTML onclick binding if needed
+        window.loginCoreInstance = this;
+        
         this.init();
     }
 
@@ -48,16 +51,29 @@ export class LoginCore {
 
     bindEvents() {
         const loginForm = document.getElementById('login-form');
-        if (!loginForm) return;
+        const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.executeLoginSequence();
-        });
+        if (loginForm) {
+            loginForm.onsubmit = async (e) => {
+                e.preventDefault();
+                await this.executeLoginSequence();
+                return false;
+            };
+        }
+
+        if (submitBtn) {
+            submitBtn.onclick = async (e) => {
+                if (e) e.preventDefault();
+                await this.executeLoginSequence();
+                return false;
+            };
+        }
     }
 
     async executeLoginSequence() {
         try {
+            alert('🚀 Login triggered successfully!');
+
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
                 alert(`Account is locked. Please wait ${mins} minutes.`);
@@ -69,6 +85,8 @@ export class LoginCore {
             
             const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
+
+            alert(`📧 Email: ${email}`);
 
             if (!email || !password) {
                 alert('Please enter both email and password.');
@@ -83,7 +101,7 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            // 🔍 Direct API Call with absolute clarity
+            // 🔍 Direct API Call
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
                 headers: {
@@ -92,6 +110,7 @@ export class LoginCore {
                 body: JSON.stringify({ email, password })
             });
 
+            alert(`📡 Response Status: ${response.status}`);
             const result = await response.json();
 
             if (submitBtn) {
