@@ -7,10 +7,9 @@ import admin from 'firebase-admin';
 
 if (!admin.apps.length) {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-  // Remove starting/ending quotes if accidentally added in Render
-  privateKey = privateKey.replace(/^["']|["']$/g, '');
-  // Replace escaped newlines with actual newlines
-  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  // Clean potential quotes and format newlines properly
+  privateKey = privateKey.replace(/^["']|["']$/g, '').replace(/\\n/g, '\n');
 
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -50,4 +49,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ success: false, message: 'Method not allowed' });
-}
+                                   }
