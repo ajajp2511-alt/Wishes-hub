@@ -24,6 +24,7 @@ import getWishesRouter from './router/get-wishes.js';
 import getYoutubeSongRouter from './router/get-youtube-song.js';
 import manageWishRouter from './router/manage-wish.js';
 import saveSecurityConfigRouter from './router/save-security-config.js';
+import verifyPassRouter from './router/verify-pass.js'; // ✅ Added Verify-Pass Router
 
 // 3. Routers ko /api ke sath mount karein
 app.use('/api', addUnifiedWishRouter);
@@ -38,6 +39,7 @@ app.use('/api', getWishesRouter);
 app.use('/api', getYoutubeSongRouter);
 app.use('/api', manageWishRouter);
 app.use('/api', saveSecurityConfigRouter);
+app.use('/api', verifyPassRouter); // ✅ Mounted /api/verify-pass endpoint
 
 // Root route check karne ke liye ki server live hai ya nahi
 app.get('/', (req, res) => {
