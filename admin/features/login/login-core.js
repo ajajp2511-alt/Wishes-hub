@@ -49,10 +49,17 @@ export class LoginCore {
 
     bindEvents() {
         const loginForm = document.getElementById('login-form');
-        if (!loginForm) return;
+        
+        if (!loginForm) {
+            alert('❌ ERROR: #login-form nahi mila HTML mein!');
+            return;
+        } else {
+            alert('✅ SUCCESS: #login-form mil gaya!');
+        }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            alert('🚀 Step 1: Form submit event fired!');
             
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
@@ -79,7 +86,7 @@ export class LoginCore {
         const submitBtn = document.querySelector('#login-form button[type="submit"]');
         
         try {
-            alert('Step 1: Inside handleSignInAttempt'); // 🔍 Debug check 1
+            alert('Step 1.5: Inside handleSignInAttempt'); // 🔍 Debug check
 
             if (submitBtn) {
                 submitBtn.disabled = true;
