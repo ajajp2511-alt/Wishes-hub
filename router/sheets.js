@@ -1,4 +1,40 @@
-// api/sheets.js
+/**
+ * Sheets Handler & Utility Module
+ */
+
+// 1. Helper function jisko add-unified-wish.js import kar raha hai
+export async function appendToGoogleSheet(dataArray) {
+  const apiKey = process.env.GOOGLE_API_KEY || process.env.VITE_SHEETS_API_KEY;
+  const masterSheetId = process.env.MASTER_SHEET_ID || process.env.VITE_MASTER_SHEET_ID;
+
+  if (!apiKey || !masterSheetId) {
+    throw new Error('Server environment configuration missing for Google Sheets');
+  }
+
+  // Google Sheets Append API URL (e.g. Sheet1!A:Z append)
+  const range = 'Sheet1!A:Z';
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${masterSheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      values: [dataArray]
+    })
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error?.message || 'Failed to append data to Google Sheet');
+  }
+
+  return result;
+}
+
+// 2. Existing Vercel/Express API Handler
 export default async function handler(req, res) {
   const apiKey = process.env.GOOGLE_API_KEY || process.env.VITE_SHEETS_API_KEY;
   const masterSheetId = process.env.MASTER_SHEET_ID || process.env.VITE_MASTER_SHEET_ID;
