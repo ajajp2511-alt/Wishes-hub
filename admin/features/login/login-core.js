@@ -25,7 +25,6 @@ export class LoginCore {
 
     async init() {
         try {
-            // 1. Validate IP and Geo-Fencing before rendering or processing
             const ipCheck = await this.ipWhitelist.validateAccess().catch(() => ({ allowed: true }));
 
             if (!ipCheck.allowed) {
@@ -36,10 +35,9 @@ export class LoginCore {
                 return;
             }
 
-            // 2. Check if account is locked out on load
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
-                this.showNotification(`Account temporarily locked due to multiple failed attempts. Try again in ${mins} minutes.`, 'error');
+                this.showNotification(`Account temporarily locked. Try again in ${mins} minutes.`, 'error');
             }
 
             this.bindEvents();
@@ -49,66 +47,43 @@ export class LoginCore {
     }
 
     bindEvents() {
-        // ✅ Using Event Delegation on the document to capture form submissions and button clicks globally
-        document.addEventListener('submit', async (e) => {
-            if (e.target && e.target.id === 'login-form') {
-                e.preventDefault();
-                alert('🚀 Step 1: Form Submit Captured via Delegation!');
-                await this.processLogin();
-            }
-        });
+        const loginForm = document.getElementById('login-form');
+        if (!loginForm) return;
 
-        document.addEventListener('click', async (e) => {
-            const target = e.target.closest('#login-submit-btn, button[type="submit"]');
-            if (target) {
-                // Prevent default form submit double-firing if button is inside form
-                const form = target.closest('form');
-                if (!form) {
-                    e.preventDefault();
-                    alert('🚀 Step 1: Button Click Captured via Delegation!');
-                    await this.processLogin();
-                }
-            }
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.executeLoginSequence();
         });
     }
 
-    async processLogin() {
-        if (this.securityGuard.isLockedOut()) {
-            const mins = this.securityGuard.getRemainingLockoutMinutes();
-            alert(`Account is locked. Please wait ${mins} minutes before trying again.`);
-            return;
-        }
-
-        const emailInput = document.getElementById('admin-email');
-        const passwordInput = document.getElementById('admin-password');
-        
-        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-        const password = passwordInput ? passwordInput.value.trim() : '';
-
-        alert(`📧 Email: ${email} | 🔑 Password length: ${password.length}`);
-
-        if (!email || !password) {
-            alert('Please enter both email and password.');
-            return;
-        }
-
-        await this.handleSignInAttempt(email, password);
-    }
-
-    async handleSignInAttempt(email, password) {
-        const submitBtn = document.querySelector('#login-submit-btn, #login-form button[type="submit"]');
-        
+    async executeLoginSequence() {
         try {
-            alert('Step 2: Inside handleSignInAttempt');
+            if (this.securityGuard.isLockedOut()) {
+                const mins = this.securityGuard.getRemainingLockoutMinutes();
+                alert(`Account is locked. Please wait ${mins} minutes.`);
+                return;
+            }
 
+            const emailInput = document.getElementById('admin-email');
+            const passwordInput = document.getElementById('admin-password');
+            
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+            const password = passwordInput ? passwordInput.value.trim() : '';
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
+            
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.dataset.originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            alert('Step 3: About to fetch /api/verify-pass');
-
+            // 🔍 Direct API Call with absolute clarity
             const response = await fetch('/api/verify-pass', {
                 method: 'POST',
                 headers: {
@@ -117,16 +92,19 @@ export class LoginCore {
                 body: JSON.stringify({ email, password })
             });
 
-            alert(`Step 4: Response status code: ${response.status}`);
-
             const result = await response.json();
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In to Dashboard';
+            }
 
             if (!response.ok || !result.ok) {
                 const lockoutData = this.securityGuard.recordFailedAttempt();
                 await this.auditLogger.logEvent('LOGIN_FAILED', email, 'WARNING', { reason: result.error || 'Invalid credentials' });
 
                 if (lockoutData.locked) {
-                    alert('Maximum failed attempts reached. Account has been locked for 15 minutes.');
+                    alert('Maximum failed attempts reached. Account locked for 15 minutes.');
                 } else {
                     alert(`Invalid credentials. Failed attempts: ${lockoutData.attempts}/${LoginConfig.security.maxLoginAttempts}`);
                 }
@@ -139,8 +117,7 @@ export class LoginCore {
             const isTrusted = this.trustedDevice.isDeviceTrusted(email);
             
             if (!isTrusted) {
-                await this.auditLogger.logEvent('MFA_TRIGGERED', email, 'SUCCESS', { reason: 'New or untrusted device' });
-                
+                await this.auditLogger.logEvent('MFA_TRIGGERED', email, 'SUCCESS', { reason: 'New device' });
                 const mfaModule = new MfaOtpModule(() => {
                     this.completeSuccessfulLogin(email, userRole);
                 });
@@ -151,12 +128,13 @@ export class LoginCore {
             this.completeSuccessfulLogin(email, userRole);
 
         } catch (error) {
-            console.error('Sign-in Error:', error);
-            alert('❌ Catch Error: ' + error.message);
-        } finally {
+            console.error('Login Error:', error);
+            alert('❌ Network/API Error: ' + error.message);
+            
+            const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In';
+                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In to Dashboard';
             }
         }
     }
@@ -169,7 +147,7 @@ export class LoginCore {
         this.trustedDevice.trustCurrentDevice(email);
         this.auditLogger.logEvent('LOGIN_SUCCESS', email, 'SUCCESS');
 
-        alert('Sign-in successful! Redirecting to Admin Panel...');
+        alert('Sign-in successful! Redirecting...');
         window.location.href = LoginConfig.roles.adminPanelPath;
     }
 
@@ -178,5 +156,4 @@ export class LoginCore {
     }
 }
 
-// ✅ Correct instantiation for ES Modules
 new LoginCore();
