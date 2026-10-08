@@ -1,11 +1,10 @@
 /**
- * Admin Pass Verification & OTP Trigger Router
+ * Admin Pass Verification & OTP Trigger Router (Using Brevo HTTP API)
  * Path: router/verify-pass.js
  */
 
 import express from 'express';
 import admin from 'firebase-admin';
-import nodemailer from 'nodemailer';
 
 const router = express.Router();
 
@@ -91,26 +90,21 @@ router.post('/verify-pass', async (req, res) => {
             return res.status(401).json({ ok: false, error: 'Incorrect email or password!' });
         }
 
-        // ✅ Password is correct! Now trigger 2FA OTP via Brevo SMTP
+        // ✅ Password is correct! Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = Date.now() + 5 * 60 * 1000; // Valid for 5 minutes
 
         otpStore.set(email, { otp, expiresAt, role: userRole });
 
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
-            port: Number(process.env.SMTP_PORT) || 587,
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-        });
+        // Send Email via Brevo HTTP API (Port 443 - Never blocked on Render)
+        const brevoApiKey = process.env.SMTP_PASS; // Using SMTP_PASS or your Brevo API Key from Environment variables
+        const senderEmail = process.env.EMAIL_FROM || 'admin@wisheshub.com';
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || 'admin@wisheshub.com',
-            to: email,
+        const emailPayload = {
+            sender: { name: 'Wishes Hub Security', email: senderEmail },
+            to: [{ email: email }],
             subject: 'Wishes Hub Admin - Verification OTP',
-            html: `
+            htmlContent: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; border-radius: 8px;">
                     <h2 style="color: #4f46e5;">Wishes Hub Security</h2>
                     <p>Hello Admin,</p>
@@ -118,11 +112,26 @@ router.post('/verify-pass', async (req, res) => {
                     <h1 style="background: #e0e7ff; color: #312e81; padding: 10px 20px; display: inline-block; letter-spacing: 4px; border-radius: 6px;">${otp}</h1>
                     <p>This code is valid for 5 minutes. Do not share it with anyone.</p>
                 </div>
-            `,
+            `
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`📧 [OTP SENT] Successfully sent OTP to ${email}`);
+        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': brevoApiKey,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(emailPayload)
+        });
+
+        if (!brevoResponse.ok) {
+            const errData = await brevoResponse.text();
+            console.error("❌ Brevo API Error:", errData);
+            return res.status(500).json({ ok: false, error: 'Failed to send OTP email via API.' });
+        }
+
+        console.log(`📧 [OTP SENT via Brevo API] Successfully sent OTP to ${email}`);
 
         return res.status(200).json({ 
             ok: true, 
