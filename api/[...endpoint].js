@@ -5,7 +5,7 @@
 
 export const config = {
     api: {
-        bodyParser: true, // Vercel khud body parse kar lega taaki JSON aage bhej sakein
+        bodyParser: true, 
     },
 };
 
@@ -26,7 +26,6 @@ export default async function handler(req, res) {
     try {
         console.log("🔍 Incoming Vercel Proxy Request URL:", req.url);
 
-        // Foolproof Endpoint Extraction directly from URL or query
         let currentEndpoint = '';
 
         if (req.query && req.query.endpoint) {
@@ -48,47 +47,49 @@ export default async function handler(req, res) {
             return res.status(404).json({ ok: false, error: 'API Endpoint not specified.' });
         }
 
-        console.log("🎯 Proxying to Render Endpoint:", currentEndpoint);
+        // Clean endpoint to avoid double 'api/api' issue
+        currentEndpoint = currentEndpoint.replace(/^api\//, '');
+
+        console.log("🎯 Proxying to Clean Render Endpoint:", currentEndpoint);
 
         const RENDER_BACKEND_URL = "https://wishes-hub.onrender.com";
         
-        // Query parameters build karna
         const incomingUrl = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
         const searchParams = incomingUrl.search;
+        
+        // Correct path concatenation
         const targetUrl = `${RENDER_BACKEND_URL}/api/${currentEndpoint}${searchParams}`;
 
-        // Headers setup karna (host change karna zaroori hai)
         const headers = {};
         for (const [key, value] of Object.entries(req.headers)) {
-            if (key.toLowerCase() !== 'host' && key.toLowerCase() !== 'connection') {
+            const lowerKey = key.toLowerCase();
+            if (lowerKey !== 'host' && lowerKey !== 'connection' && lowerKey !== 'content-length') {
                 headers[key] = value;
             }
         }
         headers['Host'] = 'wishes-hub.onrender.com';
+        headers['Content-Type'] = 'application/json';
 
         const fetchOptions = {
             method: req.method,
             headers: headers
         };
 
-        // Agar POST, PUT, PATCH request hai aur body maujood hai
-        if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.body) {
-            fetchOptions.body = JSON.stringify(req.body);
-            headers['Content-Type'] = 'application/json';
+        if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+            if (req.body) {
+                fetchOptions.body = typeof req.body === 'object' ? JSON.stringify(req.body) : req.body;
+            }
         }
 
-        // Render backend ko request bhejna
         const backendResponse = await fetch(targetUrl, fetchOptions);
         const responseText = await backendResponse.text();
 
-        // Status code aur content type set karna
         res.status(backendResponse.status);
         const contentType = backendResponse.headers.get('content-type');
         if (contentType) {
             res.setHeader('content-type', contentType);
         }
 
-        // Render ka response wapas client ko dena
         return res.send(responseText);
 
     } catch (error) {
