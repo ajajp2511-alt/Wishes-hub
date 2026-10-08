@@ -25,10 +25,14 @@ import getYoutubeSongRouter from './router/get-youtube-song.js';
 import manageWishRouter from './router/manage-wish.js';
 import saveSecurityConfigRouter from './router/save-security-config.js';
 import verifyPassRouter from './router/verify-pass.js';
+import sendEmailOtpRouter from './router/send-email-otp.js'; // ✅ Added Send Email OTP Router
+import verifyOtpRouter from './router/verify-otp.js';         // ✅ Added Verify OTP Router
 
 // 3. Routers ko /api ke sath mount karein
 // 🔥 sabse pehle verifyPassRouter mount kiya hai taaki priority mile!
 app.use('/api', verifyPassRouter);
+app.use('/api', sendEmailOtpRouter);
+app.use('/api', verifyOtpRouter);
 
 // Baaki saare routers iske baad mount honge
 app.use('/api', addUnifiedWishRouter);
