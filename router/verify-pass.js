@@ -24,9 +24,14 @@ router.post('/verify-pass', async (req, res) => {
         const enteredPassword = body?.password ? String(body.password).trim() : '';
 
         console.log(`🔑 Login Attempt -> Email: "${email}" | Password Length: ${enteredPassword.length}`);
+        console.log(`📦 Full Request Body received:`, req.body);
 
         if (!email || !enteredPassword) {
-            return res.status(400).json({ ok: false, error: 'Email and password are required fields' });
+            return res.status(400).json({ 
+                ok: false, 
+                error: 'Email and password are required fields',
+                receivedBody: req.body || null 
+            });
         }
 
         let isValid = false;
@@ -50,8 +55,6 @@ router.post('/verify-pass', async (req, res) => {
                         const adminData = superAdmins[key];
                         const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
                         const dbPassword = adminData.password ? String(adminData.password).trim() : '';
-
-                        console.log(`🔎 DB Check [${key}] -> Email match: ${dbEmail === email} | Pass match: ${dbPassword === enteredPassword}`);
 
                         if (dbEmail === email && dbPassword === enteredPassword) {
                             isValid = true;
