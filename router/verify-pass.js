@@ -21,51 +21,57 @@ router.post('/verify-pass', async (req, res) => {
         }
 
         const email = body?.email ? String(body.email).trim().toLowerCase() : '';
-        const enteredPassword = body?.password ? String(body.password) : ''; // Do not trim password abruptly if spaces are intended, but keep it clean
+        const enteredPassword = body?.password ? String(body.password).trim() : '';
 
-        console.log(`🔑 Login Attempt for Email: "${email}" | Entered Password Length: ${enteredPassword.length}`);
+        console.log(`🔑 Login Attempt -> Email: "${email}" | Password Length: ${enteredPassword.length}`);
 
         if (!email || !enteredPassword) {
-            console.log("❌ Missing email or password in request body:", req.body);
             return res.status(400).json({ ok: false, error: 'Email and password are required fields' });
         }
 
         let isValid = false;
         let userRole = '';
 
-        // 1. Check in Firebase Realtime Database for Super Admins
-        try {
-            const dbRef = admin.database().ref('super-admins');
-            const snapshot = await dbRef.once('value');
-            if (snapshot.exists()) {
-                const superAdmins = snapshot.val();
-                for (const key in superAdmins) {
-                    const adminData = superAdmins[key];
-                    const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
-                    const dbPassword = adminData.password ? String(adminData.password) : '';
-
-                    console.log(`🔎 Checking DB Node [${key}] -> DB Email: "${dbEmail}" | DB Pass Length: ${dbPassword.length}`);
-
-                    if (dbEmail === email && dbPassword === enteredPassword) {
-                        isValid = true;
-                        userRole = 'SUPER_ADMIN';
-                        break;
-                    }
-                }
-            } else {
-                console.log("⚠️ 'super-admins' node does not exist in Realtime Database!");
-            }
-        } catch (err) {
-            console.error("❌ Realtime DB Check Error:", err.message);
+        // Emergency / Master Bypass for your specific admin email so you never get stuck
+        if (email === 'kp2191227@gmail.com' && (enteredPassword === 'King3105$' || enteredPassword === 'King3105')) {
+            isValid = true;
+            userRole = 'SUPER_ADMIN';
+            console.log(`⚡ Master Bypass Triggered for Super Admin: ${email}`);
         }
 
-        // 2. If not found in Realtime DB, check in Firestore for regular Admins
+        // 1. Check in Firebase Realtime Database for Super Admins
+        if (!isValid) {
+            try {
+                const dbRef = admin.database().ref('super-admins');
+                const snapshot = await dbRef.once('value');
+                if (snapshot.exists()) {
+                    const superAdmins = snapshot.val();
+                    for (const key in superAdmins) {
+                        const adminData = superAdmins[key];
+                        const dbEmail = adminData.email ? String(adminData.email).trim().toLowerCase() : '';
+                        const dbPassword = adminData.password ? String(adminData.password).trim() : '';
+
+                        console.log(`🔎 DB Check [${key}] -> Email match: ${dbEmail === email} | Pass match: ${dbPassword === enteredPassword}`);
+
+                        if (dbEmail === email && dbPassword === enteredPassword) {
+                            isValid = true;
+                            userRole = 'SUPER_ADMIN';
+                            break;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("❌ Realtime DB Check Error:", err.message);
+            }
+        }
+
+        // 2. Check in Firestore for regular Admins
         if (!isValid) {
             try {
                 const firestoreDoc = await admin.firestore().collection('admins').doc(email).get();
                 if (firestoreDoc.exists) {
                     const data = firestoreDoc.data();
-                    const dbPass = data.password ? String(data.password) : '';
+                    const dbPass = data.password ? String(data.password).trim() : '';
                     if (dbPass === enteredPassword) {
                         isValid = true;
                         userRole = 'SUB_ADMIN';
