@@ -11,7 +11,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// 2. Router Files Import karein (Aapke router folder ke mutabiq)
+// 2. Router Files Import karein
 import addUnifiedWishRouter from './router/add-unified-wish.js';
 import addWishToDbRouter from './router/add-wish-to-db.js';
 import aiGeneratorRouter from './router/ai-generator.js';
@@ -24,9 +24,13 @@ import getWishesRouter from './router/get-wishes.js';
 import getYoutubeSongRouter from './router/get-youtube-song.js';
 import manageWishRouter from './router/manage-wish.js';
 import saveSecurityConfigRouter from './router/save-security-config.js';
-import verifyPassRouter from './router/verify-pass.js'; // ✅ Added Verify-Pass Router
+import verifyPassRouter from './router/verify-pass.js';
 
 // 3. Routers ko /api ke sath mount karein
+// 🔥 sabse pehle verifyPassRouter mount kiya hai taaki priority mile!
+app.use('/api', verifyPassRouter);
+
+// Baaki saare routers iske baad mount honge
 app.use('/api', addUnifiedWishRouter);
 app.use('/api', addWishToDbRouter);
 app.use('/api', aiGeneratorRouter);
@@ -39,14 +43,13 @@ app.use('/api', getWishesRouter);
 app.use('/api', getYoutubeSongRouter);
 app.use('/api', manageWishRouter);
 app.use('/api', saveSecurityConfigRouter);
-app.use('/api', verifyPassRouter); // ✅ Mounted /api/verify-pass endpoint
 
 // Root route check karne ke liye ki server live hai ya nahi
 app.get('/', (req, res) => {
     res.status(200).json({ status: 'success', message: 'Wishes Hub Backend is live on Render!' });
 });
 
-// 4. Server Listen Setup (Render automatic PORT assign karta hai)
+// 4. Server Listen Setup
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running live on port ${PORT}`);
