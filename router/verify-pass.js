@@ -9,8 +9,6 @@ import nodemailer from 'nodemailer';
 
 const router = express.Router();
 
-// In-memory OTP store (shared across routers if imported, or handled here)
-// Make sure this aligns with your send-email-otp.js and verify-otp.js store
 export const otpStore = new Map();
 
 router.post('/verify-pass', async (req, res) => {
@@ -97,10 +95,8 @@ router.post('/verify-pass', async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = Date.now() + 5 * 60 * 1000; // Valid for 5 minutes
 
-        // Store OTP temporarily
         otpStore.set(email, { otp, expiresAt, role: userRole });
 
-        // Configure Brevo Transporter
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
             port: Number(process.env.SMTP_PORT) || 587,
@@ -128,7 +124,7 @@ router.post('/verify-pass', async (req, res) => {
         await transporter.sendMail(mailOptions);
         console.log(`📧 [OTP SENT] Successfully sent OTP to ${email}`);
 
-        return.status(200).json({ 
+        return res.status(200).json({ 
             ok: true, 
             requireOtp: true, 
             message: 'Password verified. OTP sent to your email.' 
@@ -136,7 +132,7 @@ router.post('/verify-pass', async (req, res) => {
 
     } catch (error) {
         console.error("❌ Verify Pass Server Error:", error);
-        return.status(500).json({ ok: false, error: 'Server Error: ' + error.message });
+        return res.status(500).json({ ok: false, error: 'Server Error: ' + error.message });
     }
 });
 
