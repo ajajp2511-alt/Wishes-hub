@@ -5,10 +5,9 @@
 
 import express from 'express';
 import admin from 'firebase-admin';
+import { readOtpStore, writeOtpStore } from './send-email-otp.js';
 
 const router = express.Router();
-
-export const otpStore = new Map();
 
 router.post('/verify-pass', async (req, res) => {
     try {
@@ -90,11 +89,13 @@ router.post('/verify-pass', async (req, res) => {
             return res.status(401).json({ ok: false, error: 'Incorrect email or password!' });
         }
 
-        // ✅ Password is correct! Generate OTP
+        // ✅ Password is correct! Generate OTP and save to shared store
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = Date.now() + 5 * 60 * 1000; // Valid for 5 minutes
 
-        otpStore.set(email, { otp, expiresAt, role: userRole });
+        const store = readOtpStore();
+        store[email] = { otp, expiresAt, role: userRole };
+        writeOtpStore(store);
 
         // Send Email via Brevo HTTP API (Port 443 - Never blocked on Render)
         const brevoApiKey = process.env.SMTP_PASS || process.env.BREVO_API_KEY;
