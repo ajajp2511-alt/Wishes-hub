@@ -55,9 +55,9 @@ export class LoginCore {
                 return { status: 'ERROR', message: `Account is locked. Please wait ${mins} minutes.` };
             }
 
-            // ⏱️ Add a 25-second timeout controller for Render free-tier cold starts
+            // ⏱️ Increased timeout to 45 seconds to accommodate Render free-tier cold starts
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 25000);
+            const timeoutId = setTimeout(() => controller.abort(), 45000);
 
             let response;
             try {
@@ -131,4 +131,4 @@ export class LoginCore {
         this.trustedDevice.trustCurrentDevice(email);
         this.auditLogger.logEvent('LOGIN_SUCCESS', email, 'SUCCESS');
     }
-}
+                    }
