@@ -20,9 +20,7 @@ export class LoginCore {
         this.sessionShield = new SessionShield();
         this.ipWhitelist = new IpWhitelistModule();
         
-        // Make instance globally available for direct inline HTML onclick binding if needed
         window.loginCoreInstance = this;
-        
         this.init();
     }
 
@@ -40,70 +38,30 @@ export class LoginCore {
 
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
-                this.showNotification(`Account temporarily locked. Try again in ${mins} minutes.`, 'error');
+                console.log(`Account temporarily locked. Try again in ${mins} minutes.`);
             }
-
-            this.bindEvents();
         } catch (error) {
             console.error('Initialization Error:', error);
         }
     }
 
-    bindEvents() {
-        const loginForm = document.getElementById('login-form');
-        const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
-
-        if (loginForm) {
-            loginForm.onsubmit = async (e) => {
-                e.preventDefault();
-                await this.executeLoginSequence();
-                return false;
-            };
-        }
-
-        if (submitBtn) {
-            submitBtn.onclick = async (e) => {
-                if (e) e.preventDefault();
-                await this.executeLoginSequence();
-                return false;
-            };
-        }
-    }
-
-    async executeLoginSequence() {
+    /**
+     * Called by SigninModule to authenticate user against Render Backend
+     */
+    async authenticateUser(email, password, captchaResponse) {
         try {
             if (this.securityGuard.isLockedOut()) {
                 const mins = this.securityGuard.getRemainingLockoutMinutes();
-                alert(`Account is locked. Please wait ${mins} minutes.`);
-                return;
+                return { status: 'ERROR', message: `Account is locked. Please wait ${mins} minutes.` };
             }
 
-            const emailInput = document.getElementById('admin-email');
-            const passwordInput = document.getElementById('admin-password');
-            
-            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-            const password = passwordInput ? passwordInput.value.trim() : '';
-
-            if (!email || !password) {
-                alert('Please enter both email and password.');
-                return;
-            }
-
-            const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
-            
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.dataset.originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = 'Authenticating...';
-            }
-
-            // 🔍 FIXED: Using LoginConfig.endpoints.authenticate to point directly to Render Backend
+            // 🔍 POST Request to Render Backend API endpoint
             const response = await fetch(LoginConfig.endpoints.authenticate, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, captcha: captchaResponse })
             });
 
             const contentType = response.headers.get('content-type');
@@ -112,12 +70,7 @@ export class LoginCore {
             if (contentType && contentType.includes('application/json')) {
                 result = await response.json();
             } else {
-                throw new Error(`API endpoint returned non-JSON response (Status ${response.status}). Check backend route.`);
-            }
-
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In to Dashboard';
+                throw new Error(`API endpoint returned non-JSON response (Status ${response.status}).`);
             }
 
             if (!response.ok || !result.ok) {
@@ -125,11 +78,10 @@ export class LoginCore {
                 await this.auditLogger.logEvent('LOGIN_FAILED', email, 'WARNING', { reason: result.error || 'Invalid credentials' });
 
                 if (lockoutData.locked) {
-                    alert('Maximum failed attempts reached. Account locked for 15 minutes.');
+                    return { status: 'ERROR', message: 'Maximum failed attempts reached. Account locked for 15 minutes.' };
                 } else {
-                    alert(`Invalid credentials. Failed attempts: ${lockoutData.attempts}/${LoginConfig.security.maxLoginAttempts}`);
+                    return { status: 'ERROR', message: `Invalid credentials. Failed attempts: ${lockoutData.attempts}/${LoginConfig.security.maxLoginAttempts}` };
                 }
-                return;
             }
 
             this.securityGuard.resetAttempts();
@@ -139,24 +91,23 @@ export class LoginCore {
             
             if (!isTrusted) {
                 await this.auditLogger.logEvent('MFA_TRIGGERED', email, 'SUCCESS', { reason: 'New device' });
+                
+                // Trigger MFA OTP Modal
                 const mfaModule = new MfaOtpModule(() => {
                     this.completeSuccessfulLogin(email, userRole);
+                    window.location.href = LoginConfig.roles.adminPanelPath;
                 });
-                mfaModule.renderMfaModal(email, 'Email / WhatsApp');
-                return;
+                mfaModule.renderMfaModal(email, 'Email');
+
+                return { status: 'REQUIRES_MFA', message: 'MFA verification required.' };
             }
 
             this.completeSuccessfulLogin(email, userRole);
+            return { status: 'SUCCESS', redirectUrl: LoginConfig.roles.adminPanelPath };
 
         } catch (error) {
-            console.error('Login Error:', error);
-            alert('❌ Login Error: ' + error.message);
-            
-            const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Sign In to Dashboard';
-            }
+            console.error('Authentication Error:', error);
+            return { status: 'ERROR', message: error.message || 'Authentication failed.' };
         }
     }
 
@@ -167,14 +118,5 @@ export class LoginCore {
         this.sessionShield.establishShield();
         this.trustedDevice.trustCurrentDevice(email);
         this.auditLogger.logEvent('LOGIN_SUCCESS', email, 'SUCCESS');
-
-        alert('Sign-in successful! Redirecting...');
-        window.location.href = LoginConfig.roles.adminPanelPath;
-    }
-
-    showNotification(message, type = 'info') {
-        console.log(`[${type.toUpperCase()}] ${message}`);
     }
 }
-
-new LoginCore();
