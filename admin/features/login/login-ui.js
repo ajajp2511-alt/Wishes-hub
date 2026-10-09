@@ -3,8 +3,11 @@
  * Manages DOM styling, password visibility toggles, loading animations, and interactive UI enhancements.
  */
 
+import { LoginCore } from './login-core.js';
+
 export class LoginUI {
     constructor() {
+        this.loginCore = new LoginCore();
         this.initUIInteractions();
     }
 
@@ -19,7 +22,7 @@ export class LoginUI {
     setupUI() {
         this.initPasswordToggle();
         this.initInputAnimations();
-        this.enhanceButtons();
+        this.initFormSubmitHandler();
     }
 
     /**
@@ -29,7 +32,6 @@ export class LoginUI {
         const passwordInput = document.getElementById('admin-password');
         if (!passwordInput) return;
 
-        // Create toggle button container if not present
         const wrapper = passwordInput.parentElement;
         if (wrapper && !document.getElementById('pwd-toggle-btn')) {
             wrapper.style.position = 'relative';
@@ -61,7 +63,7 @@ export class LoginUI {
                     toggleBtn.innerHTML = '🔒';
                 } else {
                     passwordInput.type = 'password';
-                    toggleBtn.innerHTML = '👁️️';
+                    toggleBtn.innerHTML = '👁';
                 }
             });
 
@@ -75,7 +77,6 @@ export class LoginUI {
     initInputAnimations() {
         const inputs = document.querySelectorAll('.input-group input, .form-control');
         inputs.forEach(input => {
-            // Check initial state on load
             if (input.value && input.parentElement) {
                 input.parentElement.classList.add('focused');
             }
@@ -95,22 +96,54 @@ export class LoginUI {
     }
 
     /**
-     * Add smooth ripple or loading state effect to submit buttons
+     * Handle Form Submission and Connect with LoginCore
      */
-    enhanceButtons() {
-        // Updated ID to match login.html (login-submit-btn and login-form)
+    initFormSubmitHandler() {
+        const form = document.getElementById('login-form');
         const submitBtn = document.getElementById('login-submit-btn') || document.querySelector('#login-form button[type="submit"]');
-        if (!submitBtn) return;
+        
+        if (!form) return;
 
-        submitBtn.addEventListener('click', () => {
-            const form = document.getElementById('login-form');
-            if (form && form.checkValidity()) {
-                submitBtn.classList.add('btn-loading');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('admin-email');
+            const passwordInput = document.getElementById('admin-password');
+
+            const email = emailInput ? emailInput.value.trim() : '';
+            const password = passwordInput ? passwordInput.value.trim() : '';
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            // Set loading state on button
+            if (submitBtn) {
                 submitBtn.disabled = true;
                 if (!submitBtn.dataset.originalText) {
                     submitBtn.dataset.originalText = submitBtn.textContent;
                 }
                 submitBtn.textContent = 'Authenticating...';
+            }
+
+            try {
+                // Call LoginCore authentication flow
+                const result = await this.loginCore.authenticateUser(email, password, null);
+
+                if (result.status === 'ERROR') {
+                    alert(result.message);
+                } else if (result.status === 'SUCCESS' && result.redirectUrl) {
+                    window.location.href = result.redirectUrl;
+                }
+            } catch (err) {
+                console.error('Login Submission Error:', err);
+                alert('An unexpected error occurred during login.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = submitBtn.dataset.originalText || 'Sign In to Dashboard';
+                }
             }
         });
     }
