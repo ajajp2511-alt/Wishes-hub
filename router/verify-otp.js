@@ -1,3 +1,8 @@
+/**
+ * Admin Verify OTP Router
+ * Path: router/verify-otp.js
+ */
+
 import express from 'express';
 import { readOtpStore, writeOtpStore } from './send-email-otp.js';
 
@@ -13,7 +18,7 @@ router.post('/admin/auth/verify-otp', async (req, res) => {
 
         email = email.toLowerCase().trim();
 
-        // Read store from file
+        // Read store from file/memory
         const store = readOtpStore();
         const record = store[email];
 
