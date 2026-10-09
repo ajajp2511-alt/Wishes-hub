@@ -1,5 +1,9 @@
+/**
+ * Admin Send Email OTP Router (Using Brevo HTTP API - Port 443)
+ * Path: router/send-email-otp.js
+ */
+
 import express from 'express';
-import nodemailer from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
 
@@ -30,17 +34,6 @@ export const writeOtpStore = (store) => {
     }
 };
 
-// Nodemailer Transporter Configuration
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.brevo.com',
-    port: process.env.SMTP_PORT || 587,
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
-
 router.post('/admin/auth/send-email-otp', async (req, res) => {
     try {
         let { email } = req.body;
@@ -60,12 +53,20 @@ router.post('/admin/auth/send-email-otp', async (req, res) => {
         store[email] = { otp, expiresAt };
         writeOtpStore(store);
 
-        // Email Content Options
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || '"Wishes Hub Security" <no-reply@wisheshub.com>',
-            to: email,
+        // Send Email via Brevo HTTP API (Port 443 - Never blocked on Render)
+        const brevoApiKey = process.env.SMTP_PASS || process.env.BREVO_API_KEY;
+        if (!brevoApiKey) {
+            console.error("❌ Critical Error: Brevo API Key is missing in environment variables.");
+            return res.status(500).json({ ok: false, error: 'Server email configuration error.' });
+        }
+
+        const senderEmail = process.env.EMAIL_FROM || 'admin@wisheshub.com';
+
+        const emailPayload = {
+            sender: { name: 'Wishes Hub Security', email: senderEmail },
+            to: [{ email: email }],
             subject: '🔐 Your Wishes Hub Admin OTP Code',
-            html: `
+            htmlContent: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
                     <h2 style="color: #4f46e5;">Wishes Hub Admin Portal</h2>
                     <p>Hello Admin,</p>
@@ -78,15 +79,28 @@ router.post('/admin/auth/send-email-otp', async (req, res) => {
             `
         };
 
-        // Send Email via SMTP
-        await transporter.sendMail(mailOptions);
+        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': brevoApiKey,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(emailPayload)
+        });
 
-        console.log(`[OTP SENT] 6-digit OTP successfully sent to ${email}`);
+        if (!brevoResponse.ok) {
+            const errData = await brevoResponse.text();
+            console.error("❌ Brevo API Error:", errData);
+            return res.status(500).json({ ok: false, error: 'Failed to send OTP email via API.' });
+        }
+
+        console.log(`📧 [OTP SENT via Brevo HTTP API] Successfully sent OTP to ${email}`);
         return res.status(200).json({ ok: true, message: 'OTP sent successfully to email.' });
 
     } catch (error) {
         console.error('Send Email OTP Error:', error);
-        return res.status(500).json({ ok: false, error: 'Failed to send OTP email. Check SMTP configuration.' });
+        return res.status(500).json({ ok: false, error: 'Failed to send OTP email. Server error.' });
     }
 });
 
