@@ -13,7 +13,7 @@ export class MfaOtpModule {
     }
 
     /**
-     * Render MFA verification modal on screen
+     * Render MFA verification modal on screen and automatically request an OTP
      */
     renderMfaModal(userId, channel = 'email') {
         this.email = userId; // userId yahan email hai
@@ -51,6 +51,8 @@ export class MfaOtpModule {
             if (inputField) inputField.value = '';
         }
 
+        // 🚀 Automatically request OTP from backend when modal opens
+        this.resendOtp(userId, true);
         this.startOtpTimer();
     }
 
@@ -80,7 +82,7 @@ export class MfaOtpModule {
 
         resendBtn.addEventListener('click', async () => {
             resendBtn.disabled = true;
-            await this.resendOtp(userId);
+            await this.resendOtp(userId, false);
             this.startOtpTimer();
         });
     }
@@ -154,7 +156,7 @@ export class MfaOtpModule {
         }
     }
 
-    async resendOtp(userId) {
+    async resendOtp(userId, isInitial = false) {
         try {
             const response = await fetch(LoginConfig.endpoints.sendOtpEmail, {
                 method: 'POST',
@@ -167,13 +169,19 @@ export class MfaOtpModule {
             const result = await response.json();
 
             if (!response.ok || !result.ok) {
-                throw new Error(result.error || 'Failed to resend OTP.');
+                throw new Error(result.error || 'Failed to send OTP.');
             }
 
-            alert('A new OTP has been sent to your email.');
+            if (!isInitial) {
+                alert('A new OTP has been sent to your email.');
+            } else {
+                console.log('[OTP] Initial OTP generated and sent successfully.');
+            }
         } catch (error) {
-            console.error('Resend OTP Error:', error);
-            alert('❌ ' + error.message);
+            console.error('Send/Resend OTP Error:', error);
+            if (!isInitial) {
+                alert('❌ ' + error.message);
+            }
         }
     }
 
