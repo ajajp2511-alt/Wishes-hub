@@ -11,7 +11,6 @@
             const token = localStorage.getItem('wh_admin_token');
             const role = localStorage.getItem('wh_user_role');
             
-            // Agar token ya role nahi hai, ya invalid hai, toh turant login page par bhej do
             if (!token || !role || token === 'undefined' || token === 'null' || token.trim() === '') {
                 window.location.replace('/admin/features/login/login');
             }
@@ -34,9 +33,6 @@
 
     <!-- Master CSS Link -->
     <link rel="stylesheet" href="/admin/features/style-css.css">
-
-    <!-- ✅ Full Admin Guard Integrated (Session Shield & Timeout Sync) -->
-    <script type="module" src="./admin-guard.js"></script>
 </head>
 <body>
 
@@ -92,18 +88,17 @@
                 backdrop.addEventListener('click', toggleMenu);
             }
 
-            // Logout Event Listener with Clean URL for Vercel
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
-                    // Clear tokens and session data from localStorage
                     localStorage.removeItem('wh_admin_token');
                     localStorage.removeItem('wh_user_role');
-                    
-                    // Redirect using clean URL path (without .html) to match vercel.json settings
                     window.location.replace('/admin/features/login/login');
                 });
             }
         });
     </script>
+
+    <!-- ✅ Absolute Path Fix for Vercel Module Loading -->
+    <script type="module" src="/admin/features/features-assembly.js"></script>
 </body>
 </html>
