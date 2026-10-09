@@ -8,7 +8,7 @@ const BACKEND_URL = 'https://wishes-hub.onrender.com';
 export const LoginConfig = Object.freeze({
     // API Endpoints with full Render backend URL
     endpoints: {
-        authenticate: `${BACKEND_URL}/api/admin/auth/signin`,
+        authenticate: `${BACKEND_URL}/api/verify-pass`, // ✅ Updated to match backend verifyPassRouter path
         sendOtpEmail: `${BACKEND_URL}/api/admin/auth/send-email-otp`,
         sendOtpWhatsapp: `${BACKEND_URL}/api/admin/auth/send-whatsapp-otp`,
         verifyOtp: `${BACKEND_URL}/api/admin/auth/verify-otp`,
@@ -20,7 +20,7 @@ export const LoginConfig = Object.freeze({
 
     // Security & Brute-Force Thresholds
     security: {
-        maxLoginAttempts: 5,             // Lock account after 5 failed attempts
+        maxLoginAttempts: 5,               // Lock account after 5 failed attempts
         lockoutDurationMinutes: 15,      // Temporary lockout duration
         captchaTriggerAttempts: 3,       // Show captcha after 3 wrong attempts
         sessionTimeoutMinutes: 30,       // Auto-logout after inactivity
