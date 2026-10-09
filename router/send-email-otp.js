@@ -1,13 +1,34 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
-// ✅ FIX 1: Global store use karein taaki server restart hone par OTP wipe na ho
-if (!global.otpStore) {
-    global.otpStore = new Map();
-}
-export const otpStore = global.otpStore;
+// JSON file ka path jahan OTP store hoga
+const STORAGE_FILE = path.resolve('otpStore.json');
+
+// Helper function: Read OTPs from file
+export const readOtpStore = () => {
+    try {
+        if (fs.existsSync(STORAGE_FILE)) {
+            const data = fs.readFileSync(STORAGE_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error reading OTP store file:', error);
+    }
+    return {};
+};
+
+// Helper function: Write OTPs to file
+export const writeOtpStore = (store) => {
+    try {
+        fs.writeFileSync(STORAGE_FILE, JSON.stringify(store, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Error writing OTP store file:', error);
+    }
+};
 
 // Nodemailer Transporter Configuration
 const transporter = nodemailer.createTransport({
@@ -28,15 +49,16 @@ router.post('/admin/auth/send-email-otp', async (req, res) => {
             return res.status(400).json({ ok: false, error: 'Email is required to send OTP.' });
         }
 
-        // ✅ FIX 2: Email ko lowercase aur trim karein
         email = email.toLowerCase().trim();
 
         // 6-digit random OTP generation
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = Date.now() + 5 * 60 * 1000; // Valid for 5 minutes
 
-        // Store OTP temporarily
-        otpStore.set(email, { otp, expiresAt });
+        // Read store, update, and write back
+        const store = readOtpStore();
+        store[email] = { otp, expiresAt };
+        writeOtpStore(store);
 
         // Email Content Options
         const mailOptions = {
