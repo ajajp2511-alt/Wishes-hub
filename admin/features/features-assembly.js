@@ -1,7 +1,5 @@
 console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
-import { assembleHomeModule } from './manage-home/manage-home-assembly.js';
-
 export class FeaturesAssembly {
   constructor() {
     console.log("🚀 Booting Dynamic System Architecture...");
@@ -302,7 +300,21 @@ export class FeaturesAssembly {
     try {
       if (this.root) {
         this.root.innerHTML = '';
-        assembleHomeModule('dynamic-content-root');
+      }
+
+      // ⚡ Safely import and initialize Home Module dynamically to prevent static import blocking
+      try {
+        const homeModule = await import('./manage-home/manage-home-assembly.js');
+        if (homeModule && typeof homeModule.assembleHomeModule === 'function') {
+          homeModule.assembleHomeModule('dynamic-content-root');
+        } else if (homeModule.default && typeof homeModule.default === 'function') {
+          homeModule.default('dynamic-content-root');
+        }
+      } catch (homeErr) {
+        console.warn("⚠️ Home module load warning, rendering fallback:", homeErr);
+        if (this.root) {
+          this.root.innerHTML = `<div style="padding: 20px;"><h2>Welcome to Wishes Hub Admin</h2><p>Select a module from the menu.</p></div>`;
+        }
       }
 
       // ⚡ Init Menu System
