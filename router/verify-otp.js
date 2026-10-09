@@ -18,15 +18,20 @@ router.post('/admin/auth/verify-otp', async (req, res) => {
         const record = store[email];
 
         if (!record) {
+            console.log(`[OTP ERROR] No record found in store for email: ${email}`);
             return res.status(400).json({ ok: false, error: 'No OTP requested or OTP expired.' });
         }
 
         // Check Expiry
         if (Date.now() > record.expiresAt) {
+            console.log(`[OTP ERROR] OTP expired for email: ${email}`);
             delete store[email];
             writeOtpStore(store);
             return res.status(400).json({ ok: false, error: 'OTP has expired. Please request a new one.' });
         }
+
+        // 🔍 Debug Logging to match expected vs received OTP
+        console.log(`[OTP CHECK] Expected: "${record.otp}" | Received: "${otp.toString().trim()}"`);
 
         // Verify OTP value
         if (record.otp !== otp.toString().trim()) {
