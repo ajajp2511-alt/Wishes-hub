@@ -97,7 +97,12 @@ router.post('/verify-pass', async (req, res) => {
         otpStore.set(email, { otp, expiresAt, role: userRole });
 
         // Send Email via Brevo HTTP API (Port 443 - Never blocked on Render)
-        const brevoApiKey = process.env.SMTP_PASS; // Using SMTP_PASS or your Brevo API Key from Environment variables
+        const brevoApiKey = process.env.SMTP_PASS || process.env.BREVO_API_KEY;
+        if (!brevoApiKey) {
+            console.error("❌ Critical Error: Brevo API Key is missing in environment variables.");
+            return res.status(500).json({ ok: false, error: 'Server email configuration error.' });
+        }
+
         const senderEmail = process.env.EMAIL_FROM || 'admin@wisheshub.com';
 
         const emailPayload = {
