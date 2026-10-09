@@ -9,25 +9,32 @@ import path from 'path';
 
 const router = express.Router();
 
-// JSON file ka path jahan OTP store hoga
-const STORAGE_FILE = path.resolve('otpStore.json');
+// Fallback to /tmp directory on Render if root is read-only, otherwise use root
+const STORAGE_FILE = path.join(process.env.RENDER ? '/tmp' : '.', 'otpStore.json');
 
-// Helper function: Read OTPs from file
+// Global in-memory backup store for instant verification across requests in same instance
+global.otpMemoryStore = global.otpMemoryStore || {};
+
+// Helper function: Read OTPs from store (combines file + memory fallback)
 export const readOtpStore = () => {
     try {
         if (fs.existsSync(STORAGE_FILE)) {
             const data = fs.readFileSync(STORAGE_FILE, 'utf8');
-            return JSON.parse(data);
+            const parsed = JSON.parse(data);
+            // Sync with global memory
+            global.otpMemoryStore = { ...global.otpMemoryStore, ...parsed };
+            return global.otpMemoryStore;
         }
     } catch (error) {
         console.error('Error reading OTP store file:', error);
     }
-    return {};
+    return global.otpMemoryStore;
 };
 
-// Helper function: Write OTPs to file
+// Helper function: Write OTPs to both file and memory
 export const writeOtpStore = (store) => {
     try {
+        global.otpMemoryStore = store;
         fs.writeFileSync(STORAGE_FILE, JSON.stringify(store, null, 2), 'utf8');
     } catch (error) {
         console.error('Error writing OTP store file:', error);
