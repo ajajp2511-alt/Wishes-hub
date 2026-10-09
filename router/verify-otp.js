@@ -1,5 +1,5 @@
 import express from 'express';
-import { otpStore } from './send-email-otp.js';
+import { readOtpStore, writeOtpStore } from './send-email-otp.js';
 
 const router = express.Router();
 
@@ -11,10 +11,11 @@ router.post('/admin/auth/verify-otp', async (req, res) => {
             return res.status(400).json({ ok: false, error: 'Email and OTP are required.' });
         }
 
-        // ✅ FIX: Email ko lowercase aur trim karein taaki send-email-otp se match ho sake
         email = email.toLowerCase().trim();
 
-        const record = otpStore.get(email);
+        // Read store from file
+        const store = readOtpStore();
+        const record = store[email];
 
         if (!record) {
             return res.status(400).json({ ok: false, error: 'No OTP requested or OTP expired.' });
@@ -22,7 +23,8 @@ router.post('/admin/auth/verify-otp', async (req, res) => {
 
         // Check Expiry
         if (Date.now() > record.expiresAt) {
-            otpStore.delete(email);
+            delete store[email];
+            writeOtpStore(store);
             return res.status(400).json({ ok: false, error: 'OTP has expired. Please request a new one.' });
         }
 
@@ -32,7 +34,8 @@ router.post('/admin/auth/verify-otp', async (req, res) => {
         }
 
         // Clear OTP after successful verification (Single use)
-        otpStore.delete(email);
+        delete store[email];
+        writeOtpStore(store);
 
         console.log(`[OTP VERIFIED] Admin ${email} authenticated successfully via MFA.`);
         return res.status(200).json({
