@@ -61,6 +61,7 @@ export class LoginCore {
 
             let response;
             try {
+                console.log(`🚀 Sending login request to: ${LoginConfig.endpoints.authenticate}`);
                 response = await fetch(LoginConfig.endpoints.authenticate, {
                     method: 'POST',
                     headers: {
@@ -69,6 +70,9 @@ export class LoginCore {
                     body: JSON.stringify({ email, password, captcha: captchaResponse }),
                     signal: controller.signal
                 });
+            } catch (fetchErr) {
+                console.error('Fetch Execution Error:', fetchErr);
+                throw fetchErr;
             } finally {
                 clearTimeout(timeoutId);
             }
@@ -79,6 +83,8 @@ export class LoginCore {
             if (contentType && contentType.includes('application/json')) {
                 result = await response.json();
             } else {
+                const textResp = await response.text();
+                console.error('Non-JSON Response Received:', textResp);
                 throw new Error(`API endpoint returned non-JSON response (Status ${response.status}).`);
             }
 
@@ -89,7 +95,7 @@ export class LoginCore {
                 if (lockoutData.locked) {
                     return { status: 'ERROR', message: 'Maximum failed attempts reached. Account locked for 15 minutes.' };
                 } else {
-                    return { status: 'ERROR', message: `Invalid credentials. Failed attempts: ${lockoutData.attempts}/${LoginConfig.security.maxLoginAttempts}` };
+                    return { status: 'ERROR', message: result.error || `Invalid credentials. Failed attempts: ${lockoutData.attempts}/${LoginConfig.security.maxLoginAttempts}` };
                 }
             }
 
@@ -131,4 +137,4 @@ export class LoginCore {
         this.trustedDevice.trustCurrentDevice(email);
         this.auditLogger.logEvent('LOGIN_SUCCESS', email, 'SUCCESS');
     }
-                    }
+}
