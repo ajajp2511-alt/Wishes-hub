@@ -3,17 +3,19 @@
  * Centralized settings for authentication, security limits, and feature toggles.
  */
 
+const BACKEND_URL = 'https://wishes-hub.onrender.com';
+
 export const LoginConfig = Object.freeze({
-    // API Endpoints
+    // API Endpoints with full Render backend URL
     endpoints: {
-        authenticate: '/api/admin/auth/signin',
-        sendOtpEmail: '/api/admin/auth/send-email-otp',
-        sendOtpWhatsapp: '/api/admin/auth/send-whatsapp-otp',
-        verifyOtp: '/api/admin/auth/verify-otp',
-        forgotPassword: '/api/admin/auth/forgot-password',
-        passkeyChallenge: '/api/admin/auth/passkey-challenge',
-        validateSession: '/api/admin/auth/validate-session',
-        revokeAll: '/api/admin/auth/remote-revoke'
+        authenticate: `${BACKEND_URL}/api/admin/auth/signin`,
+        sendOtpEmail: `${BACKEND_URL}/api/admin/auth/send-email-otp`,
+        sendOtpWhatsapp: `${BACKEND_URL}/api/admin/auth/send-whatsapp-otp`,
+        verifyOtp: `${BACKEND_URL}/api/admin/auth/verify-otp`,
+        forgotPassword: `${BACKEND_URL}/api/admin/auth/forgot-password`,
+        passkeyChallenge: `${BACKEND_URL}/api/admin/auth/passkey-challenge`,
+        validateSession: `${BACKEND_URL}/api/admin/auth/validate-session`,
+        revokeAll: `${BACKEND_URL}/api/admin/auth/remote-revoke`
     },
 
     // Security & Brute-Force Thresholds
