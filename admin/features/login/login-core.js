@@ -46,7 +46,7 @@ export class LoginCore {
     }
 
     /**
-     * Called by SigninModule to authenticate user against Render Backend
+     * Called by SigninModule to authenticate user against Render Backend with Timeout Protection
      */
     async authenticateUser(email, password, captchaResponse) {
         try {
@@ -55,14 +55,23 @@ export class LoginCore {
                 return { status: 'ERROR', message: `Account is locked. Please wait ${mins} minutes.` };
             }
 
-            // 🔍 POST Request to Render Backend API endpoint
-            const response = await fetch(LoginConfig.endpoints.authenticate, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password, captcha: captchaResponse })
-            });
+            // ⏱️ Add a 25-second timeout controller for Render free-tier cold starts
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+            let response;
+            try {
+                response = await fetch(LoginConfig.endpoints.authenticate, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, captcha: captchaResponse }),
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeoutId);
+            }
 
             const contentType = response.headers.get('content-type');
             let result;
@@ -107,6 +116,9 @@ export class LoginCore {
 
         } catch (error) {
             console.error('Authentication Error:', error);
+            if (error.name === 'AbortError') {
+                return { status: 'ERROR', message: 'Server took too long to respond (Render cold start). Please try again.' };
+            }
             return { status: 'ERROR', message: error.message || 'Authentication failed.' };
         }
     }
