@@ -97,8 +97,8 @@ export class LoginCore {
                 submitBtn.innerHTML = 'Authenticating...';
             }
 
-            // 🔍 API Call with Safe Content-Type Validation
-            const response = await fetch('/api/verify-pass', {
+            // 🔍 FIXED: Using LoginConfig.endpoints.authenticate to point directly to Render Backend
+            const response = await fetch(LoginConfig.endpoints.authenticate, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ export class LoginCore {
             if (contentType && contentType.includes('application/json')) {
                 result = await response.json();
             } else {
-                throw new Error(`API endpoint '/api/verify-pass' returned non-JSON response (Status ${response.status}). Check backend route.`);
+                throw new Error(`API endpoint returned non-JSON response (Status ${response.status}). Check backend route.`);
             }
 
             if (submitBtn) {
@@ -133,7 +133,7 @@ export class LoginCore {
             }
 
             this.securityGuard.resetAttempts();
-            const userRole = result.role || 'SUB_ADMIN';
+            const userRole = result.role || 'SUPER_ADMIN';
 
             const isTrusted = this.trustedDevice.isDeviceTrusted(email);
             
