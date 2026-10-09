@@ -1,18 +1,22 @@
 /**
  * Wishes Hub - MFA OTP Module
- * Handles OTP generation, countdown timer, resend logic, and verification flow.
+ * Handles OTP generation, countdown timer, resend logic, and verification flow via Render Backend.
  */
+
+import { LoginConfig } from '../login-config.js';
 
 export class MfaOtpModule {
     constructor(onVerificationSuccess) {
         this.onVerificationSuccess = onVerificationSuccess;
         this.timerInterval = null;
+        this.email = '';
     }
 
     /**
      * Render MFA verification modal on screen
      */
     renderMfaModal(userId, channel = 'email') {
+        this.email = userId; // userId yahan email hai
         let modal = document.getElementById('mfa-otp-modal');
         if (!modal) {
             modal = document.createElement('div');
@@ -21,7 +25,7 @@ export class MfaOtpModule {
             modal.innerHTML = `
                 <div class="modal-card">
                     <h3>Two-Factor Authentication 🔐</h3>
-                    <p>Enter the 6-digit OTP sent to your registered <span id="mfa-channel-name">${channel}</span>.</p>
+                    <p>Enter the 6-digit OTP sent to your registered <span id="mfa-channel-name">${channel}</span> (<strong style="color: #4f46e5;">${userId}</strong>).</p>
                     
                     <form id="mfa-form">
                         <div class="input-group">
@@ -34,6 +38,7 @@ export class MfaOtpModule {
                             <button type="button" id="resend-otp-btn" class="btn-secondary" disabled>Resend OTP</button>
                             <button type="submit" id="verify-otp-btn" class="btn-primary">Verify & Sign In</button>
                         </div>
+                        <div id="mfa-error-msg" style="color: #dc2626; font-size: 13px; margin-top: 10px; display: none; text-align: center;"></div>
                     </form>
                 </div>
             `;
@@ -66,7 +71,7 @@ export class MfaOtpModule {
             const otpCode = otpInput ? otpInput.value.trim() : '';
 
             if (otpCode.length !== 6) {
-                alert('Please enter a valid 6-digit OTP.');
+                this.showError('Please enter a valid 6-digit OTP.');
                 return;
             }
 
@@ -106,6 +111,7 @@ export class MfaOtpModule {
 
     async verifyOtp(userId, code) {
         const verifyBtn = document.getElementById('verify-otp-btn');
+        const errorDiv = document.getElementById('mfa-error-msg');
         
         try {
             if (verifyBtn) {
@@ -113,23 +119,33 @@ export class MfaOtpModule {
                 verifyBtn.dataset.originalText = verifyBtn.textContent;
                 verifyBtn.textContent = 'Verifying...';
             }
+            if (errorDiv) errorDiv.style.display = 'none';
 
-            // Simulating API call for OTP verification
-            await new Promise((resolve) => setTimeout(resolve, 800));
+            // 🔍 POST Request to Render Backend API endpoint
+            const response = await fetch(LoginConfig.endpoints.verifyOtp, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: userId, otp: code })
+            });
 
-            // Mock success condition
-            if (code === '123456') {
-                if (this.timerInterval) clearInterval(this.timerInterval);
-                const modal = document.getElementById('mfa-otp-modal');
-                if (modal) modal.remove();
-                
-                if (this.onVerificationSuccess) this.onVerificationSuccess();
-            } else {
-                alert('Invalid OTP code. Please try again.');
+            const result = await response.json();
+
+            if (!response.ok || !result.ok) {
+                throw new Error(result.error || 'Invalid OTP code entered.');
             }
+
+            // Success Flow
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            const modal = document.getElementById('mfa-otp-modal');
+            if (modal) modal.remove();
+            
+            if (this.onVerificationSuccess) this.onVerificationSuccess(result);
+
         } catch (error) {
             console.error('OTP Verification Error:', error);
-            alert('Verification failed. Please try again.');
+            this.showError(error.message || 'Verification failed. Please try again.');
         } finally {
             if (verifyBtn) {
                 verifyBtn.disabled = false;
@@ -140,12 +156,32 @@ export class MfaOtpModule {
 
     async resendOtp(userId) {
         try {
-            // Simulating resend request
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            alert('New OTP has been sent successfully.');
+            const response = await fetch(LoginConfig.endpoints.sendOtpEmail, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: userId })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.ok) {
+                throw new Error(result.error || 'Failed to resend OTP.');
+            }
+
+            alert('A new OTP has been sent to your email.');
         } catch (error) {
             console.error('Resend OTP Error:', error);
-            alert('Failed to resend OTP.');
+            alert('❌ ' + error.message);
+        }
+    }
+
+    showError(msg) {
+        const errorDiv = document.getElementById('mfa-error-msg');
+        if (errorDiv) {
+            errorDiv.innerText = msg;
+            errorDiv.style.display = 'block';
         }
     }
 }
