@@ -13,7 +13,7 @@ export class MfaOtpModule {
     }
 
     /**
-     * Render MFA verification modal on screen and automatically request an OTP
+     * Render MFA verification modal on screen (OTP is already sent by /verify-pass)
      */
     renderMfaModal(userId, channel = 'email') {
         this.email = userId; // userId yahan email hai
@@ -51,8 +51,7 @@ export class MfaOtpModule {
             if (inputField) inputField.value = '';
         }
 
-        // 🚀 Automatically request OTP from backend when modal opens
-        this.resendOtp(userId, true);
+        // 🚀 Do NOT trigger duplicate OTP here because /verify-pass already sent it successfully!
         this.startOtpTimer();
     }
 
