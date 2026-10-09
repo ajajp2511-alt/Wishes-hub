@@ -11,7 +11,7 @@ export class FeaturesAssembly {
   }
 
   featureRegistry = {
-    // Menu System (Added to fix boot navigation error)
+    // Menu System
     'menu': { path: './menu-navigation/menu-assembly.js', initFn: 'initMenu' },
 
     // Create Wish
@@ -299,24 +299,36 @@ export class FeaturesAssembly {
   }
 
   async bootSystem() {
-    if (this.root) {
-      this.root.innerHTML = '';
-      assembleHomeModule('dynamic-content-root');
-    }
-
-    // ⚡ Init Menu System
-    await this.safeRun('menu', './menu-navigation/menu-assembly.js', 'initMenu');
-
-    // ⚡ Start Background AI Engine
-    this.startBackgroundAIEngine();
-
-    // ⚡ Tap Navigation Listener
-    document.addEventListener('menu-navigate', (e) => {
-      const subId = e.detail?.subId;
-      if (subId) {
-        this.loadFeatureOnTap(subId);
+    try {
+      if (this.root) {
+        this.root.innerHTML = '';
+        assembleHomeModule('dynamic-content-root');
       }
-    });
+
+      // ⚡ Init Menu System
+      await this.safeRun('menu', './menu-navigation/menu-assembly.js', 'initMenu');
+
+      // ⚡ Start Background AI Engine
+      this.startBackgroundAIEngine();
+
+      // ⚡ Tap Navigation Listener
+      document.addEventListener('menu-navigate', (e) => {
+        const subId = e.detail?.subId;
+        if (subId) {
+          this.loadFeatureOnTap(subId);
+        }
+      });
+    } catch (err) {
+      console.error("❌ Critical Error in bootSystem:", err);
+      if (this.root) {
+        this.root.innerHTML = `
+          <div style="padding: 20px;">
+            <h3 style="color: #ff6b6b;">Failed to load dashboard modules</h3>
+            <p style="color: #888; font-size: 13px;">${err.message || 'Check console for detailed network errors.'}</p>
+          </div>
+        `;
+      }
+    }
   }
 
   async startBackgroundAIEngine() {
