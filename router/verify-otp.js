@@ -5,11 +5,14 @@ const router = express.Router();
 
 router.post('/admin/auth/verify-otp', async (req, res) => {
     try {
-        const { email, otp } = req.body;
+        let { email, otp } = req.body;
 
         if (!email || !otp) {
             return res.status(400).json({ ok: false, error: 'Email and OTP are required.' });
         }
+
+        // ✅ FIX: Email ko lowercase aur trim karein taaki send-email-otp se match ho sake
+        email = email.toLowerCase().trim();
 
         const record = otpStore.get(email);
 
