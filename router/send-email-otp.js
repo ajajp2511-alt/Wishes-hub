@@ -3,14 +3,17 @@ import nodemailer from 'nodemailer';
 
 const router = express.Router();
 
-// In-memory or temporary storage for OTP (Production mein Redis ya Database use kar sakte hain)
-export const otpStore = new Map(); // key: email, value: { otp, expiresAt }
+// ✅ FIX 1: Global store use karein taaki server restart hone par OTP wipe na ho
+if (!global.otpStore) {
+    global.otpStore = new Map();
+}
+export const otpStore = global.otpStore;
 
-// Nodemailer Transporter Configuration (Apne SMTP details env se uthayega)
+// Nodemailer Transporter Configuration
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.brevo.com',
     port: process.env.SMTP_PORT || 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -19,11 +22,14 @@ const transporter = nodemailer.createTransport({
 
 router.post('/admin/auth/send-email-otp', async (req, res) => {
     try {
-        const { email } = req.body;
+        let { email } = req.body;
 
         if (!email) {
             return res.status(400).json({ ok: false, error: 'Email is required to send OTP.' });
         }
+
+        // ✅ FIX 2: Email ko lowercase aur trim karein
+        email = email.toLowerCase().trim();
 
         // 6-digit random OTP generation
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
