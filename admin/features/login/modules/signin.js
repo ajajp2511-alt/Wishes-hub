@@ -4,6 +4,8 @@
  */
 
 import { LoginCore } from '../login-core.js';
+import { MfaOtpModule } from './mfa-otp.js';
+import { LoginConfig } from '../login-config.js';
 
 export class SigninModule {
     constructor() {
@@ -43,7 +45,7 @@ export class SigninModule {
 
                 // Trigger Core Authentication Processing
                 const result = await this.core.authenticateUser(email, password, captchaResponse);
-                this.handleAuthResponse(result);
+                this.handleAuthResponse(result, email);
             } catch (error) {
                 console.error('Signin Exception:', error);
                 this.showToast('An unexpected error occurred. Please try again.', 'error');
@@ -57,12 +59,12 @@ export class SigninModule {
         });
     }
 
-    handleAuthResponse(result) {
+    handleAuthResponse(result, email) {
         switch (result.status) {
             case 'SUCCESS':
                 this.showToast('Login successful! Redirecting to Admin Panel...', 'success');
                 setTimeout(() => {
-                    window.location.href = result.redirectUrl || '/admin/dashboard.html';
+                    window.location.href = result.redirectUrl || LoginConfig.roles.adminPanelPath;
                 }, 1000);
                 break;
 
@@ -74,8 +76,15 @@ export class SigninModule {
                 break;
 
             case 'REQUIRES_MFA':
-                this.showToast('MFA verification required. Choose OTP channel.', 'info');
-                // Trigger MFA/OTP module display here
+                this.showToast('MFA verification required. Please enter OTP.', 'info');
+                // 🚀 Trigger MFA OTP Modal directly when required
+                const mfaModule = new MfaOtpModule(() => {
+                    this.showToast('OTP verified successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = LoginConfig.roles.adminPanelPath;
+                    }, 1000);
+                });
+                mfaModule.renderMfaModal(email, 'Email');
                 break;
 
             case 'ERROR':
