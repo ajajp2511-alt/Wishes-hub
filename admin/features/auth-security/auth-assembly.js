@@ -19,13 +19,48 @@ export class AuthAssembly {
   constructor() {
     this.container = null;
     this.activeSubTab = 'roles-rbac';
+    this.currentActiveModule = null; // Track current module for cleanup
   }
 
   init(rootId) {
     this.container = document.getElementById(rootId);
-    if (!this.container) return;
-
+    if (!this.container) {
+      console.error(`AuthAssembly: Root container with ID '${rootId}' not found.`);
+      return;
+    }
+    this.injectStyles();
     this.renderDashboard();
+  }
+
+  // Inject dynamic styles for tabs to guarantee active state visibility
+  injectStyles() {
+    if (document.getElementById('auth-assembly-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'auth-assembly-styles';
+    style.innerHTML = `
+      .auth-container .tab-btn {
+        background: #f6f8fa;
+        border: 1px solid #e1e4e8;
+        color: #24292e;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .auth-container .tab-btn:hover {
+        background: #ebf0f4;
+        border-color: #cbd6e2;
+      }
+      .auth-container .tab-btn.active {
+        background: #0366d6 !important;
+        color: #ffffff !important;
+        border-color: #0366d6 !important;
+        font-weight: 600;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   renderDashboard() {
@@ -34,8 +69,8 @@ export class AuthAssembly {
       <div class="auth-container" style="padding:16px;">
         <header style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
-            <h2 style="margin:0; color:#f0f6fc;">Auth & Security Control Center</h2>
-            <small style="color:#8b949e;">RBAC Roles, API Vault, IP Whitelisting, MFA & Security Posture</small>
+            <h2 style="margin:0; color:#24292e;">Auth & Security Control Center</h2>
+            <small style="color:#586069;">RBAC Roles, API Vault, IP Whitelisting, MFA & Security Posture</small>
           </div>
         </header>
 
@@ -65,44 +100,60 @@ export class AuthAssembly {
     if (!view) return;
 
     try {
-      view.innerHTML = ''; // Clear previous view safely
-      switch (this.activeSubTab) {
-        case 'roles-rbac': AdminRolesRbacModule.render(view, authCoreInstance); break;
-        case 'api-secrets': ApiKeysSecretsModule.render(view, authCoreInstance); break;
-        case 'ip-whitelist': IpWhitelistModule.render(view, authCoreInstance); break;
-        case 'mfa': MfaEnforcementModule.render(view, authCoreInstance); break;
-        case 'sessions': ActiveSessionsDeskModule.render(view, authCoreInstance); break;
-        case 'brute-force': BruteForceGuardModule.render(view, authCoreInstance); break;
-        case 'anomaly': SecurityAnomalyDetectorModule.render(view, authCoreInstance); break;
-        case 'pass-policy': PasswordPolicyManagerModule.render(view, authCoreInstance); break;
-        case 'sso': SsoSamlIntegrationModule.render(view, authCoreInstance); break;
-        case 'audit': VulnerabilitySecurityAuditModule.render(view, authCoreInstance); break;
-        default: AdminRolesRbacModule.render(view, authCoreInstance); break;
+      // Cleanup previous module if it has a destroy/cleanup lifecycle method
+      if (this.currentActiveModule && typeof this.currentActiveModule.destroy === 'function') {
+        this.currentActiveModule.destroy();
       }
+
+      view.innerHTML = ''; // Clear container safely
+      
+      let moduleToRender = AdminRolesRbacModule; // Default fallback
+
+      switch (this.activeSubTab) {
+        case 'roles-rbac': moduleToRender = AdminRolesRbacModule; break;
+        case 'api-secrets': moduleToRender = ApiKeysSecretsModule; break;
+        case 'ip-whitelist': moduleToRender = IpWhitelistModule; break;
+        case 'mfa': moduleToRender = MfaEnforcementModule; break;
+        case 'sessions': moduleToRender = ActiveSessionsDeskModule; break;
+        case 'brute-force': moduleToRender = BruteForceGuardModule; break;
+        case 'anomaly': moduleToRender = SecurityAnomalyDetectorModule; break;
+        case 'pass-policy': moduleToRender = PasswordPolicyManagerModule; break;
+        case 'sso': moduleToRender = SsoSamlIntegrationModule; break;
+        case 'audit': moduleToRender = VulnerabilitySecurityAuditModule; break;
+      }
+
+      this.currentActiveModule = moduleToRender;
+      if (typeof moduleToRender.render === 'function') {
+        moduleToRender.render(view, authCoreInstance);
+      } else {
+        throw new Error(`Module for '${this.activeSubTab}' does not implement a static render() method.`);
+      }
+
     } catch (error) {
       console.error("Error rendering sub-tab:", error);
       view.innerHTML = `
         <div style="padding: 20px; background: #ffebe6; color: #de350b; border-radius: 6px; border: 1px solid #ffbdad;">
-          <strong>Error Loading Module:</strong> Failed to render the selected security component. Please check console logs.
+          <strong>Error Loading Module:</strong> Failed to render the selected security component. (${error.message})
         </div>
       `;
     }
   }
 
   attachDashboardEvents() {
-    this.container.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const targetBtn = e.target.closest('.tab-btn');
-        if (!targetBtn) return;
+    const navContainer = this.container.querySelector('nav');
+    if (!navContainer) return;
 
-        this.container.querySelectorAll('.tab-btn').forEach(b => {
-          b.classList.remove('active');
-        });
-        
-        targetBtn.classList.add('active');
-        this.activeSubTab = targetBtn.dataset.subtab;
-        this.renderActiveSubTab();
+    navContainer.addEventListener('click', (e) => {
+      const targetBtn = e.target.closest('.tab-btn');
+      if (!targetBtn) return;
+
+      this.container.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
       });
+      
+      targetBtn.classList.add('active');
+      this.activeSubTab = targetBtn.dataset.subtab;
+      this.renderActiveSubTab();
     });
   }
 }
@@ -111,4 +162,4 @@ export const authAssemblyInstance = new AuthAssembly();
 
 export function init(rootId) {
   authAssemblyInstance.init(rootId);
-      }
+  }
