@@ -1,5 +1,5 @@
 /**
- * A/B Testing Core Engine
+ * A/B Testing Core Engine (Optimized & Extensible)
  * Path: admin/features/ab-testing/ab-core.js
  */
 
@@ -13,18 +13,42 @@ export class ABCore {
     ];
 
     this.metrics = [
-      { testId: 'EXP-101', variantA_CTR: '4.2%', variantB_CTR: '6.8%', confidence: '97.4%', winner: 'Variant B' },
-      { testId: 'EXP-102', variantA_CTR: '3.1%', variantB_CTR: '3.3%', confidence: '62.0%', winner: 'Pending' }
+      { testId: 'EXP-101', variantA_CTR: 4.2, variantB_CTR: 6.8, confidence: 0.974, winner: 'Variant B' },
+      { testId: 'EXP-102', variantA_CTR: 3.1, variantB_CTR: 3.3, confidence: 0.620, winner: 'Pending' }
     ];
   }
 
-  getActiveTests() { return this.activeTests; }
-  getMetrics() { return this.metrics; }
+  getActiveTests() { 
+    return this.activeTests; 
+  }
+
+  getMetrics() { 
+    return this.metrics; 
+  }
 
   calculateWinner(testId) {
     const metric = this.metrics.find(m => m.testId === testId);
     if (!metric) return { winner: 'Unknown', status: 'Not Found' };
-    return metric;
+
+    // Check if confidence meets the minimum threshold from config (e.g., 95%)
+    const isSignificant = metric.confidence >= AB_CONFIG.minConfidenceThreshold;
+    
+    return {
+      ...metric,
+      isStatisticallySignificant: isSignificant,
+      thresholdRequired: AB_CONFIG.minConfidenceThreshold * 100 + '%'
+    };
+  }
+
+  addTest(testData) {
+    const newTest = {
+      id: `EXP-${Date.now().toString().slice(-3)}`,
+      status: 'Running',
+      split: `${AB_CONFIG.defaultSplitRatio[0]}/${AB_CONFIG.defaultSplitRatio[1]}`,
+      ...testData
+    };
+    this.activeTests.push(newTest);
+    return newTest;
   }
 }
 
