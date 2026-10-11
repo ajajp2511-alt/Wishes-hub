@@ -1,10 +1,15 @@
 /**
- * Admin Roles & RBAC Module (Optimized & Robust)
+ * Admin Roles & RBAC Module (Optimized & Bug-Fixed)
  * Path: admin/features/auth-security/modules/admin-roles-rbac.js
  */
 
 export const AdminRolesRbacModule = {
+  container: null,
+  core: null,
+
   render(container, core) {
+    this.container = container;
+    this.core = core;
     const roles = core.getAdminRoles();
     
     container.innerHTML = `
@@ -46,11 +51,13 @@ export const AdminRolesRbacModule = {
       </div>
     `;
 
-    this.bindEvents(container, core);
+    this.bindEvents();
   },
 
-  bindEvents(container, core, onUpdate) {
-    const addBtn = container.querySelector('#btn-add-role');
+  bindEvents(onUpdate) {
+    if (!this.container) return;
+
+    const addBtn = this.container.querySelector('#btn-add-role');
     addBtn?.addEventListener('click', () => {
       const roleName = prompt('Enter new role name (e.g., Senior Editor):');
       if (!roleName || roleName.trim() === '') return;
@@ -65,21 +72,33 @@ export const AdminRolesRbacModule = {
         members: 0
       };
 
-      if (core.addAdminRole(newRole)) {
-        this.render(container, core);
+      const result = this.core.addAdminRole(newRole);
+      if (result.success) {
+        this.render(this.container, this.core);
         if (typeof onUpdate === 'function') onUpdate({ action: 'ROLE_ADDED', role: newRole });
+      } else {
+        alert(result.message);
       }
     });
 
-    container.querySelectorAll('.btn-delete-role').forEach(btn => {
+    this.container.querySelectorAll('.btn-delete-role').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const roleId = e.target.getAttribute('data-id');
         if (confirm(`Are you sure you want to delete role ${roleId}?`)) {
-          core.removeAdminRole(roleId);
-          this.render(container, core);
-          if (typeof onUpdate === 'function') onUpdate({ action: 'ROLE_REMOVED', roleId });
+          const result = this.core.removeAdminRole(roleId);
+          if (result.success) {
+            this.render(this.container, this.core);
+            if (typeof onUpdate === 'function') onUpdate({ action: 'ROLE_REMOVED', roleId });
+          } else {
+            alert(result.message);
+          }
         }
       });
     });
+  },
+
+  destroy() {
+    this.container = null;
+    this.core = null;
   }
 };
