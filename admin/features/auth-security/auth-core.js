@@ -1,5 +1,5 @@
 /**
- * Auth Core Engine (Improved with LocalStorage Persistence & Mutation Methods)
+ * Auth Core Engine (Improved with Validation & LocalStorage Persistence)
  * Path: admin/features/auth-security/auth-core.js
  */
 
@@ -53,18 +53,27 @@ export class AuthCore {
   getIpWhitelist() { return this.ipWhitelist; }
   getConfig() { return this.config; }
 
-  // Mutations / Actions with Persistence
+  // Mutations / Actions with Persistence & Validation
   addAdminRole(role) {
-    if (!role || !role.id) return false;
+    if (!role || !role.id || !role.name) return { success: false, message: 'Invalid role data.' };
+    
+    // Check for duplicate ID
+    const exists = this.adminRoles.some(r => r.id === role.id);
+    if (exists) return { success: false, message: 'Role ID already exists.' };
+
     this.adminRoles.push(role);
     this.saveToStorage();
-    return true;
+    return { success: true, message: 'Role added successfully.' };
   }
 
   removeAdminRole(roleId) {
+    const initialLength = this.adminRoles.length;
     this.adminRoles = this.adminRoles.filter(r => r.id !== roleId);
-    this.saveToStorage();
-    return true;
+    if (this.adminRoles.length !== initialLength) {
+      this.saveToStorage();
+      return true;
+    }
+    return false;
   }
 
   rotateApiSecret(keyId) {
@@ -79,16 +88,25 @@ export class AuthCore {
   }
 
   addIpEntry(entry) {
-    if (!entry || !entry.ipRange) return false;
+    if (!entry || !entry.id || !entry.ipRange) return { success: false, message: 'Invalid IP entry data.' };
+
+    // Check for duplicate ID
+    const exists = this.ipWhitelist.some(ip => ip.id === entry.id);
+    if (exists) return { success: false, message: 'IP Entry ID already exists.' };
+
     this.ipWhitelist.push(entry);
     this.saveToStorage();
-    return true;
+    return { success: true, message: 'IP entry added successfully.' };
   }
 
   removeIpEntry(id) {
+    const initialLength = this.ipWhitelist.length;
     this.ipWhitelist = this.ipWhitelist.filter(ip => ip.id !== id);
-    this.saveToStorage();
-    return true;
+    if (this.ipWhitelist.length !== initialLength) {
+      this.saveToStorage();
+      return true;
+    }
+    return false;
   }
 }
 
