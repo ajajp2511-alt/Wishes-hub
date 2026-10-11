@@ -1,5 +1,5 @@
 /**
- * Main Assembly Controller - A/B Testing Studio
+ * Main Assembly Controller - A/B Testing Studio (Optimized & Bulletproof)
  * Path: admin/features/ab-testing/ab-assembly.js
  */
 
@@ -24,11 +24,15 @@ export class ABAssembly {
   constructor() {
     this.container = null;
     this.activeSubTab = 'active-tests';
+    this.currentModuleInstance = null;
   }
 
   init(rootId) {
     this.container = document.getElementById(rootId);
-    if (!this.container) return;
+    if (!this.container) {
+      console.error(`[ABAssembly] Root container #${rootId} not found.`);
+      return;
+    }
 
     this.renderLayout();
     this.attachEventListeners();
@@ -36,67 +40,146 @@ export class ABAssembly {
 
   renderLayout() {
     this.container.innerHTML = `
-      <div class="ab-testing-container" style="padding:16px;">
+      <div class="ab-testing-container" style="padding:16px; font-family: inherit;">
         <header style="margin-bottom:20px;">
-          <h2 style="margin:0;">A/B Testing Studio</h2>
+          <h2 style="margin:0; font-size: 1.5rem;">A/B Testing Studio</h2>
           <small style="color:#6e7681;">Experimentation Engine, Layout Variants, MAB Traffic Optimization & Analytics</small>
         </header>
 
-        <nav style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
-          <button class="tab-btn active" data-subtab="active-tests">Active Tests</button>
-          <button class="tab-btn" data-subtab="layout-variants">Layout Variants</button>
-          <button class="tab-btn" data-subtab="conversion-metrics">Conversion Metrics</button>
-          <button class="tab-btn" data-subtab="auto-winner">Auto Winner</button>
-          <button class="tab-btn" data-subtab="audience-segmentation">Segmentation</button>
-          <button class="tab-btn" data-subtab="heatmap">Heatmaps</button>
-          <button class="tab-btn" data-subtab="mab-router">MAB Router</button>
-          <button class="tab-btn" data-subtab="multivariate">Multivariate</button>
-          <button class="tab-btn" data-subtab="visual-editor">Visual Editor</button>
-          <button class="tab-btn" data-subtab="rollback-history">Rollback History</button>
-          <button class="tab-btn" data-subtab="ai-hypothesis">AI Ideas</button>
-          <button class="tab-btn" data-subtab="rpv-optimizer">RPV Optimizer</button>
-          <button class="tab-btn" data-subtab="killswitch">Kill Switch</button>
-          <button class="tab-btn" data-subtab="session-replay">Session Replay</button>
-          <button class="tab-btn" data-subtab="edge-testing">Edge Testing</button>
+        <!-- Scrollable Navigation optimized for mobile & desktop -->
+        <nav class="ab-nav-tabs" style="display:flex; gap:8px; overflow-x:auto; white-space:nowrap; margin-bottom:20px; padding-bottom:6px; -webkit-overflow-scrolling:touch;">
+          <button class="tab-btn active" data-subtab="active-tests" style="flex-shrink:0;">Active Tests</button>
+          <button class="tab-btn" data-subtab="layout-variants" style="flex-shrink:0;">Layout Variants</button>
+          <button class="tab-btn" data-subtab="conversion-metrics" style="flex-shrink:0;">Conversion Metrics</button>
+          <button class="tab-btn" data-subtab="auto-winner" style="flex-shrink:0;">Auto Winner</button>
+          <button class="tab-btn" data-subtab="audience-segmentation" style="flex-shrink:0;">Segmentation</button>
+          <button class="tab-btn" data-subtab="heatmap" style="flex-shrink:0;">Heatmaps</button>
+          <button class="tab-btn" data-subtab="mab-router" style="flex-shrink:0;">MAB Router</button>
+          <button class="tab-btn" data-subtab="multivariate" style="flex-shrink:0;">Multivariate</button>
+          <button class="tab-btn" data-subtab="visual-editor" style="flex-shrink:0;">Visual Editor</button>
+          <button class="tab-btn" data-subtab="rollback-history" style="flex-shrink:0;">Rollback History</button>
+          <button class="tab-btn" data-subtab="ai-hypothesis" style="flex-shrink:0;">AI Ideas</button>
+          <button class="tab-btn" data-subtab="rpv-optimizer" style="flex-shrink:0;">RPV Optimizer</button>
+          <button class="tab-btn" data-subtab="killswitch" style="flex-shrink:0;">Kill Switch</button>
+          <button class="tab-btn" data-subtab="session-replay" style="flex-shrink:0;">Session Replay</button>
+          <button class="tab-btn" data-subtab="edge-testing" style="flex-shrink:0;">Edge Testing</button>
         </nav>
 
-        <main id="ab-main-view"></main>
+        <main id="ab-main-view" style="min-height: 300px;"></main>
       </div>
     `;
 
     this.renderActiveSubTab();
   }
 
+  destroyCurrentModule() {
+    // Optional cleanup hook if sub-modules implement a destroy/unmount method
+    if (this.currentModuleInstance && typeof this.currentModuleInstance.destroy === 'function') {
+      try {
+        this.currentModuleInstance.destroy();
+      } catch (err) {
+        console.error('[ABAssembly] Error during module cleanup:', err);
+      }
+    }
+    this.currentModuleInstance = null;
+  }
+
   renderActiveSubTab() {
     const view = this.container.querySelector('#ab-main-view');
     if (!view) return;
 
-    switch (this.activeSubTab) {
-      case 'active-tests': ActiveAbTestsModule.render(view, abCoreInstance); break;
-      case 'layout-variants': LayoutVariantsModule.render(view); break;
-      case 'conversion-metrics': ConversionMetricsModule.render(view, abCoreInstance); break;
-      case 'auto-winner': AutoWinnerPromoterModule.render(view); break;
-      case 'audience-segmentation': AudienceSegmentationModule.render(view); break;
-      case 'heatmap': HeatmapIntegratorModule.render(view); break;
-      case 'mab-router': MabTrafficRouterModule.render(view); break;
-      case 'multivariate': MultivariateEngineModule.render(view); break;
-      case 'visual-editor': VisualVariantEditorModule.render(view); break;
-      case 'rollback-history': ExperimentRollbackHistoryModule.render(view); break;
-      case 'ai-hypothesis': AiHypothesisGeneratorModule.render(view); break;
-      case 'rpv-optimizer': RpvRevenueOptimizerModule.render(view); break;
-      case 'killswitch': FeatureFlagKillswitchModule.render(view); break;
-      case 'session-replay': SessionReplayIntegratorModule.render(view); break;
-      case 'edge-testing': EdgeServerTestingModule.render(view); break;
-      default: ActiveAbTestsModule.render(view, abCoreInstance); break;
+    // Cleanup previous sub-module state/listeners
+    this.destroyCurrentModule();
+    view.innerHTML = ''; // Clear container safely
+
+    try {
+      switch (this.activeSubTab) {
+        case 'active-tests': 
+          ActiveAbTestsModule.render(view, abCoreInstance); 
+          this.currentModuleInstance = ActiveAbTestsModule;
+          break;
+        case 'layout-variants': 
+          LayoutVariantsModule.render(view); 
+          this.currentModuleInstance = LayoutVariantsModule;
+          break;
+        case 'conversion-metrics': 
+          ConversionMetricsModule.render(view, abCoreInstance); 
+          this.currentModuleInstance = ConversionMetricsModule;
+          break;
+        case 'auto-winner': 
+          AutoWinnerPromoterModule.render(view); 
+          this.currentModuleInstance = AutoWinnerPromoterModule;
+          break;
+        case 'audience-segmentation': 
+          AudienceSegmentationModule.render(view); 
+          this.currentModuleInstance = AudienceSegmentationModule;
+          break;
+        case 'heatmap': 
+          HeatmapIntegratorModule.render(view); 
+          this.currentModuleInstance = HeatmapIntegratorModule;
+          break;
+        case 'mab-router': 
+          MabTrafficRouterModule.render(view); 
+          this.currentModuleInstance = MabTrafficRouterModule;
+          break;
+        case 'multivariate': 
+          MultivariateEngineModule.render(view); 
+          this.currentModuleInstance = MultivariateEngineModule;
+          break;
+        case 'visual-editor': 
+          VisualVariantEditorModule.render(view); 
+          this.currentModuleInstance = VisualVariantEditorModule;
+          break;
+        case 'rollback-history': 
+          ExperimentRollbackHistoryModule.render(view); 
+          this.currentModuleInstance = ExperimentRollbackHistoryModule;
+          break;
+        case 'ai-hypothesis': 
+          AiHypothesisGeneratorModule.render(view); 
+          this.currentModuleInstance = AiHypothesisGeneratorModule;
+          break;
+        case 'rpv-optimizer': 
+          RpvRevenueOptimizerModule.render(view); 
+          this.currentModuleInstance = RpvRevenueOptimizerModule;
+      break;
+        case 'killswitch': 
+          FeatureFlagKillswitchModule.render(view); 
+          this.currentModuleInstance = FeatureFlagKillswitchModule;
+          break;
+        case 'session-replay': 
+          SessionReplayIntegratorModule.render(view); 
+          this.currentModuleInstance = SessionReplayIntegratorModule;
+          break;
+        case 'edge-testing': 
+          EdgeServerTestingModule.render(view); 
+          this.currentModuleInstance = EdgeServerTestingModule;
+          break;
+        default: 
+          ActiveAbTestsModule.render(view, abCoreInstance); 
+          this.currentModuleInstance = ActiveAbTestsModule;
+          break;
+      }
+    } catch (error) {
+      console.error(`[ABAssembly] Failed to render subtab: ${this.activeSubTab}`, error);
+      view.innerHTML = `
+        <div style="padding: 20px; background: #ffeef0; border: 1px solid #f85149; border-radius: 6px; color: #b31d28;">
+          <h4 style="margin: 0 0 8px 0;">Module Loading Error</h4>
+          <p style="margin: 0; font-size: 14px;">Failed to load the <strong>${this.activeSubTab}</strong> module. Please check console logs or try again.</p>
+        </div>
+      `;
     }
   }
 
   attachEventListeners() {
-    this.container.querySelectorAll('.tab-btn').forEach(btn => {
+    const navContainer = this.container.querySelector('.ab-nav-tabs');
+    if (!navContainer) return;
+
+    navContainer.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        this.container.querySelectorAll('.tab-btn').forEach(b => {
+        navContainer.querySelectorAll('.tab-btn').forEach(b => {
           b.classList.remove('active');
           b.style.fontWeight = 'normal';
+          b.style.borderBottom = 'none';
         });
         
         e.target.classList.add('active');
