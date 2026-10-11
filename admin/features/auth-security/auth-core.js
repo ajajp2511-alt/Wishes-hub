@@ -1,5 +1,5 @@
 /**
- * Auth Core Engine (Improved with Validation & LocalStorage Persistence)
+ * Auth Core Engine (Optimized with Consistent Returns & Edit/Update Methods)
  * Path: admin/features/auth-security/auth-core.js
  */
 
@@ -33,7 +33,11 @@ export class AuthCore {
         { id: 'IP-02', ipRange: '49.36.210.12', label: 'DevOps Fixed VPN Gateway', status: 'Whitelisted' }
       ];
     } catch (e) {
-      console.error('Error loading auth data from localStorage:', e);
+      console.error('Error loading auth data from localStorage, resetting to defaults:', e);
+      localStorage.removeItem('wh_admin_roles');
+      localStorage.removeItem('wh_api_secrets');
+      localStorage.removeItem('wh_ip_whitelist');
+      this.loadFromStorage(); // Reload defaults
     }
   }
 
@@ -53,13 +57,16 @@ export class AuthCore {
   getIpWhitelist() { return this.ipWhitelist; }
   getConfig() { return this.config; }
 
-  // Mutations / Actions with Persistence & Validation
+  // --- Admin Roles Actions ---
   addAdminRole(role) {
-    if (!role || !role.id || !role.name) return { success: false, message: 'Invalid role data.' };
+    if (!role || !role.id || !role.name) {
+      return { success: false, message: 'Invalid role data provided.' };
+    }
     
-    // Check for duplicate ID
     const exists = this.adminRoles.some(r => r.id === role.id);
-    if (exists) return { success: false, message: 'Role ID already exists.' };
+    if (exists) {
+      return { success: false, message: 'Role ID already exists.' };
+    }
 
     this.adminRoles.push(role);
     this.saveToStorage();
@@ -69,30 +76,37 @@ export class AuthCore {
   removeAdminRole(roleId) {
     const initialLength = this.adminRoles.length;
     this.adminRoles = this.adminRoles.filter(r => r.id !== roleId);
+    
     if (this.adminRoles.length !== initialLength) {
       this.saveToStorage();
-      return true;
+      return { success: true, message: 'Role removed successfully.' };
     }
-    return false;
+    return { success: false, message: 'Role ID not found.' };
   }
 
+  // --- API Secrets Actions ---
   rotateApiSecret(keyId) {
     const secret = this.apiSecrets.find(s => s.keyId === keyId);
-    if (secret) {
-      secret.lastRotated = new Date().toISOString().split('T')[0];
-      secret.status = 'Active';
-      this.saveToStorage();
-      return true;
+    if (!secret) {
+      return { success: false, message: 'API Secret key ID not found.' };
     }
-    return false;
+
+    secret.lastRotated = new Date().toISOString().split('T')[0];
+    secret.status = 'Active';
+    this.saveToStorage();
+    return { success: true, message: `API Secret ${keyId} rotated successfully.` };
   }
 
+  // --- IP Whitelist Actions ---
   addIpEntry(entry) {
-    if (!entry || !entry.id || !entry.ipRange) return { success: false, message: 'Invalid IP entry data.' };
+    if (!entry || !entry.id || !entry.ipRange) {
+      return { success: false, message: 'Invalid IP entry data provided.' };
+    }
 
-    // Check for duplicate ID
     const exists = this.ipWhitelist.some(ip => ip.id === entry.id);
-    if (exists) return { success: false, message: 'IP Entry ID already exists.' };
+    if (exists) {
+      return { success: false, message: 'IP Entry ID already exists.' };
+    }
 
     this.ipWhitelist.push(entry);
     this.saveToStorage();
@@ -102,11 +116,12 @@ export class AuthCore {
   removeIpEntry(id) {
     const initialLength = this.ipWhitelist.length;
     this.ipWhitelist = this.ipWhitelist.filter(ip => ip.id !== id);
+    
     if (this.ipWhitelist.length !== initialLength) {
       this.saveToStorage();
-      return true;
+      return { success: true, message: 'IP entry removed successfully.' };
     }
-    return false;
+    return { success: false, message: 'IP Entry ID not found.' };
   }
 }
 
