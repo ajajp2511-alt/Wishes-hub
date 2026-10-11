@@ -25,7 +25,6 @@ export class AuthAssembly {
     this.container = document.getElementById(rootId);
     if (!this.container) return;
 
-    // Direct dashboard render (Login check hata diya gaya hai)
     this.renderDashboard();
   }
 
@@ -65,18 +64,28 @@ export class AuthAssembly {
     const view = this.container.querySelector('#auth-main-view');
     if (!view) return;
 
-    switch (this.activeSubTab) {
-      case 'roles-rbac': AdminRolesRbacModule.render(view, authCoreInstance); break;
-      case 'api-secrets': ApiKeysSecretsModule.render(view, authCoreInstance); break;
-      case 'ip-whitelist': IpWhitelistModule.render(view, authCoreInstance); break;
-      case 'mfa': MfaEnforcementModule.render(view, authCoreInstance); break;
-      case 'sessions': ActiveSessionsDeskModule.render(view, authCoreInstance); break;
-      case 'brute-force': BruteForceGuardModule.render(view, authCoreInstance); break;
-      case 'anomaly': SecurityAnomalyDetectorModule.render(view, authCoreInstance); break;
-      case 'pass-policy': PasswordPolicyManagerModule.render(view, authCoreInstance); break;
-      case 'sso': SsoSamlIntegrationModule.render(view, authCoreInstance); break;
-      case 'audit': VulnerabilitySecurityAuditModule.render(view, authCoreInstance); break;
-      default: AdminRolesRbacModule.render(view, authCoreInstance); break;
+    try {
+      view.innerHTML = ''; // Clear previous view safely
+      switch (this.activeSubTab) {
+        case 'roles-rbac': AdminRolesRbacModule.render(view, authCoreInstance); break;
+        case 'api-secrets': ApiKeysSecretsModule.render(view, authCoreInstance); break;
+        case 'ip-whitelist': IpWhitelistModule.render(view, authCoreInstance); break;
+        case 'mfa': MfaEnforcementModule.render(view, authCoreInstance); break;
+        case 'sessions': ActiveSessionsDeskModule.render(view, authCoreInstance); break;
+        case 'brute-force': BruteForceGuardModule.render(view, authCoreInstance); break;
+        case 'anomaly': SecurityAnomalyDetectorModule.render(view, authCoreInstance); break;
+        case 'pass-policy': PasswordPolicyManagerModule.render(view, authCoreInstance); break;
+        case 'sso': SsoSamlIntegrationModule.render(view, authCoreInstance); break;
+        case 'audit': VulnerabilitySecurityAuditModule.render(view, authCoreInstance); break;
+        default: AdminRolesRbacModule.render(view, authCoreInstance); break;
+      }
+    } catch (error) {
+      console.error("Error rendering sub-tab:", error);
+      view.innerHTML = `
+        <div style="padding: 20px; background: #ffebe6; color: #de350b; border-radius: 6px; border: 1px solid #ffbdad;">
+          <strong>Error Loading Module:</strong> Failed to render the selected security component. Please check console logs.
+        </div>
+      `;
     }
   }
 
