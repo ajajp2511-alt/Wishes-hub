@@ -1,0 +1,269 @@
+/**
+ * Automation Module Master Stylesheet
+ * Path: admin/features/automation/assets/automation-manager.css
+ * Description: Styles for automation controls, 3D card canvases, scratch card modals,
+ *              sponsor logo overlays, QR codes, and dashboard layouts.
+ */
+
+:root {
+  --wh-primary: #6366f1;
+  --wh-primary-hover: #4f46e5;
+  --wh-gold: #f59e0b;
+  --wh-gold-glow: rgba(245, 158, 11, 0.4);
+  --wh-bg-dark: #0f172a;
+  --wh-card-bg: rgba(30, 41, 59, 0.7);
+  --wh-text-light: #f8fafc;
+  --wh-text-muted: #94a3b8;
+  --wh-border-glow: rgba(255, 255, 255, 0.1);
+  --wh-radius: 16px;
+  --wh-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Container & Grid */
+.wh-automation-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--wh-text-light);
+}
+
+.wh-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+/* Glassmorphism Card Panels */
+.wh-card-panel {
+  background: var(--wh-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--wh-border-glow);
+  border-radius: var(--wh-radius);
+  padding: 24px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: var(--wh-transition);
+}
+
+.wh-card-panel:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Headings & Badges */
+.wh-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.wh-panel-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.wh-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wh-badge-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000000;
+  box-shadow: 0 0 12px var(--wh-gold-glow);
+}
+
+.wh-badge-live {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+/* 3D Scene Viewport Wrapper */
+.wh-3d-scene-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1e1b4b, #0f172a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wh-3d-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Interactive Scratch Card Modal */
+.wh-scratch-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.wh-scratch-card {
+  position: relative;
+  width: 320px;
+  height: 420px;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border-radius: 20px;
+  border: 2px solid var(--wh-gold);
+  box-shadow: 0 0 30px var(--wh-gold-glow);
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.wh-scratch-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.wh-scratch-reveal-content {
+  position: absolute;
+  inset: 0;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Co-Sponsor Logo Overlay Badge */
+.wh-sponsor-overlay-frame {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wh-sponsor-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wh-sponsor-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.wh-sponsor-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--wh-gold);
+}
+
+.wh-sponsor-sub {
+  font-size: 0.65rem;
+  color: var(--wh-text-muted);
+}
+
+/* Dynamic QR Coupon Frame */
+.wh-qr-container {
+  display: inline-block;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.wh-qr-container svg {
+  display: block;
+}
+
+/* Controls & Buttons */
+.wh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--wh-transition);
+  text-decoration: none;
+}
+
+.wh-btn-primary {
+  background: linear-gradient(135deg, var(--wh-primary), var(--wh-primary-hover));
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.wh-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+  transform: translateY(-1px);
+}
+
+.wh-btn-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000000;
+  box-shadow: 0 4px 14px var(--wh-gold-glow);
+}
+
+.wh-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+}
+
+/* Responsive Mobile Rules */
+@media (max-width: 768px) {
+  .wh-automation-container {
+    padding: 12px;
+  }
+
+  .wh-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wh-3d-scene-container {
+    height: 300px;
+  }
+
+  .wh-sponsor-overlay-frame {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 10px;
+  }
+    }
