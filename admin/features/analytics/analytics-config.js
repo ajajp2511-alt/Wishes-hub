@@ -1,9 +1,9 @@
 /**
- * Analytics Configuration
+ * Analytics Configuration (Frozen for Immutability)
  * Path: admin/features/analytics/analytics-config.js
  */
 
-export const ANALYTICS_CONFIG = {
+export const ANALYTICS_CONFIG = Object.freeze({
   version: '1.0.0',
   refreshIntervalMs: 5000,
   metrics: {
@@ -12,4 +12,4 @@ export const ANALYTICS_CONFIG = {
     adRevenue: true,
     performance: true
   }
-};
+});
