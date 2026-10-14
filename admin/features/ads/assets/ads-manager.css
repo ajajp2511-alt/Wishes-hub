@@ -1,0 +1,378 @@
+/**
+ * Wishes Hub - Ads Management System Stylesheet
+ * File: admin/features/ads/assets/ads-manager.css
+ * Description: Complete UI styling for public request forms, dynamic calculator widgets,
+ *              admin queues, AI modals, invoices, and free template cards.
+ */
+
+/* ==========================================================================
+   1. CSS Variables & Master Tokens
+   ========================================================================== */
+:root {
+  --ads-primary: #6366f1;
+  --ads-primary-hover: #4f46e5;
+  --ads-secondary: #0ea5e9;
+  --ads-success: #10b981;
+  --ads-warning: #f59e0b;
+  --ads-danger: #ef4444;
+  --ads-bg-dark: #0f172a;
+  --ads-card-bg: #1e293b;
+  --ads-border: #334155;
+  --ads-text-main: #f8fafc;
+  --ads-text-muted: #94a3b8;
+  --ads-radius: 12px;
+  --ads-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. Layout & Request Form Styling
+   ========================================================================== */
+.ads-request-card {
+  background: var(--ads-card-bg);
+  border: 1px solid var(--ads-border);
+  border-radius: var(--ads-radius);
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--ads-text-main);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.ads-form-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ads-text-main);
+  margin-bottom: 6px;
+}
+
+.ads-form-header p {
+  color: var(--ads-text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 20px;
+}
+
+.ads-form-section {
+  border-top: 1px solid var(--ads-border);
+  padding-top: 18px;
+  margin-top: 18px;
+}
+
+.ads-form-section h3 {
+  font-size: 1.05rem;
+  color: var(--ads-secondary);
+  margin-bottom: 14px;
+}
+
+.ads-input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.ads-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ads-input-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ads-text-muted);
+}
+
+.ads-input-group input,
+.ads-input-group select,
+.ads-input-group textarea {
+  background: var(--ads-bg-dark);
+  border: 1px solid var(--ads-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--ads-text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--ads-transition);
+}
+
+.ads-input-group input:focus,
+.ads-input-group select:focus,
+.ads-input-group textarea:focus {
+  border-color: var(--ads-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* ==========================================================================
+   3. Dynamic Pricing Summary Widget
+   ========================================================================== */
+.ads-price-widget {
+  margin-top: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px dashed var(--ads-primary);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.ads-price-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ads-price-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--ads-text-muted);
+}
+
+.ads-discount-tag {
+  color: var(--ads-success);
+  font-weight: 600;
+}
+
+.ads-price-final {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+}
+
+.ads-price-final strong {
+  font-size: 1.6rem;
+  color: var(--ads-success);
+}
+
+.ads-price-free-badge {
+  text-align: center;
+  padding: 8px;
+}
+
+.ads-price-free-badge span {
+  background: var(--ads-success);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ==========================================================================
+   4. Creative Radio Selection Cards
+   ========================================================================== */
+.ads-radio-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.ads-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--ads-bg-dark);
+  border: 1px solid var(--ads-border);
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--ads-transition);
+}
+
+.ads-radio-card:hover {
+  border-color: var(--ads-primary);
+}
+
+.ads-radio-card.highlight-free {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.ads-radio-card strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.ads-radio-card p {
+  font-size: 0.78rem;
+  color: var(--ads-text-muted);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   5. Admin Queue Tables & List View
+   ========================================================================== */
+.ads-list-wrap {
+  background: var(--ads-card-bg);
+  border-radius: var(--ads-radius);
+  border: 1px solid var(--ads-border);
+  padding: 20px;
+}
+
+.ads-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ads-list-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.ads-tab-btn {
+  background: transparent;
+  border: 1px solid var(--ads-border);
+  color: var(--ads-text-muted);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: var(--ads-transition);
+}
+
+.ads-tab-btn.active {
+  background: var(--ads-primary);
+  border-color: var(--ads-primary);
+  color: #fff;
+}
+
+.ads-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ads-table th,
+.ads-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--ads-border);
+}
+
+.ads-table th {
+  color: var(--ads-text-muted);
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+/* ==========================================================================
+   6. Badges & Button Controls
+   ========================================================================== */
+.ads-badge-free {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--ads-success);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ads-badge-paid {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--ads-warning);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ads-badge-active {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--ads-primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ads-btn-primary {
+  background: var(--ads-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--ads-transition);
+}
+
+.ads-btn-primary:hover {
+  background: var(--ads-primary-hover);
+}
+
+.ads-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--ads-border);
+  color: var(--ads-text-main);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ads-btn-approve {
+  background: var(--ads-success);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.ads-btn-reject {
+  background: var(--ads-danger);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   7. Modals & Overlays (AI Studio & Invoice)
+   ========================================================================== */
+.ads-ai-modal-overlay,
+.ads-invoice-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.ads-ai-modal-content,
+.ads-invoice-card {
+  background: var(--ads-card-bg);
+  border: 1px solid var(--ads-border);
+  border-radius: var(--ads-radius);
+  width: 100%;
+  max-width: 600px;
+  padding: 24px;
+  color: var(--ads-text-main);
+}
+
+.ads-preview-box {
+  background: var(--ads-bg-dark);
+  border: 1px dashed var(--ads-border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+/* Helper Utilities */
+.ads-hidden { display: none !important; }
+.ads-mt-10 { margin-top: 10px; }
+.ads-empty { text-align: center; color: var(--ads-text-muted); padding: 24px; }
