@@ -1,0 +1,20 @@
+import express from 'express';
+
+const router = express.Router();
+
+// GET /api/analytics/ad-revenue
+router.get('/', (req, res) => {
+  try {
+    const adData = {
+      estimatedRevenue: '$14.20',
+      averageEcpm: '$2.85',
+      currency: 'USD'
+    };
+    res.status(200).json({ success: true, data: adData });
+  } catch (error) {
+    console.error("Ad revenue API error:", error);
+    res.status(500).json({ success: false, error: "Internal server error." });
+  }
+});
+
+export default router;
