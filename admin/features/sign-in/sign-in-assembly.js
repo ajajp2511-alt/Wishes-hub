@@ -22,7 +22,19 @@ export class SignInAssembly {
         this.currentStep = 'SIGN_IN'; // 'SIGN_IN' | 'REQUEST_FORM' | 'MFA_VERIFY'
     }
 
-    init() {
+    init(rootId) {
+        if (rootId) {
+            const root = document.getElementById(rootId);
+            if (root) {
+                root.innerHTML = `
+                    <div style="padding: 20px;">
+                        <h2>Sign In Dashboard</h2>
+                        <p style="color: #888;">Sign-in module loaded successfully via Universal Smart Router.</p>
+                    </div>
+                `;
+            }
+        }
+
         SignInAntiTamper.initializeGuard((tamperErr) => {
             alert(tamperErr);
             window.location.reload();
@@ -91,3 +103,9 @@ export class SignInAssembly {
         return mfaResult;
     }
 }
+
+export const signInAssemblyInstance = new SignInAssembly();
+
+export function init(rootId, name) {
+    signInAssemblyInstance.init(rootId, name);
+                    }
