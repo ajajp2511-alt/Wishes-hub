@@ -241,7 +241,50 @@ export class FeaturesAssembly {
     'sandbox-module': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
     'sandbox-config': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
     'sandbox-rollout': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
-    'sandbox-risk': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' }
+    'sandbox-risk': { path: './private-sandbox/sandbox-assembly.js', initFn: 'init' },
+
+    // --- Newly Added 6 Modules Routing ---
+    // 1. Sign-In Module
+    'sign-in-dashboard': { path: './sign-in/sign-in-assembly.js', initFn: 'init' },
+    'sign-in-requests': { path: './sign-in/sign-in-assembly.js', initFn: 'init' },
+    'sign-in-security': { path: './sign-in/sign-in-assembly.js', initFn: 'init' },
+    'sign-in-socials': { path: './sign-in/sign-in-assembly.js', initFn: 'init' },
+    'sign-in-settings': { path: './sign-in/sign-in-assembly.js', initFn: 'init' },
+
+    // 2. Login Module
+    'login-dashboard': { path: './login/login-assembly.js', initFn: 'init' },
+    'login-endpoints': { path: './login/login-assembly.js', initFn: 'init' },
+    'login-security': { path: './login/login-assembly.js', initFn: 'init' },
+    'login-features': { path: './login/login-assembly.js', initFn: 'init' },
+    'login-roles': { path: './login/login-assembly.js', initFn: 'init' },
+
+    // 3. Ads Management Module
+    'ads-dashboard': { path: './ads/ads-assembly.js', initFn: 'init' },
+    'ads-zones': { path: './ads/ads-assembly.js', initFn: 'init' },
+    'ads-packages': { path: './ads/ads-assembly.js', initFn: 'init' },
+    'ads-ai-generator': { path: './ads/ads-assembly.js', initFn: 'init' },
+    'ads-templates': { path: './ads/ads-assembly.js', initFn: 'init' },
+
+    // 4. Coupons Marketplace Module
+    'coupons-dashboard': { path: './coupons/coupons-assembly.js', initFn: 'init' },
+    'coupons-aggregators': { path: './coupons/coupons-assembly.js', initFn: 'init' },
+    'coupons-financials': { path: './coupons/coupons-assembly.js', initFn: 'init' },
+    'coupons-fraud-guard': { path: './coupons/coupons-assembly.js', initFn: 'init' },
+    'coupons-currencies': { path: './coupons/coupons-assembly.js', initFn: 'init' },
+
+    // 5. Approvals & Problems Module
+    'approvals-dashboard': { path: './approvals/approvals-assembly.js', initFn: 'init' },
+    'approvals-admin-scope': { path: './approvals/approvals-assembly.js', initFn: 'init' },
+    'approvals-custom-scope': { path: './approvals/approvals-assembly.js', initFn: 'init' },
+    'approvals-user-scope': { path: './approvals/approvals-assembly.js', initFn: 'init' },
+    'approvals-audit-log': { path: './approvals/approvals-assembly.js', initFn: 'init' },
+
+    // 6. Automation Engine Module
+    'automation-dashboard': { path: './automation/automation-assembly.js', initFn: 'init' },
+    'automation-festival-db': { path: './automation/automation-assembly.js', initFn: 'init' },
+    'automation-3d-monetization': { path: './automation/automation-assembly.js', initFn: 'init' },
+    'automation-sponsorship': { path: './automation/automation-assembly.js', initFn: 'init' },
+    'automation-content-guard': { path: './automation/automation-assembly.js', initFn: 'init' }
   };
 
   async safeRun(name, importPath, initFn) {
