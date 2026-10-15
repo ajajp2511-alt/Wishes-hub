@@ -51,6 +51,13 @@ import { userPermissionsNavItem } from './items/user-permissions-nav.js';
 import { managePermissionsNavItem } from './items/manage-permissions-nav.js';
 // Sandbox Testing Module Nav Item
 import { sandboxNavItem } from './items/sandbox-nav.js';
+// Additional Integrated Feature Modules
+import { signInNavItem } from './items/sign-in-nav.js';
+import { loginNavItem } from './items/login-nav.js';
+import { adsNavItem } from './items/ads-nav.js';
+import { couponsNavItem } from './items/coupons-nav.js';
+import { approvalsNavItem } from './items/approvals-nav.js';
+import { automationNavItem } from './items/automation-nav.js';
 
 export const MENU_CONFIG = {
   BRAND: {
@@ -105,6 +112,13 @@ export const MENU_CONFIG = {
     userPermissionsNavItem,
     managePermissionsNavItem,
     // Sandbox Testing Module
-    sandboxNavItem
+    sandboxNavItem,
+    // Additional Integrated Feature Modules
+    signInNavItem,
+    loginNavItem,
+    adsNavItem,
+    couponsNavItem,
+    approvalsNavItem,
+    automationNavItem
   ]
 };
