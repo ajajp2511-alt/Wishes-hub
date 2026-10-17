@@ -1,0 +1,54 @@
+/**
+ * @file affiliate-manager.css
+ * @description Styling for deal cards, price comparison tables, global banners, and badges for Wishes Hub Affiliate Engine.
+ */
+
+:root {
+    --affiliate-primary: #ff4757;
+    --affiliate-secondary: #2ed573;
+    --affiliate-bg: #f8f9fa;
+    --affiliate-card-bg: #ffffff;
+    --affiliate-text-main: #2f3542;
+    --affiliate-text-muted: #747d8c;
+    --affiliate-border: #e4e7eb;
+    --affiliate-badge-bg: #ffa502;
+    --affiliate-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Container & Grid Layout */
+.affiliate-deals-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.affiliate-deals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+/* Individual Deal Card */
+.affiliate-deal-card {
+    background-color: var(--affiliate-card-bg);
+    border: 1px solid var(--affiliate-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--affiliate-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.affiliate-deal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Product Badge */
+.affiliate-badge {
+    position:
