@@ -1,55 +1,102 @@
 /**
- * Module: Affiliate Marketing Engine - Assembly
- * Location: admin/features/affiliate/affiliate-assembly.js
- * Description: Master Assembly Controller & Boot Manager for Affiliate Module.
+ * @file affiliate-assembly.js
+ * @description Master Assembly Controller & Boot Manager for the Wishes Hub Affiliate Module.
  */
 
-import { AffiliateConfig } from './affiliate-config.js';
-import { AffiliateCore } from './affiliate-core.js';
-import { AffiliateApiSync } from './modules/affiliate-api-sync.js';
-import { AffiliateDeepLink } from './modules/affiliate-deep-link.js';
-import { AffiliateLinkCreator } from './modules/affiliate-link-creator.js';
-import { AffiliateUiRenderer } from './modules/affiliate-ui-renderer.js';
-import { AffiliateAnalytics } from './modules/affiliate-analytics.js';
-import { AffiliateFestivalTagger } from './modules/affiliate-festival-tagger.js';
-import { AffiliatePushNotifier } from './modules/affiliate-push-notifier.js';
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['./affiliate-config', './affiliate-core'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(
+            require('./affiliate-config'),
+            require('./affiliate-core')
+        );
+    } else {
+        root.AffiliateAssembly = factory(root.AffiliateConfig, root.AffiliateCore);
+    }
+}(typeof self !== 'undefined' ? self : this, function (AffiliateConfig, AffiliateCore) {
+    'use strict';
 
-class AffiliateAssembly {
-  constructor() {
-    this.config = AffiliateConfig;
-    this.core = new AffiliateCore(this.config);
-    this.modules = {};
-  }
+    class AssemblyManager {
+        constructor() {
+            this.config = AffiliateConfig;
+            this.core = AffiliateCore;
+            this.modules = {};
+            this.isInitialized = false;
+        }
 
-  async init() {
-    console.log('[AffiliateAssembly] Booting Affiliate Engine...');
-    
-    // Core state initialize
-    await this.core.init();
+        // Register Sub-Modules into Assembly
+        registerModule(name, moduleInstance) {
+            if (this.modules[name]) {
+                console.warn(`[AffiliateAssembly] Module ${name} is already registered. Overwriting.`);
+            }
+            this.modules[name] = moduleInstance;
+            this.core.log('ASSEMBLY', `Sub-module registered: ${name}`);
+        }
 
-    // Sub-modules instantiation
-    this.modules.apiSync = new AffiliateApiSync(this.core);
-    this.modules.deepLink = new AffiliateDeepLink(this.core);
-    this.modules.linkCreator = new AffiliateLinkCreator(this.core);
-    this.modules.uiRenderer = new AffiliateUiRenderer(this.core);
-    this.modules.analytics = new AffiliateAnalytics(this.core);
-    this.modules.festivalTagger = new AffiliateFestivalTagger(this.core);
-    this.modules.pushNotifier = new AffiliatePushNotifier(this.core);
+        // Retrieve Registered Sub-Module
+        getModule(name) {
+            return this.modules[name] || null;
+        }
 
-    // Boot all sub-modules
-    for (const [name, moduleInstance] of Object.entries(this.modules)) {
-      if (typeof moduleInstance.init === 'function') {
-        await moduleInstance.init();
-        console.log(`[AffiliateAssembly] Sub-module loaded: ${name}`);
-      }
+        // Initialize Master Affiliate Engine
+        async init(options = {}) {
+            if (this.isInitialized) {
+                console.warn('[AffiliateAssembly] Affiliate Module already initialized.');
+                return;
+            }
+
+            this.core.setState({ isLoading: true });
+            this.core.log('INIT', 'Initializing Affiliate Assembly System...', options);
+
+            try {
+                // Initialize modules if they expose an init lifecycle method
+                for (const [name, mod] of Object.entries(this.modules)) {
+                    if (mod && typeof mod.init === 'function') {
+                        await mod.init(this.config, this.core);
+                        this.core.log('INIT', `Sub-module initialized: ${name}`);
+                    }
+                }
+
+                this.isInitialized = true;
+                this.core.setState({ 
+                    isLoading: false, 
+                    lastSyncTime: new Date().toISOString() 
+                });
+
+                this.core.emit('assembly:ready', {
+                    modulesLoaded: Object.keys(this.modules),
+                    timestamp: this.core.getState().lastSyncTime
+                });
+
+            } catch (error) {
+                this.core.setState({ isLoading: false });
+                this.core.log('ERROR', 'Assembly initialization failed', error);
+                console.error('[AffiliateAssembly] Critical initialization failure:', error);
+            }
+        }
+
+        // Destroy / Reset Assembly State
+        destroy() {
+            for (const [name, mod] of Object.entries(this.modules)) {
+                if (mod && typeof mod.destroy === 'function') {
+                    mod.destroy();
+                }
+            }
+            this.modules = {};
+            this.isInitialized = false;
+            this.core.log('DESTROY', 'Affiliate Assembly destroyed');
+        }
     }
 
-    console.log('[AffiliateAssembly] Affiliate Engine is live and operational.');
-  }
+    const instance = new AssemblyManager();
 
-  getModule(moduleName) {
-    return this.modules[moduleName] || null;
-  }
-}
+    // Auto-boot in browser environment when DOM is ready
+    if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', () => {
+            instance.init();
+        });
+    }
 
-export const affiliateAssembly = new AffiliateAssembly();
+    return instance;
+}));
