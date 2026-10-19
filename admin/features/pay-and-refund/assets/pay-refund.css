@@ -1,0 +1,147 @@
+/* ================================================================= */
+/* Wishes Pay & Refund Module - Enterprise UI Stylesheet             */
+/* ================================================================= */
+
+:root {
+    --pr-bg-primary: #0f172a;
+    --pr-bg-card: #1e293b;
+    --pr-border-color: #334155;
+    --pr-text-main: #f8fafc;
+    --pr-text-muted: #94a3b8;
+    --pr-accent-indigo: #6366f1;
+    --pr-accent-indigo-hover: #4f46e5;
+    --pr-success: #22c55e;
+    --pr-warning: #f59e0b;
+    --pr-danger: #ef4444;
+    --pr-radius: 12px;
+}
+
+.wishes-pay-container {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--pr-bg-primary);
+    color: var(--pr-text-main);
+    padding: 24px;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: var(--pr-radius);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Header & Titles */
+.pr-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--pr-text-main);
+}
+
+.pr-header p {
+    font-size: 0.875rem;
+    color: var(--pr-text-muted);
+    margin-bottom: 24px;
+}
+
+/* Card / Box Layout */
+.pr-card {
+    background-color: var(--pr-bg-card);
+    border: 1px solid var(--pr-border-color);
+    border-radius: var(--pr-radius);
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+/* Price Breakdown Table */
+.pr-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--pr-border-color);
+}
+
+.pr-breakdown-row.total {
+    border-bottom: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--pr-success);
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 2px dashed var(--pr-border-color);
+}
+
+/* Gateway Selection Grid */
+.pr-gateway-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.pr-gateway-option {
+    background-color: var(--pr-bg-primary);
+    border: 2px solid var(--pr-border-color);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pr-gateway-option:hover, 
+.pr-gateway-option.active {
+    border-color: var(--pr-accent-indigo);
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+/* Action Buttons */
+.pr-btn {
+    display: block;
+    width: 100%;
+    background-color: var(--pr-accent-indigo);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+    margin-top: 16px;
+}
+
+.pr-btn:hover {
+    background-color: var(--pr-accent-indigo-hover);
+}
+
+.pr-btn.wallet-bonus {
+    background-color: #059669;
+}
+.pr-btn.wallet-bonus:hover {
+    background-color: #047857;
+}
+
+/* Refund 24-hr Banner & Status */
+.pr-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.pr-badge.success { background-color: rgba(34, 197, 94, 0.2); color: var(--pr-success); }
+.pr-badge.warning { background-color: rgba(245, 158, 11, 0.2); color: var(--pr-warning); }
+.pr-badge.danger { background-color: rgba(239, 68, 68, 0.2); color: var(--pr-danger); }
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .pr-gateway-grid {
+        grid-template-columns: 1fr;
+    }
+    .wishes-pay-container {
+        padding: 16px;
+    }
+}
