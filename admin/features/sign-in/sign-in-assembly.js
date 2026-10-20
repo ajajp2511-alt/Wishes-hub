@@ -150,7 +150,7 @@ export class SignInAssembly {
                             ${currentFp}
                         </div>
                         <p style="margin: 10px 0 0 0; font-size: 12px; color: #94a3b8;">
-                            `SignInIpGuard` dwara screen resolution, user agent, aur browser locale se hash generate kiya gaya hai.
+                            SignInIpGuard dwara screen resolution, user agent, aur browser locale se hash generate kiya gaya hai.
                         </p>
                     </div>
 
@@ -260,4 +260,4 @@ export const signInAssemblyInstance = new SignInAssembly();
 
 export function init(rootId, name) {
     signInAssemblyInstance.init(rootId, name);
-}
+                                         }
