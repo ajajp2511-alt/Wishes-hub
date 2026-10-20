@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishes Hub Admin - Private Sign-In</title>
-    <!-- Dedicated Professional CSS -->
-    <link rel="stylesheet" href="./assets/sign-in.css">
+    <!-- Absolute Path for CSS -->
+    <link rel="stylesheet" href="/admin/features/sign-in/assets/sign-in.css">
 </head>
 <body class="admin-signin-wrapper">
 
@@ -16,22 +16,22 @@
         </div>
     </div>
 
-    <!-- Main Module Script -->
+    <!-- Main Module Script with Absolute Paths -->
     <script type="module">
-        import { SignInToken } from './modules/sign-in-token.js';
-        import { SignInAntiTamper } from './modules/sign-in-anti-tamper.js';
-        import { SignInFormCapture } from './modules/sign-in-form-capture.js';
-        import { SIGN_IN_CONFIG } from './sign-in-config.js';
+        import { SignInToken } from '/admin/features/sign-in/modules/sign-in-token.js';
+        import { SignInAntiTamper } from '/admin/features/sign-in/modules/sign-in-anti-tamper.js';
+        import { SignInFormCapture } from '/admin/features/sign-in/modules/sign-in-form-capture.js';
+        import { SIGN_IN_CONFIG } from '/admin/features/sign-in/sign-in-config.js';
 
         document.addEventListener('DOMContentLoaded', async () => {
             const rootContainer = document.getElementById('signInRoot');
             const urlParams = new URLSearchParams(window.location.search);
             const inviteToken = urlParams.get('invite');
 
-            // 1. Anti-Tamper Guard: Agar koi code ke sath chhedchhaad karega, link turant expire ho jayegi
+            // 1. Anti-Tamper Guard
             SignInAntiTamper.initializeGuard((tamperErr) => {
                 if (inviteToken) {
-                    SignInToken.markTokenAsUsed(inviteToken); // Link ko turant burn/expire kar do
+                    SignInToken.markTokenAsUsed(inviteToken);
                 }
                 rootContainer.innerHTML = `
                     <div class="admin-signin-header">
@@ -79,7 +79,6 @@
         });
 
         function renderFullAccessForm(container, token) {
-            // Generate dynamic social input fields from config
             const socialFieldsHtml = SIGN_IN_CONFIG.socialPlatforms.map(platform => `
                 <div class="admin-form-group">
                     <label>${platform.label}</label>
@@ -164,7 +163,6 @@
                 btn.disabled = true;
                 btn.textContent = 'Submitting Request...';
 
-                // Collect and validate data
                 const requestData = SignInFormCapture.collectFormData(form);
                 const validation = SignInFormCapture.validateRequestData(requestData);
 
@@ -179,11 +177,9 @@
                     return;
                 }
 
-                // Submit request save
                 const result = await SignInFormCapture.submitAccessRequest(requestData);
 
                 if (result.success) {
-                    // One-Time Use Enforcement: Token ko burn kar do
                     SignInToken.markTokenAsUsed(token);
 
                     feedback.innerHTML = `
