@@ -59,79 +59,78 @@ import { couponsNavItem } from './items/coupons-nav.js';
 import { approvalsNavItem } from './items/approvals-nav.js';
 import { automationNavItem } from './items/automation-nav.js';
 
-// Newly Integrated Modules from Github Screenshots
+// Newly Integrated Modules
 import { threeDNavItem } from './items/3d-nav.js';
 import { affiliateNavItem } from './items/affiliate-nav.js';
 import { festivalStorytellerNavItem } from './items/festival-storyteller-nav.js';
 import { localVendorsNavItem } from './items/local-vendors-nav.js';
 import { payRefundNavItem } from './items/pay-refund-nav.js';
 
+// Safe Filter Array function to prevent crash if any nav item import is undefined/missing
+const rawNavItems = [
+  createWishNavItem,
+  assetHubNavItem,
+  manageLoadingNavItem,
+  wishesNavItem,
+  usersNavItem,
+  securityNavItem,
+  pwaNavItem,
+  featureFlagsNavItem,
+  gamificationNavItem,
+  marketplaceNavItem,
+  campaignsNavItem,
+  templateEngineNavItem,
+  mediaNavItem,
+  aiStudioNavItem,
+  localizationNavItem,
+  analyticsNavItem,
+  seoGrowthNavItem,
+  reportsNavItem,
+  trendingNavItem,
+  experimentsNavItem,
+  monetizationNavItem,
+  linkNavItem,
+  shareNavItem,
+  communityNavItem,
+  notificationsNavItem,
+  priceNavItem,
+  performanceNavItem,
+  sysHealthNavItem,
+  workerAnalyticsNavItem,
+  googleSheetsNavItem,
+  integrationsNavItem,
+  complianceNavItem,
+  logsNavItem,
+  authNavItem,
+  settingNavItem,
+  walletNavItem,
+  categoriesNavItem,
+  geoNavItem,
+  globalLangNavItem,
+  brandingNavItem,
+  platformSuiteNavItem,
+  supportNavItem,
+  userPermissionsNavItem,
+  managePermissionsNavItem,
+  sandboxNavItem,
+  signInNavItem,
+  loginNavItem,
+  adsNavItem,
+  couponsNavItem,
+  approvalsNavItem,
+  automationNavItem,
+  threeDNavItem,
+  affiliateNavItem,
+  festivalStorytellerNavItem,
+  localVendorsNavItem,
+  payRefundNavItem
+];
+
 export const MENU_CONFIG = {
   BRAND: {
     NAME: 'Wishes Hub',
     LOGO_ICON: '✨'
   },
-  NAV_ITEMS: [
-    createWishNavItem,
-    assetHubNavItem,
-    manageLoadingNavItem,
-    wishesNavItem,
-    usersNavItem,
-    securityNavItem,
-    pwaNavItem,
-    featureFlagsNavItem,
-    gamificationNavItem,
-    marketplaceNavItem,
-    campaignsNavItem,
-    templateEngineNavItem,
-    mediaNavItem,
-    aiStudioNavItem,
-    localizationNavItem,
-    analyticsNavItem,
-    seoGrowthNavItem,
-    reportsNavItem,
-    trendingNavItem,
-    experimentsNavItem,
-    monetizationNavItem,
-    linkNavItem,
-    shareNavItem,
-    communityNavItem,
-    notificationsNavItem,
-    priceNavItem,
-    performanceNavItem,
-    sysHealthNavItem,
-    workerAnalyticsNavItem,
-    googleSheetsNavItem,
-    integrationsNavItem,
-    complianceNavItem,
-    logsNavItem,
-    authNavItem,
-    settingNavItem,
-    // Integrated Features
-    walletNavItem,
-    categoriesNavItem,
-    geoNavItem,
-    globalLangNavItem,
-    brandingNavItem,
-    platformSuiteNavItem,
-    supportNavItem,
-    // Separate Permissions Modules
-    userPermissionsNavItem,
-    managePermissionsNavItem,
-    // Sandbox Testing Module
-    sandboxNavItem,
-    // Additional Integrated Feature Modules
-    signInNavItem,
-    loginNavItem,
-    adsNavItem,
-    couponsNavItem,
-    approvalsNavItem,
-    automationNavItem,
-    // Screenshots Feature Modules
-    threeDNavItem,
-    affiliateNavItem,
-    festivalStorytellerNavItem,
-    localVendorsNavItem,
-    payRefundNavItem
-  ]
+  // Filter out any undefined/unloaded items to prevent script crash
+  NAV_ITEMS: rawNavItems.filter(Boolean)
 };
