@@ -1,6 +1,6 @@
 /**
  * Admin Sign-In Module - UI Renderer
- * Generates clean, professional HTML markup utilizing external CSS classes.
+ * Generates professional dashboard markup leveraging sign-in.css variables and classes.
  */
 
 import { SIGN_IN_CONFIG } from '../sign-in-config.js';
@@ -11,96 +11,108 @@ export class SignInUI {
         const pendingCount = pendingRequests.filter(r => r.status === 'PENDING_APPROVAL').length;
 
         container.innerHTML = `
-            <div class="admin-dashboard-container">
+            <div style="padding: 1.5rem; background-color: var(--admin-bg-dark); min-height: 100vh; color: var(--admin-text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                 
-                <!-- Module Header -->
-                <div class="admin-header-card">
-                    <div class="admin-header-info">
-                        <h2><span class="icon">🔐</span> Sign-In & Access Control Center</h2>
-                        <p>Manage admin sign-in flows, access requests, device fingerprints & active security guards.</p>
+                <!-- Module Header Card -->
+                <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--admin-shadow);">
+                    <div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--admin-text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🔐</span> Sign-In & Access Control Center
+                        </h2>
+                        <p style="font-size: 0.875rem; color: var(--admin-text-secondary); margin: 0;">
+                            Manage admin sign-in flows, access requests, device fingerprints & active security guards.
+                        </p>
                     </div>
-                    <div class="admin-header-actions">
-                        <button id="refreshSignInDashBtn" class="btn btn-primary">
+                    <div>
+                        <button id="refreshSignInDashBtn" class="admin-btn-primary" style="width: auto; padding: 0.6rem 1.25rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem;">
                             🔄 Refresh Data
                         </button>
                     </div>
                 </div>
 
-                <!-- 1. Top Metrics Cards -->
-                <div class="admin-metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-title">PENDING REQUESTS</span>
-                        <div class="metric-value warning">${pendingCount}</div>
-                        <span class="metric-desc">Awaiting Super Admin review</span>
+                <!-- 1. Top Metrics Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.25rem;">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--admin-text-secondary); letter-spacing: 0.05em;">PENDING REQUESTS</span>
+                        <div style="font-size: 1.75rem; font-weight: 800; color: #f59e0b; margin-top: 0.5rem;">${pendingCount}</div>
+                        <span style="font-size: 0.75rem; color: var(--admin-text-secondary);">Awaiting Super Admin review</span>
                     </div>
 
-                    <div class="metric-card">
-                        <span class="metric-title">GEOFENCE GUARD</span>
-                        <div class="metric-value info">${SIGN_IN_CONFIG.allowedCountries.join(', ')} ONLY</div>
-                        <span class="metric-desc success-text">✓ India Region Restricted</span>
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.25rem;">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--admin-text-secondary); letter-spacing: 0.05em;">GEOFENCE GUARD</span>
+                        <div style="font-size: 1.25rem; font-weight: 800; color: #38bdf8; margin-top: 0.5rem;">${SIGN_IN_CONFIG.allowedCountries.join(', ')} ONLY</div>
+                        <span style="font-size: 0.75rem; color: var(--admin-success-green);">✓ India Region Restricted</span>
                     </div>
 
-                    <div class="metric-card">
-                        <span class="metric-title">ANTI-TAMPER GUARD</span>
-                        <div class="metric-value success">ACTIVE</div>
-                        <span class="metric-desc">DevTools & Injection Monitored</span>
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.25rem;">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--admin-text-secondary); letter-spacing: 0.05em;">ANTI-TAMPER GUARD</span>
+                        <div style="font-size: 1.25rem; font-weight: 800; color: var(--admin-success-green); margin-top: 0.5rem;">ACTIVE</div>
+                        <span style="font-size: 0.75rem; color: var(--admin-text-secondary);">DevTools & Injection Monitored</span>
                     </div>
 
-                    <div class="metric-card">
-                        <span class="metric-title">LOCKOUT THRESHOLD</span>
-                        <div class="metric-value danger">${SIGN_IN_CONFIG.maxFailedAttempts} Attempts</div>
-                        <span class="metric-desc">${SIGN_IN_CONFIG.lockoutDurationMs / 60000} mins auto-lockout</span>
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.25rem;">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--admin-text-secondary); letter-spacing: 0.05em;">LOCKOUT THRESHOLD</span>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--admin-danger-red); margin-top: 0.5rem;">${SIGN_IN_CONFIG.maxFailedAttempts} Attempts</div>
+                        <span style="font-size: 0.75rem; color: var(--admin-text-secondary);">${SIGN_IN_CONFIG.lockoutDurationMs / 60000} mins auto-lockout</span>
                     </div>
+
                 </div>
 
-                <!-- 2. Pending Access Requests Table -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <h3><span>📝</span> Admin Access Requests (Pending Review)</h3>
-                        <span class="badge badge-secondary">Total: ${pendingRequests.length}</span>
+                <!-- 2. Pending Access Requests Table Card -->
+                <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--admin-shadow);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📝</span> Admin Access Requests (Pending Review)
+                        </h3>
+                        <span style="background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); color: var(--admin-text-secondary); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 500;">
+                            Total: ${pendingRequests.length}
+                        </span>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="admin-table">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; color: var(--admin-text-secondary);">
                             <thead>
-                                <tr>
-                                    <th>REQUEST ID</th>
-                                    <th>NAME / EMAIL</th>
-                                    <th>ROLE</th>
-                                    <th>COVER NOTE</th>
-                                    <th>DATE</th>
-                                    <th>STATUS</th>
-                                    <th class="text-right">ACTIONS</th>
+                                <tr style="border-bottom: 1px solid var(--admin-border-color); color: var(--admin-text-secondary); background-color: var(--admin-bg-dark);">
+                                    <th style="padding: 0.75rem 1rem;">REQUEST ID</th>
+                                    <th style="padding: 0.75rem 1rem;">NAME / EMAIL</th>
+                                    <th style="padding: 0.75rem 1rem;">ROLE</th>
+                                    <th style="padding: 0.75rem 1rem;">COVER NOTE</th>
+                                    <th style="padding: 0.75rem 1rem;">DATE</th>
+                                    <th style="padding: 0.75rem 1rem;">STATUS</th>
+                                    <th style="padding: 0.75rem 1rem; text-align: right;">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${pendingRequests.length === 0 ? `
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">
+                                        <td colspan="7" style="padding: 2rem; text-align: center; color: var(--admin-text-secondary);">
                                             Koi pending access request nahi hai.
                                         </td>
                                     </tr>
                                 ` : pendingRequests.map(req => `
-                                    <tr>
-                                        <td class="font-mono text-info">${req.requestId}</td>
-                                        <td>
-                                            <div class="font-semibold">${req.fullName || 'N/A'}</div>
-                                            <div class="text-xs text-muted">${req.email} \vert{}${req.mobile}</div>
+                                    <tr style="border-bottom: 1px solid var(--admin-border-color);">
+                                        <td style="padding: 0.75rem 1rem; font-family: monospace; color: #38bdf8;">${req.requestId}</td>
+                                        <td style="padding: 0.75rem 1rem;">
+                                            <div style="font-weight: 600; color: var(--admin-text-primary);">${req.fullName || 'N/A'}</div>
+                                            <div style="font-size: 0.75rem; color: var(--admin-text-secondary);">${req.email} \vert{}${req.mobile}</div>
                                         </td>
-                                        <td><span class="badge badge-dark">${req.requestedRole || 'Admin'}</span></td>
-                                        <td class="text-truncate text-muted" title="${req.coverNote || ''}">
+                                        <td style="padding: 0.75rem 1rem;">
+                                            <span style="background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; color: var(--admin-text-primary);">${req.requestedRole || 'Admin'}</span>
+                                        </td>
+                                        <td style="padding: 0.75rem 1rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${req.coverNote || ''}">
                                             ${req.coverNote || '-'}
                                         </td>
-                                        <td class="text-muted text-xs">
+                                        <td style="padding: 0.75rem 1rem; font-size: 0.75rem;">
                                             ${req.submittedAt ? new Date(req.submittedAt).toLocaleDateString() : 'N/A'}
                                         </td>
-                                        <td>
-                                            <span class="badge ${req.status === 'PENDING_APPROVAL' ? 'badge-warning' : 'badge-success'}">
+                                        <td style="padding: 0.75rem 1rem;">
+                                            <span style="background-color: ${req.status === 'PENDING_APPROVAL' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border: 1px solid ${req.status === 'PENDING_APPROVAL' ? '#f59e0b' : 'var(--admin-success-green)'}; color: ${req.status === 'PENDING_APPROVAL' ? '#fcd34d' : '#6ee7b7'}; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">
                                                 ${req.status}
                                             </span>
                                         </td>
-                                        <td class="text-right">
-                                            <button class="btn btn-sm btn-danger remove-req-btn" data-id="${req.requestId}">
+                                        <td style="padding: 0.75rem 1rem; text-align: right;">
+                                            <button class="remove-req-btn" data-id="${req.requestId}" style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid var(--admin-danger-red); color: #fca5a5; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
                                                 Remove
                                             </button>
                                         </td>
@@ -111,24 +123,30 @@ export class SignInUI {
                     </div>
                 </div>
 
-                <!-- 3. Active Security Rules & Device Fingerprint -->
-                <div class="admin-grid-2col">
+                <!-- 3. Security & Device Fingerprint Bottom Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
                     
-                    <div class="admin-card">
-                        <h3><span>📱</span> Current Device Fingerprint Guard</h3>
-                        <div class="code-box font-mono">
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; box-shadow: var(--admin-shadow);">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📱</span> Current Device Fingerprint Guard
+                        </h3>
+                        <div style="background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); padding: 0.75rem; border-radius: var(--admin-radius); font-family: monospace; font-size: 0.75rem; color: #38bdf8; word-break: break-all;">
                             ${currentFp}
                         </div>
-                        <p class="text-xs text-muted mt-2">
-                            SignInIpGuard dwara screen resolution, user agent, aur browser locale se hash generate kiya gaya hai.
+                        <p style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-top: 0.75rem; margin-bottom: 0;">
+                            SignInIpGuard dwara screen resolution, user agent, aur browser locale se unique secure hash generate kiya gaya hai.
                         </p>
                     </div>
 
-                    <div class="admin-card">
-                        <h3><span>⚙️</span> Configured Social Identity Platforms</h3>
-                        <div class="tags-flex">
+                    <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; box-shadow: var(--admin-shadow);">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>⚙️</span> Configured Social Identity Platforms
+                        </h3>
+                        <div style="display: flex; flex-wrap: gap; gap: 0.5rem;">
                             ${SIGN_IN_CONFIG.socialPlatforms.map(p => `
-                                <span class="tag-chip">${p.label}</span>
+                                <span style="background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); color: var(--admin-text-primary); padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">
+                                    ${p.label}
+                                </span>
                             `).join('')}
                         </div>
                     </div>
@@ -138,7 +156,7 @@ export class SignInUI {
             </div>
         `;
 
-        // Attach event listeners via callbacks
+        // Bind event listeners
         if (callbacks.onRefresh) {
             const refreshBtn = container.querySelector('#refreshSignInDashBtn');
             if (refreshBtn) refreshBtn.addEventListener('click', callbacks.onRefresh);
