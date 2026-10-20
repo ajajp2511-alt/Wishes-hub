@@ -41,9 +41,12 @@ export class SignInAssembly {
         const pendingRequests = JSON.parse(localStorage.getItem('wishes_hub_admin_requests') || '[]');
         const currentFp = SignInIpGuard.getDeviceFingerprint();
 
-        // Generate dynamic secure invite token
+        // Generate dynamic secure invite token pointing directly to sign-in.html
         const inviteToken = 'inv_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        const generatedInviteUrl = `${window.location.origin}${window.location.pathname}?invite=${inviteToken}`;
+        
+        // Ensure path points to sign-in.html
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const generatedInviteUrl = `${window.location.origin}${basePath}sign-in.html?invite=${inviteToken}`;
 
         SignInUI.renderDashboard(rootElement, {
             pendingRequests,
@@ -94,7 +97,7 @@ export class SignInAssembly {
 
         // 4. Invite Token Check if mandatory
         if (inviteToken) {
-            const tokenCheck = await SignInToken.validateInviteToken(inviteToken, identifier);
+            const tokenCheck = await SignInToken.validateInviteToken(inviteToken);
             if (!tokenCheck.valid) {
                 return { success: false, error: tokenCheck.error };
             }
@@ -128,4 +131,4 @@ export const signInAssemblyInstance = new SignInAssembly();
 
 export function init(rootId, name) {
     signInAssemblyInstance.init(rootId, name);
-}
+                                               }
