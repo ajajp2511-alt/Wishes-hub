@@ -1,7 +1,6 @@
 /**
  * Path: admin/features/menu-navigation/items/pay-refund-nav.js
  */
-import PayRefundConfig from '../../pay-refund/pay-refund-config.js';
 
 export const payRefundNavItem = {
   id: 'pay-and-refund',
@@ -12,6 +11,5 @@ export const payRefundNavItem = {
     { id: 'pay-refund-policies', label: 'Refund Policies' },
     { id: 'pay-tax-surcharge', label: 'Tax & Surcharge' },
     { id: 'pay-security', label: 'Payment Security' }
-  ],
-  config: PayRefundConfig
+  ]
 };
