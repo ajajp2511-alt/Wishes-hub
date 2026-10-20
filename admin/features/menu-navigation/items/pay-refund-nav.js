@@ -1,7 +1,7 @@
 /**
  * Path: admin/features/menu-navigation/items/pay-refund-nav.js
  */
-import PayRefundConfig from '../../pay-and-refund/pay-refund-config.js';
+import PayRefundConfig from '../../pay-refund/pay-refund-config.js';
 
 export const payRefundNavItem = {
   id: 'pay-and-refund',
