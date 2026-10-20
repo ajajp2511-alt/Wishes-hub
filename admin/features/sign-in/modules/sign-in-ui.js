@@ -61,9 +61,14 @@ export class SignInUI {
 
                 <!-- 2. Secure Invite Link Generator & Sharing Section -->
                 <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--admin-shadow);">
-                    <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                        <span>🔗</span> Generate & Share Secure Sign-In Link
-                    </h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🔗</span> Generate & Share Secure Sign-In Link
+                        </h3>
+                        <button id="generateNewInviteBtn" style="background-color: #3b82f6; color: white; border: none; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+                            ⚡ Generate New Link
+                        </button>
+                    </div>
                     <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 1rem;">
                         Naye admin ko add karne ke liye secure invite link share karein. Yeh link bina valid token ke open nahi hogi.
                     </p>
@@ -188,6 +193,14 @@ export class SignInUI {
                     const reqId = e.target.getAttribute('data-id');
                     callbacks.onRemoveRequest(reqId);
                 });
+            });
+        }
+
+        // Generate New Invite Link action
+        const generateBtn = container.querySelector('#generateNewInviteBtn');
+        if (generateBtn && callbacks.onGenerateLink) {
+            generateBtn.addEventListener('click', () => {
+                callbacks.onGenerateLink();
             });
         }
 
