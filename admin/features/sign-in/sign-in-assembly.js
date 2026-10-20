@@ -41,9 +41,14 @@ export class SignInAssembly {
         const pendingRequests = JSON.parse(localStorage.getItem('wishes_hub_admin_requests') || '[]');
         const currentFp = SignInIpGuard.getDeviceFingerprint();
 
+        // Generate a secure dynamic invite token for sharing with new admins
+        const inviteToken = 'inv_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+        const generatedInviteUrl = `${window.location.origin}${window.location.pathname}?invite=${inviteToken}`;
+
         SignInUI.renderDashboard(rootElement, {
             pendingRequests,
-            currentFp
+            currentFp,
+            generatedInviteUrl
         }, {
             onRefresh: () => this.loadDashboardView(rootElement, rootId),
             onRemoveRequest: (reqId) => {
@@ -122,4 +127,4 @@ export const signInAssemblyInstance = new SignInAssembly();
 
 export function init(rootId, name) {
     signInAssemblyInstance.init(rootId, name);
-}
+    }
