@@ -7,7 +7,7 @@ import { SIGN_IN_CONFIG } from '../sign-in-config.js';
 
 export class SignInUI {
     static renderDashboard(container, data = {}, callbacks = {}) {
-        const { pendingRequests = [], currentFp = '' } = data;
+        const { pendingRequests = [], currentFp = '', generatedInviteUrl = '' } = data;
         const pendingCount = pendingRequests.filter(r => r.status === 'PENDING_APPROVAL').length;
 
         container.innerHTML = `
@@ -59,7 +59,27 @@ export class SignInUI {
 
                 </div>
 
-                <!-- 2. Pending Access Requests Table Card -->
+                <!-- 2. Secure Invite Link Generator & Sharing Section -->
+                <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--admin-shadow);">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>🔗</span> Generate & Share Secure Sign-In Link
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--admin-text-secondary); margin-bottom: 1rem;">
+                        Naye admin ko add karne ke liye secure invite link share karein. Yeh link bina valid token ke open nahi hogi.
+                    </p>
+                    
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                        <input type="text" id="inviteUrlInput" readonly value="${generatedInviteUrl}" style="flex: 1; min-width: 280px; padding: 0.65rem 1rem; background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); color: #38bdf8; font-family: monospace; font-size: 0.8rem;" />
+                        <button id="copyInviteLinkBtn" class="admin-btn-primary" style="width: auto; padding: 0.65rem 1rem; font-size: 0.8rem;">
+                            📋 Copy Link
+                        </button>
+                        <button id="shareInviteLinkBtn" style="background-color: #10b981; color: white; border: none; padding: 0.65rem 1rem; border-radius: var(--admin-radius); cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                            📤 Share Link
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Pending Access Requests Table Card -->
                 <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--admin-shadow);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                         <h3 style="font-size: 1rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
@@ -123,7 +143,7 @@ export class SignInUI {
                     </div>
                 </div>
 
-                <!-- 3. Security & Device Fingerprint Bottom Grid -->
+                <!-- 4. Security & Device Fingerprint Bottom Grid -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
                     
                     <div style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius); padding: 1.5rem; box-shadow: var(--admin-shadow);">
@@ -142,7 +162,7 @@ export class SignInUI {
                         <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                             <span>⚙️</span> Configured Social Identity Platforms
                         </h3>
-                        <div style="display: flex; flex-wrap: gap; gap: 0.5rem;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                             ${SIGN_IN_CONFIG.socialPlatforms.map(p => `
                                 <span style="background-color: var(--admin-bg-dark); border: 1px solid var(--admin-border-color); color: var(--admin-text-primary); padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">
                                     ${p.label}
@@ -168,6 +188,41 @@ export class SignInUI {
                     const reqId = e.target.getAttribute('data-id');
                     callbacks.onRemoveRequest(reqId);
                 });
+            });
+        }
+
+        // Copy Invite Link action
+        const copyBtn = container.querySelector('#copyInviteLinkBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const input = container.querySelector('#inviteUrlInput');
+                input.select();
+                navigator.clipboard.writeText(input.value).then(() => {
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => copyBtn.textContent = '📋 Copy Link', 2000);
+                });
+            });
+        }
+
+        // Share Invite Link action
+        const shareBtn = container.querySelector('#shareInviteLinkBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                const input = container.querySelector('#inviteUrlInput');
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'Wishes Hub Admin Access Invite',
+                            text: 'Wishes Hub Admin panel ke liye secure sign-in invite link:',
+                            url: input.value
+                        });
+                    } catch (err) {
+                        console.log('Share canceled or failed', err);
+                    }
+                } else {
+                    navigator.clipboard.writeText(input.value);
+                    alert('Invite link clipboard par copy ho gaya hai!');
+                }
             });
         }
     }
