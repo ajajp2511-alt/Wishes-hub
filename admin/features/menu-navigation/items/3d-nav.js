@@ -4,7 +4,7 @@
 
 import { THREE_CONFIG } from '../../3d/3d-config.js';
 
-export const tdNavItem = {
+export const threedNavItem = {
   id: '3d-engine',
   label: '3D Engine',
   icon: '🧊',
