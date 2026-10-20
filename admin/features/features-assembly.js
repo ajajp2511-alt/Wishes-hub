@@ -284,7 +284,39 @@ export class FeaturesAssembly {
     'automation-festival-db': { path: './automation/automation-assembly.js', initFn: 'init' },
     'automation-3d-monetization': { path: './automation/automation-assembly.js', initFn: 'init' },
     'automation-sponsorship': { path: './automation/automation-assembly.js', initFn: 'init' },
-    'automation-content-guard': { path: './automation/automation-assembly.js', initFn: 'init' }
+    'automation-content-guard': { path: './automation/automation-assembly.js', initFn: 'init' },
+
+    // --- Newly Integrated 5 Modules Routing ---
+    // 1. 3D Engine Module
+    '3d-viewer': { path: './3d/3d-assembly.js', initFn: 'init' },
+    '3d-assets': { path: './3d/3d-assembly.js', initFn: 'init' },
+    '3d-geofence': { path: './3d/3d-assembly.js', initFn: 'init' },
+    '3d-security': { path: './3d/3d-assembly.js', initFn: 'init' },
+
+    // 2. Affiliate Engine Module
+    'affiliate-aggregator': { path: './affiliate/affiliate-assembly.js', initFn: 'init' },
+    'affiliate-deeplink': { path: './affiliate/affiliate-assembly.js', initFn: 'init' },
+    'affiliate-localization': { path: './affiliate/affiliate-assembly.js', initFn: 'init' },
+    'affiliate-cache-settings': { path: './affiliate/affiliate-assembly.js', initFn: 'init' },
+
+    // 3. Festival Storyteller Module
+    'festival-categories': { path: './festival-storyteller/festival-storyteller-assembly.js', initFn: 'init' },
+    'festival-languages': { path: './festival-storyteller/festival-storyteller-assembly.js', initFn: 'init' },
+    'festival-features': { path: './festival-storyteller/festival-storyteller-assembly.js', initFn: 'init' },
+    'festival-ad-slots': { path: './festival-storyteller/festival-storyteller-assembly.js', initFn: 'init' },
+    'festival-affiliate': { path: './festival-storyteller/festival-storyteller-assembly.js', initFn: 'init' },
+
+    // 4. Local Vendors Module
+    'vendor-types': { path: './local-vendors/local-vendors-assembly.js', initFn: 'init' },
+    'vendor-delivery': { path: './local-vendors/local-vendors-assembly.js', initFn: 'init' },
+    'vendor-commissions': { path: './local-vendors/local-vendors-assembly.js', initFn: 'init' },
+    'vendor-whatsapp-bot': { path: './local-vendors/local-vendors-assembly.js', initFn: 'init' },
+
+    // 5. Pay & Refund Module
+    'pay-gateways': { path: './pay-refund/pay-refund-assembly.js', initFn: 'init' },
+    'pay-refund-policies': { path: './pay-refund/pay-refund-assembly.js', initFn: 'init' },
+    'pay-tax-surcharge': { path: './pay-refund/pay-refund-assembly.js', initFn: 'init' },
+    'pay-security': { path: './pay-refund/pay-refund-assembly.js', initFn: 'init' }
   };
 
   async safeRun(name, importPath, initFn) {
