@@ -59,6 +59,13 @@ import { couponsNavItem } from './items/coupons-nav.js';
 import { approvalsNavItem } from './items/approvals-nav.js';
 import { automationNavItem } from './items/automation-nav.js';
 
+// Newly Integrated Modules from Github Screenshots
+import { threeDNavItem } from './items/3d-nav.js';
+import { affiliateNavItem } from './items/affiliate-nav.js';
+import { festivalStorytellerNavItem } from './items/festival-storyteller-nav.js';
+import { localVendorsNavItem } from './items/local-vendors-nav.js';
+import { payRefundNavItem } from './items/pay-refund-nav.js';
+
 export const MENU_CONFIG = {
   BRAND: {
     NAME: 'Wishes Hub',
@@ -119,6 +126,12 @@ export const MENU_CONFIG = {
     adsNavItem,
     couponsNavItem,
     approvalsNavItem,
-    automationNavItem
+    automationNavItem,
+    // Screenshots Feature Modules
+    threeDNavItem,
+    affiliateNavItem,
+    festivalStorytellerNavItem,
+    localVendorsNavItem,
+    payRefundNavItem
   ]
 };
