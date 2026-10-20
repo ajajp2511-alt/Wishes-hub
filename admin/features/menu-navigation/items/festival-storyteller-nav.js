@@ -1,7 +1,6 @@
 /**
  * Path: admin/features/menu-navigation/items/festival-storyteller-nav.js
  */
-import FestivalStoryConfig from '../../festival-storyteller/festival-story-config.js';
 
 export const festivalStorytellerNavItem = {
   id: 'festival-storyteller',
@@ -13,6 +12,5 @@ export const festivalStorytellerNavItem = {
     { id: 'festival-features', label: 'Story Features' },
     { id: 'festival-ad-slots', label: 'Ad Slots & Monetization' },
     { id: 'festival-affiliate', label: 'Affiliate & Puja Kits' }
-  ],
-  config: FestivalStoryConfig
+  ]
 };
