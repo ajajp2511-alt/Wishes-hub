@@ -41,12 +41,9 @@ export class SignInAssembly {
         const pendingRequests = JSON.parse(localStorage.getItem('wishes_hub_admin_requests') || '[]');
         const currentFp = SignInIpGuard.getDeviceFingerprint();
 
-        // Generate dynamic secure invite token pointing directly to sign-in.html
+        // Generate dynamic secure invite token pointing correctly via vercel rewrite rule
         const inviteToken = 'inv_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        
-        // Ensure path points to sign-in.html
-        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const generatedInviteUrl = `${window.location.origin}${basePath}sign-in.html?invite=${inviteToken}`;
+        const generatedInviteUrl = `${window.location.origin}/sign-in.html?invite=${inviteToken}`;
 
         SignInUI.renderDashboard(rootElement, {
             pendingRequests,
@@ -131,4 +128,4 @@ export const signInAssemblyInstance = new SignInAssembly();
 
 export function init(rootId, name) {
     signInAssemblyInstance.init(rootId, name);
-                                               }
+    }
