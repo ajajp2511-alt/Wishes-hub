@@ -8,6 +8,10 @@
       "destination": "https://wishes-hub.onrender.com/api/$1"
     },
     {
+      "source": "/sign-in.html",
+      "destination": "/admin/features/sign-in/sign-in.html"
+    },
+    {
       "source": "/admin",
       "destination": "/admin/index.html"
     },
