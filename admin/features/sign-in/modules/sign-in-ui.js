@@ -185,7 +185,6 @@ export class SignInUI {
             </div>
         `;
 
-        // Bind event listeners
         if (callbacks.onRefresh) {
             const refreshBtn = container.querySelector('#refreshSignInDashBtn');
             if (refreshBtn) refreshBtn.addEventListener('click', callbacks.onRefresh);
@@ -456,6 +455,22 @@ export class SignInUI {
     static bindWizardEvents(container) {
         const state = window._wizardData;
 
+        container.querySelector('#sendEmailOtpBtn')?.addEventListener('click', () => {
+            const email = container.querySelector('#w_email').value.trim();
+            if (!email) { alert('Please enter official email first.'); return; }
+            state.emailOtpSent = true;
+            container.querySelector('#emailOtpGroup').style.display = 'block';
+            alert('OTP sent to ' + email);
+        });
+
+        container.querySelector('#sendMobileOtpBtn')?.addEventListener('click', () => {
+            const mobile = container.querySelector('#w_mobile').value.trim();
+            if (!mobile) { alert('Please enter mobile number first.'); return; }
+            state.mobileOtpSent = true;
+            container.querySelector('#mobileOtpGroup').style.display = 'block';
+            alert('OTP sent to ' + mobile);
+        });
+
         const nextBtn = container.querySelector('#nextStepBtn');
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
@@ -595,4 +610,4 @@ export class SignInUI {
 
 export function initSignInPortal(containerId) {
     SignInUI.initSignInPortal(containerId);
-                                    }
+    }
