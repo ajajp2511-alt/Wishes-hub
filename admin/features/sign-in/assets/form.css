@@ -1,0 +1,140 @@
+/**
+ * Admin Wizard Form Stylesheet
+ * File: admin/features/sign-in/assets/form.css
+ */
+
+.admin-signin-card {
+    background-color: var(--admin-card-bg);
+    border: 1px solid var(--admin-border-color);
+    border-radius: var(--admin-radius);
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--admin-shadow);
+}
+
+.admin-brand-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.admin-brand-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+}
+
+.admin-signin-header {
+    margin-bottom: 1.5rem;
+}
+
+.admin-signin-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.admin-signin-header p {
+    font-size: 0.85rem;
+    color: var(--admin-text-secondary);
+}
+
+/* Step Tracker Dots Bar */
+.admin-wizard-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.admin-tracker-dot {
+    flex: 1;
+    height: 4px;
+    background-color: var(--admin-border-color);
+    margin: 0 3px;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.admin-tracker-dot.completed {
+    background-color: var(--admin-success-green);
+}
+
+.admin-tracker-dot.active {
+    background-color: #3b82f6;
+}
+
+/* Form Groups & Inputs */
+.admin-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.admin-form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--admin-text-secondary);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.admin-form-input,
+.admin-form-select,
+.admin-form-textarea {
+    width: 100%;
+    padding: 0.75rem 1.0rem;
+    background-color: var(--admin-bg-dark);
+    border: 1px solid var(--admin-border-color);
+    border-radius: var(--admin-radius);
+    color: var(--admin-text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.admin-form-input:focus,
+.admin-form-select:focus,
+.admin-form-textarea:focus {
+    border-color: #3b82f6;
+}
+
+.admin-form-textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.admin-social-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Alerts and Feedbacks */
+.admin-alert {
+    padding: 0.85rem 1rem;
+    border-radius: var(--admin-radius);
+    font-size: 0.85rem;
+    margin-top: 1rem;
+}
+
+.admin-alert-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    border: 1px solid var(--admin-success-green);
+    color: #34d399;
+}
+
+.admin-alert-error {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--admin-danger-red);
+    color: #f87171;
+  }
