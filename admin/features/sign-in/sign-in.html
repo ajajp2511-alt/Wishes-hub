@@ -9,6 +9,7 @@
 </head>
 <body class="admin-signin-wrapper">
 
+    <!-- Secure Dynamic Root Container -->
     <div class="admin-signin-card" id="signInRoot">
         <div class="admin-signin-header">
             <h2>🔐 Verifying Security & Invite Link...</h2>
@@ -16,190 +17,13 @@
         </div>
     </div>
 
-    <!-- Main Module Script with Absolute Paths -->
+    <!-- Secure Dynamic Entry Point Module -->
     <script type="module">
-        import { SignInToken } from '/admin/features/sign-in/modules/sign-in-token.js';
-        import { SignInAntiTamper } from '/admin/features/sign-in/modules/sign-in-anti-tamper.js';
-        import { SignInFormCapture } from '/admin/features/sign-in/modules/sign-in-form-capture.js';
-        import { SIGN_IN_CONFIG } from '/admin/features/sign-in/sign-in-config.js';
+        import { initSignInPortal } from '/admin/features/sign-in/modules/sign-in-ui.js';
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const rootContainer = document.getElementById('signInRoot');
-            const urlParams = new URLSearchParams(window.location.search);
-            const inviteToken = urlParams.get('invite');
-
-            // 1. Anti-Tamper Guard
-            SignInAntiTamper.initializeGuard((tamperErr) => {
-                if (inviteToken) {
-                    SignInToken.markTokenAsUsed(inviteToken);
-                }
-                rootContainer.innerHTML = `
-                    <div class="admin-signin-header">
-                        <h2 style="color: var(--admin-danger-red);">🚨 Security Alert: Tampering Detected</h2>
-                        <p>Unauthorized code modification or manipulation caught.</p>
-                    </div>
-                    <div class="admin-alert admin-alert-error">
-                        Security violation pakde jaane par yeh invite link permanently expire kar di gayi hai. Page reload ho raha hai...
-                    </div>
-                `;
-                setTimeout(() => window.location.reload(), 3000);
-            });
-
-            // 2. Token Missing Check
-            if (!inviteToken) {
-                rootContainer.innerHTML = `
-                    <div class="admin-signin-header">
-                        <h2 style="color: var(--admin-danger-red);">🚫 Access Restricted</h2>
-                        <p>This sign-in portal is strictly private.</p>
-                    </div>
-                    <div class="admin-alert admin-alert-error">
-                        Public sign-in disabled hai. Naye access ke liye Super Admin se private invite link mangwayein.
-                    </div>
-                `;
-                return;
-            }
-
-            // 3. Token Validation & Single-Use Expiry Check
-            const tokenValidation = await SignInToken.validateInviteToken(inviteToken);
-            if (!tokenValidation.valid) {
-                rootContainer.innerHTML = `
-                    <div class="admin-signin-header">
-                        <h2 style="color: var(--admin-danger-red);">❌ Link Expired / Invalid</h2>
-                        <p>Yeh invite link ab valid nahi hai ya pehle hi use ho chuki hai.</p>
-                    </div>
-                    <div class="admin-alert admin-alert-error">
-                        ${tokenValidation.error}
-                    </div>
-                `;
-                return;
-            }
-
-            // 4. Render Professional Registration Form with All Fields
-            renderFullAccessForm(rootContainer, inviteToken);
+        document.addEventListener('DOMContentLoaded', () => {
+            initSignInPortal('signInRoot');
         });
-
-        function renderFullAccessForm(container, token) {
-            const socialFieldsHtml = SIGN_IN_CONFIG.socialPlatforms.map(platform => `
-                <div class="admin-form-group">
-                    <label>${platform.label}</label>
-                    <input type="text" name="social_${platform.id}" class="admin-form-input" placeholder="Enter ${platform.label} link or handle" />
-                </div>
-            `).join('');
-
-            container.innerHTML = `
-                <div class="admin-signin-header">
-                    <h2>🔐 Admin Access Registration</h2>
-                    <p>Complete all required details securely for Wishes Hub Admin Panel review.</p>
-                </div>
-
-                <form id="publicSignInForm">
-                    <input type="hidden" name="inviteToken" value="${token}">
-
-                    <div class="admin-form-group">
-                        <label>Full Name *</label>
-                        <input type="text" name="fullName" class="admin-form-input" placeholder="e.g. Rahul Patel" required />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Official Email *</label>
-                        <input type="email" name="email" class="admin-form-input" placeholder="admin@wisheshub.com" required />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Mobile Number *</label>
-                        <input type="tel" name="mobile" class="admin-form-input" placeholder="+91 9876543210" required />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Government ID Reference (Optional)</label>
-                        <input type="text" name="govtIdRef" class="admin-form-input" placeholder="Aadhaar / PAN / Passport reference" />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Emergency Contact (Optional)</label>
-                        <input type="tel" name="emergencyContact" class="admin-form-input" placeholder="Emergency contact number" />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Requested Role *</label>
-                        <select name="requestedRole" class="admin-form-select">
-                            <option value="Admin">Admin</option>
-                            <option value="Moderator">Moderator</option>
-                            <option value="Editor">Editor</option>
-                        </select>
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Entity Name</label>
-                        <input type="text" name="entityName" class="admin-form-input" value="Wishes Hub" readonly />
-                    </div>
-
-                    <div class="admin-form-group">
-                        <label>Cover Note / Purpose * (Min 20 chars)</label>
-                        <textarea name="coverNote" class="admin-form-textarea" placeholder="Describe your responsibility and reason for access..." required></textarea>
-                    </div>
-
-                    <div style="margin: 1.5rem 0 1rem 0; border-top: 1px solid var(--admin-border-color); padding-top: 1rem;">
-                        <h4 style="font-size: 0.9rem; color: var(--admin-text-primary); margin-bottom: 0.75rem;">Social Identity Links (Optional)</h4>
-                        <div class="admin-social-grid">
-                            ${socialFieldsHtml}
-                        </div>
-                    </div>
-
-                    <div id="formFeedback"></div>
-
-                    <button type="submit" id="submitRequestBtn" class="admin-btn-primary">
-                        Submit Secure Access Request
-                    </button>
-                </form>
-            `;
-
-            const form = container.querySelector('#publicSignInForm');
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = container.querySelector('#submitRequestBtn');
-                const feedback = container.querySelector('#formFeedback');
-                
-                btn.disabled = true;
-                btn.textContent = 'Submitting Request...';
-
-                const requestData = SignInFormCapture.collectFormData(form);
-                const validation = SignInFormCapture.validateRequestData(requestData);
-
-                if (!validation.valid) {
-                    feedback.innerHTML = `
-                        <div class="admin-alert admin-alert-error">
-                            ❌ ${validation.error}
-                        </div>
-                    `;
-                    btn.disabled = false;
-                    btn.textContent = 'Submit Secure Access Request';
-                    return;
-                }
-
-                const result = await SignInFormCapture.submitAccessRequest(requestData);
-
-                if (result.success) {
-                    SignInToken.markTokenAsUsed(token);
-
-                    feedback.innerHTML = `
-                        <div class="admin-alert admin-alert-success">
-                            ✓ Access Request successfully submitted! Request ID: <strong>${result.requestId}</strong>. Super Admin approval ka wait karein. (Yeh link ab expire ho chuki hai).
-                        </div>
-                    `;
-                    form.reset();
-                    btn.style.display = 'none';
-                } else {
-                    feedback.innerHTML = `
-                        <div class="admin-alert admin-alert-error">
-                            ❌ ${result.error || 'Failed to submit request.'}
-                        </div>
-                    `;
-                    btn.disabled = false;
-                    btn.textContent = 'Submit Secure Access Request';
-                }
-            });
-        }
     </script>
 </body>
 </html>
