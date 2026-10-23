@@ -65,6 +65,24 @@ export class AdsAssembly {
   }
 
   /**
+   * Universal Router Entry Point (Required by features-assembly.js)
+   * @param {HTMLElement|string} target 
+   * @param {string} subId 
+   */
+  async init(target = 'dynamic-content-root', subId = '') {
+    const container = typeof target === 'string' ? document.getElementById(target) : target;
+    if (!container) return;
+
+    if (subId === 'ads-ai-generator' && this.aiGenerator && typeof this.aiGenerator.render === 'function') {
+      this.aiGenerator.render(container);
+    } else if (subId === 'ads-templates' && this.freeTemplates && typeof this.freeTemplates.render === 'function') {
+      this.freeTemplates.render(container);
+    } else {
+      this.mountAdminDashboard(container);
+    }
+  }
+
+  /**
    * Mount Public Request Form UI
    * @param {HTMLElement|string} target 
    */
@@ -80,3 +98,10 @@ export class AdsAssembly {
     this.adsListUI.render(target);
   }
 }
+
+export async function init(target = 'dynamic-content-root', subId = '') {
+  const instance = new AdsAssembly();
+  return instance.init(target, subId);
+}
+
+export default AdsAssembly;
