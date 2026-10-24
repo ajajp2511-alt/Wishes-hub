@@ -1,32 +1,31 @@
 /**
- * Notifications to System Logs Connection
- * Logs broadcast dispatches, delivery statuses, and notification failures to the audit trail.
+ * Security-Shield to Notifications Connection
+ * Dispatches instant high-priority alerts to super admins upon detecting severe attacks or panic triggers.
  */
 
-import { logsCoreInstance } from '../../system-logs/logs-core.js';
+import { notificationsCoreInstance } from '../../notifications/notifications-core.js';
 
-export const NotificationsLogsConn = {
-    async logBroadcastEvent(adminIdentifier, broadcastType, details = {}) {
+export const SecurityShieldNotificationsConn = {
+    async sendSecurityAlert(title, message, severity = 'CRITICAL') {
         try {
-            const logEntry = {
-                timestamp: new Date().toISOString(),
-                module: 'notifications',
-                eventType: broadcastType, // e.g., 'PUSH_BROADCAST_SENT', 'CAMPAIGN_SCHEDULED'
-                identifier: adminIdentifier,
-                metadata: details
+            const payload = {
+                title: `🚨 Security Shield: ${title}`,
+                body: message,
+                type: severity,
+                timestamp: new Date().toISOString()
             };
 
-            if (logsCoreInstance && typeof logsCoreInstance.recordLog === 'function') {
-                await logsCoreInstance.recordLog(logEntry);
+            if (notificationsCoreInstance && typeof notificationsCoreInstance.dispatch === 'function') {
+                await notificationsCoreInstance.dispatch(payload);
             } else {
-                const logs = JSON.parse(localStorage.getItem('wishes_hub_audit_logs') || '[]');
-                logs.unshift(logEntry);
-                localStorage.setItem('wishes_hub_audit_logs', JSON.stringify(logs.slice(0, 500)));
+                const notifs = JSON.parse(localStorage.getItem('wishes_hub_admin_notifications') || '[]');
+                notifs.unshift(payload);
+                localStorage.setItem('wishes_hub_admin_notifications', JSON.stringify(notifs));
             }
 
             return { success: true };
         } catch (error) {
-            console.error('Failed to log broadcast event:', error);
+            console.error('Failed to dispatch security notification:', error);
             return { success: false, error: error.message };
         }
     }
