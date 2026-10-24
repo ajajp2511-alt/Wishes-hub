@@ -1,25 +1,24 @@
 /**
- * Notifications to User-Permissions Connection
- * Verifies if the active admin has the required role and permissions to send broadcasts or alerts.
+ * Security-Shield to User-Permissions Connection
+ * Validates whether the active admin has root clearance to modify firewall rules or trigger lockdowns.
  */
 
 import { UserPermissionsAssembly } from '../../user-permissions/user-permissions-assembly.js';
 
-export const NotificationsPermissionsConn = {
-    async verifyBroadcastAccess(adminRole) {
+export const SecurityShieldPermissionsConn = {
+    async verifySecurityAdminAccess(adminRole) {
         try {
-            // Allowed roles for broadcasting
-            const allowedRoles = ['ROOT_ADMIN', 'MARKETING_ADMIN', 'SUPER_ADMIN'];
-            if (!allowedRoles.includes(adminRole)) {
+            const authorizedRoles = ['ROOT_ADMIN', 'SECURITY_ADMIN'];
+            if (!authorizedRoles.includes(adminRole)) {
                 return {
                     success: false,
-                    error: 'Insufficient permissions to dispatch system-wide notifications.'
+                    error: 'Unauthorized: Security shield modifications require Security or Root Admin privileges.'
                 };
             }
 
             return { success: true };
         } catch (error) {
-            console.error('Error verifying broadcast permissions:', error);
+            console.error('Error verifying security admin permissions:', error);
             return { success: false, error: error.message };
         }
     }
