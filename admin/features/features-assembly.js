@@ -1,4 +1,4 @@
-import { eventBus } from './features/eventBus.js';
+import { eventBus } from './eventBus.js';
 
 console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
