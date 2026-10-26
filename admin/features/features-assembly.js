@@ -1,3 +1,5 @@
+import { eventBus } from './features/eventBus.js';
+
 console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
 export class FeaturesAssembly {
@@ -39,7 +41,7 @@ export class FeaturesAssembly {
     'loading-history': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
     'loading-analytics': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
     'loading-template': { path: './manage-loading/manage-loading-assembly.js', initFn: 'init' },
- 
+
     // Wishes Manager
     'wishes-all': { path: './manage-wish/manage-wish-assembly.js', initFn: 'init' },
     'wishes-categories': { path: './manage-wish/manage-wish-assembly.js', initFn: 'init' },
@@ -377,6 +379,9 @@ export class FeaturesAssembly {
         this.root.innerHTML = '';
       }
 
+      // ⚡ Initialize EventBus Central System
+      this.initEventBusSystem();
+
       // ⚡ Safely import and initialize Home Module dynamically to prevent static import blocking
       try {
         const homeModule = await import('./manage-home/manage-home-assembly.js');
@@ -416,6 +421,13 @@ export class FeaturesAssembly {
         `;
       }
     }
+  }
+
+  initEventBusSystem() {
+    // Shared Central Event Bus listener setup
+    eventBus.on('system:log', (data) => {
+      console.log("🌐 [FeaturesAssembly Central Log]:", data);
+    });
   }
 
   async startBackgroundAIEngine() {
