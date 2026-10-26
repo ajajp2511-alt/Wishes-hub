@@ -1,4 +1,4 @@
-import { eventBus } from './eventBus.js';
+import { eventBus } from './eventbus.js';
 
 console.log("⚡ features-assembly.js initialized with Universal Smart Router!");
 
@@ -425,9 +425,11 @@ export class FeaturesAssembly {
 
   initEventBusSystem() {
     // Shared Central Event Bus listener setup
-    eventBus.on('system:log', (data) => {
-      console.log("🌐 [FeaturesAssembly Central Log]:", data);
-    });
+    if (eventBus && typeof eventBus.on === 'function') {
+      eventBus.on('system:log', (data) => {
+        console.log("🌐 [FeaturesAssembly Central Log]:", data);
+      });
+    }
   }
 
   async startBackgroundAIEngine() {
