@@ -1,9 +1,9 @@
 /**
- * Receiver Module with Magic Proxy - 3D Engine
- * Path: wishes-hub/admin/features/3d/connection/3d-receiver.js
+ * Receiver Module with Magic Proxy - 3D Master Assembly & Orchestration
+ * Path: admin/features/3d/connection/3d-receiver.js
  */
 
-import { coreEngine } from '../3d-core.js';
+import { eventBus } from '../../eventbus.js';
 import * as Master3DAssemblyModule from '../3d-assembly.js';
 
 /**
@@ -26,14 +26,14 @@ const proxyHandler = {
   }
 };
 
-// Master3DAssembly ke upar Magic Proxy laga diya
+// Exports ke upar Magic Proxy laga diya
 const smartDispatcher = new Proxy(Master3DAssemblyModule, proxyHandler);
 
 /**
  * Global Broadcast Listener: 
  * Event aate hi Proxy khud-b-khud intercept karega aur function run kar dega.
  */
-coreEngine.on('GLOBAL_BROADCAST', (eventData) => {
+eventBus.on('GLOBAL_BROADCAST', (eventData) => {
   const { sourceModule, actionName, payload } = eventData;
   
   console.log(`🪄 [3D Receiver] Intercepted action: ${actionName}`);
